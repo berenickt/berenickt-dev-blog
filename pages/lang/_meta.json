@@ -1,0 +1,14 @@
+{
+  "intro": "언어",
+  "-- language --": {
+    "type": "separator",
+    "title": "language"
+  },
+  "html": "html",
+  "css": "css",
+  "js": "js",
+  "ts": "ts",
+  "python": "python",
+  "java": "java",
+  "git": "git"
+}

@@ -1,0 +1,45 @@
+{
+  "intro": "Front 로드맵",
+  "-- Admins --": {
+    "type": "separator",
+    "title": "CSR"
+  },
+  "react": "react",
+  "-- SSR --": {
+    "type": "separator",
+    "title": "SSR "
+  },
+  "next": "next.js",
+  "-- Data Fetching --": {
+    "type": "separator",
+    "title": "Data Fetching"
+  },
+  "rest": "REST-API",
+  "graphql": "GralhQL",
+  "-- State Management --": {
+    "type": "separator",
+    "title": "State Management"
+  },
+  "redux-toolkit": "redux-toolkit",
+  "recoil": "recoil",
+  "mobx": "mobx",
+  "zustand": "zustand",
+  "-- Styling-library --": {
+    "type": "separator",
+    "title": "Styling-library"
+  },
+  "sass": "sass",
+  "emotion": "emotion",
+  "styled-components": "styled-components",
+  "postcss": "postcss",
+  "-- UI-library --": {
+    "type": "separator",
+    "title": "UI-library"
+  },
+  "ui-lib": "ui-library",
+  "-- TEST --": {
+    "type": "separator",
+    "title": "TEST"
+  },
+  "jest": "jest"
+}
