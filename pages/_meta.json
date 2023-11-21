@@ -1,0 +1,69 @@
+{
+	"front": {
+    "title": "Front",
+    "type": "page"
+  },
+  "back": {
+    "title": "Back",
+    "type": "page"
+  },
+	"cs": {
+    "title": "CS",
+    "type": "menu",
+    "items": {
+      "algorithm": {
+        "title": "algorithm",
+        "type": "page"
+      },
+      "data-structure": {
+        "title": "data-structure",
+        "type": "page"
+      },
+      "network": {
+        "title": "network",
+        "type": "page"
+      },
+      "operating-system": {
+        "title": "operating-system",
+        "type": "page"
+      }
+    }
+  },
+  "lang": {
+    "title": "lang",
+    "type": "menu",
+    "items": {
+      "html": {
+        "title": "html"
+      },
+      "css": {
+        "title": "css"
+      },
+      "js": {
+        "title": "js"
+      },
+      "ts": {
+        "title": "ts"
+      },
+      "python": {
+        "title": "py"
+      },
+      "java": {
+        "title": "java"
+      }
+    }
+  },
+  "memo": {
+    "title": "memo",
+    "type": "page"
+  },
+  "index": {
+    "title": "About",
+    "type": "page"
+  },
+  "github_link": {
+    "title": "Nextra",
+    "href": "https://nextra.site/docs/docs-theme/page-configuration",
+		"newWindow": true
+	}
+}
