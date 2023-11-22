@@ -1,11 +1,14 @@
 {
-  "intro": "Front 로드맵",
+  "intro": "컴퓨터과학 로드맵",
   "-- Admins --": {
     "type": "separator",
     "title": "CSR"
   },
-  "algorithm": "algorithm",
   "data-structure": "data-structure",
+  "algorithm": "algorithm",
+  "computer-architecture" : "computer-architecture",
+  "operating-system": "operating-system",
+  "unix-system": "unix-system",
   "network": "network",
-  "operating-system": "operating-system"
+  "design-pattern" : "design-pattern"
 }

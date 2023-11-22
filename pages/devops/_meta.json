@@ -1,3 +1,7 @@
 {
-  "intro": "Front 로드맵"
+  "intro": "devOps 로드맵",
+  "git": "git",
+  "docker": "docker",
+  "kubernetes": "kubernetes",
+  "aws": "aws"
 }

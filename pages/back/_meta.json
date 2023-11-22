@@ -1,0 +1,26 @@
+{
+  "intro": "Backend 로드맵",
+  "-- Node 백엔드 --": {
+    "type": "separator",
+    "title": "Node 백엔드"
+  },
+  "express": "express",
+  "nest": "nest",
+  "-- Database & SQL --": {
+    "type": "separator",
+    "title": "Database & SQL"
+  },
+  "mysql": "mysql",
+  "oracle": "oracle",
+  "redis": "redis",
+  "-- ORM --": {
+    "type": "separator",
+    "title": "ORM"
+  },
+  "typeorm": "typeorm",
+  "-- TEST --": {
+    "type": "separator",
+    "title": "TEST"
+  },
+  "jest": "jest"
+}
