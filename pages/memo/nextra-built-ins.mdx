@@ -1,0 +1,212 @@
+---
+title: Nextra built-ins
+date: 2023/11/22
+---
+
+import { Callout } from 'nextra/components'
+
+## 1. Callout Component
+
+- https://nextra.site/docs/guide/built-ins/callout
+
+### 1.1 기본
+
+<Callout emoji="💡">
+  **Space Invaders** is a 1978 shoot 'em up arcade game developed by Tomohiro
+  Nishikado.
+</Callout>
+
+```mdx
+import { Callout } from 'nextra/components'
+ 
+<Callout emoji="💡">
+  **Space Invaders** is a 1978 shoot 'em up arcade game developed by Tomohiro
+  Nishikado.
+</Callout>
+```
+
+### 1.2 정보
+
+<Callout type="info" emoji="ℹ️">
+  Today is Friday.
+</Callout>
+
+```mdx
+import { Callout } from 'nextra/components'
+ 
+<Callout type="info" emoji="ℹ️">
+  Today is Friday.
+</Callout>
+```
+
+### 1.3 경고
+
+<Callout type="warning" emoji="⚠️">
+  This API will be deprecated soon.
+</Callout>
+
+```mdx
+import { Callout } from 'nextra/components'
+ 
+<Callout type="warning" emoji="⚠️">
+  This API will be deprecated soon.
+</Callout>
+```
+
+### 1.4 에러
+
+<Callout type="error" emoji="️🚫">
+  This is a dangerous feature that can cause everything to explode.
+</Callout>
+
+```mdx
+import { Callout } from 'nextra/components'
+ 
+<Callout type="error" emoji="️🚫">
+  This is a dangerous feature that can cause everything to explode.
+</Callout>
+```
+
+---
+
+## 2. Tabs
+
+- https://nextra.site/docs/guide/built-ins/tabs
+
+import { Tabs } from 'nextra/components'
+ 
+<Tabs items={['pnpm', 'npm', 'yarn']}>
+  <Tabs.Tab>**pnpm**: Fast, disk space efficient package manager.</Tabs.Tab>
+  <Tabs.Tab>**npm** is a package manager for the JavaScript programming language.</Tabs.Tab>
+  <Tabs.Tab>**Yarn** is a software packaging system.</Tabs.Tab>
+</Tabs>
+
+```mdx
+import { Tabs } from 'nextra/components'
+ 
+<Tabs items={['pnpm', 'npm', 'yarn']}>
+  <Tabs.Tab>**pnpm**: Fast, disk space efficient package manager.</Tabs.Tab>
+  <Tabs.Tab>**npm** is a package manager for the JavaScript programming language.</Tabs.Tab>
+  <Tabs.Tab>**Yarn** is a software packaging system.</Tabs.Tab>
+</Tabs>
+```
+
+---
+
+## 3. Steps
+
+https://nextra.site/docs/guide/built-ins/steps
+
+import { Steps } from 'nextra/components'
+ 
+<Steps>
+### Step 1
+ 
+Contents for step 1.
+ 
+### Step 2
+ 
+Contents for step 2.
+</Steps>
+
+```mdx
+import { Steps } from 'nextra/components'
+ 
+<Steps>
+### Step 1
+ 
+Contents for step 1.
+ 
+### Step 2
+ 
+Contents for step 2.
+</Steps>
+```
+
+---
+
+## 4. File Tree
+
+import { FileTree } from 'nextra/components'
+ 
+<FileTree>
+  <FileTree.Folder name="pages" defaultOpen>
+    <FileTree.File name="_meta.json" />
+    <FileTree.File name="contact.md" />
+    <FileTree.File name="index.mdx" />
+    <FileTree.Folder name="about">
+      <FileTree.File name="_meta.json" />
+      <FileTree.File name="legal.md" />
+      <FileTree.File name="index.mdx" />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+
+```mdx
+import { FileTree } from 'nextra/components'
+ 
+<FileTree>
+  <FileTree.Folder name="pages" defaultOpen>
+    <FileTree.File name="_meta.json" />
+    <FileTree.File name="contact.md" />
+    <FileTree.File name="index.mdx" />
+    <FileTree.Folder name="about">
+      <FileTree.File name="_meta.json" />
+      <FileTree.File name="legal.md" />
+      <FileTree.File name="index.mdx" />
+    </FileTree.Folder>
+  </FileTree.Folder>
+</FileTree>
+```
+
+---
+
+## 5. code-hike/mdx code 쓰는 법
+
+### 5.1 파일 위치 표시
+
+```mdx
+```js rooms/models.js
+import { useState } from 'react'
+ 
+function Counter() {
+  const [count, setCount] = useState(0)
+  return <button onClick={() => setCount(count + 1)}>{count}</button>
+}
+```
+
+result : 
+
+```js rooms/models.js
+import { useState } from 'react'
+ 
+function Counter() {
+  const [count, setCount] = useState(0)
+  return <button onClick={() => setCount(count + 1)}>{count}</button>
+}
+```
+
+---
+
+### 5.2 특정 줄 강조 표시
+
+```mdx
+```js rooms/models.js focus=5:6
+import { useState } from 'react'
+ 
+function Counter() {
+  const [count, setCount] = useState(0)
+  return <button onClick={() => setCount(count + 1)}>{count}</button>
+}
+```
+
+result : 
+
+```js rooms/models.js focus=5:6
+import { useState } from 'react'
+ 
+function Counter() {
+  const [count, setCount] = useState(0)
+  return <button onClick={() => setCount(count + 1)}>{count}</button>
+}
+```

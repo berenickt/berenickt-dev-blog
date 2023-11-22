@@ -131,3 +131,7 @@ code.text-\[\.9em\] {
 .emphasize:hover {
   transform: scale(1.5);
 }
+
+strong {
+  color: palevioletred;
+}

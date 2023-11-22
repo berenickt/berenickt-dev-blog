@@ -1,13 +1,20 @@
 {
-  "intro": "언어",
-  "-- language --": {
+  "-- html & css --": {
     "type": "separator",
-    "title": "language"
+    "title": "html & css"
   },
   "html": "html",
   "css": "css",
+  "-- js & ts --": {
+    "type": "separator",
+    "title": "js & ts"
+  },
   "js": "js",
   "ts": "ts",
+  "-- others --": {
+    "type": "separator",
+    "title": "others"
+  },
   "python": "python",
   "java": "java"
 }

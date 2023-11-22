@@ -61,8 +61,8 @@ export default {
     ),
     darkMode: true,
     // @see https://nextra.site/docs/docs-theme/theme-configuration#theme-color
-    primaryHue: { dark: 105, light: 254 },
-    primarySaturation: 105,
+    // primaryHue: { dark: 105, light: 254 },
+    // primarySaturation: 105,
     // @see https://nextra.site/docs/docs-theme/theme-configuration#banner
     banner: {
       key: 'berenickt-release',
@@ -84,5 +84,8 @@ export default {
           .
         </span>
       )
+    },
+    toc: {
+      backToTop: true
     }
   }

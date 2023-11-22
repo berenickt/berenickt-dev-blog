@@ -1,0 +1,280 @@
+---
+title: "CS-JS-DataAlgo-12-이진탐색 (Binary Search)"
+date: 2023/01/11
+---
+
+# 1. 선형 탐색
+
+정리가 안된 책장에서 원하는 책을 찾는 방법은? 사람마다 다르겠지만 어느 방향이든 처음부터 순차적으로 찾을 수 있습니다.
+
+![Data Structure_12_1](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_12_1.png)
+
+* 순서대로 하나씩 찾는 탐색 알고리즘
+* **선형($O(n)$ ) 시간 복잡도**가 걸린다.
+
+------
+
+# 2. 이진 탐색
+
+상대방의 나이를 맞추고 싶다면?
+**Up&Down 게임으로 예상 나이를 말하고, 더 큰지 작은지 판단**하여 절반씩 줄여나가는 전략을 사용합니다.
+
+![Data Structure_12_2](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_12_2.png)
+
+* **정렬되어 있는 요소들을 반씩 제외하며 찾는** 알고리즘
+* **로그($O(log\ n)$) 시간복잡도**가 걸린다.
+
+------
+
+## 2.1 이진 탐색의 특징
+
+* **반드시 정렬되어 있어야 사용가능**하다.
+* **배열 혹은 이진 트리를 이용하여 구현**할 수 있다.
+* $O(log\ n)$ 시간복잡도인 만큼 **상당히 빠르다**.
+
+------
+
+## 2.2 배열을 이용한 구현 방법
+
+![Data Structure_12_3](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_12_3.png)
+
+위 배열에서 45를 찾으려면 어떻게 해야 할까요?
+
+1. 이진 탐색에서는 시작 지점을 Left, 중간을 Mid, 끝 지점을 Right로 둡니다.
+   - Mid와 찾을 값인 45를 비교합니다
+2. 45 < 58 이기 때문에  Right 값을 Mid 1칸 왼쪽에 위치시킵니다.
+3. 36 < 45 이기 때문에 Left가 36의 오른쪽으로 이동합니다.
+   - Left와 Right가 동일하기 때문에 Mid도 동일한 값으로 다시 부여됩니다.
+   - Mid값과 찾을 값인 45가 같기 때문에 탐색이 종료됩니다.
+
+------
+
+## 2.3 이진 탐색 트리를 이용한 구현 방법
+
+배열로 구현하는 방법은 중간에 요소를 추가하거나, 삭제할 떄, 선형시간의 단점을 여전히 들고 있습니다.
+그래서 이 방법을 해결하기 위해 이진 탐색 트리를 활용하 수 있습니다.
+
+* 이진 탐색을 위한 이진트리로 **왼쪽 서브 트리는 루트보다 작은 값**이 모여있고
+* **오른쪽 서브 트리는 루트보다 큰 값**이 모여있다. 
+
+------
+
+### 2.3.1 이진 탐색 트리 요소 추가
+
+![Data Structure_12_4](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_12_4.png)
+
+1. 루트인 5을 추가한다.
+2. 4를 추가한다.
+   - 4 < 5 이기 떄문에 왼쪽 정점에 위치
+3. 7을 추가한다.
+   - 5 < 7이기 때문에 오른쪽 정점에 위치
+4. 8을 추가한다.
+   - 루트인 5 < 8이기 때문에 오른쪽 정점에 위치
+   - 서브 트리의 루트인 7< 8이기 때문에 오른쪽 정점에 위치
+5. 5를 추가한다.
+   - 동일한 경우 왼쪽, 오른쪽 아무 곳에 넣어도 상관없지만, 여기서는 왼쪽 정점에 넣겠음
+   - 서브 트리의 루트인 4 < 5이기 때문에 오른쪽 정점에 위치
+6. 6을 추가한다.
+   - 6은 5보다 크고, 7보다 작기 때문에 7의 왼쪽 노드에 추가
+7. 2를 추가한다.
+   - 2는 5보다 작고, 4보다 작기 때문에 4의 왼쪽 노드에 추가
+
+### 2.3.2 이진 탐색 트리 요소 삭제
+
+#### (1) 단말 정점을 삭제하는 경우
+
+![Data Structure_12_5](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_12_5.png)
+
+별다른 처리없이 부모 정점과 연결을 끊으면 된다.
+
+------
+
+#### (2) 하나의 서브 트리를 가지는 경우
+
+![Data Structure_12_6](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_12_6.png)
+
+제거되는 정점의 부모 간선을 자식 정점을 가르키게 바꾸면 된다.
+
+* 예를 들어, 7을 제거할 경우 5의 오른쪽 간선을 8을 가르키게 하면 된다.
+
+------
+
+#### (3) 두 개의 서브 트리를 가지는 경우
+
+![Data Structure_12_7](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_12_7.png)
+
+* 왼쪽 서브 트리의 가장 큰 값 혹은 오른쪽 서브 트리의 가장 작은 값과 교체하면 된다.
+* 이 경우 교체된 정점의 좌우 자식이 없다면 제거되는 정점의 링크로 대체된다.
+  * 예를 들어, 4를 삭제할 때, 3 또는 5의 해당하는 정점과 교체하면 됩니다.
+
+------
+
+## 2.4 이진 탐색 트리의 문제점
+
+![Data Structure_12_8](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_12_8.png)
+
+* **최악의 경우 한쪽으로 편향된 트리가 될 수 있다**.
+* 그런 경우 **순차 탐색과 동일한 시간복잡도**를 가진다.
+* 이를 해결하기 위해 다음과 같은 자료구조를 이용할 수 있다.
+  * **AVL 트리**
+  * **레드-블랙 트리**
+
+------
+
+# 3. 이진 탐색 구현
+
+만약 코딩테스트에서 이진 탐색을 사용한다면, 배열을 이용해 구현하는 것을 추천합니다.
+
+## 3.1 Array
+
+```js
+const array = [1, 1, 5, 124, 400, 599, 1004, 2876, 8712];
+
+function binarySearch(array, findValue) {
+  let left = 0;
+  let right = array.length - 1;
+  let mid = Math.floor((left + right) / 2);
+
+  // mid가 찾는 값이 일치할 떄까지 순회
+  while (left < right) {
+    if (array[mid] === findValue) {
+      return mid;
+    }
+    if (array[mid] < findValue) {
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+    mid = Math.floor((left + right) / 2);
+  }
+  // 만약 left값과 right값이 동일할 경우 루프 탈출
+  // 루프를 그대로 빠져나온다면,
+  // 요소를 찾지 못했다는 뜻이기에 - 1반환
+  return -1;
+}
+console.log(binarySearch(array, 2876)); // 7
+console.log(binarySearch(array, 1)); // 0
+console.log(binarySearch(array, 500)); // -1
+```
+
+------
+
+## 3.2 Binary Search Tree
+
+기존 이진 트리에 탐색 함수를 추가하면 됩니다.
+
+```js
+class Node {
+  constructor(value) {
+    this.value = value;
+    this.left = null;
+    this.right = null;
+  }
+}
+
+class BinarySearchTree {
+  constructor() {
+    this.root = null;
+  }
+  
+  // 이진 탐색 트리 요소 추가
+  insert(value) {
+    const newNode = new Node(value); // 노드를 하나 생성
+    // 루트가 비어있으면 생성한 노드가 루특가 됨
+    if (this.root === null) {
+      this.root = newNode;
+      return;
+    }
+
+    let currentNode = this.root;
+    // 현재 노드가 null이 아닐 떄까지 순회 
+    while (currentNode !== null) {
+      // 만약 오른쪽 노드의 값보다 추가될 노드의 값이 큰 경우 오른쪽 노드에 삽입
+      if (currentNode.value < value) {
+        if (currentNode.right === null) {
+          currentNode.right = newNode;
+          break;
+        }
+        currentNode = currentNode.right; // null이 아닌 경우 이동만 함
+      } else {
+        // 만약 왼쪽 노드의 값보다 추가될 노드의 값이 큰 경우 왼쪽 노드에 삽입
+        if (currentNode.left === null) {
+          currentNode.left = newNode;
+          break;
+        }
+        currentNode = currentNode.left; // null이 아닌 경우 이동만 함
+      }
+    }
+  }
+  has(value) {
+    let currentNode = this.root;
+    while (currentNode !== null) {
+      if (currentNode.value === value) {
+        return true;
+      }
+      if (currentNode.value < value) {
+        currentNode = currentNode.right;
+      } else {
+        currentNode = currentNode.left;
+      }
+    }
+    return false;
+  }
+}
+
+const tree = new BinarySearchTree();
+tree.insert(5);
+tree.insert(4);
+tree.insert(7);
+tree.insert(8);
+tree.insert(5);
+tree.insert(6);
+tree.insert(2);
+console.log(tree.has(8)); // true
+console.log(tree.has(1)); // false
+```
+
+------
+
+# 3. 이진 탐색 실습 : 입국 심사
+
+## 3.1 문제
+
+* https://school.programmers.co.kr/learn/courses/30/lessons/43238
+
+------
+
+## 3.2 풀이
+
+```js
+// 로그 시간 = 이진 탐색
+// times -> 선형 로그 시간으로 충분히 가능
+
+// 우리는 특정 값을 찾는 것이 아닙니다.
+// 우리가 찾는 것은 최소 몇 분에 모든 심사가 끝나는가?
+// - 결정 문제 = 이진 탐색 = 파라메트릭 서치(Parametric Search)
+
+// 최소 1분에서 10억분 * n 사이
+// 면접관들이 몇 명을 처리하는가?
+// 처리 가능한 입국자 n보다 작다면, 분을 올려야 하고, 입국자가 n보다 크면 분을 낮춰야 한다.
+// 시간 / 심사시간 = 심사관 당 처리 가능한 입국자 수
+function solution(n, times) {
+  // 오름차순
+  const sortedTimes = times.sort((a, b) => a - b); // O(n log n)
+  let left = 1;
+  let right = sortedTimes[sortedTimes.length - 1] * n;
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    // sum([시간 / 심사시간])
+    const sum = times.reduce((acc, time) => acc + Math.floor(mid / time), 0);
+
+    if (sum < n) {
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+  return left;
+}
+```

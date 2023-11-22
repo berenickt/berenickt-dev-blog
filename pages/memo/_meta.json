@@ -2,5 +2,21 @@
   "-- memo --": {
     "type": "separator",
     "title": "memo"
-  }
+  },
+  "wisesaying" : "좋아하는 글귀들",
+  "-- blog --": {
+    "type": "separator",
+    "title": "blog"
+  },
+  "start_blog_with_nextra": "nextra 블로그 만들기",
+  "nextra-built-ins": "nextra Built-ins",
+  "-- CheatSheet --": {
+    "type": "separator",
+    "title": "CheatSheet"
+  },
+  "CheatSheet-Git" : "CheatSheet-Git",
+  "CheatSheet-GitHub" : "CheatSheet-GitHub",
+  "CheatSheet-JS-DataAlgo-Ref" : "CheatSheet-JS-DataAlgo-Ref",
+  "CheatSheet-Linux" : "CheatSheet-Linux"
+  
 }

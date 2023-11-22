@@ -1,0 +1,86 @@
+---
+title: "CS-JS-DataAlgo-15-그리디 (Greedy)"
+date: 2023/01/11
+---
+
+# 1. 그리디(Greedy, 탐욕)
+
+* 매 선택에서 **지금 이 순간 가장 최적인 답을 선택**하는 알고리즘
+* **최적해를 보장해주지** 않는다.
+  * e.g. 자판기는 남은 금액 반환
+  * e.g. 마시멜로 실험(30분을 참으면 마시멜로+1)에서 아이들은 어떤 선택
+
+
+![Data Structure_15_1](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_15_1.png)
+
+* A → F로 가는 방법은 B와 D가 있습니다.
+* 총 이동거리로 보면 D루트가 더 빠르지만, 지금 B와 D만 봤을 떄는 B가 더 빠르기에 B를 선택합니다.
+
+------
+
+## 1.1 그리디 알고리즘의 특징
+
+* **보통 최적해를 구하는 알고리즘보다 빠른 경우**가 많다.
+* **크루스칼, 다익스트라 알고리즘** 등에 사용된다.
+* 직관적인 문제 풀이에 적합하다.
+
+------
+
+## 1.2 동전 반환 문제
+
+거스름돈은 번거롭기 때문에 최대한 큰 단위로 거슬러주고 싶다. 어떻게 해야할까?
+
+* 지불금액 : 5,000원
+* 요금 : 3,140원
+* 거스름돈 : 1,860원
+
+![Data Structure_15_2](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_15_2.png)
+
+큰 단위인 지폐, 동전 순으로 거스름돈을 만들면 된다. 가장 쉽고 직관적인 그리디 문제
+
+------
+
+# 2. 그리디 실습 : 큰 수 만들기
+
+참고로 그리디 문제는 **특정 구현 방법이 존재하는 것이 아닌 하나의 개념**으로 봐야 한다는 점입니다.
+그래서 문제를 통해 이해하는 것이 가장 좋습니다.
+
+## 2.1 문제
+
+* https://school.programmers.co.kr/learn/courses/30/lessons/42883
+
+------
+
+## 2.2 풀이
+
+```js
+// N이 백만이면 O(N), O(N log N)
+// 큰 값이 나오면 이전 값 중 더 작은 값은 전부 삭제한다.
+// 즉, 스택의 바닥에서부터 탑은 큰 수부터 작은 수로 나열이 되어야 한다.
+function solution(number, k) {
+  const stack = [];
+  let count = 0; // 몇 개를 지웠는지
+
+  // 입력받은 문자열만큼 순회하면서 지우기
+  for (const item of number) {
+    // k보다 count가 작거나 && 스택의 길이가 입력문자열보다 작은 동안
+    while (count < k && stack[stack.length - 1] < item) {
+      stack.pop();
+      count += 1;
+    }
+    stack.push(item); // 나머지 item은 stack에 넣기
+  }
+  // console.log(stack.join(''));
+
+  // 9876543처럼 count가 k보다 작은 경우
+  while (count < k) {
+    stack.pop();
+    count += 1;
+  }
+  return stack.join('');
+}
+
+// console.log(solution('1924', 2));
+```
+
+------

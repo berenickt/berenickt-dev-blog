@@ -1,0 +1,309 @@
+---
+title: "CS-JS-DataAlgo-14-BFS, DFS"
+date: 2023/01/11
+---
+
+# 1. DFS/BFS
+
+너비 우선탐색과 깊이 우선탐색을 이용하면 이러한 것들을 구현할 수 있습니다.
+
+* 그림판의 페인트툴
+* 그래프의 D에서 G로 가는 최단 거리
+
+>  cf. [DFS BFS 깊이 너비 우선탐색 알고리즘 5분만에 이해하기](https://youtu.be/BsYbdUnKZ-Y)
+>
+> * 드라마 하나를 몰아본다 = DFS
+> * 드라마 여러 개를 하나씩 본다 = BFS
+>
+> 그래프 탐색 알고리즘 = BFS, DFS
+>
+> * `그래프` : 여러 개체들이 연결되어 있는 자료구조
+> * `탐색` : 특정 개체를 찾기 위한 알고리즘
+
+## 1.1 대표적인 문제 유형 
+
+* 경로탐색 유형(최단거리, 시간)
+* 네트워크 유형(연결)
+* 조합 유형(모든 조합 만들기)
+
+------
+
+## 1.2 DFS 구현 방법
+
+* 한 놈만 끝까지 패는 유형이라 **재귀함수로 구현**하는 것이 가장 일반적
+* 재귀를 타고, 타서 탈출 조건에 먼저 도달하고 그 다음 파라미터를 하나씩 바꿔 가면서 정답을 구현
+
+------
+
+## 1.3 BFS 구현 방법
+
+* 여러 놈을 한대씩 때리면서 가는 유형이라 **Queue, LinkedList를 사용**하는 것이 일반적
+* 구현 방법
+  1. 가장 먼저 넣었던 것을 꺼내서
+  2. 연결된 점을 Queue에 넣기
+  3. Queue가 빌 때까지 반복
+* 순서가 보장되어야 하기 때문에 Queue, LinkedList를 사용
+
+------
+
+## 1.4 DFS/BFS 중 어떤 걸 써야하나
+
+* 둘 다 탐색을 하는 알고리즘이라 어떤 걸 써도 정답은 나오지만 자신있고 손에 익은 알고리즘을 쓰면 된다.
+* DFS는 BFS보다 동작 검증을 하기 쉬움 
+* DFS는 하나의 조합을 완성해서 정답과 비교하고 또 다른 조합을 만들어 보고 정답과 비교하는 식으로 동작
+* BFS는 한 번에 여러 조합들을 한칸 한칸씩 만들다보니 조합을 완성해 
+  * 정답과 비교하는 시점에 언제 어떻게 만들어 졌는지
+  * 어디서부터 틀린건지를 분석하기가 까다롭습니다.
+* 하지만 BFS도 필요할 떄가 있는데,
+  * DFS는 한 놈만 패는 알고리즘인데, 그 한 놈이 오래 걸리면 시간이 초과될 수 있음
+* 한 문제를 두 방식으로 모두 풀어보는 것을 추천
+
+------
+
+##  1.5 정리
+
+|            |                             DFS                              |                             BFS                              |
+| :--------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+|  수행시간  |                            복불복                            |               모든 경우의 수를 한 걸음씩 나감                |
+|            | 운이 좋으면 첫번째 조합이 최적의 답<br />최악의 경우 모든 조합을 다 만들어야 함 | 초반에 느리더라도 하나의 정답만 찾으면 <br />나머지 경우의 수는 정답에서 제외 |
+| 시간복잡도 |                             높다                             |                             낮다                             |
+
+![dfs-bfs](https://raw.githubusercontent.com/berenickt/image-server/main/img/dfs-bfs.gif)
+
+------
+
+# 2. BFS (너비 우선 탐색)
+
+* ` BFS (Breadth-First Search, 너비 우선 탐색)`
+* 그래프 탐색 알고리즘으로 **같은 깊이에 해당하는 정점부터 탐색**하는 알고리즘
+
+------
+
+## 2.1 BFS 특징
+
+* **Queue를 이용해서 구현**할 수 있다.
+* **시작 지점에서 가까운 정점부터 탐색**한다.
+* V가 정점의 수, E가 간선의 수일 때 **BFS의 시간복잡도**는 $O(V+E)$다.
+
+![Data Structure_14_1](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_14_1.png)
+
+1. 시작지점을 A라고 가정하고, Queue에 A를 삽입
+2. A로부터 이동할 수 있는 간선을 체크하여, 해당 정점 B, C, D를 Queue에 넣습니다.
+3. B 정점을 Dequeue하여, B로부터 이동가능한 정점 F를 Queue에 넣습니다.
+   - 이떄 C는 이미 방문한 곳이기 때문에 추가하지 않습니다.
+4. C 정점을 Dequeue하여, C로부터 이동가능한 정점 F이지만, 이미 Queue에 있기 때문에 추가하지 않습니다.
+5. D 정점을 Dequeue하여, D로부터 이동가능한 정점 E를 Queue에 넣습니다.
+6. F 정점을 Dequeue하여, F로부터 이동가능한 정점 G를 Queue에 넣습니다.
+7. G 정점은 더 이상 갈 수 있는 정점이 없습니다.
+8. 그래서 G 정점을 Dequeue하고 종료합니다.
+
+------
+
+# 3. DFS (깊이 우선 탐색)
+
+* `DFS (Depth-First Search, 깊이 우선 탐색)`
+* 그래프 탐색 알고리즘으로 **최대한 깊은 정점부터 탐색**하는 알고리즘
+
+------
+
+## 3.1 DFS 특징
+
+* **Stack를 이용해서 구현**할 수 있다.
+* **시작 정점에서 깊은 것부터 찾는다**.
+* V가 정점의 수, E가 간선의 수일 때 **DFS의 시간복잡도**는 $O(V+E)$다.
+
+![Data Structure_14_2](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_14_2.png)
+
+> 최상위 노트에서 연결된 자식 노드를 모두 탐색한 후, 더 이상 자식 노드가 없을 때 인접한 상위 노드의 형제 노드를 방문,
+> 해당 형제 노드에서도 자식 노드를 탐색하고, 더 이상 자식노드가 없을 경우 다시 인접한 상위 형제의 노드를 방문
+
+1. 시작지점을 A라고 가정하고, Stack에 A를 삽입
+2. Stack의 탑인 A를 참고하여, 이동할 수 있는 정점 B를 Stack에 넣습니다.
+3. Stack의 탑인 B를 참고하여, 이동할 수 있는 정점 F를 Stack에 넣습니다.
+4. Stack의 탑인 F를 참고하여, 이동할 수 있는 정점 C를 Stack에 넣습니다.
+   - C에서는 더 이상 갈 수 있는 곳이 없기 때문에 pop을 수행하고,
+5. 다시 Stack의 탑인 F를 참고하여, 이동할 수 있는 정점 G를 Stack에 넣습니다.
+6. G에서는 더 이상 갈 수 있는 곳이 없기 때문에 pop을 수행하고,
+   - 다시 F로 돌아와도 F에서는 더 이상 갈 수 있는 곳이 없기 때문에 pop을 수행하고,
+   - 다시 B로 돌아와도 B에서는 더 이상 갈 수 있는 곳이 없기 때문에 pop을 수행하고,
+   - 다시 A로 돌아옵니다.
+7. Stack의 탑인 A를 참고하여, 이동할 수 있는 정점 D를 Stack에 넣습니다.
+8. Stack의 탑인 D를 참고하여, 이동할 수 있는 정점 E를 Stack에 넣습니다.
+9. E에서 더 이상 갈 수 있는 곳이 없기 때문에 A까지 다시 돌아가고, A에서도 갈 수 있는 곳이 없기 때문에 종료합니다.
+
+------
+
+# 4. 문제 : 타겟넘버
+
+코딩테스트 고득점 Kit :  [프로그래머스 Level 2 타겟넘버](https://school.programmers.co.kr/learn/courses/30/lessons/43165?language=javascript)
+
+1. `경우의 수 계산` : 최악의 경우 수행할 연산 횟수를 계산해 재귀함수/완전탐색을 사용할지 확인
+2. `수행동작` : 재귀함수가 호출됐을 떄 1턴마다 수행할 동작 구현
+3. `탈출조건` : 어느  시점에 이 재귀함수를 끊을지 구현
+
+numbers의 0번째 부터 마지막까지 모든 요소를 각각 덧셈 또는 뺄셈한 결과를 모두 확인하여 target과 같은 경우의 개수를 세기
+
+```js
+/** https://school.programmers.co.kr/learn/courses/30/lessons/43165?language=javascript
+ * numbers 배열을 각각 더하거나 빼서 목표하는 target 숫자 만드는 모든 경우의 수 구하기
+ * @param {*} numbers 사용할 수 있는 숫자
+ * @param {*} target 타겟 넘버
+ * @returns target 숫자 만드는 모든 경우의 수
+ * numbers의 각 자리의 숫자를 더하거나 빼는 경우가 2
+ * 주어지는 숫자 최대 개수가 20개
+ * 그 20개의 숫자에 대해 각각 2가지 경우의 수가 존재
+ * 2의 20승인 100만번 정도가 최악의 경우의 수
+ */
+function solution(numbers, target) {
+  let answer = 0;
+  const length = numbers.length;
+
+  DFS(0, 0); //함수 호출 (0번째 숫자, 현재까지 합계 0)
+  return answer;  
+    
+  // numbers의 인덱스와 현재까지의 합계
+  function DFS(index, sum) {
+    // **** 1. 탈출 조건
+    // numbers의 인덱스를 모두 탐색했다면
+    if (index === length) {
+      // 현재까지의 합계가 target이면 answer++
+      if (target === sum) {
+        answer++;
+      }
+      return;
+    }
+
+    // **** 2. 수행동작
+    // 모든 숫자가 (+)인 경우를 모두 탐색한 뒤
+    // 다음 인덱스의 숫자가 (-)인 경우를 탐색
+    DFS(index + 1, sum + numbers[index]);
+    DFS(index + 1, sum - numbers[index]);
+  }  
+}
+```
+
+------
+
+## 4.1 수행동작
+
+ numbers는 [1,1,1,1,1]이, target이 3인 경우
+
+![Data Structure_14_3](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_14_3.png)
+
+(1) `DFS(index + 1, sum + numbers[index])` 부분이 계속 실행되며 다음 인덱스의 숫자가 (+) 인 자식 노드를 계속 탐색
+
+------
+
+![Data Structure_14_4](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_14_4.png)
+
+(2) 마지막 인덱스에 다다랐을 경우(index = 5, sum = 5 일 때) 해당 함수를 스택에서 제거한 뒤,
+ index가 4일 때 `DFS(index + 1, sum - numbers[index])` 을 실행하여 (-)인 자식 노드를 탐색
+
+------
+
+![Data Structure_14_5](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_14_5.png)
+
+(3) 마지막 인덱스에 다다랐으니 다시 해당 함수를 스택에서 제거, 
+index가 3일 때 `DFS(index + 1, sum — numbers[index])` 을 실행
+
+------
+
+![Data Structure_14_6](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_14_6.png)
+
+(4) index 4가 (-)일 때 `DFS(index + 1, sum + numbers[index])`을 실행하여 index 5가 (+)인 경우의 자식을 탐색,
+탐색을 마치면 해당 함수를 스택에서 제거한 뒤
+`DFS(index + 1, sum - numbers[index])`을 실행하여 index 5가 (-)인 경우의 자식을 탐색
+
+------
+
+(5) 다시 index가 2일 때 `DFS(index + 1, sum + numbers[index])`을 실행,
+index 3이 (-)일 때 `DFS(index + 1, sum + numbers[index])`을 실행하여 index 4가 (+)인 경우의 자식 노드를 모두 탐색 후
+15번 라인을 실행하며 index 5가 (-)인 경우의 자식 노드를 탐색
+
+------
+
+(+)의 자식 노드 탐색 → (-)의 자식 노드 탐색 순서로 위 과정이 진행되며, 
+index 1이 (-)일 때의 자식 노드의 경우의 수 (+), (-) 를 모두 탐색하면 해당 함수가 종료
+
+------
+
+## 4.2 풀이 리팩토링
+
+```js
+/** https://school.programmers.co.kr/learn/courses/30/lessons/43165?language=javascript
+ * numbers 배열을 각각 더하거나 빼서 목표하는 target 숫자 만드는 모든 경우의 수 구하기
+ * @param {*} numbers 사용할 수 있는 숫자
+ * @param {*} target 타겟 넘버
+ * @returns
+ * numbers의 각 자리의 숫자를 더하거나 빼는 경우가 2
+ * 주어지는 숫자 최대 개수가 20개
+ * 그 20개의 숫자에 대해 각각 2가지 경우의 수가 존재
+ * 2의 20승인 100만번 정도가 최악의 경우의 수
+ */
+function solution(numbers, target) {
+  function DFS(index, sum) {
+    if (index === numbers.length) return sum === target ? 1 : 0;
+    return DFS(index + 1, sum + numbers[index]) + DFS(index + 1, sum - numbers[index]);
+  }
+  return DFS(0, 0);
+}
+```
+
+------
+
+# 5. 문제 : 게임 맵 최단거리
+
+코딩테스트 고득점 Kit :  [프로그래머스 Level 2 게임 맵 최단거리](https://school.programmers.co.kr/learn/courses/30/lessons/1844)
+
+1. 게입 맵에서 우측 하단의 상대방 진영의 위치를 확인한다.
+2. 게임 캐릭터가 이동할 수 있는 방향성을 수치화한다.
+3. 너비 우선 탐색(BFS)을 구현하기 위하여 현재 확인한 위치를 담을 Queue를 생성한다.
+4. 게임 캐릭터가 최초 위치하고 있는 지점을 Queue에 입력한다.
+5. BFS를 통해 시작지점에서부터 상대방 진영까지의 최단거리를 구한다.
+   - 최단거리 구하기는 모든 지역을 깊이 있게 훑어봐야하는 깊이 우선 탐색(DFS)보다 
+   - 현재 위치에서부터 가까운 위치를 탐색하면서 넓게 거리를 탐색하는 너비 우선 탐색(BFS) 알고리즘을 선택하는 것이 바람직
+
+```js
+function solution(maps) {
+  let answer = -1;
+  const X_LEN = maps.length; // maps의 행
+  const Y_LEN = maps[0].length; // maps의 열
+  const DIRECTION = [
+    [1, 0], // 상
+    [0, 1], // 우
+    [-1, 0], // 하
+    [0, -1], // 좌
+  ];
+
+  // // BFS에 사용할 queue를 생성
+  const mapsQueue = [];
+
+  maps[0][0] = 0; // 시작 위치
+
+  // 첫 시작은 무조건 가장 좌측의 가장 상단에서 시작하므로 
+  // 0, 0 좌표와 이동한 칸 수 까지 해서 [0, 0, 1]
+  mapsQueue.push([0, 0, 1]);
+
+  while (mapsQueue.length > 0) {
+    const [x, y, distance] = mapsQueue.shift();
+
+    if (x === X_LEN - 1 && y === Y_LEN - 1) {
+      answer = distance;
+      break;
+    }
+
+    for (let i = 0; i < DIRECTION.length; i++) {
+      const [nextX, nextY] = [x + DIRECTION[i][0], y + DIRECTION[i][1]];
+      if (nextX < 0 || nextX >= X_LEN || nextY < 0 || nextY >= Y_LEN || maps[nextX][nextY] === 0) {
+        continue;
+      }
+
+      maps[nextX][nextY] = 0;
+      mapsQueue.push([nextX, nextY, distance + 1]);
+    }
+  }
+
+  return answer;
+}
+```
+

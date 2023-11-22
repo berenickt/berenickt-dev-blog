@@ -1,0 +1,351 @@
+---
+title: "CheatSheet-Linux Command-명령어 정리"
+date: 2022/12/14
+---
+
+## 1. Shell Commands (Shell 종류들)
+
+많은 Unix Shell이 존재하지만, 하나만 잘 사용하면, 명령어가 비슷해서 다양한 Shell을 사용할 수 있습니다.
+그리고 Unix Shell을 알아두면, Linux, Mac OS의 Shell Command, WSL에도 사용 가능합니다.
+
+> 💡 참고
+>
+> * WSL(Windows Subsystem for Linux)
+>   * WSL을 사용하면 Windows안에서도 Linux 명령어를 사용 가능 (Window 10 이상부터)
+> * 뭐 설치하기 귀찮으면, Native Terminal을 사용하면 됩니다.
+>   * Window는 PowerShell
+>   * PowerShell은 Unix 명령어들을 사용할 수 있게 Aliases(별명)를 제공함
+> * Mac OS 추천 터미널
+>   *  iTerm2 : https://iterm2.com/
+> * Windows 추천 터미널
+>   * cmder (git이 내장으로 이미 설치됨)
+>   * https://cmder.app/
+
+------
+
+## 2. Manual
+
+### 2.1 man (명령어의 사용법 출력)
+
+`man`은 `Manual`의 약자로, 어떤 명령어의 사용법을 보여줍니다. man을 나가고 싶다면 `q`를 입력하면 됩니다.
+
+```sh
+$ man man
+```
+
+------
+
+### 2.2 clear
+
+`clear`은 터미널의 모든 텍스트를 지워주는 명령어입니다.
+
+```bash
+$ clear
+```
+
+------
+
+## 3. Navigating File System
+
+### 3.1 pwd (현재 자신이 위치한 디렉토리)
+
+`pwd`는 `Print Working Directory`의 약자로, 내가 있는 곳의 전체 경로를 보여줍니다.
+
+```bash
+$ pwd
+```
+
+------
+
+### 3.2 ls (현재 자신이 속해있는 폴더 내의 파일, 폴더 표시)
+
+`ls`는 `list`의 약자로, 현재 디렉토리에 있는 폴더와 파일의 명들을 보여줍니다.
+
+```bash
+$ ls
+dir1 dir2 file1.txt file2.txt
+
+$ ls dir1 # dir1이라는 폴더 안 폴더와 파일명 출력
+
+# -l (long의 약자)
+$ ls -l # 파일에 내용을 자세히 알고 싶을 떄
+
+# -a (all의 약자)
+$ ls -a # 숨겨진 파일까지 모두 출력
+$ ls -la # -l옵션과 -a옵션을 같이 사용 가능
+
+$ open . # 현재 디렉토리를 파일 탐색기로 열기
+$ explorer . # PowerShell에서 현재 디렉토리를 파일 탐색기로 열기
+```
+
+------
+
+### 3.3 cd (디렉토리 이동)
+
+`cd`는 `change directory`의 약자로, 현재 있는 경로의 위치를 변경해주는 명령입니다.
+
+```bash
+$ cd dir1
+$ cd .. # 현재 경로의 바로 상위 경로 폴더로 이동
+$ cd ~ # 현재 설정된 사용자의 최상위 경로(Home 디렉토리)로 이동
+$ cd - # 바로 이전 경로로 이동
+```
+
+------
+
+### 3.4 find (특정한 파일을 찾기)
+
+`find`는 파일 시스템에서 특정 파일이나 디렉토리를 찾는 명령어입니다.
+
+```bash
+$ find . -type file -name "*.txt"   # txt 파일을 찾기
+$ find . -type file -name "*.json"  # json 파일을 찾기
+$ find . -type directory -name "*2" # 이름이 2로 끝나는 폴더 찾기  
+```
+
+PowerShell에서는 find alias를 지원하지 않아서 직접 작성해줘야 합니다.
+
+------
+
+### 3.5 which (특정 명령어의 위치)
+
+`which`는 내가 실행하고자 하는 명령이 어디에 설치되어 있는지 어디에 설정되어 있는지 경로를 확인할 떄 사용하는 명령어입니다.
+
+```bash
+$ which node # node의 실행결로를 확인
+$ which code # visual studio의 실행경로를 확인
+```
+
+------
+
+## 4. Create and mangae files
+
+### 4.1 touch (파일 생성)
+
+`touch`는 원하는 파일을 작성하면 새로운 파일을 만들 수 있습니다.
+
+```bash
+$ touch new_file1.txt # new_file1.txt라는 파일 생성
+```
+
+------
+
+### 4.2 cat (파일의 내용을 화면에 출력)
+
+`cat`은 `concatenate(연결하다)`약자로, 파일 안의 내용을 터미널 상에서 확인할 수 있습니다.
+
+```bash
+$ cat new_file1.txt
+First Line
+$ touch new_file2.txt
+$ cat new_file1.txt new_file2.txt
+First Line
+Second Line
+```
+
+------
+
+### 4.3 echo
+
+echo 다음에 문자열을 입력하면 문자열을 터미널에 echo(메아리)칠 수 있습니다.
+
+```bash
+$ echo "Hello World"
+hello world
+
+# echo 명령어 단독으로는 별 영향이 없지만
+$ echo "Hello World" > new_file3.txt # >로 새로운 파일을 만들면서 파일 내용으로 작성됩니다.
+$ cat new_file3.txt
+Hello World
+
+#  >을 사용할 떄 주의할 점은 파일 내용을 덮어씌운다는 점입니다.
+$ echo "Hello Brave New world" > new_file3.txt
+$ cat new_file3.txt
+Hello Brave New world
+
+# 덮어씌우는 게 아니라 붙이고 싶다면 >>을 사용합니다.
+$ echo "Goodbye world" >> new_file3.txt
+$ cat new_file3.txt
+Hello Brave New world
+Goodbye world
+```
+
+------
+
+### 4.4 mkdir (디렉토리 생성)
+
+`mkdir`은 `make directory`의 약자로, 폴더(directory)를 만드는 명령어입니다.
+
+```bash
+$ mkdir dir3 # dir3이라는 폴더 생성
+$ ls
+
+# 폴더 내 폴더같이 모든 서브 폴더들을 만들고 싶다면 -p 옵션
+$ mkdir -p dir4/subdir1/subdir2
+```
+
+반대 명령어로 `rmdir(디렉토리 삭제)`
+
+------
+
+### 4.5 cp (파일 복사)
+
+`cp`는 `copy`의 약자로, 파일이나 폴더를 복사하는 명령어입니다.
+
+```bash
+# cp [파일] [원하는 위치]
+$ cp file1.txt dir1/ # file1.txt를 dir1에 복사
+```
+
+------
+
+### 4.6 mv (파일 이동)
+
+`mv`는 `move`의 약자로, 복사하지 않고 파일이나 폴더를 이동시키는 명령어입니다.
+
+```bash
+$ mv file2.txt dir1/ # file2.txt를 dir1으로 이동
+
+# 새로운 파일로 복사하고 싶다면
+$ mv file1.txt file2.txt 
+```
+
+------
+
+### 4.7 rm (파일 삭제)
+
+`rm`은 `remove`의 약자로, 파일을 삭제합니다. (디렉토리를 삭제하려고 하면 경고가 나옵니다.)
+
+```bash
+$ rm file2.txt # file2.txt 파일을 삭제
+$ rm dir2 # 폴더(directory)라 지울 수 없음
+rm: dir2: is a directory
+
+# 디렉토리를 삭제하려면 -r옵션은 사용해야 합니다.
+$ rm -r dir2 # dir2안에 서브 경로들도 모두 삭제
+```
+
+------
+
+### 4.8 grep (특정 패턴으로 파일을 찾기)
+
+`grep`은 `Global Regular Expression Print`의 약자로, 파일이나 프로젝트 한에서 키워드 검색하는 명령어입니다.
+
+```bash
+# grep [검색키워드] [파일종류]
+$ grep "world" *.txt  # txt파일 내에서 world라는 단어 검색
+new_file3.txt:Goodbye world
+
+# -n 몇번쨰 줄에 있는지
+$ grep -n "world" *.txt # txt파일 내에서 world라는 단어가 몇 번쨰 줄에 있는지 검색
+new_file3.txt:2:Goodbye world
+
+# -i 대소문자 구분X
+$ grep -ni "world" *.txt # 대소문자 상관없이 world라는 단어가 몇 번쨰 줄에 있는지 검색
+
+# -r 현재 폴더의 모든 서브 시스템까지 포함해서
+$ grep -nir "world" . # 현재 경로와 그 하위 서브경로를 포함해 검색
+```
+
+------
+
+## 5. Work with environment variables
+
+환경변수(environment variables)은 내 컴퓨터에서 특정한 키워드가 어떠한 일을 하거나, 경로를 저장할 수 있도록 만들어 줍니다.
+
+------
+
+### 5.1 export (환경변수를 설정)
+
+export는 환경변수를 설정하는 명령어입니다. (환경변수는 보통 대문자로 작성, 단어 사이에는 언더바(_) 사용)
+
+```bash
+$ export MY_DIR="dir1" # 내 환경변수(컴퓨터상에 변수)를 설정
+```
+
+------
+
+### 5.2 env (환경변수를 출력)
+
+`env`는 설정된 모든 환경변수를 출력합니다.
+
+```bash
+$ env # 모든 환경변수 출력
+$ cd $MY_DIR # 환경변수를 사용할 떄는 앞에 $를 붙여서 사용
+```
+
+우리가 프로그래밍을 할 떄, 변수를 설정하는 것처럼 우리 컴퓨터 상에서 변수처럼 사용가능합니다.
+
+------
+
+### 5.3 unset (환경변수를 삭제)
+
+`unset`은 환경변수를 삭제하는 명령어입니다.
+
+```bash
+$ unset MY_DIR # 환경변수 삭제
+```
+
+------
+
+## 6. Network
+
+* `ping` : 네트워크 상태 점검 및 도메인 IP 확인
+* `ifconfig` : 리눅스 IP 확인 및 설정
+* `netstat` : 네트워크의 상태
+* `nbstat` : IP 충돌 시, 충돌된 컴퓨터를 찾기 위함
+* `traceroute` : 알고 싶은 목적지까지 경로를 찾아줌
+* `route` : 라우팅 테이블 구성 상태
+* `clock` : 시간 조절 명령어
+* `date` : 시간, 날짜 출력 및 시간과 날짜 변경
+
+
+------
+
+## 7. File
+
+* `tar, gzip 등` : 압축 파일 묶거나 품
+
+------
+
+## 8. User
+
+* `useradd` : 새로운 사용자 계정 생성
+* `password` : 사용자 계정의 비밀번호 설정
+* `userdel` : 사용자 계정 삭제
+* `usermod` : 사용자 계정 수정
+* `groupadd` : 그룹 생성
+* `groupdel` : 그룹 삭제
+* `groups` : 그룹 확인
+* `newgrp` : 자신이 속한 그룹 변경
+* `mesg` : 메시지 응답 가능 및 불가 설정
+* `talk` : 로그인한 사용자끼리 대화
+* `wall` : 시스템 로그인한 모든 사용자에게 메시지 전송
+* `write` : 로그인한 사용자에게 메시지 전달
+* `dd` : 블럭 단위로 파일을 복사하거나 변환
+
+------
+
+## 9. System
+
+* `shutdown`, `halt`, `init 0`, `poweroff` : 시스템 종료
+* `reboot`, `init 6`, `shutdown -r now` : 시스템 재부팅
+
+------
+
+
+## 10. VIM
+
+Vi 또는 Vim이라 불리는 터미널 텍스트 에디터는 터미널뿐만 아니라 Visual Studio Code, IntellJ같은 IDE에서도 사용할 수 있습니다. 
+
+```bash
+$ vim file1.txt # file1.txt이라는 파일 생성하면서 파일 내부로 에디터모드에 들어감
+
+# i를 눌러야 편집 가능 (insert)⭐
+# 다 편집했으면 키보드 ESC를 클릭⭐
+# :w (write changes)는 수정한 내용 저장
+# :q (quit) 그냥 나가기(수정사항이 있으면 경고창 표시)
+# :q! 경고창안띄우고 강제로 그냥 나가기⭐
+# :wq 수정한 내용을 저장하면서 나가기⭐
+```
+

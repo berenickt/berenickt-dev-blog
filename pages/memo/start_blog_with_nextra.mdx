@@ -1,32 +1,29 @@
 ---
 title: Nextra를 이용해 블로그 만들기
-date: 2023/02/07
-description: Next.js와 MDX를 이용해 아름다운 사이트를 만들 수 있다.
-tag: blog, nextra
-author: You
+date: 2023/11/22
 ---
 
-# Nextra를 이용해 블로그 만들기
+## 1. Nextra를 이용해 블로그 만들기
 
 얼마전 Gatsby를 이용해 Git 블로그를 만들었다. <br/>
 템플릿을 이용해 만들었는데, 맘에 안드는 스타일을 바꾸기 어려웠다. <br/>
 그러다 우연히 Nextra를 알게 되었고 이를 이용해 블로그를 만들어 보았다.
 
-## Nextra란?
+### 1.1 Nextra란?
 
 > Nextra is a framework on top of Next.js, that lets you build content focused websites. <br/>
 > It has all the great features from Next.js, plus extra power to create Markdown-based content with ease.
 
 Next.js와 MDX를 합쳐놓은 프레임워크으로 콘텐츠 중심 웹사이트를 구축할 수 있다.
 
-## 테마를 이용해 빠르게 시작하기
+### 1.2 테마를 이용해 빠르게 시작하기
 
 ![image](/images/start_blog_with_nextra/01.png)
 
 nextra에서는 현재 Documentation과 Blog 두 개의 테마를 제공하고 있다. <br/>
 이 중 Blog 테마를 이용하였다.
 
-### Install
+#### 1.2.1 Install
 
 Next.js , React , Nextra 및 Nextra Blog Theme 를 설치한다.
 
@@ -34,7 +31,7 @@ Next.js , React , Nextra 및 Nextra Blog Theme 를 설치한다.
 yarn add next react react-dom nextra nextra-theme-blog
 ```
 
-### Next.js 구성 추가
+#### 1.2.2 Next.js 구성 추가
 
 프로젝트 루트 디렉터리에 `next.config.js`를 만든다.
 
@@ -50,7 +47,7 @@ module.exports = withNextra()
 // module.exports = withNextra({ /* other next.js config */ })
 ```
 
-### 블로그 테마 구성 만들기
+#### 1.2.3 블로그 테마 구성 만들기
 
 프로젝트 루트 디렉터리에 `theme.config.jsx` 파일을 만든다. <br/>
 해당 파일은 Nextra 블로그 테마를 구성하는데 사용된다.
@@ -79,7 +76,7 @@ export default {
 }
 ```
 
-### 준비 완료!
+#### 1.2.4 준비 완료!
 
 이제 `yarn start` 명령어를 통해 시작할 수 있다.
 
@@ -97,7 +94,7 @@ export default {
 여기까지 수행하면 Nextra를 사용하기 위한 기본 구성을 마칠 수 있다. <br/>
 이제 간단한 글을 올려볼 수 있다.
 
-### Navbar Items
+#### 1.2.5 Navbar Items
 
 `pages` 폴더에 `_meta.json`를 생성하여 페이지에 대한 구성을 정의할 수 있다. <br/>
 
@@ -119,7 +116,7 @@ About과 Posts 두 개의 메뉴를 갖도록 구성할 수 있다.
 }
 ```
 
-### About 글 작성
+#### 1.2.6 About 글 작성
 
 Nextra를 사용하면 pages 디렉토리 안의 모든 파일이 MDX로 렌더링 된다. <br/>
 즉 페이지에 표시될 글은 `.mdx` 파일에 Markdown으로 작성하면 된다.
@@ -133,7 +130,7 @@ title: About
 date: 2023-02-07
 ---
 
-# Your Name
+## 2. Your Name
 
 Hello! I'm Yewon Noh
 
@@ -146,7 +143,7 @@ Hello! I'm Yewon Noh
 - Velog [@yewo2nn16](https://velog.io/@yewo2nn16)
 ```
 
-### Posts 글 작성
+### 2.1 Posts 글 작성
 
 여러 개의 하위 문서를 가질 수도 있다. <br/>
 `posts` 폴더 아래에 MDX 파일을 추가하면 된다.
@@ -160,7 +157,7 @@ tag: hello, nextra
 author: You
 ---
 
-# Hello!
+## 3. Hello!
 
 Hello, Nextra!
 ```
@@ -174,7 +171,7 @@ title: Posts
 date: 2023-02-07
 ---
 
-# Posts
+## 4. Posts
 ```
 
 ---
@@ -188,11 +185,11 @@ date: 2023-02-07
 
 ---
 
-## SEO 적용하기
+## 5. SEO 적용하기
 
 `next-seo`를 사용하여 손쉽게 seo를 구현할 수 있다.
 
-### Install
+### 5.1 Install
 
 next-seo 를 설치한다.
 
@@ -200,7 +197,7 @@ next-seo 를 설치한다.
 yarn add next-seo
 ```
 
-### DefaultSeo 설정
+### 5.2 DefaultSeo 설정
 
 `_app.jsx`에 `DefaultSeo`를 설정할 수 있다. <br/>
 속성에 대해서는 [여기서](https://github.com/garmeeh/next-seo) 확인할 수 있다.
@@ -245,7 +242,7 @@ export default function Nextra({ Component, pageProps }) {
 
 - 참고 문서 : [https://kyounghwan01.github.io/blog/React/next/next-seo/](https://kyounghwan01.github.io/blog/React/next/next-seo/)
 
-## 검색 엔진에 등록하기
+## 6. 검색 엔진에 등록하기
 
 블로그를 만들면 바로 검색 엔진에 표시되는 것이 아니라 크롤링을 요청해야 한다.<br/>
 
@@ -264,13 +261,13 @@ HTML 파일을 다운로드 받아 `public` 폴더 아래에 추가해주었다.
 
 소유권 확인을 마치고 하루 이틀 정도 지나면 Google에서 검색 결과로 확인할 수 있다.
 
-## Vercel Analytics로 방문자 수 집계하기
+## 7. Vercel Analytics로 방문자 수 집계하기
 
 이 블로그는 [vercel](https://vercel.com/)를 이용해 배포하고 있다.
 
 구글 애널리틱스와 같이 방문자 수를 집계하기 위한 설정을 해주었다.
 
-### Install
+### 7.1 Install
 
 @vercel/analytics 패키지를 설치한다.
 
@@ -278,7 +275,7 @@ HTML 파일을 다운로드 받아 `public` 폴더 아래에 추가해주었다.
 yarn add @vercel/analytics
 ```
 
-### App에 Analytics 컴포넌트 추가
+### 7.2 App에 Analytics 컴포넌트 추가
 
 pages/\_app.jsx 파일에 아래를 추가해준다.
 
