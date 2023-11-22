@@ -1,27 +1,26 @@
 ---
-title: "08-그래프(Graph)"
+title: '08-그래프(Graph)'
 date: 2023/01/11
 ---
 
 # 1. 그래프(Graph)
 
-* **정점(Node)**과 **정점 사이를 연결하는 간선(Edge)**으로 이루어진 비선형 자료구조
-* 정점 집합과 간선 집합으로 표현할 수 있다.
-  * e.g. 실생활에서 인물 관계도
-  * e.g. 지하철 노선도
-  * e.g. 구글의 페이지 랭크 알고리즘
+- `정점(Node)`과 `정점 사이를 연결하는 간선(Edge)`으로 이루어진 비선형 자료구조
+- 정점 집합과 간선 집합으로 표현할 수 있다.
+  - e.g. 실생활에서 인물 관계도
+  - e.g. 지하철 노선도
+  - e.g. 구글의 페이지 랭크 알고리즘
 
-
-------
+---
 
 ## 1.1 그래프의 특징
 
-* **정점(Node)은 여러 개의 간선**을 가질 수 있다.
-* 크게 `방향 그래프`와 `무방향 그래프`로 나눌 수 있다.
-* **간선은 가중치를 가질 수 있다.**
-* 사이클이 발생할 수 있다.
+- **정점(Node)은 여러 개의 간선**을 가질 수 있다.
+- 크게 `방향 그래프`와 `무방향 그래프`로 나눌 수 있다.
+- **간선은 가중치를 가질 수 있다.**
+- 사이클이 발생할 수 있다.
 
-------
+---
 
 ## 1.2 그래프 종류
 
@@ -31,61 +30,61 @@ date: 2023/01/11
 
 간선 방향에 따른 그래프 종류:
 
-* 무방향 그래프
-* 방향 그래프
-* 양방향 그래프 (사실상 무방향 그래프 = 양방향 그래프)
+- 무방향 그래프
+- 방향 그래프
+- 양방향 그래프 (사실상 무방향 그래프 = 양방향 그래프)
 
 싸이클 유무에 따른 그래프 종류:
 
-* 순환 그래프, 비순환 그래프
+- 순환 그래프, 비순환 그래프
 
 방향과 싸이클이 합해지면 다음과 같은 그래프가 나올수 있다.
 
-* 방향성 비순환 그래프(DAG, Directed Acyclic Graph)
-* DAG의 실생활 예 - VCS(Version Control System), Cryptocurrency
+- 방향성 비순환 그래프(DAG, Directed Acyclic Graph)
+- DAG의 실생활 예 - VCS(Version Control System), Cryptocurrency
 
-------
+---
 
 ### 1.2.1 무방향 그래프
 
-* **간선으로 이어진 정점끼리는 양방향으로 이동이 가능**하다.
-* 표현하기에 **(A, B)와 (B, A)는 같은 간선으로 취급**된다.
-* e.g. 양방향 통행 도로
+- **간선으로 이어진 정점끼리는 양방향으로 이동이 가능**하다.
+- 표현하기에 **(A, B)와 (B, A)는 같은 간선으로 취급**된다.
+- e.g. 양방향 통행 도로
 
-------
+---
 
 ### 1.2.2 방향 그래프
 
-* **간선에 방향성이 존재**하는 그래프
-* 양방향으로 갈 수 있더라도 **<A, B>와 <B, A>는 다른 간선으로 취급**된다.
-* e.g. 일반 통행
+- **간선에 방향성이 존재**하는 그래프
+- 양방향으로 갈 수 있더라도 **`<A, B>`와 `<B, A>`는 다른 간선으로 취급**된다.
+- e.g. 일반 통행
 
-------
+---
 
 ### 1.2.3 연결 그래프
 
 **모든 정점이 서로 이동 가능한 상태**인 그래프
 
-------
+---
 
 ### 1.2.4 비연결 그래프
 
-* **특정 정점쌍 사이에 간선이 존재하지 않는** 그래프
-* e.g. 친한 친구 설문 그래프
+- **특정 정점쌍 사이에 간선이 존재하지 않는** 그래프
+- e.g. 친한 친구 설문 그래프
 
-------
+---
 
 ### 1.2.5 완전 그래프
 
 **모든 정점끼리 연결된 상태**인 그래프
 
-------
+---
 
 ### 1.2.6 사이클
 
 **그래프의 정점과 간선의 부분 집합에서 순환이 되는 부분**
 
-------
+---
 
 ## 1.8 그래프의 구현 방법
 
@@ -93,27 +92,27 @@ date: 2023/01/11
 
 ![Data Structure_8_2](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_8_2.PNG)
 
-* `인접 행렬` : **2차원 배열로 표현**이 가능하다.
-  * 정점 간의 간선의 존재 여부를 1 또는 0로 표현
-  *  항상 노드 개수의 제곱만큼 메모리($V^2$)가 필요한데, 간선이 매우 적으면 비효율적
-  * 탐색을 할 때도 연결되지 않은 간선들도 확인해야 되기 때문에 느림
+- `인접 행렬` : **2차원 배열로 표현**이 가능하다.
 
-* `인접 리스트` : **연결 리스트로 구현** 가능하다.
-  * 정점 개수만큼 리스트를 만들어 각각의 정점 리스트에 간선 추가
-  * 메모리도 조금만 사용($V+E$)하며 탐색할 때도 연결된 간선만 보면 되기 때문에 빠름
+  - 정점 간의 간선의 존재 여부를 1 또는 0로 표현
+  - 항상 노드 개수의 제곱만큼 메모리($V^2$)가 필요한데, 간선이 매우 적으면 비효율적
+  - 탐색을 할 때도 연결되지 않은 간선들도 확인해야 되기 때문에 느림
 
+- `인접 리스트` : **연결 리스트로 구현** 가능하다.
+  - 정점 개수만큼 리스트를 만들어 각각의 정점 리스트에 간선 추가
+  - 메모리도 조금만 사용($V+E$)하며 탐색할 때도 연결된 간선만 보면 되기 때문에 빠름
 
 |             |     인접 행렬      |        인접 리스트        |
 | :---------: | :----------------: | :-----------------------: |
 |             | 밀집 그래프를 사용 |    희소 그래프를 사용     |
 | 시간 복잡도 |      $O(v^2)$      | $O(V + E) = O(max(V, E))$ |
 
-* 그래프에서 간선 개수가 많은 그래프를 `밀집(Dense) 그래프`라고 한다.
-* 간선 개수가 많지 않은 그래프는 `희소(Sparse) 그래프`라고 한다.
+- 그래프에서 간선 개수가 많은 그래프를 `밀집(Dense) 그래프`라고 한다.
+- 간선 개수가 많지 않은 그래프는 `희소(Sparse) 그래프`라고 한다.
 
 그래프도 상황에 따라 배열과 리스트 중 무엇으로 구현할 지 선택해야 합니다.
 
-------
+---
 
 # 2. 구현
 
@@ -121,50 +120,50 @@ date: 2023/01/11
 
 ```js
 // 정점의 크기만큼 2차원 배열을 만들고, 연결이 안된 상태로 초기화
-const graph = Array.from(Array(5), () => Array(5).fill(false));
+const graph = Array.from(Array(5), () => Array(5).fill(false))
 
 // 열 부분을 시작 정점
 // 행 부분을 도착 정점
 // true 값을 넣어주면 연결된 것이라 침
-graph[0][1] = true; // 0 -> 1
-graph[0][3] = true; // 0 -> 3
-graph[1][2] = true; // 1 -> 2
-graph[2][0] = true; // 2 -> 0
-graph[2][4] = true; // 2 -> 4
-graph[3][2] = true; // 3 -> 2
-graph[4][0] = true; // 4 -> 0
+graph[0][1] = true // 0 -> 1
+graph[0][3] = true // 0 -> 3
+graph[1][2] = true // 1 -> 2
+graph[2][0] = true // 2 -> 0
+graph[2][4] = true // 2 -> 4
+graph[3][2] = true // 3 -> 2
+graph[4][0] = true // 4 -> 0
 
 // 만약 간선에 가중치를 넣고 싶다면, false와 true가 아닌 null과 임의의 가중치값을 넣으면 됩니다.
 // 참고로 무방향 그래프를 구현한다면, 모든 방향을 대칭으로 넣어주면 됩니다.
 ```
 
-------
+---
 
 ## 2.2 인접 리스트
 
 ```js
 // 다른 언어와 달리 JS에서 배열은 연결리스트처럼 무한정 늘어나기 때문에
 // 정점의 수 만큼 배열을 만들고, 연결할 정점을 배열에 추가하면 됩니다.
-const graph = Array.from(Array(5), () => []);
+const graph = Array.from(Array(5), () => [])
 
-graph[0].push(1); // 0 -> 1
-graph[0].push(3); // 0 -> 3
-graph[1].push(2); // 1 -> 2
-graph[2].push(0); // 2 -> 0
-graph[2].push(4); // 2 -> 4
-graph[3].push(2); // 3 -> 2
-graph[4].push(0); // 4 -> 0
+graph[0].push(1) // 0 -> 1
+graph[0].push(3) // 0 -> 3
+graph[1].push(2) // 1 -> 2
+graph[2].push(0) // 2 -> 0
+graph[2].push(4) // 2 -> 4
+graph[3].push(2) // 3 -> 2
+graph[4].push(0) // 4 -> 0
 ```
 
-------
+---
 
 # 3. BFS, DFS 실습 : 가장 먼 노드❌
 
 ## 3.1 문제
 
-* https://school.programmers.co.kr/learn/courses/30/lessons/49189
+- https://school.programmers.co.kr/learn/courses/30/lessons/49189
 
-------
+---
 
 ## 3.2 풀이
 
@@ -172,55 +171,64 @@ graph[4].push(0); // 4 -> 0
 // 핵심 키워드는 '노드', '간선', '최단경로'
 // 최단 경로가 제일 큰 경우의 집합을 구하는 문제
 function solution(n, edge) {
-  const graph = Array.from(Array(n + 1), () => []); // 그래프를 담을 빈 배열
-  console.log(graph);
+  const graph = Array.from(Array(n + 1), () => []) // 그래프를 담을 빈 배열
+  console.log(graph)
 
   // 간선들을 순회
   for (const [src, dest] of edge) {
     // 양방향이기 때문에 둘 다 갈 수 있도록
-    graph[src].push(dest); // 원점에서 출발지를
-    graph[dest].push(src); // 출발지에서 원점으로
+    graph[src].push(dest) // 원점에서 출발지를
+    graph[dest].push(src) // 출발지에서 원점으로
   }
 
   // 각 정점의 길이를 알 수 있도록 하는 0으로 초기화된 배열 생성
-  const distance = Array(n + 1).fill(0);
-  distance[1] = 1;
+  const distance = Array(n + 1).fill(0)
+  distance[1] = 1
 
   // BFS : 큐를 이용해 구현 가능
-  const queue = [1];
+  const queue = [1]
   while (queue.length > 0) {
     // shift는 O(n)이지만 요소가 적을 경우에는 자바스크립트 엔진에서 최적화를 해줌
-    const src = queue.shift();
+    const src = queue.shift()
     for (const dest of graph[src]) {
       if (distance[dest] === 0) {
-        queue.push(dest);
-        distance[dest] = distance[src] + 1;
+        queue.push(dest)
+        distance[dest] = distance[src] + 1
       }
     }
   }
 
-  const max = Math.max(...distance); // 최대값
-  return distance.filter((item) => item === max).length;
+  const max = Math.max(...distance) // 최대값
+  return distance.filter(item => item === max).length
 }
 
-console.log(solution(6, [[3, 6],[4, 3],[3, 2],[1, 3],[1, 2],[2, 4],[5, 2]]));
+console.log(
+  solution(6, [
+    [3, 6],
+    [4, 3],
+    [3, 2],
+    [1, 3],
+    [1, 2],
+    [2, 4],
+    [5, 2],
+  ]),
+)
 ```
 
-------
+---
 
 예를 들어 첫 인자가 [3,6]이 들어온다고 가정했을 때 graph[3].push(6)을 해석해보면, 3번째 graph 배열에 6을 푸시한다. 라고 알 수 있습니다!
 
-
 ```js
 for (const [src, dest] of edge) {
-  graph[src].push(dest);
-  graph[dest].push(src);
+  graph[src].push(dest)
+  graph[dest].push(src)
 }
 ```
 
 이 부분은 양방향 그래프를 만들어주기 위함입니다. 리스트를 이용하여 인접 리스트 형태로 그래프를 만든 것이라 볼 수 있습니다. :)
- 예를 들어 `graph[1]`이 `[3, 2]`라는 값을 담고있다면 `1번 정점이 3번과 2번 정점과 연결되어있다`라고 볼 수 있습니다.
- 이 부분을 구체적으로 풀어보면 다음과 같습니다.
+예를 들어 `graph[1]`이 `[3, 2]`라는 값을 담고있다면 `1번 정점이 3번과 2번 정점과 연결되어있다`라고 볼 수 있습니다.
+이 부분을 구체적으로 풀어보면 다음과 같습니다.
 
 ```
 [
@@ -236,7 +244,7 @@ for (const [src, dest] of edge) {
 
 이런 형태로 자료 구조를 만들어 문제를 해결했습니다. :)
 
-------
+---
 
 ### 3.2.1 큐를 이용한 풀이
 
@@ -247,60 +255,56 @@ for (const [src, dest] of edge) {
 // 큐 구현
 class Queue {
   constructor() {
-    this.queue = [];
-    this.front = 0;
-    this.rear = 0;
+    this.queue = []
+    this.front = 0
+    this.rear = 0
   }
   enqueue(value) {
-    this.queue[this.rear++] = value;
+    this.queue[this.rear++] = value
   }
   dequeue() {
-    const value = this.queue[this.front];
-    delete this.queue[this.front];
-    this.front += 1;
-    return value;
+    const value = this.queue[this.front]
+    delete this.queue[this.front]
+    this.front += 1
+    return value
   }
   isEmpty() {
-    return this.rear === this.front;
+    return this.rear === this.front
   }
 }
 
 function solution(n, edge) {
-  const graph = Array.from(Array(n + 1), () => []);
+  const graph = Array.from(Array(n + 1), () => [])
 
   for (const [src, dest] of edge) {
-    graph[src].push(dest);
-    graph[dest].push(src);
+    graph[src].push(dest)
+    graph[dest].push(src)
   }
 
-  const distance = Array(n + 1).fill(0);
-  distance[1] = 1;
+  const distance = Array(n + 1).fill(0)
+  distance[1] = 1
 
   // BFS : 큐를 이용해 구현 가능
-  const queue = new Queue();
-  queue.enqueue(1);
+  const queue = new Queue()
+  queue.enqueue(1)
   while (!queue.isEmpty()) {
     // shift는 O(n)이지만 요소가 적을 경우에는 자바스크립트 엔진에서 최적화를 해줌
-    const src = queue.dequeue();
+    const src = queue.dequeue()
     for (const dest of graph[src]) {
       if (distance[dest] === 0) {
-        queue.enqueue(dest);
-        distance[dest] = distance[src] + 1;
+        queue.enqueue(dest)
+        distance[dest] = distance[src] + 1
       }
     }
   }
 
-  const max = Math.max(...distance);
-  return distance.filter(item => item === max).length;
+  const max = Math.max(...distance)
+  return distance.filter(item => item === max).length
 }
 ```
 
-
-
-
-
-------
+---
 
 # [참고]
 
-* https://laboputer.github.io/ps/2017/09/29/graph/
+- https://laboputer.github.io/ps/2017/09/29/graph/
