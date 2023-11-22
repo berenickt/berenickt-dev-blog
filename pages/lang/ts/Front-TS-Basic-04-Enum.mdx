@@ -1,0 +1,49 @@
+---
+title: '04-Type-이넘(enum, 열거형)'
+date: 2023/01/08
+---
+
+# 1. Enum
+
+- `Enum` = **여러 개의 관련된 상수들을 모아주는 타입**
+  - `enumerated type`의 약어,
+  - 무언가 (늘여놓은, 나열, 열거)하는 타입
+  - cf. **enumberate** = 여러가지 것들을 축 늘여놓은 그림
+- 열거자 이름들은 일반적으로 해당 언어의 상수 역할을 하는 식별자
+- 다른 언어에서는 Enum이 유용하지만, **TS에서는 가능한 Enum 쓰지 않는 것을 권장**
+  - 왜냐하면, Enum 타입으로 선언된 변수에 다른 어떤 숫자로 할당이 가능하다는 문제점이 존재
+  - 대신 **Union 타입( | )을 사용**하기
+
+```typescript
+// JavaScript에서 Enum은 존재X, 직접 독립적인 상수를 정의해서 사용 ---------
+const MAX_NUM = 6
+const MAX_STUDENTS_PER_CLASS = 10
+const MONDAY = 0
+const TUESDAY = 1
+const WEDNESDAY = 2
+const DAYS_ENUM = Object.freeze({ MONDAY: 0, TUESDAY: 1, WEDNESDAY: 2 })
+const dayOfToday = DAYS_ENUM.MONDAY // 0이 할당됨
+
+// TypeScript ----------------------------------------------------------------
+// 맨 앞의 첫글자는 대문자로
+type DaysOfWeek = 'Monday' | 'Tuesday' | 'Wednesday'
+enum Days {
+  Monday,
+  Tuesday,
+  Wednesday,
+  Thursday,
+  Friday,
+  Saturday,
+  Sunday,
+}
+// 자동으로 맨 앞에서 0부터 값을 할당해줌
+
+console.log(Days.Monday) // 0이 출력
+let day: Days = Days.Saturday // 5
+day = Days.Tuesday // 4
+day = 10 // Enum 타입으로 선언된 변수에 다른 어떤 숫자로 할당이 가능하다는 문제점이 존재
+console.log(day) // 10이 출력
+
+let dayOfweek: DaysOfWeek = 'Monday'
+dayOfweek = 'Wednesday'
+```

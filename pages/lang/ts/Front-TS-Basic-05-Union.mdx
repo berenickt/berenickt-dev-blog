@@ -1,0 +1,200 @@
+---
+title: '05-Type-Union & Intersection'
+date: 2023/01/08
+---
+
+# 1. Union (합집합, |)
+
+`Union(유니언)` : 하나로 뭉쳐지는 것, 조합
+
+- e.g. Unit : 하나로 움직이는 최소 단위, (상품의) 1개, (특정 임무를 위한) 부대 | 단체
+- e.g. Unity : 하나로 뭉쳐진 사람들의 마음, 정서 등
+
+```typescript
+// 4가지 타입을 가질 수 있는 Direction 타입----------------------
+type Direction = 'left' | 'right' | 'up' | 'down'
+function move(direction: Direction) {
+  console.log(direction)
+}
+move('down')
+
+// 3가지 타입을 가지는 TileSize타입-------------------------------
+type TileSize = 8 | 16 | 32
+const tile: TileSize = 16
+```
+
+---
+
+# 2. Intersection (교집합, &)
+
+`Intersect(인터섹션)` : 교차하다[만나다], (어떤 지역을) 가로지르다, 교집합
+
+```typescript
+type student = {
+  name: string
+  score: number
+}
+
+type father = {
+  empolyeeId: number
+  work: () => void
+}
+
+// 학생 & 직장인 타입을 모두 작성해야만 하는 경우
+function internWork(집안: student & father) {
+  console.log(집안.name, 집안.empolyeeId, 집안.work())
+}
+
+internWork({
+  name: '메시',
+  score: 189,
+  empolyeeId: 123,
+  work: () => {},
+})
+```
+
+---
+
+# 3. Union Type을 쓸 때 주의할 점
+
+논리적으로 Unio 타입은 OR, Intersection 타입은 AND라고 생각하시는 분들이 있을텐데,
+Interace와 같은 타입을 다룰 때는 다음와 같은 논리적 사고를 주의해야 합니다. 아래 코드를 보겠습니다.
+
+```ts
+interface Person {
+  name: string
+  age: number
+}
+interface Developer {
+  name: string
+  skill: string
+}
+
+// 파라미터 타입을 `Person`, `Developer` 인터페이스의 Union 타입으로 정의
+// 파라미터의 타입이 `Person`도 되고 `Developer`도 된다고 생각해서
+// 함수 안에 해당 인터페이스들이 제공하는 `age`나 `skill`를 사용할 수 있다라고 생각할 수 있음
+// 그러나 introduce() 함수를 호출하는 시점에 `Person` 타입이 올지 `Developer` 타입이 올지 알 수가 없음
+// 그래서 TS는 어느 타입이 들어오든 간에 오류가 안 나는 방향으로 타입을 추론함
+function introduce(someone: Person | Developer) {
+  someone.name // O 정상 동작
+  someone.age // X 타입 오류
+  someone.skill // X 타입 오류
+}
+```
+
+결과적으로 `introduce()`안에서는 별도의 **타입 가드(Type Guard)**를 이용하여 타입의 범위를 좁히지 않는 이상,
+기본적으로는 `Person`과 `Developer` 두 타입에 공통적으로 들어있는 속성인 `name`만 접근할 수 있게 됩니다.
+
+---
+
+# 4. Type Narrowing(타입 좁히기)
+
+if문 등으로 타입을 하나로 정해주는 것을 의미합니다.
+타입이 확실하지 않을 때 생기는 부작용을 막기위한 장치입니다.
+
+Narrowing으로 판정해주는 문법들
+
+- **조건문을 이용한 타입가드**
+- **typeof 타입 가드** : `typeof 변수`
+- **in 타입 가드** : `속성명 in 오브젝트 자료`
+- **instanceof 타입 가드** : `인스턴스 instanceof 부모`
+
+---
+
+## 4.1 조건문을 이용한 타입가드
+
+```typescript
+type Animal = {
+  name: string
+  legs?: number
+}
+function addLeg(animal: Animal) {
+  // leg 속성이 undefined가 될수 있기 때문에 타입 에러가 발생할 수 있음
+  // leg 속성을 사용하기 전에 truthy인지 확인하면 됨
+  // 변수에서 null과 undefined를 제외시킴
+  if (animal.legs) {
+    animal.legs = animal.legs + 1
+  }
+}
+```
+
+---
+
+## 4.2 typeof 타입 가드
+
+```typescript
+function PlusOne(x: number | string) {
+  if (typeof x === 'number') return x + 1
+  else if (typeof x === 'string') return x + 1
+  else return 0
+}
+```
+
+---
+
+## 4.3 in 타입 가드
+
+```typescript
+interface Person {
+  firstName: string
+  surname: string
+}
+interface Organization {
+  name: string
+}
+
+type Contact = Person | Organization
+
+function sayHello(contact: Contact) {
+  // 속성명 in 오브젝트 자료
+  if ('firstName' in contact) {
+    console.log('Hello ' + contact.firstName)
+  }
+}
+```
+
+---
+
+## 4.4 instanceof 타입 가드
+
+```typescript
+class Person {
+  constructor(
+    public firstName: string,
+    public surname: string,
+  ) {}
+}
+class Organisation {
+  constructor(public name: string) {}
+}
+type Contact = Person | Organisation
+
+function sayHello(contact: Contact) {
+  console.log('Hello ' + contact.firstName)
+  // 💥 Property 'firstName' does not exist on type 'Contact'.
+  // 💥 contact가 firstName 속성를 없는 Organisation 타입일 수 있기 때문
+}
+```
+
+`인스턴스 instanceof 부모`를 사용하면, 편합니다.
+
+```typescript
+class Person {
+  constructor(
+    public firstName: string,
+    public surname: string,
+  ) {}
+}
+class Organisation {
+  constructor(public name: string) {}
+}
+type Contact = Person | Organisation
+
+function sayHello(contact: Contact) {
+  // 인스턴스 instanceof 부모
+  // if 문안에서 contact의 타입은 Person으로 좁혀짐(narrow)
+  if (contact instanceof Person) {
+    console.log('Hello ' + contact.firstName)
+  }
+}
+```

@@ -1,0 +1,262 @@
+---
+title: '09-Type-유틸리티 타입 (Utility Type)'
+date: 2023/01/09
+---
+
+# 1. keyof
+
+유니온 타입을 사용한 것과 동일한 결과를 변수에 넣을 수 있음
+
+```typescript
+interface User {
+  id: number
+  name: string
+  age: number
+  gender: 'm' | 'f'
+}
+
+// User 인터페이스의 키 값중 하나를 불러올 때  사용
+type UserKey = keyof User // 'id' | 'name' | 'age' | 'gender'
+
+const uk: UserKey = 'id'
+
+// 다음처럼 없는 값을 넣으면 에러가 납니다.
+// const uk: UserKey = '';
+```
+
+---
+
+# 2. partial`<T>`
+
+다음 코드처럼 인터페이스에 선언한 속성 값들 중 일부 속성만 넣으면 에러납니다.
+
+```typescript
+interface User {
+  id: number
+  name: string
+  age: number
+  gender: 'm' | 'f'
+}
+
+// 인터페이스에 선언한 속성 값들 중 일부 속성만 넣음
+// 💥 Error : age, gender 속성이 없음
+let admin: User = {
+  id: 1,
+  name: '메시',
+}
+```
+
+partial은 속성을 모두 `Optional(선택적인)` 값으로 바꿔줍니다.
+
+```typescript
+interface User {
+  id: number
+  name: string
+  age: number
+  gender: 'm' | 'f'
+}
+
+// partial : 다 선택적인 속성으로 바꿔줌
+let admin: Partial<User> = {
+  id: 1,
+  name: '메시',
+}
+```
+
+---
+
+# 3. required`<T>`
+
+`required`는 반대로 **모든 속성 값들을 필수 값으로** 만들어줍니다.
+
+```typescript
+interface User {
+  id: number
+  name: string
+  age?: number // age 속성은 선택적인 값
+}
+
+// Required : 모든 속성이 필수여야 함
+// 💥 Error : age 속성이 정의안됨
+let admin: Required<User> = {
+  id: 1,
+  name: '메시',
+  // age: 30,
+}
+```
+
+age를 선언해주면 에러가 사라집니다.
+
+---
+
+# 4. readonly`<T>`
+
+- `readonly`는 말 그대로 **읽기 전용으로 바꾸는 것**
+- 선언만 가능하고, 수정을 할 수 없음
+
+```typescript
+interface User {
+  id: number
+  name: string
+  age?: number
+}
+
+// Readonly : 읽을 수만 있음
+let admin: Readonly<User> = {
+  id: 1,
+  name: '메시',
+}
+
+admin: id = 4 // 💥 Error : 수정못함
+```
+
+---
+
+# 5. record`<K,T>`
+
+- `record`는 key와 value 값에 어떤 내용을 할당할 수 있는지 명확하게 할 때 사용
+- K는 키이고, T는 요소
+
+다음처럼 과목별 점수를 담는 객체를 선언하면 복잡합니다.
+
+```typescript
+interface Score {
+  '1': 'A' | 'B' | 'C' | 'D'
+  '2': 'A' | 'B' | 'C' | 'D'
+  '3': 'A' | 'B' | 'C' | 'D'
+  '4': 'A' | 'B' | 'C' | 'D'
+}
+
+const score: Score = {
+  1: 'A',
+  2: 'C',
+  3: 'B',
+  4: 'D',
+}
+```
+
+Record를 이용하면 쉽게 표현할 수 있습니다. Record **앞에는 키**, **뒤에는 요소**가 들어갑니다.
+
+```typescript
+// 1,2,3,4라는 키값에는 A,B,C,D라는 요소가 들어갈 수 있음
+const score: Record<'1' | '2' | '3' | '4', 'A' | 'B' | 'C' | 'D'> = {
+  1: 'A',
+  2: 'C',
+  3: 'B',
+  4: 'D',
+}
+```
+
+따로 변수를 만들어서 넣어두면 좀 더 편하게 사용할 수 있습니다.
+
+```typescript
+type Grade = '1' | '2' | '3' | '4'
+type Score = 'A' | 'B' | 'C' | 'D'
+
+const score: Record<Grade, Score> = {
+  1: 'A',
+  2: 'C',
+  3: 'B',
+  4: 'D',
+}
+```
+
+조금 더 확장해서 user객체를 받아서 이 객체가 올바른 값을 갖고 있는 지를 확인해주는 isValid라는 함수를 만든다고 합시다.
+
+```typescript
+interface User {
+  id: number
+  name: string
+  age: number
+}
+
+// user 객체가 올바른 값을 가지는지 체크
+function isValid(user: User) {
+  const result: Record<keyof User, boolean> = {
+    id: user.id > 0,
+    name: user.name !== '',
+    age: user.age > 0,
+  }
+  return result
+}
+```
+
+isValid 안의 result 객체의 키값에는 id, name, age가 들어갑니다.
+이 키값은 User 인터페이스의 key값과 같기 때문에 **keyof User**로 간단하게 사용할 수 있습니다.
+
+---
+
+# 6. pick`<T,K>`
+
+- **T 타입에서 K 속성만 골라서 사용**
+
+```typescript
+interface User {
+  id: number
+  name: string
+  age: number
+  gender: 'M' | 'W'
+}
+
+// USer 인터페이스에서 id, name 속성만 사용할 떄 pick
+const admin: Pick<User, 'id' | 'name'> = {
+  id: 0,
+  name: '메시',
+}
+```
+
+---
+
+# 7. omit`<T,K>`
+
+- pick과 반대로 **T 타입에서 K 프로퍼티만 제외하고 사용할 수 있게 해 주는 키워드**
+- 위 예제를 반대로 id와 name 대신 age와 gender로 바꾸고 Pick을 Omit로 바꿔주면 동일하게 동작
+
+```typescript
+interface User {
+  id: number
+  name: string
+  age: number
+  gender: 'M' | 'W'
+}
+
+// USer 인터페이스에서 age, gender 속성를 제외하고 사용할 떄 omit
+const admin: Omit<User, 'age' | 'gender'> = {
+  id: 0,
+  name: '메시',
+}
+```
+
+---
+
+# 8. exclude`<T1,T2>`
+
+- **T1 타입에서 T2 타입을 제외하고 사용할 수 있게 해 주는 키워드**
+- omit과 다른 점은 `omit`은 **프로퍼티를 제외**하는 것이고, `exclude`는 **타입을 제외**
+- 즉, T1타입에서 T2타입과 겹치는 것들을 제거하는 것
+
+만약 T1 타입에서 number랑 string을 제외한 타입을 T2에 넣고 싶다면...
+
+```typescript
+type T1 = string | number | boolean
+type T2 = Exclude<T1, number | string> // T1 타입에서 number랑 string을 제외한 타입
+// T2에 마우스를 올려보면, boolean 타입만 할당 가능
+```
+
+---
+
+# 9. nonnullable`<T>`
+
+- **null을 제외한 타입을 생성하는 키워드**
+- 이름만 보면 null만 제외하는 것처럼 보일 수 있는데, undefined도 같이 제거합니다.
+
+```typescript
+type T1 = string | null | undefined | void
+type T2 = NonNullable<T1> // null과 undefined를 제거한 타입
+```
+
+---
+
+# [참고]
+
+- [코딩앙마 - TypeScript #8 유틸리티 타입 Utility Types](https://youtu.be/IeXZo-JXJjc)

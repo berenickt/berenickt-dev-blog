@@ -1,0 +1,12 @@
+{
+  "Front-TS-Basic-01-introduce": "01-소개",
+  "Front-TS-Basic-02-BasicType": "02-기본타입",
+  "Front-TS-Basic-03-Interface": "03-인터페이스",
+  "Front-TS-Basic-04-Enum": "04-Enum",
+  "Front-TS-Basic-05-Union": "05-Union",
+  "Front-TS-Basic-06-Literal": "06-Literal",
+  "Front-TS-Basic-07-Class": "07-Class",
+  "Front-TS-Basic-08-Generics": "08-Generics",
+  "Front-TS-Basic-09-UtilityType": "09-UtilityType",
+  "Front-TS-Basic-10-Module": "10-Module"
+}

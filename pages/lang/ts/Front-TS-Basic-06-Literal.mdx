@@ -1,0 +1,92 @@
+---
+title: '06-Type-Literal'
+date: 2023/01/08
+---
+
+# 1. Literal Narrowing(리터럴 좁히기)
+
+`literal type(리터럴 타입)`
+
+- `string, number` 같은 것만 타입이 될 수 있는 것이 아니라 문자열도 타입이 될 수 있음
+- **특정 글자나 숫자만 가질 수 있게 제한을 두는** 타입을 `literal type`이라고 부름
+- `const`는 **변하지 않는 값을 선언**할 때, `let`은 **변할 수 있는 값을 선언**할 때 사용
+
+```typescript
+// 마우스를 올려 타입을 확인해보면,
+const userName1 = '메시' // '메시' 타입
+let userName2 = '호날두' // string 타입
+```
+
+---
+
+# 2. String Literal Types
+
+```typescript
+let 방향: 'left' | 'right' | 'top' | 'bottom'
+방향 = 'left'
+```
+
+---
+
+# 3. Numeric Literal Types
+
+숫자도 가능합니다.
+
+```typescript
+function rollDice(): 1 | 2 | 3 | 4 | 5 | 6 {
+  return (Math.floor(Math.random() * 6) + 1) as 1 | 2 | 3 | 4 | 5 | 6
+}
+
+const result = rollDice()
+```
+
+주로 설정값을 설명할 때 사용됩니다:
+
+```ts
+/** loc/lat 좌표에 지도를 생성합니다. */
+declare function setupMap(config: MapConfig): void
+// ---생략---
+interface MapConfig {
+  lng: number
+  lat: number
+  tileSize: 8 | 16 | 32
+}
+
+setupMap({ lng: -73.935242, lat: 40.73061, tileSize: 16 })
+```
+
+---
+
+# 4. as const 문법
+
+`'kim'`타입만 들어올 수 있는 함수를 만들었는데, `자료.name`을 입력하고 싶다면...
+
+```typescript
+let 자료 = {
+  name: 'kim',
+}
+
+function onlyKim(a: 'kim') {}
+onlyKim(자료.name) // string 타입인거지, 'kim'타입이 아님
+// onlyKim()은 'kim'이라는 타입만 들어올 수 있음
+// 💥 Argument of type 'string' is not assignable to parameter of type '"kim"'
+```
+
+위 에러를 해결하고 싶으면
+
+1. **object 만들 때 타입을 미리 정의**
+2. **assertion을 쓰기** (as 'kim' 붙이기)
+3. **as const를 object 자료에** 붙이기
+
+```typescript
+let 자료 = {
+  name: 'kim',
+} as const
+
+// 1. 타입을 object의 value로 바꿔줌 (타입을 'kim'으로 바꿔줍)
+// 2. object안에 있는 모든 속성을 readonly로 바꿔줌 (변경하면 에러 발생하도록)
+function onlyKim(a: 'kim') {}
+onlyKim(자료.name)
+```
+
+object를 잠그고 싶으면, `as const`를 사용하면 됩니다.

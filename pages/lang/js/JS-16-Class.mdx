@@ -1,0 +1,207 @@
+---
+title: 'JS-16-class(클래스) - 작성중'
+date: 2023/01/05
+---
+
+# 1. 클래스(class)
+
+- `생성자 함수`는 ‘붕어빵 기계’처럼 객체를 찍어낼 수 있는 ‘템플릿’ 양식 같은 개념이고,
+- `객체`는 템플릿을 통해 데이터를 주입해서 만든 ‘붕어빵’에 비유할 수 있습니다.
+
+이것이 가능한 이유는 JavaScript에서는 `프로토타입(Prototype)`을 토대로 해서 객체지향 프로그래밍을 지원해주기 때문입니다.
+대다수 객체 지향 언어들은 프로토타입보다 `클래스(Class)`를 기반으로 동작합니다.
+JavaScript의 내부에서는 프로토타입을 쓰고, 개발자들은 클래스를 이용해도 내부에서는 프로토타입을 이용하기 때문입니다.
+
+참고로 ES6+ 이상의 JavaScript에서 Class 문법을 지원합니다.
+그리고 현업의 대부분 언어는 클래스를 사용하고, 생성자 함수를 더 이상 사용하고 있지 않습니다.
+
+> 💡 용어 정리
+>
+> - `클래스(Class)` : **객체를 생성할 수 있는 템플릿** (e.g. 청사진, 틀, 양식, 설계도)
+> - `객체지향 프로그래밍(Object-Oriented Programming)` : 객체끼리 서로 호환되도록 프로그래밍하는 것
+> - `인스턴스(Instance)` : 클래스를 통해 객체를 만들 수 있는데, 이떄 **클래스를 이용해 만들어진 객체들**
+
+```js
+// 객체를 손쉽게 만들수 있는 템플릿
+// 1. 생성자 함수 (오래된 고전적인 방법)
+// 2. 클래스 ✨
+class Fruit {
+  // 모든 클래스는 기본 생성자(constructor)가 존재해야 함
+  // 생성자: new 키워드로 객체를 생성할때 호출되는 함수
+  constructor(name, emoji) {
+    this.name = name
+    this.emoji = emoji
+  }
+
+  display = () => {
+    console.log(`${this.name}: ${this.emoji}`)
+  }
+}
+
+const apple = new Fruit('apple', '🍎') // apple은 Fruit 클래스의 인스턴스이다.
+const orange = new Fruit('orange', '🍊') // orange은 Fruit 클래스의 인스턴스이다.
+
+console.log(apple) // Fruit { display: [Function: display], name: 'apple', emoji: '🍎' }
+console.log(orange) // Fruit { display: [Function: display], name: 'orange', emoji: '🍊' }
+console.log(apple.name)
+console.log(apple.emoji)
+apple.display()
+
+// obj는 객체이고, 그 어떤 클래스의 인스턴스도 아니다.
+const obj = { name: 'ellie' }
+```
+
+cf. [MDN Class](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Statements/class)
+
+---
+
+# 2. 재사용성을 높이는 방법(static)
+
+클래스에 정의된 프로퍼티와 메서드는 `인스턴스 레벨의 프로퍼티와 메서드`라고 합니다.
+왜냐하면 클래스에서 정의한 프로퍼티와 함수들이 인스턴스에 중복적으로 만들어지기 때문입니다.
+각각의 인스턴스들을 통해 `객체.속성` 또는 `객체.함수`로 호출할 수 있습니다.
+모든 객체마다 동일하게 참조해야 하는 속성이나 함수가 있다면, `클래스 레벨의 프로퍼티와 메서드`를 사용하면 됩니다.
+
+클래스 안에 `static` 키워드를 프로퍼티나 메서드 앞에 작성하면, 만들어진 인스턴스에 포함되지 않고 클래스에 그대로 남아있게 됩니다. 즉, 클래스에 1번만 정의하고 인스턴스에서 재사용을 하는 것입니다.
+그래서 호출할 떄도`만들어진 인스턴스.`이 아니라 `클래스명.`으로 클래스 레벨의 메서드를 호출할 수 있습니다.
+
+```js
+// static 정적 프로퍼티, 메서드
+class Fruit {
+  static MAX_FRUITS = 4
+  // 생성자: new 키워드로 객체를 생성할때 호출되는 함수
+  constructor(name, emoji) {
+    this.name = name
+    this.emoji = emoji
+  }
+
+  // 클래스 레벨의 메서드
+  static makeRandomFruit() {
+    // 클래스 레벨의 메서드에서는 this를 참조할 수 없음
+    return new Fruit('banana', '🍌')
+  }
+
+  // 인스턴스 레벨의 메서드
+  display = () => {
+    console.log(`${this.name}: ${this.emoji}`)
+  }
+}
+
+const banana = Fruit.makeRandomFruit()
+console.log(banana) // Fruit { display: [Function: display], name: 'banana', emoji: '🍌' }
+console.log(Fruit.MAX_FRUITS) // 4
+
+// apple은 Fruit 클래스의 인스턴스이다.
+const apple = new Fruit('apple', '🍎')
+// orange은 Fruit 클래스의 인스턴스이다.
+const orange = new Fruit('orange', '🍊')
+
+console.log(apple) // Fruit { display: [Function: display], name: 'apple', emoji: '🍎' }
+console.log(orange) // Fruit { display: [Function: display], name: 'orange', emoji: '🍊' }
+console.log(apple.name)
+console.log(apple.emoji)
+apple.display()
+
+Math.pow() // math 클래스 API
+Number.isFinite(1) // number 클래스 API
+```
+
+---
+
+# 3. 필드(field)
+
+```js
+// 접근제어자 - 캡슐화
+// private(#), public(기본), protected
+class Fruit {
+  // # : 내부에서는 사용 가능, 외부에서는 사용 불가
+  #name
+  #emoji
+  #type = '과일'
+  constructor(name, emoji) {
+    this.#name = name
+    this.#emoji = emoji
+  }
+  #display = () => {
+    console.log(`${this.#name}: ${this.#emoji}`)
+  }
+}
+
+const apple = new Fruit('apple', '🍎')
+// apple.#name = '오렌지'; // #field는 외부에서 접근이 불가능함
+console.log(apple) // Fruit {}
+```
+
+---
+
+# 4. getter와 setter
+
+```js
+// 접근자 프로퍼티 (Accessor Property)
+class Student {
+  constructor(firstName, lastName) {
+    this.firstName = firstName
+    this.lastName = lastName
+  }
+  // fullName에 접근(호출)할 떄
+  get fullName() {
+    return `${this.lastName} ${this.firstName}`
+  }
+  // fullName에 할당할 떄
+  set fullName(value) {
+    console.log('set', value)
+  }
+}
+
+const student = new Student('수지', '김')
+student.firstName = '안나'
+console.log(student.firstName) // 안나
+console.log(student.fullName) // 김 안나
+student.fullName = '김철수' // set 김철수
+```
+
+---
+
+# 5. 상속(inheritance)
+
+```js
+class Animal {
+  constructor(color) {
+    this.color = color
+  }
+  eat() {
+    console.log('먹자!')
+  }
+  sleep() {
+    console.log('잔다')
+  }
+}
+
+class Tiger extends Animal {}
+const tiger = new Tiger('노랑이')
+console.log(tiger) // Tiger { color: '노랑이' }
+tiger.sleep() // 잔다
+tiger.eat() // 먹자!
+
+class Dog extends Animal {
+  constructor(color, ownerName) {
+    super(color)
+    this.ownerName = ownerName
+  }
+  play() {
+    console.log('놀자아~!')
+  }
+
+  // 오버라이딩 overriding
+  eat() {
+    super.eat() // 부모의 기능을 그대로 유지하면서 추가적인 기능을 하고 싶을 떄
+    console.log('강아지가 먹는다!')
+  }
+}
+
+const dog = new Dog('빨강이', '엘리')
+console.log(dog) // Dog { color: '빨강이', ownerName: '엘리' }
+dog.sleep() // 잔다
+dog.eat() // 먹자! 강아지가 먹는다!
+dog.play() // 놀자아~!
+```

@@ -1,0 +1,268 @@
+---
+title: 'JS-DOM-06-이벤트 헨들러(Event Handler)'
+date: 2023/01/29
+---
+
+# 1. Event 종류
+
+브라우저 위에 발생할 수 있는 이벤트는 굉장히 다양합니다.
+
+- mouse click
+- keyboard
+- resizing window
+- close window
+- page loading
+- form submission : 사용자가 입력한 내용을 제출할 때
+- video is being played
+- error 등등
+- cf. [MDN Events 개념](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events)
+- cf. [MDN Events 종류](https://developer.mozilla.org/en-US/docs/Web/Events)
+
+웹 브라우저에서 사용자와의 상호작용으로 발생하는 이벤트는 200여 가지가 넘기 때문에 모든 이벤트를 다루기는 불가능합니다.
+그래서 여기에서는 꼭 알아야 하는 중요한 이벤트를 몇 가지만 살펴보겠습니다.
+실무에서는 상황에 맞는 이벤트 종류를 확인하고 사용해 보세요.
+
+|     구분      |   이벤트    | 설명                                           |
+| :-----------: | :---------: | ---------------------------------------------- |
+| 마우스 이벤트 |   onclick   | 마우스로 클릭하면 발생합니다.                  |
+|               | ondblclick  | 마우스로 빠르게 두 번 클릭하면 발생합니다.     |
+|               | onmouseover | 마우스 포인터를 올리면 발생합니다.             |
+|               | onmouseout  | 마우스 포인터가 빠져나가면 발생합니다.         |
+|               | onmousemove | 마우스 포인터가 움직이면 발생합니다.           |
+|               |   onwheel   | 마우스 휠(wheel)을 움직이면 발생합니다.        |
+| 키보드 이벤트 | onkeypress  | 키보드 버튼을 누르고 있는 동안 발생합니다.     |
+|               |  onkeydown  | 키보드 버튼을 누른 순간 발생합니다.            |
+|               |   onkeyup   | 키보드 버튼을 눌렀다가 뗀 순간 발생합니다.     |
+| 포커스 이벤트 |   onfocus   | 요소에 포커스가 되면 발생합니다.               |
+|               |   onblur    | 요소가 포커스를 잃으면 발생합니다.             |
+|   폼 이벤트   |  onsubmit   | 폼이 전송될 때 발생합니다.                     |
+| 리소스 이벤트 |   onload    | 웹 브라우저의 리소스 로드가 끝나면 발생합니다. |
+
+---
+
+## 1.1 이벤트 등록하는 법
+
+**이벤트가 발생할 때 어떤 작업을 할지 자바스크립트 코드로 작성하는 것**을 `이벤트 등록`이라고 합니다.
+이벤트를 등록하는 방법은 크게 3가지로 정리할 수 있습니다.
+인라인, 프로퍼티 리스너, 이벤트 등록 메서드로 이벤트를 등록하는 것을 자세히 알아봅시다.
+
+### 1.1.1 인라인 방식
+
+인라인 방식은 HTML 태그에 속성으로 이벤트를 등록하는 방법입니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>inline event</title>
+  </head>
+  <body>
+    <!-- 📝 인라인 방식 : HTML 태그에 속성으로 이벤트를 등록하는 방법 -->
+    <!-- 속성값으로는 이벤트가 발생할 때 실행될 함수를 지정 -->
+    <button onclick="clickEvent()">클릭</button>
+    <script>
+      // 웹 브라우저에 경고창이 출력
+      function clickEvent() {
+        alert('click')
+      }
+    </script>
+  </body>
+</html>
+```
+
+이벤트를 여러 가지 사용하면 사용한 만큼 이벤트를 제어할 수 있습니다.
+예를 들어, 다음 코드는 입력창을 클릭해서 커서를 활성화하면 onfocus 이벤트가 발생합니다.
+그리고 입력창 외부 영역을 클릭하면 onblur 이벤트가 발생해 커서가 빠져나가면서 블러(focus out) 상태가 됩니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>inline event2</title>
+  </head>
+  <body>
+    <form>
+      <!-- 입력창을 클릭해서 커서를 활성화하면 onfocus 이벤트가 발생 -->
+      <!-- 입력창 외부 영역을 클릭하면 onblur 이벤트가 발생해 블러(focus out) 상태 -->
+      <input type="text" onfocus="focusEvent()" onblur="blurEvent()" />
+    </form>
+    <script>
+      function focusEvent() {
+        console.log('focus on')
+      }
+      function blurEvent() {
+        console.log('focus out')
+      }
+    </script>
+  </body>
+</html>
+```
+
+> 💡 포커스 이벤트 사용 시 주의할 점
+>
+> 포커스 이벤트를 사용할 때 코드 내부에 경고창을 나타내는 alert() 메서드를 사용하면 안 됩니다.
+> 경고창을 클릭하는 순간 입력창에서 커서가 빠져나갔다고 판단해 onblur 이벤트가 발생합니다.
+> 그리고 경고창이 닫히면 다시 커서가 입력창으로 들어가서 onfocus 이벤트가 발생합니다.
+> 따라서 경고창이 무한으로 뜨는 현상이 발생할 수 있습니다.
+
+---
+
+### 1.1.2 프로퍼티 리스너 방식
+
+프로퍼티 리스너(property listener)는 요소 노드에 직접 속성으로 이벤트를 등록하는 방법입니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>property listener</title>
+  </head>
+  <body>
+    <button>클릭</button>
+    <script>
+      // 📝 버튼을 클릭했을 때 요소 노드에 등록된 이벤트 속성에 할당된 함수가 실행
+      const btnEl = document.querySelector('button')
+      btnEl.onclick = function () {
+        alert('click')
+      }
+
+      // 📝 화살표 함수로 작성 가능
+      // btnEl.onclick = () => {
+      //   alert('arrow click');
+      // };
+
+      // 📝 함수를 별도로 정의하고 함수명을 이용해 이벤트와 연결
+      // btnEl.onclick = clickEvent;
+      // function clickEvent() {
+      //   alert('click');
+      // }
+    </script>
+  </body>
+</html>
+```
+
+---
+
+### 1.1.3 이벤트 등록 메서드⭐
+
+`addEventListener()`를 사용해서 이벤트를 등록할 수도 있습니다. 3가지 방법 중 가장 권장하는 방식입니다.
+`addEventListener()`의 매개변수에 이벤트 타입과 이벤트 함수를 전달하면 되는데,
+이벤트 타입은 이벤트 종류에서 on만 빼면 됩니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>addEventListener</title>
+  </head>
+  <body>
+    <button>클릭</button>
+    <script>
+      const btnEl = document.querySelector('button')
+
+      // 📝 노드.addEventListener("이벤트타입", 이벤트함수)
+      btnEl.addEventListener('click', function () {
+        alert('button Click')
+      })
+
+      // 📝 이벤트 함수에 화살표 함수도 사용 가능
+      // 또는 함수 선언문이나 함수 표현식으로 정의한 함수명으로 연결 가능
+      // const clickEvent = () => {
+      //   alert('button Click');
+      // };
+      // btnEl.addEventListener('click', clickEvent);
+    </script>
+  </body>
+</html>
+```
+
+함수 표현식으로 정의된 함수는 호이스팅에 의해 선언과 할당이 분리되므로
+참조하려는 함수가 addEventListener() 메서드보다 반드시 위에 작성되어야 합니다.
+
+---
+
+# 2. 연습 1
+
+```html
+<button id="btn"></button>
+<script>
+  function sayHello() {
+    alert('Hello')
+  }
+
+  const el = document.getElementById('btn')
+  el.onclick = sayHello
+  // 이때 함수에 괄호가 없어야 함. 괄호가 있다면 반환값이 할당
+
+  el.addEventListener('click', sayHello)
+  // 이런 식으로 addEventListener(감지하는 이벤트, 실행할 함수) 를 활용해 작성을 많이 함
+
+  el.addEventListener('click', () => {
+    alert('hi')
+  })
+  // 함수를 직접 작성할 수도 있음
+</script>
+```
+
+---
+
+# 3. DOMcontentLoaded : 문서 로드가 완료되었을 때 이벤트
+
+문서 로드가 완료되었을 때 이벤트 `DOMcontentLoaded` 는 아래 처럼 작성해야 동작합니다.
+
+```js
+document.addEventListener('DomcontentLoaded', () => {
+  document.body.style.backgroundColor = 'red'
+})
+```
+
+자주 사용하는 이벤트를 살펴보면 더블클릭, `dblclick` 과 키를 눌렀다 땔 때 `keyup` 이 있습니다.
+
+모든 이벤트는 이벤트 값들을 객체의 모양으로 반환합니다. 아래처럼 콘솔을 찍어보면 확인할 수 있습니다.
+
+```js
+input.addEventLietener('keyup', event => {
+  console.log(event)
+})
+```
+
+아래처럼 `event.key` 를 하면 해당 이벤트의 `key` 에 해당하는 값이 반환됩니다.
+
+```js
+input.addEventLietener('keyup', event => {
+  console.log(event.key)
+})
+```
+
+`focus` 는 인풋창에 포커스가 되었을 대 `blur` 는 포커스를 잃었을 때 사용합니다.
+마우스 무브 이벤트로 `mousemove` 는 해당 영역에서 마우스가 이동할 때마다 값이 찍힙니다.
+`clientX` 와 `clientY` 값을 사용하면 현재 마우스 위치 확인할 수 있습니다.
+
+```js
+box.addEventListener('mousemove', event => {
+  circle.style.top = '${event.clientY}px'(백틱)
+  circle.style.left = '${event.clientX}px'
+})
+// box 위에 마우스가 움직일 때 circle 이 마우스 이벤트로 위치값을 받아서 같이 움직인다. box 와 circle 은 position 으로 연결되어 있어서 top, left 값으로 조정한 것
+```
+
+윈도우 리사이즈 이벤트는 아래처럼 적용할 수 있습니다.
+
+```js
+window.addEventListener('resize', () => {
+  document.body.innerText = '현재 창 크기는 ${window.innerWidth} x ${window.innerHeight}'
+  백틱
+})
+```

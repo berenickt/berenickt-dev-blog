@@ -1,0 +1,193 @@
+---
+title: 'JS-DOM-01-Web API'
+date: 2023/01/29
+---
+
+# 1. Web APIs란?
+
+브라우저 자체에서 제공하는 API이 굉장히 많습니다.
+
+- `DOM APIs`
+  - Document Object Model의 약자
+  - 웹 페이지에 있는 요소들을 생성하거나 삭제하거나 또는 스타일은 이런 조작하는 기능을 제공
+- `Network APIs` : 서버와 통신할 수 있는 기능들을 제공
+- `Graphics APIs` : Canvas나 WebGL같은 그래픽에 관련된 API들도 제공
+- `Audio/Video APIs` : 오디오나 비디오를 재생하거나 중지하는 등 다양한 멀티미디어에 관련 API 제공
+- `Device APIs` : 디바이스 사용자가 온라인인지 오프라인인지 디바이스의 상태 정보를 받아올 수 있는 API 제공
+- `File APIs` : 사용자의 파일을 읽거나 저장하는 API
+- `Storage APIs` : 사용자의 정보를 저장할 수 있는 스토리지에 관련된 API
+
+> cf
+>
+> - [MDN Web API](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Introduction)
+> - [MDN Web API collection](https://developer.mozilla.org/en-US/docs/Web/API)
+
+---
+
+# 2. HTTP와 HTTPS
+
+`HTTP`는 웹 클라이언트와 서버가 어떻게 통신할지에 대한 통신 규약을 정해놓은 것으로, Hypertext Transfer Protocol의 약자로써 클라이언트가 서버에게 정보를 요청하고, 다시 서버에서 정보를 받아오는 request를 하고 respence를 받아오는 방식으로 이루어져 있습니다.
+
+`HTTPS`는 HTTP에 S가 더해진 것으로 Hypertext Transfer Protocal Secure의 약자입니다. 즉, 정보를 주고받는 것들이 보안 처리가 된 http라는 뜻입니다.
+
+`HTTP`에서 패스워드를 입력해서 서버에게 보내게 되면, 아무런 encryption이 일어나지 않고, 즉 아무런 보안처리가 되지 않아서 ‘dream’이라는 글자가 그대로 전송되어서 해커가 네트워크가 어떻게 전송됐는지를 들여다볼 수 있는 반면에, `HTTPS`는 secure하게 encrypt가 되어서, 즉 ‘drame’이라는 글자가 사용자가 알아볼 수 없는 ‘암호키’를 이용해서 보안 처리가 되기 때문에 해커가 함부로 볼 수가 없습니다.
+
+그래서 HTTP는 보안 처리가 되지 않고 HTTPS는 보안 처리가 되어 있기 때문에, 몇몇 Web APIs는 HTTPS 환경에서만 동작합니다. 이러한 부분은 MDN 사이트에서 확인해서 찾아서 쓰면 되고, 이런 Web APIs에서 제공하는 API 뿐만 아니라, 트위터, 트렐러, 유튜브, 핀터레스 등의 서비스, 나아가 굉장히 다양한 회사에서 자신들의 백엔드 API를 제공합니다.
+
+---
+
+# 3. Browser 구조
+
+브라우저에서 웹 페이지를 열게 되면 `Window`라는 전체적인 오브젝트가 존재하고, `Window`는 여러분들의 페이지뿐만 아니라 브라우저에서 현재 열려있는 전체적인 창을 의미합니다.
+
+그리고 Window 안에 즉 페이지가 표기되는 부분이 `Document` 오브젝트입니다. 즉, `Document`는 HTML에서 작성한 요소들이 표기되는 부분이라고 볼 수 있습니다. 그리고 사용자 눈에는 보이진 않지만 전체적으로 윈도우에 관련된 즉 브라우저 자체에 관련된 정보들이 담겨 있는 `Navigator`라는 오브젝트도 있습니다.
+
+|   종류    | 설명                                                                  |
+| :-------: | --------------------------------------------------------------------- |
+|  window   | 웹 브라우저가 열릴 때마다 생성되는 최상위 관리 객체 `(브라우저 창)`   |
+| document  | 웹 브라우저에 표시되는 HTML 문서 정보가 포함된 객체 `(브라우저 내용)` |
+| location  | 웹 브라우저에 현재 표시된 페이지에 대한 URL 정보가 포함된 객체        |
+|  history  | 웹 브라우저에 저장된 방문 기록이 포함된 객체                          |
+| navigator | 웹 브라우저 정보가 포함된 객체                                        |
+|  screen   | 웹 브라우저의 화면 정보가 포함된 객체                                 |
+
+그래서 HTML, CSS, JavaScript를 포함한 웹 페이지를 브라우저에서 실행되면 `Window`라는 전체적인 오브젝트가 있고, `Window` 안에는 `DOM(Document 모델)`이 들어있고, DOM을 이용해서 새로운 요소를 추가하고, 빼거나 움직이고 이런 것들이 가능하게 됩니다. 또 `BOM`은 Browser Object Model의 약자로 브라우저에 관련된 Navigator나 Location이나 Fetch나 Storage같은 Web APIs 등이 들어있습니다. MDN 사이트에서 Web APIs와 관련된 모든 오브젝트들이 BOM에 해당됩니다.
+
+그리고 이제 작성한 자바스크립트가 함께 포함이 되어져 있습니다. 그래서 자바스크립트로 브라우저 위에서 동작하는 걸 만들 때는 이런 DOM 관련 API도 쓸 수 있고, BOM 관련 API도 쓸 수 있습니다.
+
+실제로 브라우저 콘솔 창에서 다음 명령어를 작성하고 확인해보세요.
+
+```bash
+$ document
+$ window
+```
+
+콘솔창을 이용해서 확인해도 되지만 MDN Window에 가면 더 자세히 알 수 있습니다. Window는 인터페이스인데, DOM의 document가 포함된 Window를 나타내는 것이라 설명하면서, Window는 무엇이고, 그 안에 어떤 것들이 들어있는 지도 확인해볼 수 있습니다.
+
+cf. [MDN Window](https://developer.mozilla.org/en-US/docs/Web/API/Window)
+
+---
+
+# 4. window 객체
+
+## 4.1 window 객체 기본 속성
+
+|         속성          | 설명                                                   |
+| :-------------------: | ------------------------------------------------------ |
+|      innerWidth       | 웹 브라우저 화면의 너비를 px(픽셀) 단위로 나타냄       |
+|      innerHeight      | 웹 브라우저 화면의 높이를 px 단위로 나타냄             |
+|      outerWidth       | 웹 브라우저 창의 너비를 px 단위로 나타냄               |
+|      outerHeight      | 웹 브라우저 창의 높이를 px 단위로 나타냄               |
+|  screenTop / screenY  | 웹 브라우저 위쪽 면과 모니터의 간격을 px 단위로 나타냄 |
+| screenLeft / screenX  | 웹 브라우저 왼쪽 면과 모니터의 간격을 px 단위로 나타냄 |
+| pageXOffset / scrollX | 웹 브라우저의 수평 스크롤 위치를 px 단위로 나타냄      |
+| pageYOffset / scrollY | 웹 브라우저의 수직 스크롤 위치를 px 단위로 나타냄      |
+
+```html
+<body>
+  <button onclick="printInfo()">window 객체 속성</button>
+  <script>
+    function printInfo(){
+      console.log(`웹 브라우저의 너비: ${window.innerWidth}`);
+      console.log(`웹 브라우저의 높이: ${window.innerHeight}`);
+      console.log(`웹 브라우저 창의 너비: ${window.outerWidth}`);
+      console.log(`웹 브라우저 창의 높이: ${window.outerHeight}`);
+      console.log(`웹 브라우저 창 위쪽 면과 모니터 사이의 간격: ${window.screen Top}/${window.screenY}`);
+      console.log(`웹 브라우저 창 왼쪽 면과 모니터 사이의 간격: ${window.screen Left}/${window.screenX}`);
+      console.log(`웹 브라우저 창의 스크롤 가로 위치: ${window.scrollX}`);
+      console.log(`웹 브라우저 창의 스크롤 세로 위치: ${window.scrollY}`);
+    }
+  </script>
+</body>
+```
+
+코드를 웹 브라우저로 실행하고 개발자 도구를 엽니다.
+웹 브라우저를 가로와 세로 방향으로 어느 정도 스크롤한 다음 화면에 보이는 window 객체 속성 버튼을 눌러보면,
+콘솔창에 속성값이 출력되는 것을 볼 수 있습니다.
+
+---
+
+# 5. window 객체 기본 메서드
+
+|    메서드     | 설명                                                      |
+| :-----------: | --------------------------------------------------------- |
+|    alert()    | 알림창을 표시함                                           |
+|   confirm()   | 확인창을 표시함                                           |
+|   prompt()    | 입력창을 표시함                                           |
+|    open()     | 새로운 웹 브라우저 창을 연다.                             |
+|    close()    | 웹 브라우저 창을 닫음                                     |
+| setTimeout()  | 일정 시간(ms) 뒤에 콜백 함수를 한 번만 실행함             |
+| setInterval() | 일정 시간(ms)마다 콜백 함수를 반복적으로 실행함           |
+| clearInterval | setInterval() 메서드로 반복 실행되는 함수를 중지함        |
+|  scrollTo()   | 웹 브라우저의 스크롤을 특정 위치만큼 이동함               |
+|  scrollBy()   | 웹 브라우저의 스크롤을 현재 위치에서 상대적 위치로 이동함 |
+
+---
+
+## 5.1 open() : 웹 브라우저에서 새 창 제어
+
+코드를 실행해 보면 팝업 버튼이 보입니다. 버튼을 클릭하면 popup() 함수가 호출되어 window 객체의 open() 메서드가 실행됩니다.
+
+```html
+<!-- open.html -->
+<body>
+  <button onclick="popup()">팝업</button>
+  <script>
+    function popup() {
+      // window.open(경로, 이름, 속성);
+      window.open('popup.html', '팝업', 'width=200, height=100')
+      // popup.html : 새창에서 열릴 파일의 경로
+      // 팝업 : 브라우저 탭의 이름이 아니라 open()에서 내부적으로 구분하는 용도로 사용하는 이름
+      // width=200, height=100 : 새창의 속성 값
+    }
+  </script>
+</body>
+```
+
+> window.open() 메서드로 열리는 새 창을 ‘팝업창’이라고도 합니다.
+
+이렇게 열린 창은 window 객체의 `close()`로 닫을 수 있습니다.
+보통 `open()`로 열린 새로운 창을 닫는 용도로 사용합니다.
+
+```html
+<!-- popup.html -->
+<body>
+  <button onclick="window.close()">팝업 닫기</button>
+</body>
+```
+
+---
+
+## 5.2 scrollTo() : 웹 브라우저의 스크롤 이동
+
+- `scrollTo()` : 웹 브라우저의 스크롤을 특정 위치만큼 이동함
+- `scrollBy()` : 웹 브라우저의 스크롤을 현재 위치에서 상대적 위치로 이동함
+
+두 메서드는 기본으로 매개변수에 x좌표와 y좌표를 전달받습니다.
+
+```js
+// 📌 몇 번을 호출하더라도 가로는 100px, 세로는 200px의 위치로 스크롤이 이동됨
+window.scrollTo(100, 200)
+
+// 웹 브라우저 스크롤의 현재 위치에서 상대적인 위치로 움직이기 때문에
+// 호출할 때마다 웹 브라우저의 스크롤이 가로 방향으로 100px, 세로 방향으로 200px씩 계속 이동
+window.scrollBy(100, 200) // window.scrollBy(x좌표, y좌표);
+```
+
+또는 다음처럼 객체 리터럴을 전달받을 수도 있습니다.
+
+```js
+window.scrollTo({ left: 100, top: 200 })
+window.scrollBy({ left: 100, top: 200 })
+```
+
+scrollTo() 메서드나 scrollBy() 메서드의 매개변수에 객체 리터럴을 전달할 때,
+behavior 속성을 전달할 수 있습니다.
+behavior 속성값을 smooth로 하면 웹 브라우저 스크롤이 해당 위치로 마우스 휠을 굴리듯이 부드럽게 이동합니다.
+
+```js
+window.scrollTo({ top: 4000, behavior: 'smooth' })
+window.scrollBy({ top: 600, behavior: 'smooth' })
+```
+
+> 다른 브라우저 모델 객체는 https://developer.mozilla.org/ko/docs/Web/API 참고

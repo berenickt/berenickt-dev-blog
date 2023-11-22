@@ -1,0 +1,74 @@
+---
+title: 'JS-08-반복문(Loops and Iterations)'
+date: 2023/01/03
+---
+
+# 1. 반복문 for
+
+- [MDN for](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Statements/for)
+
+```javascript
+// 반복문 Loop Statement
+// for(변수선언문; 조건식; 증감식) { }
+// 실행순서:
+// 1. 변수선언문
+// 2. 조건식의 값이 참이면  { } 코드블럭을 수행
+// 3. 증감식을 수행
+// 4. 조건식이 거짓이 될때까지 2번과 3번을 반복함
+
+for (let i = 0; i < 5; i++) {
+  console.log(i)
+}
+
+for (let i = 0; i < 5; i++) {
+  for (let j = 0; j < 5; j++) {
+    console.log(i, j)
+  }
+}
+
+// 무한루프 💩
+// for (;;) {
+// }
+
+// 반복문 제어: continue, break;
+for (let i = 0; i < 20; i++) {
+  if (i === 10) {
+    continue // 10을 넘어가고 그 다음 반복문 수행
+    console.log('i가 드디어 10이 되었다!')
+    break
+  }
+  console.log(i)
+}
+```
+
+---
+
+# 2. 반복문 while
+
+- [MDN while](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Statements/while)
+
+```javascript
+// while(조건) {}
+// 조건이 false가 될때까지 {} 코드를 반복 실행
+let num = 5
+while (num >= 0) {
+  console.log(num) // 5 4 3 2 1 0
+  num--
+}
+
+// 무한루프문
+let isActive = false // true로 바꾸면 무한 실행
+let i = 0
+while (isActive) {
+  console.log('아직살아있다!')
+  if (i === 1000) {
+    break
+  }
+  i++
+}
+
+// do-while문 : do에 있는 문 무조건 한번 실행하고 while문 수행
+do {
+  console.log('do-while 아직살아있다!')
+} while (isActive)
+```

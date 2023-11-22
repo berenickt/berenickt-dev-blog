@@ -1,0 +1,42 @@
+---
+title: '10-모듈'
+date: 2023/01/10
+---
+
+# 1. 모듈
+
+- 모듈 = 특정 기능을 하는 컴퓨터 시스템이나 프로그램의 단위
+- 모듈, 조립 부품 = 기계·가구·건물 등을 구성하는 규격화된 부품
+
+---
+
+# 2. Export
+
+ES6의 `export`와 같은 방식으로 변수, 함수, 타입, 인터페이스 등에 붙여 사용합니다.
+
+```ts
+// math.ts
+export interface Triangle {
+  width: number
+  height: number
+}
+
+// index.ts
+import { Triangle } from './math.ts'
+
+class SomeTriangle implements Triangle {
+  // ...
+}
+```
+
+---
+
+# 3. Import
+
+ES6의 `import`와 동일한 방식으로 사용합니다.
+
+```ts
+import { WheatBeerClass } from './index.ts'
+
+class Cloud extends WheatBeerClass {}
+```

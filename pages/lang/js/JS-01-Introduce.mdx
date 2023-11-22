@@ -1,0 +1,143 @@
+---
+title: 'JS-01-소개'
+date: 2022/12/20
+---
+
+# 1. JavaScript란?
+
+JavaScript = HTML을 동적으로 조작하기 위한 언어
+
+---
+
+# 2. JavaScript의 역사
+
+1989년 [팀 버너스리](https://ko.wikipedia.org/wiki/팀_버너스리)가 최초의 브라우저를 개발했습니다. (HTML 설계 및 구현, HTTP 프로토콜, URL 창시)
+
+1990년대 중반, 웹 브라우저 시장의 약 90%를 장악하던 넷스케이프 커뮤니케이션즈(이하 넷스케이프)
+
+- 이 당시 웹은 HTML로만 이루어져 정적인 기능만 제공 (링크만 존재하는 워드 느낌)
+- 로직의 필요성을 느낀 넷 스케이프 사는 프로그래밍 언어를 브라우저에 내장하기로 결정
+
+넷 스케이프에서 일하던 [브렌던 아이크](https://ko.wikipedia.org/wiki/브렌던_아이크)가 웹 브라우저인 네비게이터2.0에 **스킴**이라는 프로그래밍 언어를 내장하려다,
+스캄이 맘에 안들어서 10일만에 `모카(Mocha)`라는 언어를 창시하고 네비게이터2.0에 탑재함.
+
+- 그 해 9월, Mocha를 `LiveScript`로 이름 변경
+- Java가 큰 인기를 끌자, **단순히 마케팅 효과를 얻기 위해** 이름을 `JavaScript`로 변경
+- 즉, JavasScript는 10일 만에 개발되었다. 그래서 현재까지 기능을 보완하는 식으로 발전해오고 있다.
+
+이후 웹 페이지 동작을 향상시키는 경량의 프로그래밍 언어가 인기를 끌자,
+Microsoft사 에서 IE 3.0에서 동작하는 ‘JScript’라는 매우 비슷한 언어를 만들었고,
+다양한 브라우저들이 JS 문법을 만듭니다.
+
+이렇게 되자 브라우저 간의 호환성(크로스 브라우징) 문제가 발생해 표준화의 필요성이 대두되었습니다.
+이를 위해 1996년 11월, 넷스케이프 사는 ECMA 인터네셔널에 자바스크립트의 표준화를 요청합니다.
+
+> 💡 ECMA 인터네셔널 (Ecma International) : 정보 통신 시스템을 표준화하는 비영리 협회
+
+1997년 7월, JS의 표준화 초판이 완성되었고 **2015년도부터 매해 새로운 문법이 추가되어 배포**되고 있습니다.
+ECMA Script는 ECMA 인터내셔널에서 정의한 ECMA-262 기술 규격을 토대로 만든 표준 스크립트 프로그래밍 언어
+
+- [ECMA 인터내셔널](https://www.ecma-international.org/)
+- [ECMAScript 버전별 특징](https://github.com/tc39/proposals)
+
+---
+
+# 3. JavaScript 버전
+
+ES6 이전까지의 문법은 여러 불편함이 존재했는데,
+ES2015 (ES6, 2015년)부터 불편함을 해결해주는 문법들이 대거 추가되어 가독성과 유지보수성이 향상되었습니다.
+
+그래서 ES6+ 이상의 버전들을 `모던 JavaScript`라고 부릅니다.
+
+---
+
+## 3.1 버전별 주요 개념
+
+1. `ES1 (1997)` : 초판
+2. `ES2 (1998)` : ISO/IEC 16262 국제 표준
+3. `ES3 (1999)` : 정규 표현식, `try...catch`
+4. `ES5 (2009)`
+   - HTML5와 함께 출현한 표준안
+   - JSON
+   - strict mode
+   - 접근자 프로퍼티
+   - 프로퍼티 어트리뷰트 제어
+   - 향상된 배열 조작 기능(forEach map, filter, reduce, some, every)
+5. `ES6 (2015), ECMAScript`
+   - let/const
+   - 클래스
+   - 화살표 함수
+   - 템플릿 리터럴
+   - 디스트릭처링 할당
+   - 스프레드 문법
+   - rest 파라미터 심벌
+   - 프로미스
+   - Map/Set, 이터러블
+   - `for...of`
+   - 제너레이터
+   - Proxy
+   - 모듈 import/export
+6. `ES7 (2016)`
+   - 지수(`**`)연산자
+   - `Array.prototype.includes`
+   - `String.prototype.includes`
+7. `ES8 (2017)`
+   - async/await
+   - Object 정적 메서드(`Object.values`, `Object.entries`, `Object.getOwnPropertyDescriptors`)
+8. `ES9 (2018)`
+   - Object rest/spread 프로퍼티
+   - `Promise.prototype.finally`, `async generator`, `for await...of`
+9. `ES10 (2019)`
+   - `Object.fromEntries`
+   - Array.prototype.flat, Array.prototype.flatMap, optional catch binding
+10. `ES11 (2020)`
+    - `String.prototype.matchAll`, `BigInt, globalThis`, `Promise.allSettled`
+    - null 병합 연산자, 옵셔널 체이닝 연산자, `for...in enumeration order`
+
+cf.
+
+- [ECMA 인터내셔널](https://www.ecma-international.org/)
+- [ECMAScript 버전별 특징](https://github.com/tc39/proposals)
+
+---
+
+# 4. JavaScript Runtime (실행 방법)
+
+JavaScript 언어가 실행될 수 있는 환경을 `JavaScript runtime`이라고 부릅니다.
+자바스크립트는 다양한 환경 등에서 실행이 가능한데, 브라우저와 Node.js이 대표적입니다.
+
+---
+
+## 4.1 Browser
+
+브라우저 마다 각기 다른 자바스크립트 엔진이 존재하며, 종류는 다음과 같습니다.
+
+- `V8 (Google Chrome, Opera, Edge)`
+  - 2008년 등장한 구글의 V8 엔진은 가장 빠른 성능을 자랑
+  - Node.js, Chrome 브라우저 등에서 사용
+  - [v8 공식사이트](https://v8.dev/), C++로 구성
+- `spidermonkey (Firefox)`
+  - 넷스케이프 사에 의해 개발이 된 최초의 자바스크립트 엔진
+  - Mozilla Firefox에서 사용
+- `JavaScript Core (IOS, Safari)`
+  - 애플이 사파리를 위해 개발한 엔진
+  - Nitro 라고도 부름
+
+[브라우저별 ES6 지원현황](https://kangax.github.io/compat-table/es6/)
+
+대부분의 브라우저에서 ES6를 지원하지만, Internet Explorer는 지원하지 않습니다.
+22년 6월 15일 Explorer 지원이 중단되므로 사실상 거의 다 된다고 보면 됩니다.
+
+---
+
+## 4.2 Node.js
+
+Node.js는 구글 V8엔진으로 빌드되어, 브라우저 이외의 환경에서도 JS를 동작하게 해주는 Runtime입니다.
+
+- 주로 서버 측 개발을 하는데 사용
+- 라이언 달(Ryan Dahl)의 ‘비동기로 작업을 처리할 수 없을까?’ 라는 발상에서부터 개발되어 2009년 세상에 공개
+  - 라이언 달은 현재 Deno 런타임 환경 개발
+- 서버 사이드 에플리케이션 개발에 필요한 모듈이나 HTTP, 파일 시스템과 같은 내장 API를 제공
+  - 모듈의 설치, 업데이트, 제거, 수정 등의 작업을 자동 관리해 주는 기능을 가진 툴을 **Package Manager**라고 부름
+  - Node.js의 package manager로는 **npm**, **yarn**이 존재
+- [Nodejs 공식사이트](https://nodejs.org/en/)

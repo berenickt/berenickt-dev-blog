@@ -1,0 +1,380 @@
+---
+title: '03-Position, Float 레이아웃'
+date: 2023/02/06
+---
+
+# 1. static (기본값)
+
+우리가 지금까지 배운 CSS 속성들은 HTML 요소를 `개별적으로 선택`하여 디자인을 변경하거나 꾸미기 위해서 사용한 속성이었습니다. 실제 CSS를 만들다보면 중요하다고 느끼는 것이 스타일이 적용된 `HTML 요소를 원하는 위치에 배치`하는 방법입니다.
+
+HTML은 기본적으로 `박스 모델의 성격`에 따라서 `블록 또는 인라인 형태로` 요소들이 배치가 됩니다.
+
+- `블록 형태` : 하나의 요소가 웹 브라우저의 가로 한 줄을 차지하는 것
+- `인라인 형태` : 웹 브라우저의 가로가 허용하는 범위 내에서 요소들이 한 줄로 배치되는 것
+
+위 2가지 HTML 요소의 기본 배치만으로는 웹페이지를 만들어 나감에 있어 부족합니다. HTML 요소들을 기본적인 블록 요소와 인라인 요소의 흐름에서 벗어나 조금 더 원하는 위치에 배치하기 위해서 `position 속성`을 제공하고 있습니다.
+
+---
+
+position 속성의 `static` 값은 `모든 HTML 요소의 기본값`입니다. 위에서 HTML 요소는 요소가 가지고 잇는 박스 모델의 성격이 블록인지 인라인인지에 따라 결정된다고 했는데, 그 이유가 모든 HTML 요소의 position 속성 값의 기본값 static으로 지정되어 있기 때문입니다. 요컨대, 모든 HTML 요소는 position 속성의 값이 static으로 지정되어 있습니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>position - static</title>
+    <style>
+      .parent {
+        width: 300px;
+        height: 300px;
+        background-color: lightgray;
+      }
+      .child {
+        width: 100px;
+        height: 100px;
+      }
+      .bg-red {
+        background-color: red;
+      }
+      .bg-orange {
+        background-color: orange;
+      }
+      .bg-yellow {
+        background-color: yellow;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="parent">
+      <div class="child bg-red"></div>
+      <div class="child bg-orange"></div>
+      <div class="child bg-yellow"></div>
+    </div>
+  </body>
+</html>
+```
+
+개발자 도구로 확인해보면 기본값으로 `position : static;`으로 적용된 것을 확인할 수 있습니다.
+
+---
+
+# 2. relative
+
+- `자기 자신의 현재 위치를 기준으로` 움직입니다.
+- absolute의 기준으로 부모 위치를 잡을 때도 사용합니다.
+
+`기본 위치(position X)`
+
+![CSS_3_1](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_3_1.png)
+
+`position : relative; right : 10px; 적용 시`
+
+![CSS_3_2](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_3_2.png)
+
+position 속성을 `static이 아닌 다른 값으로 지정`하게 되면,
+`원하는 위치에 배치`하게 하기 위해 `좌표 속성`이라 불리는 top, right, bottom, left 속성을 추가로 사용할 수 있습니다.
+단, position 속성값에 따라 조금씩 다르게 적용됩니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>position - relative</title>
+    <style>
+      .parent {
+        width: 300px;
+        height: 300px;
+        background-color: lightgray;
+        /* 정중앙 정렬이라는 것만 이해, 뒤에서 다시 배움 */
+        margin: auto;
+      }
+      .child {
+        width: 100px;
+        height: 100px;
+      }
+      .bg-red {
+        background-color: red;
+        /* static이 아닌 다른 값으로 지정하면, top, right, bottom, left 속성 사용 가능 */
+        position: relative;
+        /* top 속성값이 양수면 위에서 아래로, 음수면 아래에서 위로 */
+        top: 100px;
+        /* right 속성값이 양수면 오른쪽에서 왼쪽으로, 음수면 왼쪽에서 오른쪽으로, left가 우선적용됨 */
+        /* right: 200px; */
+        /* bottom 속성값이 양수면 아래에서 위쪽으로, 음수면 위에서 아래로, top이 우선적용됨 */
+        /* bottom: 100px; */
+        /* left 속성값이 양수면 왼쪽에서 오른쪽으로, 음수면 오른쪽에서 왼쪽으로 */
+        left: 100px;
+      }
+      .bg-orange {
+        background-color: orange;
+      }
+      .bg-yellow {
+        background-color: yellow;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="parent">
+      <div class="child bg-red">100x100</div>
+      <div class="child bg-orange">100x100</div>
+      <div class="child bg-yellow">100x100</div>
+    </div>
+  </body>
+</html>
+```
+
+---
+
+# 3. absolute
+
+- `부모 위치를 기준으로 상대적으로` 위치를 움직입니다.
+- 부모 기준은 가장 가까운 부모 기준 position 값을 인식합니다.(모든 position 가능)
+- 부모 기준의 position 값이 없다면 브라우저의 가장 왼쪽, 맨위(0, 0)가 기준점
+
+`기본 위치(position X)`
+
+![CSS_3_1](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_3_1.png)
+
+`position : absolute; right : 10px; 적용 시`
+
+![CSS_3_3](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_3_3.png)
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>position - absolute</title>
+    <style>
+      .parent {
+        width: 300px;
+        height: 300px;
+        background-color: lightgray;
+        margin: auto;
+        /* 부모 요소의 position의 값이 있다면, (보통 relative로 설정)  */
+        /* absolute는 가장 가까운 위치 지정 요소를 대상으로 기준점이 재설정됨 */
+        /* 즉, 기준점이 브라우저 왼쪽맨위(0, 0)에서 부모 요소의 왼쪽맨위로 변경됨 */
+        position: relative;
+      }
+      .child {
+        width: 100px;
+        height: 100px;
+      }
+      .bg-red {
+        background-color: red;
+        /* static이 아닌 다른 값으로 지정하면, top, right, bottom, left 속성 사용 가능 */
+        /* 공중에 붕 뜬것처럼 다른 요소들이 absolute가 적용된 요소 위치를 찾지 못함 */
+        /* 좌표 속성의 기준점이 브라우저의 가장 왼쪽, 맨위(0, 0)이 기준이 됨 */
+        /* 가장 가까운 위치 지정 요소를 대상으로 기준점이 재설정됨 */
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
+      .bg-orange {
+        background-color: orange;
+      }
+      .bg-yellow {
+        background-color: yellow;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="parent">
+      <div class="child bg-red">100x100</div>
+      <div class="child bg-orange">100x100</div>
+      <div class="child bg-yellow">100x100</div>
+    </div>
+  </body>
+</html>
+```
+
+---
+
+# 4. fixed
+
+- HTML 요소를 `좌표 속성으로 설정된 위치에 배치`하여 `고정`시킬 수 있습니다.
+- 페이지 스크롤 길이와 관계없이 웹 브라우저 위치에 고정됩니다.
+- 팝업 요소에 주로 사용합니다.
+- body를 기준으로 위치가 정해집니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>position - fixed</title>
+    <style>
+      body {
+        /* 스크롤을 보이기 위해 작성 */
+        height: 5000px;
+      }
+      .parent {
+        width: 300px;
+        height: 300px;
+        background-color: lightgray;
+        margin: auto;
+        position: relative; /* 부모 요소에 또 다른 position */
+      }
+      .child {
+        width: 100px;
+        height: 100px;
+      }
+      .bg-red {
+        background-color: red;
+        /* 요소가 공중에 붕 뜬것처럼 주변 요소들이 해당 요소들을 인식하지 못함 */
+        /* 마우스 스크롤 여부와 상관없이 항상 해당 위치에 고정됨 */
+        /* absolute와 달리 부모 요소에 또 다른 position이 지정되어도 기준점이 재설정되지 않음  */
+        position: fixed;
+        top: 0;
+        left: 0;
+      }
+      .bg-orange {
+        background-color: orange;
+      }
+      .bg-yellow {
+        background-color: yellow;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="parent">
+      <div class="child bg-red">100x100</div>
+      <div class="child bg-orange">100x100</div>
+      <div class="child bg-yellow">100x100</div>
+    </div>
+  </body>
+</html>
+```
+
+---
+
+# 5. sticky
+
+`sticky`는 `끈적거리는, 끈적끈적한, 달라붙는`라는 뜻으로, position 속성의 값을 sticky로 지정하면, HTML 요소를 `좌표 속성으로 설정된 위치에` 달라붙듯이 `고정`시킬 수 있습니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>position - sticky</title>
+    <style>
+      body {
+        /* 스크롤을 보이기 위해 작성 */
+        height: 5000px;
+      }
+      .parent {
+        width: 300px;
+        height: 300px;
+        background-color: lightgray;
+        margin: auto;
+      }
+      .child {
+        width: 100px;
+        height: 100px;
+      }
+      .bg-red {
+        background-color: red;
+        /* 부모 범위 내에서 마우스 스크롤을 내렸을 떄, 해당 위치로 고정됨 */
+        /* 즉, 회색 영역인 paraent까지만 fixed처럼 작동함 */
+        /* 지원하지 않는 브라우저(e.g. IE 등)이 존재 */
+        /* https://caniuse.com/?search=sticky */
+        position: sticky;
+        top: 0;
+      }
+      .bg-orange {
+        background-color: orange;
+      }
+      .bg-yellow {
+        background-color: yellow;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="parent">
+      <div class="child bg-red">100x100</div>
+      <div class="child bg-orange">100x100</div>
+      <div class="child bg-yellow">100x100</div>
+    </div>
+  </body>
+</html>
+```
+
+---
+
+# 6. z-index : position 중첩순서 속성
+
+- -999 ~ 0 ~ +999 까지 순서를 정할 수 있습니다.(단위 작성안함)
+- 중간 숫자가 필요할 시 입력이 편하도록 10단위 ~ 100단위의 큰 숫자를 위주로 많이 사용합니다.
+- position 속성이 들어간 대상에 사용할 수 있습니다.
+
+![CSS_3_4](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_3_4.png)
+
+---
+
+# 7. float
+
+- `float : (물이나 공중에서) 뜨다`
+
+HTML 요소의 위치를 지정하기 위해서 사용할 수 있는 또 다른 방법으로는 float 속성을 이용하는 방법이 있습니다.
+float 속성은 HTML 요소의 위치를 `기본 위치에서 공중에 뜨게 하여 배치`하게 하는 원리입니다.
+float 속성의 속성값으로는 left, right, none을 지정할 수 있습니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>float</title>
+    <style>
+      .bg-red {
+        width: 50px;
+        height: 50px;
+        background-color: red;
+        /* 📝 HTML요소가 공중으로 뜬 것처럼 적용되어 다른 HTML 요소가 인식하지 못함 */
+        /* left 값은 HTML 요소가 이동할 수 있는 왼쪽 끝으로 이동 */
+        /* right 값은 HTML 요소가 이동할 수 있는 오른쪽쪽 끝으로 이동 */
+        /* 절대적인 좌표의 위치로 이동하는 것이 아니라 부모 요소의 왼쪽 끝으로 이동 */
+        float: right;
+      }
+      .bg-orange {
+        width: 70px;
+        height: 70px;
+        background-color: orange;
+        /* 레드 박스의 왼쪽에 붙어서 배치됨 */
+        /* float이 적용된 요소와 float이 적용되지 않은 요소는 서로의 위치를 인식하지 못함 */
+        /* 반대로, float이 적용된 요소끼리는 서로의 위치를 인식함 */
+        float: right;
+      }
+      .bg-green {
+        width: 100px;
+        height: 100px;
+        background-color: green;
+        /* 오렌지 박스의 왼쪽에 붙어서 배치됨 */
+        float: right;
+        /* 📝 float 속성 취소, 사용할 일이 극히 적음 */
+        /* float: none; */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-red"></div>
+    <div class="bg-orange"></div>
+    <div class="bg-green"></div>
+  </body>
+</html>
+```

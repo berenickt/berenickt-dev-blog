@@ -1,0 +1,349 @@
+---
+title: 'JS-13-this & 화살표함수'
+date: 2023/01/04
+---
+
+# 1. This 바인딩
+
+This를 사용할 떄, 생성자 함수·객체·클래스 안에서 This를 사용했는데,
+This는 **앞으로 만들어진 인스턴스나 지금의 객체 자기 자신을 가리키는 용도로 사용**했습니다.
+
+This를 사용하면서, 나 자신의 인스턴스를 가리키는 것,
+즉, **특정한 객체와 This를 묶어두는 연결된 것**을 `This 바인딩`이라고 합니다.
+
+`JavaScript에서 사용하는 This`는 `다른 프로그래밍 언어의 This`와 살짝 다릅니다.
+
+- `다른 프로그래밍 언어의 This`
+  - 클래스 안에 This를 사용해서 **앞으로 만들어진 인스턴스 자기 자신을 가리킴**
+  - 한 번 인스턴스를 가리키는 This가 결정되면, This는 계속 인스턴스 하나만 계속 정적으로 가리킴
+    - **코드 상에서 정적으로 결정**됨
+  - Java, C# 같은 다른 객체지향 프로그래밍 언어
+- `JavaScript에서 사용하는 This`
+  - 런타임 상에서 This 바인딩이 동적으로 결정
+  - JavaSciprt, TypeScript
+
+---
+
+# 2. This 뜻
+
+`This` = **this는 함수를 호출한 객체이다.**
+
+---
+
+## 2.1 전역 문맥에서 this
+
+- `전역 문맥에서 this` = **그냥 쓰꺼나 함수에서 쓰면 window 전역 객체**
+
+그냥 HTML 파일 아무거나 하나 만들고 JS 파일을 연동시키고 브라우저를 띄웁니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <body>
+    <script src="./main.js"></script>
+  </body>
+</html>
+```
+
+일단 this를 콘솔창에 출력해봅시다.
+
+```js
+// main.js
+console.log(this) // window 전역 객체
+```
+
+함수에서 this를 쓰면, windows 전역 객체이다.
+
+```js
+// main.js
+if (true) {
+  console.log(this) // window 전역 객체
+}
+```
+
+엄격모드에서 전역적인 문맥에서 접근해보면, windows 전역 객체이다. (즉, 전역모드와는 상관없다.)
+
+```js
+'use strict' // 엄격모드
+
+console.log(this) // window 전역 객체
+```
+
+> 💡 Window 전역 객체
+>
+> **함수들, 전역변수, DOM 등을 보관하는 전역 객체** = 보관소
+>
+> - 함수들 : `document.getElementById(), alert(), console.log()`같은 것들
+> - 전역 변수 : 코드 내 모든 곳에서 참조해서 쓸 수 있는 범용적인, 범위가 넓은 변수
+>
+> ```html
+> <script>
+>   // script태그 내에 var 변수만들면 전역변수
+>   var x = 300
+> </script>
+> ```
+
+---
+
+## 2.2 함수 문맥에서 this
+
+```js
+// 📝 function으로 선언한 함수는 window 객체에 등록됨
+function main() {
+  console.log(this) // this는 함수를 호출한 객체이다.
+}
+
+// 콘솔로 window 객체를 보면, main 함수가 들어있음
+// console.log(window);
+
+// 📝 전역적으로 main()를 호출한다는 것은 window.main()과 동일하다.
+main() // main()를 호출하면 this는 window 객체가 된다.
+// window.main();
+```
+
+### 2.2.1 엄격모드 함수에서 this = undefined
+
+여기서 한가지 예외가 있습니다. 엄격모드를 활성화시켜준다면,
+
+```js
+'use strict'
+
+function main() {
+  console.log(this) // 엄격모드에서 함수 안의 this는 undefined
+}
+
+main()
+```
+
+직접적으로 `window.main()`라고 명시해야지만, this가 window 전역객체가 됩니다.
+
+```js
+'use strict'
+
+function main() {
+  // 엄격모드를 함수 내부에서도 선언해줘도 똑같음
+  // 'use strict';
+  console.log(this) // window 전역객체
+}
+
+window.main() // window 전역객체를 명시
+```
+
+---
+
+## 2.3 객체 메서드에서 this
+
+`This` = **this는 함수를 호출한 객체이다.**
+
+```js
+const object = {
+  name: '메시',
+  main: function () {
+    console.log(this) // main()안에 있는 this는 작성자가 작성한 Object가 된다.
+  },
+}
+
+object.main() // Object { name: "메시", main: main() }
+```
+
+객체의 다른 속성에 접근할 떄 유용합니다.
+
+```js
+const object = {
+  name: '메시',
+  main: function () {
+    console.log(this.name) // 객체의 다른 속성에 접근할 떄 유용
+  },
+}
+
+object.main() // 메시
+```
+
+만든 객체를 새로운 변수에 할당하면, 더 이상 객체가 아니기 때문에 indow 전역 객체가 호출됩니다.
+
+```js
+const object = {
+  name: '메시',
+  main: function () {
+    console.log(this)
+  },
+}
+
+object.main()
+
+// 더 이상 main2()를 호출하는 것이 객체가 아니기 때문에 window 전역 객체가 호출된다.
+const main2 = object.main
+main2() // window 전역 객체
+```
+
+this는 함수가 정의된 위치나 방법에 영향을 받지 않습니다.
+
+```js
+// 객체 밖에서 만든 this
+function main() {
+  console.log(this)
+}
+
+// 그 이후에 객체를 만들어서 메서드로 넣어줘도 똑같이 this는 object 객체가 된다
+const object = {
+  name: '메시',
+  main,
+}
+
+object.main()
+```
+
+```js
+// 객체 밖에서 만든 this
+function main() {
+  console.log(this)
+}
+
+const object = {
+  name: '메시',
+}
+
+object.main = main // 그 이후에 객체를 만들어서 메서드로 넣어줘도 똑같이 this는 object 객체
+
+object.main()
+```
+
+마찬가지로 객체 안의 객체 안에 this라도, this는 함수를 호출한 객체입니다.
+
+```js
+// 객체 밖에서 만든 this
+function main() {
+  console.log(this)
+}
+
+const object = {
+  name: '메시',
+  smallObject: {
+    name: '호날두',
+    main,
+  },
+}
+
+object.smallObject.main() // Object { name: "호날두", main: main() }
+```
+
+그래서 `mani()`를 직접 호출한 객체가 smallObject이기 때문에 this는 `smallObject(호출한 객체)`가 됩니다.
+어떤 함수의 this 값이 궁금하다면, 바로 옆의 객체를 보면 됩니다.
+
+---
+
+### 2.3.1 bind()
+
+```js
+function main() {
+  console.log(this)
+}
+
+main() // window 전역 객체
+```
+
+동적으로 this 값이 바뀌기 때문에 일일히 추적하는 것은 귀찮기 때문에 **원하는 객체로 고정**하고 싶다면,
+`bind()`를 쓰면 됩니다. (cf. binding, 바인딩 = 묶어주다)
+
+```js
+function main() {
+  console.log(this)
+}
+
+// 원하는 객체을 this으로 설정하고 싶다면, bind(고정시키고싶은 객체)
+const mainBind = main.bind({ name: 'hi' })
+mainBind() // Object { name: "hi" }
+
+// 다른 객체 안에서 호출해도 mainBind()의 this는 고정된다.
+const object = {
+  mainBind,
+}
+
+object.mainBind() // Object { name: "hi" }
+```
+
+이제 mainBind()를 어떻게 호출하든 상관없이 this 값은 넣어준 객체값으로 고정됩니다.
+
+- `bind()`는 넣어준 객체값이 this값으로 설정된 새로운 함수를 반환해줍니다.
+- 주의할 점 : **이미 bind()된 것을 또 bind()할 수 없다**. 또 bind한 값은 무시해버린다.
+
+```js
+function main() {
+  console.log(this)
+}
+
+// 📌 주의 : 이미 bind()된 것을 또 bind()할 수 없다. 또 bind한 값은 무시해버림
+const mainBind = main.bind({ name: 'hi' })
+const mainBindBind = mainBind.bind({})
+mainBindBind() // Object { name: "hi" }
+```
+
+```js
+const object = {
+  name: '메시',
+  main: function () {
+    console.log(this)
+  }.bind({ name: '네이마르' }),
+}
+// ↑ bind()해준 객체값으로 this가 바뀐다.
+
+object.main() // Object { name: "네이마르" }
+```
+
+---
+
+## 2.4 이벤트 처리기에서 this
+
+함수를 DOM 요소의 이벤트 처리기에서 사용할 떄, this 값은 `event.target`입니다.
+버튼 클릭, 스크롤 등 같은 이벤트를 처리할 떄, 이벤트 리스너를 사용합니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <body>
+    <button id="btn">버튼</button>
+    <script src="./main.js"></script>
+  </body>
+</html>
+```
+
+```js
+const button = document.getElementById('btn')
+
+button.addEventListener('click', function (event) {
+  // 버튼을 누르면 true가 출력됩니다.
+  console.log(event.target === this)
+})
+```
+
+> 💡 화살표 함수를 쓰는 이유
+>
+> ```js
+> function main() {
+>   console.log(this)
+> }
+> ```
+>
+> - 호출 방법에 따른 this 변화
+> - this를 고정하기 위해 bind() 사용
+>
+> 전통적인 함수 문법은 동적인 this 때문에 이리저리 바인딩하느라 귀찮습니다.
+> 그럴 때는 화살표 함수(ES6+)를 사용하면 됩니다.
+>
+> ```js
+> const main = () => {
+>   console.log(this)
+> }
+> ```
+>
+> - 더 간결한 함수 선언 문법
+> - 동적인 this에 대한 값을 고정시킬 수 있음
+>   - this가 호출에 따라 바뀌지 않음
+> - 화살표 함수의 this값은 그 함수를 감싸는 스코프 외부에서 그대로 가져옴
+> - 개발자 인생을 편하게 해주지만 그렇다고 화살표함수가 모든 상황에서 대체할 수는 없음
+
+---
+
+# 3. Arrow Function(화살표 함수)
+
+## 3.1 기본 : 일반 함수 vs 화살표 함수

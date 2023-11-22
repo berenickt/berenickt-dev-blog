@@ -1,0 +1,204 @@
+---
+title: '08-제너릭 (일반적인, 포괄적인)'
+date: 2023/01/08
+---
+
+# 1. 제너릭이 필요한 이유
+
+- cf. generate = 발생, 만들다
+- cf. general = 일반[보편]적인
+- cf. generic = 포괄적인, 이름이 붙지 않은 채 판매되는
+
+함수에 파라미터를 입력할 떄, 타입을 입력할 수도 있습니다.
+
+```typescript
+// array 입력하면 첫 자료 return 해주는 함수
+function 함수(x: unknown[]) {
+  return x[0]
+}
+
+let a = 함수([4, 2])
+console.log(a) // 4 -> 숫자 타입이 아니라 unknownx타입
+```
+
+마우스로 a의 타입을 확인해보면 숫자타입이 아니라 unknown타입입니다.
+중요한 점은 **타입스크립트는 타입을 알아서 변경해주지 않습니다.**
+
+- 숫자가 return 되면 "number 타입",
+- 문자가 return 되면 "string 타입"이라고 안해줌
+
+```typescript
+function 함수(x: unknown[]) {
+  return x[0]
+}
+
+let a = 함수([4, 2])
+console.log(a + 1) // unknownx타입에 숫자 연산을 해줘서 에러
+```
+
+그래서 a는 사람이 보기에 분명히 숫자가 맞지만, 아직 타입은 unknown 타입이니까 에러가 납니다.
+
+그래서 함수에 `불확실한 unknown, any, union`타입을 입력하면,
+나오는 값도 **unknown, any, union 타입** 이라, 이것때문에 일어나는 문제들이 있습니다.
+
+- e.g. 함수가 10을 return 하는데 타입이 unknown 이라서 맘대로 조작못할 때
+
+해결책은
+
+1. narrowing 잘해서 해결하기 (귀찮음)
+2. 타입을 파라미터로 함수에 미리 입력하는 방법
+   - 이렇게 하면, 원하는 곳에 가변적으로 타입지정 가능
+   - 이를 `제너릭(generic)`이라 부름
+
+---
+
+# 2. 제너릭 (Generic)
+
+함수에 `<>`를 입력하면 **파라미터를 또 입력**할 수 있습니다.
+
+- 여기 안에는 타입만 입력해야 합니다.
+- 즉, `제너릭 === 타입파라미터` 문법입니다.
+- **클래스나 함수, 인터페이스를 다양한 타입으로 재사용**
+
+```typescript
+//  2. 함수( x : number[] ) :number { }
+function 함수<MyType>(x: MyType[]): MyType {
+  return x[0]
+}
+
+// 1. 이제 number라고 입력하면 MyType에 number가 들어감
+let a = 함수<number>([4, 2])
+let b = 함수<string>(['kim', 'park'])
+```
+
+- **Generic을 쓰면 개발자가 정한 타입을 return 값으로 뱉는 함수를 제작 가능**
+- 타입파라미터는 자유롭게 작명 가능, 보통 `<T>`이런걸로 많이 작명함
+- **일반 함수파라미터 처럼 2개 이상 넣기도 가능**
+
+```typescript
+function 함수<MyType>(x: MyType[]): MyType {
+  return x[0]
+}
+
+let a = 함수([4, 2]) // a = 4
+let b = 함수(['kim', 'park']) // b = kim
+```
+
+위 코드처럼, 함수 사용시 꼭 `<>` 안써도 알아서 기본 타입을 유추해서 집어넣어줍니다
+
+---
+
+# 3. 인터페이스의 제너릭
+
+```typescript
+interface Mobile<T> {
+  name: string
+  price: number
+  option: T // option을 제너릭 타입으로 받음
+}
+
+const m1: Mobile<object> = {
+  name: '아이폰 14',
+  price: 100,
+  // 객체 형태로
+  option: {
+    color: 'white',
+    coupon: false,
+  },
+}
+
+const m2: Mobile<string> = {
+  name: '갤럭시 22',
+  price: 200,
+  option: 'good', // 문자 형태로
+}
+```
+
+---
+
+# 4. 제너릭 타입 제한
+
+```typescript
+function 함수<MyType>(x: MyType) {
+  return x - 1 // x 타입이 불확실하니까 에러
+
+  // The left-hand side of an arithmetic operation must be of type 'any', 'number',
+  // 'bigint' or an enum type.ts(2362)
+}
+
+let a = 함수<number>(100)
+```
+
+`<MyType>`이라는 곳에 **number타입 말고도 다른 타입을 집어넣을 수도 있어서**
+미리 숫자(- 1) 연산을 미리 방지해줍니다.
+
+narrowing를 이용해서 타입을 제한해도 되나,
+MyType에 집어넣을 수 있는 타입을 미리 제한하는 것도 하나의 해결책입니다.
+
+---
+
+## 4.1 Type constraints(제약조건) : extends
+
+`extends` 문법을 쓰면 **넣을 수 있는 타입을 제한**할 수 있습니다.
+그래서 `MyType extends number`라고 쓰면, number타입만 받겠다는 의미입니다.
+
+`interface` 문법에 쓰는 `extends`와는 살짝 다른 느낌입니다.
+
+- interface의 `extends` : 복사
+- generic의 `extends` : number와 비슷한 속성을 가지고 있는지 if 문으로 체크
+
+```typescript
+// MyType이 우측에 있는 속성을 가지고 있는지 제한, number인지 체크
+function 함수<MyType extends number>(x: MyType) {
+  // return 타입지정을 안한 이유는 `숫자 - 숫자`를 했으니 알아서 number 타입이 됨
+  return x - 1
+}
+
+let a = 함수<number>(100)
+console.log(a) // 99
+```
+
+---
+
+# 5. 커스텀 타입도 제한 가능
+
+```typescript
+function 함수<MyType>(x: MyType) {
+  return x.length // 2. 에러 : length 조작을 일단 방지
+}
+
+// 1. string을 집어넣었지만 나중에 number타입을 실수로 집어넣으면?
+let a = 함수<string>('hello')
+```
+
+그래서 `extend`로 이를 제한해주면 됩니다. `interface`로 만들어둔 타입을 `extends`해봅시다.
+
+```typescript
+// 커스텀 타입으로도 타입파라미터 제한 가능
+interface lengthCheck {
+  length: number
+}
+
+// MyType이 lengthCheck 속성을 가지고 있는지 체크
+function 함수<MyType extends lengthCheck>(x: MyType) {
+  return x.length
+}
+
+let a = 함수<string>('hello') // 가능
+let b = 함수<number>(1234) // 에러
+```
+
+---
+
+# 6. 예제
+
+문자를 집어넣으면 문자의 개수, array를 집어넣으면 array안의 자료 개수를 콘솔창에 출력해주는 함수
+
+```typescript
+function 함수<MyType extends string | string[]>(x: MyType) {
+  console.log(x.length)
+}
+
+함수<string>('hello') // 5
+함수<string[]>(['kim', 'park']) // 2
+```

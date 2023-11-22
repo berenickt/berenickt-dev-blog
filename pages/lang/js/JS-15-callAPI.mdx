@@ -1,0 +1,506 @@
+---
+title: 'JS-15-데이터 호출(api, json, ajax, fetch, axios)'
+date: 2023/01/05
+---
+
+# 1. 네트워크 기초 지식
+
+cf. [코딩애플 - JSON (존슨) 은 자바스크립트 문법이 아닙니다](https://youtu.be/1ID6pfTViXo)
+
+## 1.1 JSON
+
+데이터를 텍스트 형태로만 보낸다면 굉장히 복잡합니다. 그래서 데이터를 담기 위한 깔끔한 형식이 필요합니다.
+
+### 1.1.1 데이터 담는 형식
+
+- XML
+  - `<데이터이름>값</데이터이름>`
+    `<데이터이름>값</데이터이름>`
+    `<데이터이름>값</데이터이름>`
+  - 2000년대 사용 방식
+  - 작성하기가 불편
+  - 용량이 불필요하게 컸음
+- CSV
+  - `Year, Brand, Model`
+    `1997, Ford, E350`
+    `2000, Mercury, Cougar`
+  - 표 형태로 만든 형식
+  - 데이터베이스를 모방해 만든 방식이라 데이터베이스에 있는 데이터를 CSV로 변환이 쉬움
+  - 표 안에 표를 집어넣은 형태인 고차원 형태를 표현하기 복잡
+- JSON
+  - `{'name' : 'kim', 'age' : 20 }`
+  - 일반적으로 가장 많이 사용하는 형식
+  - 2013년에 JavaScript 공식 문법에 편입
+
+---
+
+## 1.2 서버(Server) = 알바생
+
+- **요청을 받으면 데이터를 보내주는 기계**
+- 알바생을 영어로 Server라고 함.
+  - (음식을) 서빙(Serving)한다 = 무언가를 갖다준다.
+  - (컴퓨터) 서버(Server) = 무언가를 갖다주는 컴퓨터
+- e.g. 웹서버 = “웹툰 페이지 주세요“하면, 웹툰 페이지를 가져다주는 기계
+- 전문용어로는 **클라이언트의 요청을 받으면 서비스, 데이터를 제공하는 컴퓨터 혹은 프로그램**
+
+---
+
+## 1.3 API = 식당 메뉴판
+
+**API (Application Programming Interface)** : 서로 다른 프로그램간에 소통할 수 있게 도와주는 통신 규약
+
+- 웹에서 사용하면 '**서버와 고객간의 통신 규약**'
+- 풀어말하면 '**서버에게 요청해서 데이터 가져오는 방법**'
+- e.g. "**누군가 /write로 접속하면 write.html을 보내주세요**"같은 건 서버의 API
+  - `write.html`을 보고싶으면 `/write`로 접속하라는 API를 정의
+
+---
+
+### 1.3.1 기본 HTTP 메서드 (GET, POST)
+
+- `GET` : 데이터를 Read(조회)할 떄 사용
+- `POST` (BODY 포함)
+  - 새로운 정보를 Create(추가)하는데 사용
+  - Body에 새 데이터 정보를 실어서 보냄
+
+---
+
+### 1.3.2 GET = 브라우저 주소창
+
+사용자도 GET 요청 코드를 서버에게 보내야만 서버의 데이터를 볼 수 있습니다.
+서버에 GET 요청 코드는 매일 많은사람들이 사용하고 있습니다.
+
+일반 사용자들은 **브라우저라는 도구를 이용해서 주소창에서 GET 요청**을 보냅니다.
+또 직접 타이핑하지 않고, 개발자들이 각 버튼, 이미지 등의 클릭 요소에 GET 요청을 만들어 두었습니다.
+
+API는 항상 public할 필요는 없습니다.
+
+- `public API` : 누구나 사용가능한 공개 API
+- `private API` : 사내에서 몰래 쓰는 API
+- `partner API` : 미리 정해둔 놈만 쓰는 API
+
+모든 프로그램은 API를 가질 수 있습니다.
+
+- `Windows API` : 이거 쓰면 윈도우 운영체제 기능들 사용 가능
+- `Database 관리 프로그램 API` : 이거 쓰면 DB 입출력 기능들 사용 가능
+- `XX 프로그램 API` : 이거 쓰면 무슨무슨 기능들 사용 가능
+
+API로 만드는 비즈니스 모델
+
+- `Naver Cloud Platform` : 네이버 파파고 번역 API, Cloba Summary API 등 호출마다 API 요금 발생
+- API 마켓 등에서도 판매
+
+---
+
+# 2. RSET API
+
+- `REST(Representational State Transfer)`
+- 웹의 창시자(HTTP) 중의 한 사람인 Roy Fielding의 2000년 논문에 의해서 소개
+  - HTTP 요청 시스템(GET, POST, PUT, DELETE)
+  - REST 원칙에 의해서 쓰면 인터넷 세상이 평화로워짐 (이라고 졸업논문씀)
+- "웹 API 짤 때 REST 원칙을 지켜서 짜면 좋다”고 하는 **API 디자인 패턴**
+- 말 그대로 형식이기에 특정 기술에 제한받지 않음
+- 총 6개의 원칙이 존재
+- cf. [그런 REST API로 괜찮은가](https://youtu.be/RP_f5dMoHFc)
+- cf. 옛날에는 SOAP라는 걸 사용했다고 함
+
+---
+
+## 2.1 REST 6 원칙
+
+### 2.1.1 Uniform Interface⭐
+
+**인터페이스는 일관성이 있어야한다**
+
+- **하나의 URL로는 하나의 데이터**를 가져와야함 (하나를 가져오기 위한 두개의 URL을 만들지 말자)
+- **간결하고 예측가능하게 짜세요** (URL 하나를 알면 둘을 알게)
+- **URL 이름짓기 관습을** 잘 따라주세요
+
+> 💡 URI 와 URL
+>
+> - `URI` : **자료를 넘버링하고 분류하고 지칭하는 방법**
+> - `URL` : **URL과 비슷하지만 조금 더 큰 의미**
+
+---
+
+### 2.1.2 Client-server 역할 구분
+
+고객들은 URL 하나만 알면, 서버에 있는 자료를 갖다쓸 수 있습니다.
+**고객에게 서버역할을 맡기거나 고객에게 DB에 있는 자료를 직접 꺼내라고 하든지 그런 식으로 코드를 짜면 안된다**.
+
+---
+
+### 2.1.3 Stateless
+
+**요청들은 각각 독립적으로 처리**되어야 한다.
+
+- 요청1이 성공해야 요청2를 보내주고, **요청간의 의존성이 존재하는 코드를 짜시면 안됩니다**.
+- 다시 말해, **요청하나 만으로 자료를 가져오기 충분하도록 요청에 필요한 모든 정보들을 실어 보내는게 좋다**
+
+---
+
+### 2.1.4 Cacheable
+
+- **요청을 통해 보내는 자료들은 캐싱이 가능해야 한다.**
+- **캐싱가능하다고 표시하거나 캐싱 기간을 설정**해주어야 한다
+
+> 💡 캐싱(Caching)
+>
+> 네이버를 방문하면 브라우저는 자동으로 자주 사용하는 이미지 파일, CSS 파일 등을 하드에 저장해놓습니다.
+> e.g. 별로 바뀔일 없는 네이버 로고나 아이콘
+>
+> **하드에 저장해놓고 네이버 방문할 때 “네이버서버에 네이버 로고주세요~”라고 요청하지 않고 하드에서 불러옵니다**.
+> 이 행위를 **캐싱**이라고 합니다.
+
+---
+
+### 2.1.5 Layered System
+
+**여러개의 레이어를 거쳐서 요청을 처리하게 만들어도 된다**
+
+- 요청처리하는곳, DB에 저장하는곳 이런 여러가지 단계를 거쳐서 요청을 처리해도 된다.
+
+---
+
+### 2.1.6 Code on Demand
+
+서버는 **고객에게 실제 실행가능한 코드를 전송**해줄 수도 있습니다.
+
+---
+
+## 2.2 좋은 URL 이름짓기 관습
+
+- instagram.com/explore/tags/kpop
+- instagram.com/explore/tags/food
+- facebook.com/natgeo/photos
+- facebook.com/bbc/photos
+
+위 URL은 좋은 API들입니다.
+왜냐면 `facebook.com/bbc/photos` 이거만 봐도 BBC 뉴스 페북 계정의 사진첩인지 알 수 있습니다.
+
+정리하면 이런 특징을 가지고 있는데, 따라하면 됩니다.
+
+- 단어들을 **동사보다는 명사 위주**로 구성
+- 응용해서 **다른 정보들을 쉽게 가져올 수 있을 정도로 일관성** 있음
+- **대충 봐도 어떤 정보가 들어올지 예측이 가능해야** 함
+- 띄어쓰기는 **언더바(\_)대신 대시(-)기호** 사용
+- **파일 확장자 쓰지 말기** (`.html` 이런거)
+- **하위 문서들을 뜻할 땐 / 기호를 사용**함 (하위폴더같은 느낌)
+
+여러가지가 있습니다. 이것만 잘 지켜주시면 예쁜 서버 API들이 완성됩니다.
+
+---
+
+## 2.3 HTTP 메서드
+
+메서드들이 특정 용도에 제한되어 있지 않음. POST 하나로 데이터 읽고 수정하고 지우고 다 할 수 있지만,
+각 요청의 의도에 맞게 **RESTful하게 API를 만들기 위해서는 목적에 따라 구분해서 사용**해야 함
+
+- `GET` : 데이터를 Read(조회)할 떄 사용
+
+  - **가져오다**라는 뜻
+
+- `POST` (BODY 포함)
+  - 새로운 정보를 Create(추가)하는데 사용
+  - Body에 새 데이터 정보를 실어서 보냄
+  - **게시하다**라는 뜻
+- `PUT` (BODY 포함)
+
+  - **집어넣다**라는 뜻
+
+- `PATCH` (BODY 포함)
+  - **고치다**라는 뜻
+  - 데이터가 변경될 때, PUT 또는 PATCH를 사용해서 변경(Update)될 새 정보들을 Body에 실어서 보냄
+  - PUT과 PATCH는 쓰는 곳마다 다르지만,
+  - 정석은
+    - PUT은 정보를 통쟤로 변경할 떄
+    - PATCH는 일부 정보만 특정 방식으로 변경할 떄
+- `DELETE` : 데이터 삭제 요청
+
+---
+
+# 3. AJAX
+
+`AJAX` = 서버에 GET, POST 요청을 할 때 **새로고침 없이** 데이터를 주고받을 수 있게 도와주는 간단한 브라우저 기능
+
+- 사용자가 한 페이지 내에서 머무르면서, 필요한 데이터를 서버에서 받아와서, **부분적으로만 업데이트**
+- e.g. 새로고침 없이도 쇼핑몰 상품을 가져올 수도 있고, 새로고침 없이도 댓글을 서버로 전송 가능
+- 장점
+  - 웹페이지의 속도향상
+  - 서버의 처리가 완료될 때까지 기다리지 않고 처리가 가능
+  - 서버에서 Data만 전송하면 되므로 전체적인 코딩의 양이 줄어듬
+  - 기존 웹에서는 불가능했던 다양한 UI를 가능
+- 단점
+  - 히스토리 관리가 안됨
+  - 페이지 이동없는 통신으로 인한 보안상의 문제 존재
+  - 연속으로 데이터를 요청하면 서버 부하가 증가
+  - ...
+
+AJAX를 개념이라서 이를 구현하기 위한 다양한 라이브러리를 사용함
+
+- XMLHttpRequest
+  - 1998년에 개발
+  - 이벤트 기반
+  - 초기 API 구현 때, 브라우저 간의 불일치가 존재
+  - 브라우저간 불일치를 메꾸기 위해 jQuery 사용
+  - 2005년, XMLHttpRequest API 방식이 공식적인 AJAX라는 이름을 가짐
+  - 구글에서 AJAX를 이용해서 Gmail, Google Maps같은 서비스 등의 서비스를 만듬
+  - 이것이 현재 널리 쓰이고 있는 `SPA(Single Page Application)`임
+- JQuery
+  - 2006년에 개발
+  - 크로스 브라우징 이슈를 해결하고, DOM API를 쉽게 사용하기 위해 나옴
+- Fetch
+  - JS 기본내장 API
+  - Promise 기반
+  - 이미 잘 명세된 API가 제공됨으로써 브라우저간의 불일치가 없음
+- AXIOS, query 등 다양한 라이브러리 등이 존재
+
+---
+
+# 4. 네트워크 통신(fetch)하는 법
+
+## 4.1 기본 사용법
+
+- cf. fetch : (어딘가에서 무언가를) 가지고 오다라는 의미
+- fetch : 서버에서 데이터를 가져오는 것
+
+```js
+fetch(url, options)
+  .then(response => console.log('response:', response))
+  .catch(error => console.log('error:', error))
+```
+
+- 첫번째 인자로 **URL**
+- 두번째 인자로 **옵션 객체를 받고, Promise 타입의 객체를 반환**
+  - 반환된 객체에는, API 호출이
+    - 성공했을 경우에는 **응답(response) 객체**를 resolve하고,
+    - 실패했을 경우에는 **예외(error) 객체**를 reject
+- cf. [MDN fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+- **옵션(options) 객체** : HTTP 방식(method), HTTP 요청 헤더(headers), HTTP 요청 전문(body) 등을 설정
+- **응답(response) 객체** :HTTP 응답 상태(status), HTTP 응답 헤더(headers), HTTP 응답 전문(body) 등을 읽어올 수 있음
+
+---
+
+## 4.2 가짜 데이터 준비
+
+`JSONPlaceholder`
+
+- JSON 데이터를 가져올 API 서버가 필요하지만,
+- DB를 설치하고 스프링 또는 Node.js를 이용해 백엔드 환경을 구성하게 되면 엄청난 에너지 소모됨
+- 그래서 웹 상에서 Github 같은 곳에 데이터를 저장해두거나 무료 가상 API 등을 제공해줌
+- 그 **무료 가상 REST API 서비스** 중 하나가 JSONPlaceholder란 곳임
+- https://jsonplaceholder.typicode.com/
+
+  - 가짜 데이터가 필요할 때마다 사용할 수 있는 무료 온라인 REST API
+  - 6가지의 데이터 API 주소를 호출해서 데이터를 JSON으로 받아 볼 수 있다.
+
+- 다음과 같이 JSONPlacehoder 주소에 리소스 접미어를 붙여주면, 가짜 데이터를 보내줌
+  - https://jsonplaceholder.typicode.com/posts
+  - https://jsonplaceholder.typicode.com/comments
+
+---
+
+## 4.3 CORS 에러
+
+**CORS (Cross-Origin Resource Sharing, 교차 출처 리소스 공유)** 에러
+
+- `Client` : localhost:3000
+- `Server` : localhost:4000 (react 개발 서버)
+  - origin이 다르다. 클라이언트에서 서버에서 데이터를 막 꺼내면 안됨
+  - origin이 다르다는 건 데이터를 다룰 떄, 조심해야 된다는 소리
+  - 예를들어, naver.com, google.com의 origin이 다른데,
+  - **naver에서 google의 데이터를 꺼내가려고 하면 CORS 에러가 발생**함
+  - 그래서 웹 개발자는 origin이 다르면 무조건 막는 CORS를 숙지
+  - CORS를 풀려면, 서버에서 해결해야 함
+
+---
+
+## 4.4 실습
+
+```html
+<!doctype html>
+<html lang="ko">
+  <body>
+    <script>
+      // **** fetch : 서버에서 데이터 받아오기
+      // response : 받아온 데이터
+      // json() : body안에 json 문자열을 객체로 변환해주는 함수, promise를 return
+      fetch('https://jsonplaceholder.typicode.com/posts/1')
+        .then(response => response.json())
+        .then(json => console.log(json))
+    </script>
+  </body>
+</html>
+```
+
+VSCode의 Live Server 확장 기능으로 켜서,
+
+- 콘솔 탭을 확인해보면, **가짜 데이터 서버에서 데이터를 객체 형태로 가지고 온 것**을 알 수 있습니다.
+- 네트워크 탭에 가서 새로고침 후 확인해보면, **응답 상태가 200 ok로 데이터를 갖고 온 것**을 알 수 있습니다.
+
+---
+
+# 5. AXIOS 라이브러리
+
+JS에 기본 내장되어 있는 fetch api와 유사한 기능을 하지만 차이점이 몇가지 존재합니다.
+
+|                    |                    fetch API                     |           AXIOS API           |
+| :----------------: | :----------------------------------------------: | :---------------------------: |
+|     설치 유무      |     모던 브라우저 기본 내장 API라 설치 필요X     |      추가적인 설치 필요       |
+|      요청객체      |                     url 없음                     |           url 있음            |
+|        XSRF        |                  별도 보호 없음                  |           보호해줌            |
+|        속성        |                  body 속성 사용                  |        data 속성 사용         |
+|  JSON 데이터 형식  |         .json()으로 json으로 변환해야 함         | 자동으로 JSON 형식으로 변환됨 |
+| HTTP 요청 가로채기 |                       안됨                       |              됨               |
+|   브라우저 지원    | 크롬 42+, 파이어폭스 39+, Edge 14+, Safari 10.1+ |   좀 더 많은 브라우저 지원    |
+|      등등...       |                                                  |                               |
+
+그래서 간단한 예제를 테스트할 떄는 fetch API를 쓰고, 실제 개발할 떄는 AXIOS API를 씀
+
+- cf. https://axios-http.com/
+
+---
+
+## 5.1 설치
+
+- cf. https://axios-http.com/docs/intro
+
+```sh
+# 자신이 사용하는 패키지 매니저로 프로젝트에 추가
+npm install axios
+yarn add axios
+
+# 설치하고 난 뒤 import axios from 'axios'
+```
+
+cdn으로도 사용 가능함
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+```
+
+---
+
+## 5.2 HTTP 메서드 요청하는 법
+
+Promise 기반 HTTP 비동기 통신 라이브러리로 HTTP 메서드를 전부 지원함
+
+- `axios.get("url" [, cofnig])`
+- `axios.post("url" [, data[, config]])`
+- `axios.put("url" [, data[, config]])`
+- `axios.patch("url" [, data[, config]])`
+- `axios.delete("url" [, cofnig]);`
+
+---
+
+## 5.3 사용법
+
+### 5.2.1 Promise를 이용한 기본 사용법
+
+```javascript
+import axios from 'axios'
+
+// ID로 사용자 요청
+axios
+  .get('/user?ID=12345')
+  // 응답(성공)
+  .then(function (response) {
+    console.log(response)
+  })
+  // 응답(실패)
+  .catch(function (error) {
+    console.log(error)
+  })
+  // 응답(항상 실행)
+  .then(function () {
+    // ...
+  })
+```
+
+---
+
+### 5.2.2 async await를 이용한 사용법
+
+```javascript
+async function getUser() {
+  try {
+    const response = await axios.get('/user?ID=12345')
+    console.log(response)
+  } catch (error) {
+    console.error(error)
+  }
+}
+```
+
+추가로 인스턴스를 하나 생성해서 axios 기본 세팅을 할 수도 있다.
+
+```javascript
+const instance = axios.create({
+  baseURL: 'https://some-domain.com/api/',
+  headers: { 'X-Custom-Header': 'foobar' },
+  timeout: 1000,
+})
+```
+
+---
+
+## 5.4 실습
+
+- [reqres](https://reqres.in/?fbclid=IwAR0hhe_cxVwzJHgrT6siWRQloSODOwDd2QQVlmpob3N0a6SyJXiYSVXd12U) 이라는 FakeServer를 사용함
+- 홈페이지에 POST 요청 중 LOGIN - SUCCESSFUL의 유저를 사용함
+
+```json
+{
+  "email": "eve.holt@reqres.in",
+  "password": "cityslicka"
+}
+```
+
+---
+
+### 5.4.1 POST
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <title>AXIOS 연습</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <input type="email" placeholder="email 입력하셈" id="email" value="" />
+    <input type="password" placeholder="비밀번호 입력하셈" id="pw" value="" />
+    <input type="button" onclick="onLoggin()" value="로그인" />
+  </body>
+  <script>
+    function onLoggin() {
+      const email = document.getElementById('email')
+      const password = document.getElementById('pw')
+
+      axios({
+        method: 'POST',
+        url: 'https://reqres.in/api/login',
+        data: {
+          email: email.value,
+          password: password.value,
+        },
+      })
+        .then(res => {
+          console.log(res)
+        })
+        .catch(error => {
+          console.log(error)
+          throw new Error(error)
+        })
+    }
+  </script>
+</html>
+```
+
+VSCode의 Live Server 확장 기능으로 켜서,
+
+- 이메일 : `eve.holt@reqres.in`, 비번 : `cityslicka` 입력
+- 콘솔 탭을 확인해보면, **가짜 데이터 서버에서 데이터를 객체 형태로 가지고 온 것**을 알 수 있습니다.
+- 네트워크 탭에 가서 새로고침 후 확인해보면, **응답 상태가 200 ok로 데이터를 갖고 온 것**을 알 수 있습니다.
+- [reqres](https://reqres.in/?fbclid=IwAR0hhe_cxVwzJHgrT6siWRQloSODOwDd2QQVlmpob3N0a6SyJXiYSVXd12U) 가서 다른 요청 객체들도 참고

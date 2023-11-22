@@ -1,0 +1,725 @@
+---
+title: 'JS-14-asynchronous(비동기) - 작성중'
+date: 2023/01/04
+---
+
+# 1. 자바스크립트 실행 순서(콜스택)
+
+JS를 동작하는 환경이라면 항상 JavaScript Engine이 포함되어 있습니다
+작성한 코드를 JavaScript Engine이 한 줄씩 읽고 번역하고 실행합니다.
+
+- `동기화` = 특정 작업 사이에 **일정한 간격을 두고 작업이 발생하도록 시간 간격을 조정**하는 것
+  - 한가지 동, 기약할 기, 될 화
+
+```js
+function a() {
+  // 📝 반환되기 전에 오래걸리는 for이 있다면, 최종결과값이 반환되는데 오래걸림
+  // 📝 이렇게 함수끼리 긴밀하게 연결된 경우를 '동기화'라고 말함
+  // 📝 JavaScript는 기본적으로 동기적으로 수행됨
+  // for (let i = 0; i < 100000; i++);
+  return 1
+}
+
+function b() {
+  return a() + 1
+}
+
+function c() {
+  return b() + 1
+}
+
+console.log('시작했다!')
+// c -> b -> a 순으로 호출되고, Call Stack에 이 순서대로 저장됨
+// Call Stack에서 반환될 때는 반대로, a -> b -> c순으로 반환됨
+const result = c() // 3
+console.log(result)
+```
+
+![js-14-1](https://raw.githubusercontent.com/berenickt/image-server/main/img/js-14-1.png)
+
+- `Memory Heap` : 소스코드에서 **객체를 동적으로 생성하면, Memory Heap에 생성**
+- `Call Stack` : **함수 실행 순서를 기억**
+  - 전역에서 C를 호출하면, C가 `Call Stack`에 들어오고,
+  - C에서 B를 호출하고, B에서도 A를 호출하면, C→B→A 순서대로 `Call Stack`에 들어옴
+
+JS는 `동기적(synchronous)`으로 동작합니다. 호이스팅이 된 후로 코드가 작성된 순서에 따라 한 줄씩 동기적으로 실행된다.
+
+---
+
+# 2. Callback
+
+## 2.1 콜백 함수
+
+- 정의 : 함수에 파라미터로 들어가는 함수
+- 용도 : 순차적으로 실행하고 싶을 떄 사용
+
+```js
+document.querySelector('.button').addEventListener('click', function () {
+  // addEventListener : 함수 안에 function()이 콜백함수
+})
+
+setTimeout(function () {
+  // 1초 뒤 실행하는 함수 setTimeout 안에 function() 역시 콜백함수
+}, 1000)
+```
+
+콜백 함수를 만드는 방법
+
+```js
+function first(파라미터) {
+  파라미터()
+}
+function seceond() {}
+first(seceond)
+```
+
+이제는 단순히 콜백함수를 만드는 건 쓸모가 없습니다. 특정 코드를 순차적으로 정하고 싶을 떄만 사용합니다.
+
+---
+
+## 2.2 JavaScript Runtime 환경
+
+![js-14-2](https://raw.githubusercontent.com/berenickt/image-server/main/img/js-14-2.png)
+
+**JS 언어 자체는 동기적으로 동작**하지만, JavaScript Runtime 환경(=호스트 환경)에서 제공해주는 다양한 API들이 있습니다.
+브라우저라면, Web API, Node라면 Node API 등이 있습니다.
+
+**API들은 비동기적으로 동작**하기 떄문에(=멀티 쓰레드환경으로 동작하기 떄문에)
+다양한 일들을 **동시다발적으로 처리**(=비동기화)할 수 있습니다.
+
+예를 들어, 다른 웹 서버에 네트워크 통신을 주고받을 수 있는 fetch와 setTimeout API도 비동기적입니다.
+
+가령 3초 뒤에 실행하고 싶어서 `setTimeout:(Test, 3000);`이라고 가정해봅시다.
+그리고 타이머가 가동되는 동안 다른 코드를 하나씩 끝내놓고,
+타이머가 끝나면 setTimeout은 던져놓은 `callback 함수`를 `Task Queue`라는 곳에 전달해줍니다.
+
+그러면 `Event Loop`라는 녀석이 `Call Stack`과 `Task Queue`를 감시하면서 `Call Stack`이 비어있다면,
+`Task Queue` 작업을 `Call Stack`으로 전달합니다. 그리고 `Call Stack`에서 `callback 함수`를 수행하는 것이죠.
+
+```js
+function execute() {
+  console.log('1')
+  setTimeout(() => console.log('2'), 3000)
+  console.log('3')
+}
+execute() // 1, 3이 출력되고 3초 뒤에 2가 출력
+```
+
+---
+
+## 2.3 예제
+
+```js
+'use strict'
+
+// **** JS는 동기적(synchronous)으로 동작
+// - 호이스팅이 된 이후부터 코드가 작성된 순서에 맞춰서 하나하나씩 동기적으로 실행됩니다.
+// - 호이스팅: var, function같은 선언들이 제일 위로 올라가는 것
+console.log('1')
+setTimeout(() => console.log('2'), 1000)
+console.log('3')
+
+// 동기적(Synchronous) callback
+function printImmediately(print) {
+  print()
+}
+printImmediately(() => console.log('hello'))
+
+// 비동기적(Asynchronous) callback
+function printWithDelay(print, timeout) {
+  setTimeout(print, timeout)
+}
+printWithDelay(() => console.log('async callback'), 2000)
+```
+
+콘솔창에는
+
+> 1 → 3 → hello → 2 → async callback
+>
+> - hello 는 콜백이지만 동기적으로 호출
+> - 2와 async callback이 비동기적으로 호출
+>   - 이런 콜백함수를 계속 묶어나가서 쌓이게 되는 것을 콜백 지옥이라고 표현
+
+---
+
+## 2.4 Callback Hell
+
+단순한 코드를 작성할 때는 위와 같이 전통적인 방식으로 콜백 함수를 통해 비동기 처리를 해도 큰 문제가 발생하지 않습니다.
+하지만, **콜백 함수를 중첩해서 연쇄적으로 호출해야하는 복잡한 코드**의 경우,
+**계속되는 들여쓰기 때문에 코드 가독성이 현저하게 떨어지게** 됩니다.
+
+```js
+class UserStorage {
+  loginUser(id, password, onSuccess, onError) {
+    setTimeout(() => {
+      if ((id === 'ellie' && password === 'dream') || (id === 'coder' && password === 'academy')) {
+        onSuccess(id)
+      } else {
+        onError(new Error('not found'))
+      }
+    }, 2000)
+  }
+
+  getRoles(user, onSuccess, onError) {
+    setTimeout(() => {
+      if (user === 'ellie') {
+        onSuccess({ name: 'ellie', role: 'admin' })
+      } else {
+        onError(new Error('no access'))
+      }
+    }, 1000)
+  }
+}
+
+// class를 만들어 id, password를 입력받음
+const userStorage = new UserStorage()
+const id = prompt('enter your id')
+const password = prompt('enter your passrod')
+
+userStorage.loginUser(id, password, user => {
+  // 로그인 성공시 실행
+  userStorage.getRoles(
+    // 로그인 성공하면 유저 역할 요청해서 받기
+    user, // 유저 데이터 받고
+    userWithRole => {
+      // 이것을 처리하는 콜백 하나
+      alert(`Hello ${userWithRole.name}, you have a ${userWithRole.role} role`)
+    },
+    error => {
+      // 에러 시 처리할 콜백
+      console.log(error)
+    },
+  )
+  error => {
+    // 로그인 실패시 실행
+    console.log(error)
+  }
+})
+```
+
+JS 개발자들 사이에서 소위 [콜백 지옥](http://callbackhell.com/)이라고 불리는 이 문제를 해결하기 위해 여러가지 방법들이 논의되었고,
+그 중 하나가 Promise 입니다. 계속 괄호를 타고 안으로 들어가서 이를 `Callback Hell (콜백지옥)`이라고 부릅니다.
+
+---
+
+# 3. Promise
+
+프로미스는 무겁고 오래 걸리는 일이 있다면, 코드 내부에서 좀 더 비동기적으로 처리할 수 있게 도와줍니다.
+**일이 끝나면 원하는 일을 하게 해준다**고 `약속(promise)`을 합니다.
+
+> 현실세계의 예
+>
+> - 어떤 사람이 강의를 미리 만들겠다고 함
+> - 학생이 강의가 완성되지 않았지만, Promise로 미리 수업에 등록함
+> - 나중에 강의가 완성되면, 강의가 완료되었다고 학생에게 이메일을 전송
+>
+> 이것이 가능한 이유는 Promise 객체를 사용했기 때문
+
+`Promise Object`는 자바스크립트 내장 객체입니다. 프로미스는 2가지의 개념을 중심으로 이해하시면 됩니다.
+
+1. `State`: 주어진 일을 수행하는 중인지 이미 끝난상태인지 확인하는 것
+2. producer(정보 제공자)/consumer (정보 소비자) 차이 이해를 하는 것
+
+> 일단 new Promise()로 생성된 변수를 콘솔창에 출력해보시면 현재 상태를 알 수 있습니다.
+>
+> - Promise를 수행중일 때 -> `pending(대기)`상태
+> - pending 상태가 정상적으로 끝나면 -> `fulfilled(이행)`상태
+> - 파일을 찾을 수 없거나 네트워크에 문제가 생기면 -> `rejected(거부)`상태
+>
+> 이렇게 프로미스 오브젝트들은 3개 상태가 있습니다. 그리고 성공을 실패나 대기상태로 다시 되돌릴 순 없습니다.
+>
+> cf. [MDN Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+
+---
+
+## 3.1 기본 사용법
+
+```js
+let 프로미스 = new Promise() // Promise 객체 생성
+
+프로미스
+  .then(function () {
+    // 프로미스가 성공일 경우 실행할 코드
+  })
+  .catch(function () {
+    // 프로미스가 실패일 경우 실행할 코드
+  })
+  .finally(function () {
+    // 프로미스가 성공/실패와 상관 없이 어떤 기능을 마지막으로 실행하고 싶을 때
+  })
+```
+
+`new Promise()` 문법으로 프로미스라는 변수 오브젝트를 하나 생성하면,
+프로미스라는 변수에다가 `then()`을 붙여서 실행가능합니다.
+코드가 실행이 실패했을 경우엔 `catch()` 함수 내의 코드를 실행시켜줍니다.
+
+`Promise`를 를 쉽게 정의하면, **성공&실패 판정 기계**입니다.
+
+---
+
+## 3.2 Producer
+
+```js
+const promise = new Promise((resolve, reject) => {
+  // network 통신, read files 등의 haeavy work를 수행
+  console.log('doing something...')
+  setTimeout(() => resolve('ellie'), 2000)
+})
+```
+
+new 키워드를 통해 promise 객체를 만들 수 있다.
+
+- `resolve 함수` : 기능을 **정상적으로 수행해서 마지막에 최종 데이터를 전달**
+- `reject 함수` : 기능을 **수행하다가 중간에 문제가 생기면 호출**
+- `<pending>` : 판정 대기중
+
+promise가 만들어지는 순간 excutor가 실행됨
+
+- 만약 네트워크 요청을 사용자가 요구했을 때만 해야하는 경우라면 (e.g. 버튼을 눌렀을 때 네트워크 요청)
+- 위 코드처럼 작성했을 때는 사용자가 요청하지 않았는데 불필요한 통신이 일어날 수 있음
+
+**프로미스가 생성된 순간 executor라는 callback 함수가 바로 실행되기 때문에 이 점에 유의하면서 코드를 작성해야 한다**
+
+---
+
+## 3.3 Consumers
+
+### 3.3.1 resolve - then
+
+- **promise 내부에서 기능이 정상적으로 수행**되고 **마지막에 최종 데이터를 전달**하려고 resolve 함수 호출함
+
+```js
+const promise = new Promise((resolve, reject) => {
+  console.log('예를 들어, network 통신, read files 등의 무거운 작업를 수행...')
+  setTimeout(() => resolve('메시'), 2000) // resolve가 '메시'라는 값을 전달
+})
+
+// 프로미스가 정상적으로 수행되면
+// 마지막에 resolve라는 콜백함수를 통해 전달된 값이 value로 들어옴
+promise
+  // 프로미스가 성공일 경우 실행할 코드
+  .then(value => {
+    console.log(value)
+  })
+  // 프로미스가 실패일 경우 실행할 코드
+  .catch(error => {
+    console.log(error)
+  })
+  // 프로미스가 성공/실패와 상관 없이 어떤 기능을 마지막으로 실행하고 싶을 때
+  .finally(() => {
+    console.log('finally')
+  })
+```
+
+---
+
+### 3.3.2 reject - catch
+
+- **promise 내부에서 실행되는 일이 실패**하였을 때는 reject를 호출함
+- 보통 error 오브젝트로 값을 전달함
+
+```js
+const promise = new Promise((resolve, reject) => {
+  console.log('예를 들어, network 통신, read files 등의 무거운 작업를 수행...')
+  setTimeout(() => reject(new Error('no network')), 2000) // reject로 변경하면 uncaught error가 발생
+})
+
+// catch를 사용해서 에러 발생시 어떻게 처리할 건지에 대한 콜백함수를 등록
+promise
+  .then(value => {
+    console.log(value)
+  })
+  .catch(error => {
+    console.log(error)
+  })
+  .finally(() => {
+    console.log('finally')
+  })
+```
+
+---
+
+## 3.4 Promise 축약 버전
+
+```js
+function fetchEgg(chicken) {
+  // new Promise((resolve, reject)) 축약 버전
+  return Promise.resolve(`${chicken} => 🥚`)
+}
+
+function fryEgg(egg) {
+  return Promise.resolve(`${egg} => 🍳`)
+}
+
+function getChicken() {
+  // 여기서 에러가 발생했다고 가정
+  return Promise.reject(new Error('치킨을 가지고 올 수 없음!'))
+  // return Promise.resolve(`🪴 => 🐓`);
+}
+
+// getChicken을 가져온다면
+getChicken()
+  .catch(() => '🐔') // 에러가 발생했다면, 🐔를 리턴
+  .then(fetchEgg) // getChicken이 다 수행되었다면,
+  .then(fryEgg) // fetchEgg이 다 수행되었다면,
+  .then(console.log) // 🐔 => 🥚 => 🍳
+```
+
+---
+
+## 3.5 Promise chaining
+
+then은 값을 전달할 수도 있고 promise를 전달 할 수도 있음!!
+
+```js
+const fetchNumber = new Promise((resolve, reject) => {
+  setTimeout(() => resolve(1), 1000)
+})
+
+fetchNumber // 1
+  .then(num => num * 2) // 2
+  .then(num => num * 3) // 6
+  .then(num => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => resolve(num - 1), 1000) // 5
+    })
+  })
+  .then(num => console.log(num)) // 5
+```
+
+---
+
+## 3.6 Error Handling
+
+### 3.6.1 정상적인 경우(모두 resolve 인 경우)
+
+```js
+const getHen = () =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => resolve('🐔'), 1000)
+  })
+const getEgg = hen =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => resolve(`${hen} => 🥚`), 1000)
+  })
+const cook = egg =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => resolve(`${egg} => 🍳`), 1000)
+  })
+
+getHen()
+  .then(hen => getEgg(hen))
+  .then(egg => cook(egg))
+  .then(meal => console.log(meal))
+
+// 결과는 🐔 => 🥚 => 🍳
+// 콜백함수를 전달할 때 받아오는 값이 하나이고 다음 함수를 바로 호출하는 경우에는
+// 다음처럼 조금 더 생략하여 사용 가능
+getHen().then(getEgg).then(cook).then(console.log)
+```
+
+### 3.6.2 에러가 포함된 경우(reject 가 포함된 경우)
+
+```js
+const getHen = () =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => resolve('🐔'), 1000)
+  })
+const getEgg = hen =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => reject(new Error(`error! ${hen} => 🥚`)), 1000)
+  })
+const cook = egg =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => resolve(`${egg} => 🍳`), 1000)
+  })
+
+getHen()
+  .then(getEgg)
+  .catch(error => {
+    return '🥖'
+  })
+  .then(cook)
+  .then(console.log)
+  .catch(console.log)
+
+// 결과는 🥖 => 🍳
+```
+
+---
+
+## 3.7 Promise API (병렬 처리)
+
+Promise API를 사용하면 코드를 더 가독성 좋게 작성할 수 있다.
+
+### 3.7.1 Promise.all
+
+Promise 배열을 전달하게 되면 모든 Promise들이 병렬적으로 다 받을 때까지 모아줌
+
+```js
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+async function getApple() {
+  await delay(1000)
+  return '🍎'
+}
+
+async function getBanana() {
+  await delay(1000)
+  return '🍌'
+}
+
+function pickAllFruits() {
+  // Promise.all : 병렬적으로 한번에 모든 Promise들을 실행
+  return Promise.all([getApple(), getBanana()]).then(fruits => fruits.join(' + '))
+}
+pickAllFruits().then(console.log) // 결과는 🍎 + 🍌
+```
+
+---
+
+### 3.7.2 Promise.race
+
+가장 먼저 처리되는 프로미스의 결과(혹은 에러)를 반환한다
+
+```js
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+async function getApple() {
+  await delay(1000)
+  return '🍎'
+}
+
+async function getBanana() {
+  await delay(2000)
+  return '🍌'
+}
+
+function pickOnlyOne() {
+  // Promise.race : 주어진 Promise중에 제일 빨리 수행된것을 출력
+  return Promise.race([getApple(), getBanana()])
+}
+pickOnlyOne().then(console.log) // 결과는 🍎
+```
+
+---
+
+### 3.7.3 정리
+
+- `Promise.all` : 병렬적으로 한번에 모든 Promise들을 실행
+  - Promise 배열을 전달하게 되면 모든 Promise들이 병렬적으로 다 받을 때까지 모아줌
+- `Promise.race` : 주어진 Promise중에 제일 빨리 수행된것을 출력
+  - 가장 먼저 처리되는 프로미스의 결과(혹은 에러)를 반환
+
+```js
+function getBanana() {
+  return new Promise(resolve => {
+    setTimeout(() => resolve('🍌'), 1000)
+  })
+}
+
+function getApple() {
+  return new Promise(resolve => {
+    setTimeout(() => resolve('🍎'), 3000)
+  })
+}
+
+function getOrange() {
+  return Promise.reject(new Error('no orange')) // 에러가 발생하면
+}
+
+// **** 바나나과 사과를 같이 가지고 오기
+// 바나나 갖고오는데 1초, 사과 갖고오는데 3초, 총 4초 뒤에 바나나, 사과 출력
+getBanana()
+  .then(banana =>
+    getApple() //
+      .then(apple => [banana, apple]),
+  )
+  .then(console.log)
+
+// 📝 Promise.all : 병렬적으로 한번에 모든 Promise들을 실행!
+Promise.all([getBanana(), getApple()]) // 1초 뒤 바나나, 3초 뒤 사과가 병렬 수행
+  .then(fruits => console.log('all', fruits)) // 총 3초 뒤에 바나나, 사과 출력
+
+// 📝 Promise.race : 주어진 Promise중에 제일 빨리 수행된것이 이김!
+Promise.race([getBanana(), getApple()]) //
+  .then(fruit => console.log('race', fruit)) // 먼저 출력되는 1초 뒤 바나나가 출력
+
+Promise.all([getBanana(), getApple(), getOrange()])
+  .then(fruits => console.log('all-error', fruits)) // 모두 완료되야 실행됨
+  .catch(console.log)
+
+Promise.allSettled([getBanana(), getApple(), getOrange()])
+  .then(fruits => console.log('all-settle', fruits)) // 성공, 실패를 둘 다 배열로 묶어서 리턴
+  .catch(console.log)
+```
+
+---
+
+# 4. async / await
+
+프로미스의 장점은 Callback함수를 사용하지 않고, 좀 더 깔끔하게 사용할 수 있다는 장점이 있습니다.
+그런데 `.then`으로 연결되어 있어서 **가독성이 떨어집니다**.
+그래서 **비동기적인 코드를 동기적인**(=절차적인) 형태로 사용할 수 있는 방법이 `async, await`입니다.
+
+- Promise 위에 더 간편한 API를 제공
+- 기존에 존재하는 것 위에 간편하게 쓸 수 있는 API를 제공하는 것을 syntactic sugar라고 부름
+  - e.g. class
+- cf. `async(어싱크, 비동기), await(어웨잇, 기다려)`
+
+최근에는 Promise를 이용해서 계속해서 메서드 체이닝하는 코딩 스타일은
+JS의 `async/await` 키워드를 사용하는 방식으로 대체되고 있는 추세입니다.
+
+---
+
+## 4.1 async
+
+### 4.1.1 기본 사용법
+
+**async 키워드를 쓰면 Promise 오브젝트가 자동생성**됩니다. 근데 **async 키워드는 function 선언 앞에만 붙일 수 있습니다**.
+
+```javascript
+async function 어려운연산() {
+  // async을 지정해주면 Promise를 리턴하는 함수로 만들어줌
+  1 + 1
+}
+```
+
+그럼 이 함수 자체가 Promise가 되어버립니다. 그래서 **이 함수를 실행할 때 뒤에 then을 붙일 수 있습니다. Promise니까요.**
+(cf. 함수를 실행하면 그 자리에 Promise 인스턴스(new Promise() 로 만든 오브젝트)가 남습니다. )
+
+```javascript
+async function 더하기() {
+  1 + 1
+}
+
+더하기().then(function () {
+  console.log('더하기 성공')
+})
+```
+
+그럼 이제 Promise 만들 때 했던거 처럼, `then`을 붙여서 `더하기()`함수가 성공한 뒤에 뭔가를 실행시킬 수 있습니다.
+
+---
+
+### 4.1.2 예제
+
+```js
+// **** Promise 사용하는 경우
+function fetchUser() {
+  return new Promise((resolve, reject) => {
+    // 네트워크에서 2초 걸리는 연산...
+    resolve('메시')
+  })
+}
+
+const user = fetchUser()
+user.then(console.log)
+
+// --------------------------------------------
+// **** Async & Await 사용하는 경우 : 가독성 ^
+async function fetchUser() {
+  // 네트워크에서 2초 걸리는 연산...
+  return '메시'
+}
+
+const user = fetchUser()
+user.then(console.log)
+```
+
+---
+
+## 4.2 await
+
+### 4.2.1 기본 사용법
+
+`async` 키워드를 쓴 함수 안에서는 `await`을 사용가능합니다.
+`await`은 그냥 `프로미스.then() 대체품`으로 생각하시면 됩니다. 하지만 **then보다 훨씬 문법이 간단합니다.**
+
+어떤 function 안에서 어려운 연산을 실행한 뒤에 성공/실패를 판정해주는 **Promise를 만들려면**
+
+```javascript
+// **** async / then 사용
+async function 더하기() {
+  let 어려운연산 = new Promise((성공, 실패) => {
+    let 결과 = 1 + 1
+    성공()
+  })
+  어려운연산.then() // (1) 여기 부분이
+}
+더하기()
+
+// ----------------------------------------------
+// **** async / awit 사용
+async function 더하기() {
+  let 어려운연산 = new Promise((성공, 실패) => {
+    let 결과 = 1 + 1
+    성공()
+  })
+  let 결과 = await 어려운연산 // (2) 이렇게 바뀜
+  // 어려운연산 Promise를 기다린 다음에 완료되면 결과를 변수에 담아라
+}
+더하기()
+```
+
+이렇게하시면 됩니다. (혹은 Promise 만들기 귀찮으면 어려운연산을 함수로 만든 후 async를 쓰시면 됩니다)
+
+---
+
+### 4.2.2 예제
+
+```js
+function getBanana() {
+  return new Promise(resolve => {
+    setTimeout(() => resolve('🍌'), 1000)
+  })
+}
+
+function getApple() {
+  return new Promise(resolve => {
+    setTimeout(() => resolve('🍎'), 3000)
+  })
+}
+
+function getOrange() {
+  return Promise.reject(new Error('no orange'))
+}
+
+// **** 바나나과 사과를 같이 가지고 오기
+async function fetchFruits() {
+  const banana = await getBanana() // getBanana() 값을 받아올 떄까지 기다림(await)
+  const apple = await getApple() // getApple() 값을 받아올 떄까지 기다림(await)
+  return [banana, apple]
+}
+
+fetchFruits() //
+  .then(fruits => console.log(fruits)) // 4초 뒤 [ '🍌', '🍎' ] 출력
+```
+
+위 코드의 경우, **getApple 함수와 getBanana 함수의 연관성이 없음**에도,
+**각 1초와 3초씩 총 4초를 기다려야 하는 상황**이 발생합니다. 이는 **비효율적이므로, 코드 개선이 필요**합니다.
+
+```js
+// 원래 코드 -> 각 1초씩 총 2초를 기다려야 함
+async function pickFruits() {
+  const banana = await getBanana()
+  const apple = await getApple()
+  return `${apple} + ${banana}`
+}
+
+// ------------------------------------------------------------------
+// 개선된 코드 -> 병렬적으로 실행되어 1초만 기다리면 됨
+async function fetchFruits() {
+  const bananaPromise = getBanana()
+  const applePromise = getApple()
+  const banana = await bananaPromise
+  const apple = await applePromise
+  return `${apple} + ${banana}`
+}
+```
+
+`applePromise`와 `bananaPromise`는 만들자마자 각자 실행이 되므로, 둘 중 어느 것이 끝날 때까지 기다릴 필요가 없는 것!

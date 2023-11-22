@@ -1,0 +1,733 @@
+---
+title: 'JS-10-함수(Functions)'
+date: 2023/01/03
+---
+
+# 1. 함수
+
+함수는 특정한 일을 수행하는 코드의 집합으로 이렇게 잘 묶어두면 재사용도 가능하고, 가독성도 높고 유지보수성도 높아집니다.
+
+- 함수는 **길고 더러운 코드 한 단어로 축약하고 싶을 때** 쓰는 문법
+- 개발자말로 표현하면 **특정 기능을 다음에도 쓰기 위해 모듈화해놓는 문법**
+
+함수는 특정 박스 안에 주어진 일을 수행하고, 이 안에서 벌어지는 일들은 외부에서 알 수 없습니다.
+그리고 입력을 받으면 출력 값을 리턴합니다.
+
+```js
+function 함수이름(매개변수A, 매개변수B) {
+  return 매개변수A + 매개변수B // 결과값 반환
+}
+
+함수이름(1, 2) // 함수 호출, 인자를 넘겨준다.
+```
+
+- `parameter(매개변수)` : **함수를 정의할 때 사용되는 변수**
+- `Argument(인자)` : **실제로 함수가 호출될 때 넘기는 변수값**
+- cf. [MDN 함수](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Statements/function)
+
+---
+
+## 1.1 함수와 메모리
+
+함수도 결국 객체이기 때문에 함수를 정의하면 Heap이라는 메모리에 저장됩니다.
+
+```js
+// 함수의 이름 add는 함수 오브젝트가 담겨있는 메모리 주소를 가지고 있음
+function add(a, b) {
+  return a + b
+}
+
+// 또 다른 변수에 함수 이름을 할당하면, sum이라는 변수는 동일하게  add가 가리키고 있는 주소를 가리킴
+const sum = add
+
+console.log(sum(1, 2)) // 3
+console.log(add(1, 2)) // 3
+```
+
+---
+
+## 1.2 템플릿 리터럴
+
+```js
+function sum(a, b) {
+  console.log('function')
+  return a + b
+}
+const result = sum(1, 2)
+console.log(result) // 3
+
+// 사용예제 2
+function fullName(firstName, lastName) {
+  return `${firstName} ${lastName} ✋`
+}
+let lastName = '김'
+let firstName = '지수'
+console.log(fullName(firstName, lastName)) // 지수 김 ✋
+
+let lastName2 = '박'
+let firstName2 = '철수'
+console.log(fullName(firstName2, lastName2)) // 철수 박 ✋
+```
+
+---
+
+## 1.3 return문 반환
+
+`return` 문을 명시하지 않으면, 자동으로 `undefined`이 반환됩니다.
+
+```js
+// return문을 명시하지 않으면 자동으로 undefined이 반환됨!
+function add(a, b) {
+  //return a + b;
+  return undefined // return문을 명시하지 않으면 자동 생성됨
+}
+const result = add(1, 2)
+console.log(result) // undefined
+
+// return을 함수 중간에 하게 되면 함수가 종료됨
+// 사용예: 조건이 맞지 않는 경우 함수 도입부분에서 함수를 일찍 종료함!
+function print(num) {
+  if (num < 0) {
+    return
+  }
+  console.log(num)
+}
+print(12) // 12
+print(-12) // undefined
+```
+
+---
+
+## 1.4 함수의 인자
+
+```js
+// 매개변수의 기본값은 무조건 undefined
+// 매개변수의 정보는 함수 내부에서 접근이 가능한 arguments 객체에 저장됨
+// 매개변수 기본값(Default Parameters) : a = 1, b = 1 / 외부에 값이 들어오면 외부값 사용
+function add(a = 1, b = 1) {
+  console.log(a) // 1
+  console.log(b) // 2
+
+  // arguments 변수는 잘 사용하지는 않음
+  console.log(arguments) // 전달된 매개변수들을 '키:값'형태로 출력하는 변수
+  console.log(arguments[1]) // 1번쨰 매개변수 출력
+  return a + b
+}
+add()
+
+// Rest 매개변수(Rest Parameters) : 얼마나 많은 수의 매개변수가 전달될지 모를 떄 사용
+function sum(a, b, ...numbers) {
+  console.log(a) // 1
+  console.log(b) // 2
+  console.log(numbers) // 그 외 나머지 숫자, [3, 4, 5, 6, 7, 8]
+}
+sum(1, 2, 3, 4, 5, 6, 7, 8)
+```
+
+---
+
+## 1.5 함수 표현식
+
+```js
+// (1) 함수 선언문 function name() { }
+// (2) 함수 표현식 const name = function () { }
+// 이는 함수가 객체이기 때문에 가능한 것임!
+let add = function (a, b) {
+  return a + b
+}
+console.log(add(1, 2)) // 3
+
+// (3) 화살표 함수 const name = () => { }
+add = (a, b) => a + b // 값만 리턴하면 중괄호{} 생략 가능
+console.log(add(1, 2))
+
+// (4) 생성자 함수 const object = new Function(); // 뒷장 객체편에서 다룸
+
+// (5) IIFE (Immediately-Invoked Function Expressions, 즉각적으로 호출되는 함수 표현식)
+// 함수를 정의하면서 호출하고 싶을 떄 사용
+// 많이 사용하지는 않음
+;(function run() {
+  console.log('😍')
+})()
+```
+
+---
+
+# 2. 콜백함수
+
+## 2.1 일급 함수
+
+- `일급 객체(first-class object)` : 일반 객체처럼 모든 연산이 가능한 것
+  - 함수의 매개변수로 전달
+  - 함수의 반환값
+  - 할당 명령문
+  - 동일 비교 대상
+- `일급 함수(first-class function)` : 함수가 일반 객체처럼 모든 연산이 가능한 것
+  - 함수의 매개변수로 전달
+  - 함수의 반환값
+  - 할당 명령문
+  - 동일 비교 대상
+
+일급함수의 기능이 모두 가능할 떄, 해당 프로그래밍 언어는 일급 함수를 지원한다고 말합니다. 일급 함수를 지원하는 언어로는 Java 8+, Python, Swift, Kotlin 등이 있습니다.
+
+---
+
+## 2.2 고차함수(=콜백함수)
+
+`고차 함수(Higher-order function)`
+
+- 인자로 함수를 받거나(콜백 함수), 함수를 반환하는 함수를 고차함수라고 부름
+- `하나 이상의 함수를 매개변수로 받거나, 함수를 결과로 반환하는 함수`
+- 매개변수로 전달되는 함수는 콜백 함수(Callback Function)
+- 에러 ↓, 가독성↑
+  - 데이터를 변경 ❌
+  - 변수 사용 ❌
+  - 조건문 ❌
+  - 반복문 ❌
+
+```js
+// 콜백함수(callback) : 나중에(back) 호출되는(call) 함수
+const add = (a, b) => a + b
+const multiply = (a, b) => a * b
+
+// 전달된 action은 콜백함수이다.
+// 전달될 당시에 함수를 바로 호출해서 반환된 값을 전달하는 것이 아니라
+// 함수를 가리키고 있는 함수의 레퍼런스(참조값)가 전달된다.
+// 그래서 함수는 고차함수안에서 필요한 순간에 호출이 나중에 됨
+function calculator(a, b, action) {
+  // action은 콜백함수
+  if (a < 0 || b < 0) {
+    // a 또는 b가 0보다 작다면 undefined 반환
+    return
+  }
+  let result = action(a, b) // add함수가 오면 add, multiply함수가 오면 multiply
+  console.log(result)
+  return result
+}
+
+calculator(1, 1, add) // 3, add함수를 콜백함수로 보냄
+calculator(1, 2, multiply) // 2, multiply함수를 콜백함수로 보냄
+```
+
+---
+
+# 3. 고차함수 종류
+
+## 3.1 forEach() : 순회
+
+- for문을 대체하는 고차 함수.
+- 반복문을 추상화하여 구현된 메서드이고 내부에서 주어진 배열을 순회하면서 연산을 수행
+
+```js
+arr.forEach((item, index, thisArr) => {})
+/*
+ * item : 배열 요소 값
+ * index : 배열 인덱스
+ * thisArr : 참조한 배열
+ * 리턴값 없음
+ */
+```
+
+```js
+const numberArr = [1, 2, 3, 4, 5]
+let total = 0
+
+numberArr.forEach(item => {
+  total += item
+})
+
+console.log(total) // 15
+```
+
+---
+
+## 3.2 map() : 순회하면서 새 배열⭐
+
+- forEach 같이 순회하면서, 콜백함수에서의 실행결과를 리턴한 값으로 이루어진 새로운 배열을 만들어 반환
+
+```js
+arr.map((currentValue, index, array) => {}, thisArg)
+/*
+ * currentValue : 현재 배열 요소 값
+ * index : 배열 인덱스
+ * array : 참조한 배열
+ * thisArr : 콜백함수에서 this로 사용할 값
+ * 리턴값 : 반환 타입은 찾은 요소의 타입 / 없다면 undefined
+ */
+```
+
+```js
+const numberArr = [1, 2, 3, 4, 5]
+
+const numberMapArr = numberArr.map(item => {
+  return item % 2 === 0 ? 'even' : 'odd' // 연산한 결과값을 넣어 배열 반환
+})
+
+console.log(numberMapArr) // ['odd', 'even', 'odd', 'even', 'odd']
+```
+
+```js
+// map 메서드는 콜백 함수를 호출하면서 3개(요소값, 인덱스, this)의 인수를 전달한다.
+;[1, 2, 3].map((item, index, arr) => {
+  console.log(`요소값: ${item}, 인덱스: ${index}, this: ${JSON.stringify(arr)}`)
+  return item
+})
+// 요소값: 1, 인덱스: 0, this: [1,2,3]
+// 요소값: 2, 인덱스: 1, this: [1,2,3]
+// 요소값: 3, 인덱스: 2, this: [1,2,3]
+```
+
+---
+
+## 3.3 find() : true인 값 반환
+
+- `indexOf()` 가 찾고자 하는 값을 인덱스로 주는거고,
+  `include()`가 찾고자 하는 값을 Bool로 주는거면,
+  `find()`는 찾고자 하는 값을 그대로 반환한다
+- 주어진 배열을 순회하면서 콜백 함수 실행의 반환값이 true에 해당하는 첫번째 요소를 반환
+
+```js
+arr.find((element, index, array) => {}, thisArg)
+/*
+ * element : 현재 배열 요소 값
+ * index : 배열 인덱스
+ * array : 참조한 배열
+ * thisArr : 콜백함수에서 this로 사용할 값
+ * 리턴값 : 반환 타입은 찾은 요소의 타입 / 없다면 undefined
+ */
+```
+
+```js
+const numberArr = [1, 3, 3, 5, 7]
+const objectArr = [
+  { name: 'Harry', age: 20 },
+  { name: 'Kim', age: 30 },
+  { name: 'Steve', age: 40 },
+]
+
+// 해당조건에 부합하면 item값 반환
+console.log(objectArr.find(item => item.age === 20))
+// { name: 'Harry', age: 20 }
+
+// find는 하나만 찾음. 뒤에서 배울 filter은 여러개를 배열로
+console.log(numberArr.find(item => item === 3)) // 3
+console.log(numberArr.filter(item => item === 3)) // [3, 3]
+```
+
+---
+
+## 3.4 findIndex() : true인 인덱스 반환
+
+- 배열 메소드 indexOf() 의 콜백함수 버젼.
+- 고차함수 find()의 리턴값이 인덱스인 버젼.
+
+```js
+arr.findIndex((element, index, array) => {}, thisArg)
+/*
+ * element : 현재 배열 요소 값
+ * index : 배열 인덱스
+ * array : 참조한 배열
+ * thisArr : 콜백함수에서 this로 사용할 값
+ * 리턴값 : 요소가 테스트를 통과하면 배열의 인덱스 / 그렇지 않다면 -1
+ */
+```
+
+```js
+const objectArr = [
+  { name: 'Harry', age: 20 },
+  { name: 'Kim', age: 30 },
+  { name: 'Steve', age: 40 },
+]
+
+// 해당조건에 부합하면 item의 인덱스를 반환
+console.log(objectArr.findIndex(item => item.age === 20)) // 0
+console.log(objectArr.findIndex(item => item.name === 'Kim')) // 1
+```
+
+---
+
+## 3.5 filter() : true인 값 새 배열⭐
+
+- 주어진 배열을 순회하면서 콜백 함수의 반환값이 true에 해당하는 요소로만 구성된 새로운 배열을 생성하여 반환.
+- 한마디로 find()의 찾아서 값을 반환하는 기능과 map()의 배열 생성 기능의 융합 버젼.
+
+```js
+arr.filter((element, index, array) => {}, thisArg)
+/*
+ * element : 현재 배열 요소 값
+ * index : 배열 인덱스
+ * array : 참조한 배열
+ * thisArr : 콜백함수에서 this로 사용할 값
+ * 리턴값 : 테스트를 통과한 요소로 이루어진 새로운 배열
+ * - 어떤 요소도 테스트를 통과하지 못했다면 빈 배열 반환
+ */
+```
+
+```js
+const numberArr = [1, 2, 3, 4, 5]
+
+const numberFilterArr = numberArr.filter(item => {
+  return item % 2 === 0 // 해당조건에 부합으면 item을 넣어 배열 반환
+})
+
+console.log(numberFilterArr) // [2, 4]
+```
+
+---
+
+## 3.6 reduce() : 누적값 반환⭐
+
+- 콜백 함수의 실행된 반환값(initialValue)을 전달 받아 연산의 결과값이 반환.
+- 첫번째 인자(accumulator)서부터 시작해서
+
+  - 배열값인 두번째 인자(currentvalue) 을 순회하며 accumulator+=currentvalue 을 실행.
+
+- 사실상 forEach, map, filter기능을 reduce로 모두 구현해서 쓸순 있어 고차함수의 부모라고 불림
+
+```js
+arr.reduce((accumulator, currentValue, index, array) => {}, initialValue)
+/*
+ * accumulator : 누산기, 순회하면서 계속 더해져서 합쳐지는 값
+ * currentValue : 현재 값
+ * index : 배열 인덱스
+ * array : 참조한 배열
+ * initialValue : 콜백 최초 호출에서 acc 누산기에 제공하는 값
+ * - 초기값을 제공하지 않으면 배열의 첫 번쟤 요소를 사용
+ * - 빈 배열에서 초기값없이 호출하면 에러
+ * 리턴값 : 누적 계산의 결과값
+ */
+```
+
+> reduce()함수 호출시 initialValue 값이 `없는 경우`
+>
+> - accumulator : 배열의 첫번째 값
+> - currentValue : 배열의 두번째 값
+>
+> reduce()함수 호출시 initialValue 값이 `있는 경우`
+>
+> - accumulator : initialValue가 지정한 값
+> - currentValue : 배열의 첫번째 값
+
+```js
+const numberArr = [1, 2, 3, 4, 5]
+
+const sum = numberArr.reduce((previousValue, currentValue, currentIndex, thisArray) => {
+  console.log(
+    'Current Index: ' + currentIndex + ' / Previous Value: ' + previousValue + ' / Current Value: ' + currentValue,
+  )
+
+  // 연산한 결과값을 누산기previousValue에 넣어 최종값을 얻는다.
+  return previousValue + currentValue
+}, 0)
+
+console.log('Sum: ' + sum)
+// Current Index: 0 / Previous Value: 0 / Current Value: 1
+// Current Index: 1 / Previous Value: 1 / Current Value: 2
+// Current Index: 2 / Previous Value: 3 / Current Value: 3
+// Current Index: 3 / Previous Value: 6 / Current Value: 4
+// Current Index: 4 / Previous Value: 10 / Current Value: 5
+// Sum: 15
+```
+
+---
+
+## 3.7 sort() : 배열 정렬⭐
+
+- 배열 정렬.
+- 단, 복사본이 만들어지는게 아니라 원 배열이 정렬됨.
+- `요소를 문자열로 변환 한 후, UTF-16 코드 단위 값`으로 비교
+- 콜백 함수를 통해 배열의 원소들을 어느 기준으로 정렬할지 지정해야함 (번거로움)
+
+```js
+arr.sort(function (a, b) {}, thisArg)
+/*
+ * compareFunction : 정렬 순서를 정의하는 함수
+ * (이 값이 생략되면, 배열의 element들을 문자열로 취급되어, 유니코드 값 순서대로 정렬)
+ * (이 값을 사용하면, 반환 값에 따라 정렬된다.)
+ * 리턴 값: sorting된 값
+ */
+```
+
+```js
+let arr = ['red', 'blue', 'green', 'white', 'black']
+console.log(arr.sort()) // [ 'black', 'blue', 'green', 'red', 'white' ]
+```
+
+문자를 정렬할 때는 문제없지만, `숫자를 정렬하는 경우에도 ABC 순으로 정렬`이 되기 때문에 콜백함수를 넣어 조작이 필요하다. 콜백함수에서 인자 두개를 받아, 두 수의 차가 양수값(큰값)이냐 음수값(작은값)이냐를 이용하여 정렬한다.
+
+```js
+const arr = [1, 2, 3, 10, 50, 70, 8, 4]
+arr.sort() // [ 1, 10, 2, 3, 4, 50, 70, 8 ]
+
+arr.sort(function (a, b) {
+  console.log(a, b)
+})
+/*
+10 1
+2 10
+3 2
+4 3
+50 4
+70 50
+8 70
+*/
+
+const arr2 = [1, 2, 3, 10, 50, 70, 8, 4]
+arr2.sort(function (a, b) {
+  if (a > b) return 1
+  if (a === b) return 0
+  if (a < b) return -1
+}) // [ 1, 2, 3, 4, 8, 10, 50, 70 ]
+```
+
+---
+
+### 3.7.1 숫자 정렬
+
+```js
+const arr = [2, 1, 3, 10]
+
+arr.sort(function (a, b) {
+  console.log(a, b)
+  return 1 // 1(양수)은 그대로 출력, -1(음수)은 역순으로 출력
+})
+
+// a는 2번쨰꺼, b는 비교하고 있는 대상
+arr.sort(function (a, b) {
+  console.log(a, b)
+})
+/*
+1 2  = -1 | 1
+3 1  = 2  | 2
+10 3 = 7  | -7
+*/
+
+// sort() : 음수면 자리가 바뀌고, 양수면 그대로
+// 숫자가 작으면 앞으로, 크면 뒤로
+arr.sort(function (a, b) {
+  return a - b
+}) // [1, 2, 3, 10] 오름차순
+
+arr.sort(function (a, b) {
+  return b - a
+}) // [10, 3, 2, 1] 내립차순
+```
+
+---
+
+### 3.7.2 문자 정렬
+
+```js
+const arr = ['banana', 'b', 'boy']
+
+arr.sort() // ['b', 'banana', 'boy']
+
+arr.sort(function (a, b) {
+  if (a < b) return 1
+  if (a > b) return -1
+  if (a === b) return 0
+}) // ['boy', 'banana', 'b'] 내림차순
+```
+
+---
+
+### 3.7.3 문자(대소문자 구분없이) 정렬
+
+```js
+const arr = ['banana', 'b', 'Boy']
+
+arr.sort() // ['Boy','b','banana']
+// sort() 함수로 문자열을 정렬하면, 대문자가 소문자보다 앞에 오도록 정렬이 됩니다.
+// 유니코드가 대문자가 소문자보다 앞서기 때문입니다.
+
+arr.sort(function (a, b) {
+  const upperCaseA = a.toUpperCase()
+  const upperCaseB = b.toUpperCase()
+
+  if (upperCaseA > upperCaseB) return 1
+  if (upperCaseA < upperCaseB) return -1
+  if (upperCaseA === upperCaseB) return 0
+}) // ['b', 'banana', 'Boy'] 오름차순
+
+arr.sort(function (a, b) {
+  const upperCaseA = a.toUpperCase()
+  const upperCaseB = b.toUpperCase()
+
+  if (upperCaseA < upperCaseB) return 1
+  if (upperCaseA > upperCaseB) return -1
+  if (upperCaseA === upperCaseB) return 0
+}) // ['Boy', 'banana', 'b'] 내림차순
+```
+
+### 3.7.4 객체 정렬
+
+```js
+const arr = [
+  { name: 'banana', price: 3000 },
+  { name: 'apple', price: 1000 },
+  { name: 'orange', price: 500 },
+]
+
+arr.sort(function (a, b) {
+  return a.price - b.price // price 숫자값을 기준으로 정렬
+})
+/*
+{"name":"orange","price":500}
+{"name":"apple","price":1000}
+{"name":"banana","price":3000}
+*/
+```
+
+---
+
+## 3.8 some() : 일부만 맞으면 true
+
+- 배열 메소드인 include()의 콜백함수 버전.
+- include는 값이 있냐에 따른 bool이면, some은 함수의 로직에 따른 bool.
+- 배열의 요소들을 주어진 함수(조건)을 통과하는데 한개라도 통과되면 true, 아닐때에는 false를 출력.
+- 빈 배열로 함수(조건)을 통과하면 무조건 false를 출력.
+- 이와같이 some이라는 이름은, 함수(조건)에 부합한 갯수가 some이면 true라는 뜻에서 비롯됨.
+
+```js
+arr.some((currentValue, index, array) => {}, thisArg)
+/*
+ * currentValue : 배열 요소 값
+ * index : 배열 인덱스
+ * array : 참조한 배열
+ * thisArr : 콜백함수에서 this로 사용할 값
+ * 리턴값 : callback이 어떤 배열 요소라도 대해 참인 값을 반환하는 경우 true, 그 외엔 false
+ */
+```
+
+```js
+const array = [1, 3, 5]
+
+// 짝수인지 체크
+const result = array.some(currentValue => {
+  return currentValue % 2 === 0
+})
+
+console.log(result) // 리턴 값 : false
+// 그 이유는 array의 3개의 요소 모두 2로 나눌때 나머지가 0이 아니기 때문이다.
+// 하나라도 부합한 조건에 맞으면 true, 모두 부합하지 않으면 false
+
+// -----------------------------------------------
+const array2 = [1, 2, 3, 5]
+
+const result2 = array2.some(currentValue => {
+  return currentValue % 2 === 0
+})
+console.log(result2) // 리턴 값 : true
+// 그 이유는 array의 4개의 요소 모두 2로 나눌때 나머지가 0인 요소가 하나라도 있기 때문이다.
+// 하나라도 부합한 조건에 맞으면 true, 모두 부합하지 않으면 false
+```
+
+---
+
+## 3.9 every() : 전부 맞아야 true
+
+- some() 의 반대 버전
+- 배열안의 모든 요소가 주어진 함수(조건)을 모두 통과하면 true, 한 요소라도 통과하지 못하면 false를 출력.
+- 빈 배열을 함수에 적용시키면 무조건 true를 반환.
+- 이와같이 every이라는 이름은, 함수(조건)에 부합한 갯수가 every이면 true라는 뜻에서 비롯됨.
+
+```js
+arr.every((currentValue, index, array) => {}, thisArg)
+/*
+ * currentValue : 배열 요소 값
+ * index : 배열 인덱스
+ * array : 참조한 배열
+ * thisArr : 콜백함수에서 this로 사용할 값
+ * 리턴값 : callback이 어떤 배열 요소라도 대해 참인 값을 반환하는 경우 true, 그 외엔 false
+ */
+```
+
+```js
+const array = [1, 30, 39, 29, 13]
+
+const result = array.every(currentValue => {
+  return currentValue < 40
+})
+
+console.log(result) // 리턴 값 : true
+// 그 이유는 array의 모든 요소가 40보다 작기 때문이다.
+// 하나라도 부합한 조건에 맞지 안으면 false, 모두 부합하면 true
+
+// -----------------------------------------------
+const array2 = [1, 30, 39, 29, 100, 13]
+
+const result2 = array2.every(currentValue => {
+  return currentValue < 40
+})
+console.log(result2) // 리턴 값 : false
+// 그 이유는 array의 1개의 요소 100이 40보다 크기 때문이다.
+// 하나라도 부합한 조건에 맞지 안으면 false, 모두 부합하면 true
+```
+
+---
+
+## 3.10 flatMap() : flat() + map()
+
+- 배열을 평탄화하는 `flat()의 기능`에 배열의 각 요소에 접근하여 사용자 정의 로직을 수행할 수 있는 `map()의 기능`을 합친 함수
+- flat()과 달리 `깊이를 최대 1만큼만 평탄`하게 만들 수 있음
+- `여러 깊이까지 가려면 flat()를 사용`합니다.
+
+```js
+const children = [[1], [2], [3], [4]]
+
+console.log(children.map(x => x * 2).flat()) // [ 2, 4, 6, 8 ]
+// 위 float과 map 문장을 floatMap을 이용해 만들 수 있다.
+console.log(children.flatMap(x => [x * 2])) // [ 2, 4, 6, 8 ]
+```
+
+---
+
+## 3.11 from() : ~에서 ⭐
+
+문자열 등 유사 배열(Array-like) 객체나 이터러블한 객체를 배열로 만들어주는 메서드
+
+> ‘유사 배열 객체’란, 키가 인덱스 값으로 되어있고 길이를 나타내는 length 속성을 갖는 객체를 의미
+
+```js
+// 1. 문자열을 배열로 만드는 예시
+console.log(Array.from('Hello'))
+// [ 'H', 'e', 'l', 'l', 'o' ]
+
+// 2. 유사 배열 객체를 배열로 만드는 예시
+console.log(Array.from({ 0: '찬민', 1: '희진', 2: '태인', length: 3 }))
+// [ '찬민', '희진', '태인' ]
+
+// 3. 함수의 매개변수들을 순서대로 배열로 만드는 예시
+const funcA = (...arguments) => {
+  return Array.from(arguments)
+}
+console.log(funcA(1, 2, 3, 4, 5))
+// [ 1, 2, 3, 4, 5 ]
+```
+
+`Array.from()`
+
+- 첫 번째 인자는 배열로 만들 이터러블한 객체가 되며,
+- 두 번째 인자는 생성한 배열의 모든 원소에 대해 수행할 맵핑 함수입니다. (`Array.map()` 이라고 생각하시면 됩니다.)
+
+한번 `Array.from()`과 반복문을 활용해 1부터 31까지의 수를 원소로 갖는 배열을 생성해 보겠습니다.
+
+```js
+// 맵핑 함수의 첫 번째 인자 언더스코어(_) 는 특별한 인자가 아니라,
+// 불필요한 인자의 공간을 채우기 위한 용도입니다.
+const arr = Array.from(Array(31), (_, index) => index + 1)
+
+console.log(arr)
+```
+
+만약 `Array.from()`을 사용하지 않는다면 아래처럼 고전적인 반복문을 사용해야 합니다.
+
+```js
+const arr = []
+
+for (let i = 1; i <= 31; i++) {
+  arr.push(i)
+}
+
+console.log(arr)
+```

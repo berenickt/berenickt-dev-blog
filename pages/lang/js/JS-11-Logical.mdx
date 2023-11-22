@@ -1,0 +1,320 @@
+---
+title: 'JS-11-단축평가 & 옵셔널 체이닝 & null 병합 연산자'
+date: 2023/01/04
+---
+
+# 1. 단축평가
+
+## 1.1 논리 연산자를 사용한 단축평가
+
+논리합(`||`) 또는 논리곱 (`&&`) 연산자 표현식은 언제나 2개의 피연산자 중 어느 한쪽으로 평가됩니다.
+
+---
+
+### 1.1.1 논리곱( && ) 연산자
+
+```js
+'Cat' && 'Dog' // "Dog"
+```
+
+논리곱(`&&`) 연산자는 **두 개의 피연산자가 모두 true로 평가될 때 true**를 반환하며, **좌항에서 우항으로 평가가 진행**됩니다.
+첫 번째 피연산자 'Cat'은 Truthy 값이므로 true로 평가됩니다. 하지만 위 표현식은 이 시점에서 평가할 수 없습니다.
+두 번째 피연산자까지 평가해야합니다.
+즉, 두 번째 피연산자가 논리곱 연산자 표현식의 평가 결과를 결정하며, 두 번째 피연산자 'Dog'를 그대로 반환합니다
+
+---
+
+### 1.1.2 논리합( || ) 연산자
+
+```js
+'Cat' || 'Dog' // "Cat"
+```
+
+논리합(`||`) 연산자는 **두 개의 피연산자 중 하나만 true로 평가되어도 true**를 반환하며, **좌항에서 우항으로 평가가 진행**됩니다.
+첫 번째 피연산자 'Cat'은 Truthy 값이므로 true로 평가됩니다.
+이 시점에 두 번째 피연산자까지 평가하지 않아도 표현식을 평가할 수 있습니다.
+논리합 연산자는 논리 연산의 결과를 결정한 첫 번째 피연산자, 문자열 'Cat'을 그대로 반환합니다.
+
+---
+
+## 1.2 단축 평가란?
+
+&& 연산자와 || 연산자는 **논리 연산의 결과를 결정하는 피연산자를 타입 변환하지 않고 그대로 반환**하는데, 이를 `단축 평가`라고 합니다.
+단축 평가는 <u>표현식을 평가하는 도중에 평가 결과가 확정된 경우 나머지 평가 과정을 생략하는 것</u>을 말합니다.
+
+단축 평가는 다음의 규칙을 따릅니다.
+
+```js
+true || anything // true
+false || anything // anything
+true && anything // anything
+false && anything // false
+```
+
+---
+
+# 2. undefined, null 체크
+
+- `undefined` : 값이 있는지 없는지 모름
+- `null` : 값이 없음
+
+---
+
+## 2.1 일반적인 undefined 체크
+
+특정 값이 undefined 인지를 체크하기 위해서는
+
+```js
+var a
+console.log(typeof a == 'undefined') // true
+console.log(a == undefined) // true
+```
+
+---
+
+## 2.2 일반적인 null 체크
+
+null 인지를 체크하기 위해서는
+
+```js
+var b = null
+console.log(b == null) // true
+```
+
+위와 같이 정확하게 값을 체크하는데 사용될 수 있다.
+
+---
+
+## 2.3 간단하게 undefined, null 체크
+
+하지만, undefined와 null은 논리연산에서는 false로 처리되므로 아래처럼 간단하게 체크하면 되겠다.
+
+```js
+var a
+console.log(a) // undefined
+console.log(!a) // true
+// if (a) {}
+// if (!a) {}
+
+var b = null
+console.log(b) // null
+console.log(!b) // true
+// if (b) {}
+// if (!b) {}
+```
+
+undefined와 null을 철저히 체크하는 경우가 아니라면, `if (!a) {}`처럼 간단히 사용하면 되겠다.
+
+```js
+if (a != undefined && a != null) {
+}
+if (a != undefined && !a) {
+}
+```
+
+위 두가지 모두 `if (!a) {}` 와 동일하다.
+
+---
+
+# 3. undefined, null 체크 예시
+
+## 예시 1 : if문 파라미터의 값이 비어있는지
+
+```js
+let nIntervId
+
+function changeColor() {
+  // check if an interval has already been set up
+  // nIntervId이 null이거나 undfined 이라면, (=값이 없다면)
+  if (!nIntervId) {
+    nIntervId = setInterval(flashText, 1000)
+  }
+}
+```
+
+---
+
+## 예시 2 : 배열 길이가 0인지 판단
+
+```js
+if ( array.length === 0 ) // 💩 Bad
+if ( !array.length ) // array.length 값이 없다면, 👍 Good
+```
+
+---
+
+## 예시 3 : 배열 길이가 0보다 큰지 판단
+
+```js
+if ( array.length > 0 ) // 💩 Bad
+if ( array.length ) // 👍 Good
+```
+
+array.length > 0이 로직은 `array.length`의 특성상 음수값은 존재하지 않고 양수값만 존재하게된다.
+그러므로 0이냐 0이 아니냐로 판단이 가능하다.
+
+---
+
+## 예시 4: 문자열이 비어있는지 판단
+
+```js
+if ( string === "" ) // 💩 Bad
+if ( !string ) // 👍 Good
+```
+
+빈문자열은 조건문안에서 false이다.
+빈문자열임을 확인하고 싶으면 부정(!)을 더해서 false -> true로 만들어주면 된다.
+
+---
+
+## 예시 5 : 문자열이 값이 있는지 판단
+
+```js
+if ( string !== "" ) // 💩 Bad
+if ( string ) // 👍 Good
+```
+
+빈문자열은 조건문안에서 false이다.
+그러므로 빈문자열이 아닐때를 판별할때는 빈문자열이 들어올 변수를 조건문안에 넣어주기만 하면된다.
+
+---
+
+## 예시 6 : 삼항 조건 연산자
+
+```js
+let done = true
+let message = ''
+
+//if...else문
+if (done) message = '완료'
+else message = '미완료'
+console.log(message) //완료
+
+message = done ? '완료' : '미완료'
+console.log(message) //완료
+```
+
+---
+
+# 4. 옵셔널 체이닝 ?.
+
+- 좌항의 피연산자가 `null` 또는 `undefined`인 경우 `undefined`를 반환하고,
+- 그렇지 않으면 우항의 프로퍼티 참조를 이어갑니다.
+- ES11에서 도입(ECMAScript 2020)
+- cf. [MDN 옵셔널 체이닝](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
+
+```js
+let elem = null
+
+// elem이 null또는 undefined이면 undefined 반환, 그렇지 않으면 우항의 프로퍼티 참조를 이어감
+let value = elem?.value
+console.log(value) // undefined
+```
+
+`?.`는 객체를 가리키기를 기대하는 변수가 `null`또는 `undefined`가 아닌지 확인하고 프로퍼티를 참조할 때 유용합니다.
+`?.`가 도입되기 전에는 논리 연산자 `&&`를 사용한 단축 평가를 통해 변수가 `null` 또는 `undefined`인지 확인했습니다.
+
+```js
+let elem = null
+
+// elem이 Falsy 값이면 elem으로 평가, elem이 Truthy 값이면 elem.value로 평가
+let value = elem && elem.value
+console.log(value) // null
+```
+
+논리 연산자 `&&`는
+
+- 좌항 피연산자가 false로 평가되는 `Falsy 값(false, undefined, null, 0, -0, NaN, '')`이면
+- 좌항 피연산자를 그대로 반환합니다.
+
+```js
+let str = ''
+
+let length = str && str.length
+
+// 문자열의 길이를 참조하지 못함
+console.log(length) // ''
+```
+
+하지만 옵셔널 체이닝 연산자`?.`는
+
+- 좌항 피연산자가 false로 평가되는 Falsy 값이라도 `null`또는 `undefined`가 아니면
+- 우항의 프로퍼티 참조를 이어갑니다.
+
+```js
+let str = ''
+
+let length = str?.length
+console.log(length) // 0
+```
+
+---
+
+## 4.1 예제
+
+```js
+// 옵셔널 체이닝 연산자 (Optional Chaining Operator)
+// null 또는 undefined을 확인할때
+let item = { price: 1 }
+// const price = item && item.price;를 옵셔널 체이닝 연산자로 표현
+const price = item?.price
+console.log(price) // 1
+
+let obj = { name: '🐶', owner: { name: '메시' } }
+function printName(obj) {
+  // 📝 obj 오브젝트가 있다면, owner가 있다면, name이 있다면
+  // owner가 없다면 undefined, name이 없다면 undefined
+  const ownerName = obj?.owner?.name
+  console.log(ownerName) // 메시
+}
+printName(obj)
+```
+
+---
+
+# 5. null 체크하는 깔끔한 법⭐
+
+## 3.1 null 병합 연산자 ??
+
+ES11에서 도입된 `??`는 좌항의 피연산자가 `null` 또는 `undefined`인 경우 우항의 피연산자를 반환하고,
+그렇지 않으면 좌항의 피연산자를 반환합니다.
+
+cf. [MDN null 병합연산자(Nullish Coalescing Operator)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator)
+
+```js
+let foo = null ?? 'default string'
+console.log(foo) // "default string"
+```
+
+`??`는 변수에 기본값을 설정할 때 유용합니다.
+`??`가 도입되기 전에는 논리 연산자 `||`를 사용한 단축 평가를 통해 변수에 기본값을 설정했습니다.
+
+논리 연산자 `||`를 사용한 단축 평가의 경우 좌항의 피연산자가 false로 평가되는 Falsy 값이면 우항의 피연산자를 반환합니다.
+만약 Falsy 값인 `0`이나 `''`도 기본값으로 유효하다면 예기치않은 동작이 발생할 수 있습니다.
+
+```js
+let foo = '' || 'default string'
+console.log(foo) // "default string"
+```
+
+하지만 `??`는 좌항의 연산자가 false로 평가되는 Falsy 값이라도 `null` 또는 `undefined`가 아니면,
+좌항의 피연산자를 그대로 반환합니다.
+
+```js
+let foo = '' ?? 'default string'
+console.log(foo) // ""
+```
+
+---
+
+## 3.2 예제
+
+```javascript
+// 📝 ?? 연산자 : null, undefined에만
+// 📝 || : falshy한 경우 설정(할당) 0, -0, ''
+let num = 0
+
+// num의 값이 없을 때만, -1을 출력하고 싶을 떄
+console.log(num || '-1') // 0은 falshy에 해당되어 -1이 출력
+console.log(num ?? '-1') // 0
+```

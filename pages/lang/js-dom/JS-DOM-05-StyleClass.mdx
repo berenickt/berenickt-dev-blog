@@ -1,0 +1,155 @@
+---
+title: 'JS-DOM-05-DOM Node CSS style, class 제어'
+date: 2023/01/29
+---
+
+# 1. 스타일 조작
+
+선택된 노드의 타입이 요소 노드라면 style 속성으로 요소에 스타일(CSS)을 지정할 수 있습니다.
+
+- `노드.style.css속성명 = 속성값;`
+- 주의할 점은 CSS 속성 중의 `대시(-)가 들어있는 속성은 카멜표기법으로` 작성
+  - 자바스크립트에서 -를 뺄셈 연산자(-)로 인식해서
+  - 속성명에 대시(-)가 있는 속성은 **backgroundColor처럼 카멜 표기법으로 변경해서 작성**
+
+```html
+<div id="box">BOX</div>
+<script>
+  const box = document.getElementById('box')
+
+  box.style.backgroundColor = 'red'
+  box.style.color = '#fff'
+  box.style.width = '100px'
+  box.style.border = '10px solid #000'
+
+  //css 속성 그대로 적어주고 싶다면
+  box.style['margin-left'] = '30px'
+</script>
+```
+
+---
+
+# 2. 클래스 속성 조작
+
+style 속성으로 스타일을 조작하면 속성을 하나씩 적어야 해서 불편합니다.
+이때 지정해야 하는 스타일이 명확하다면 자바스크립트로 속성을 하나씩 지정하지 않고,
+p 태그에 class 속성을 추가하고 클래스 선택자로 지정하는 편이 훨씬 더 깔끔합니다.
+
+선택한 요소 노드에 class 속성을 지정할 때는 classList 속성의 add(), remove(), toggle() 메서드를 사용합니다.
+
+- `노드.classList.add("class 속성값")` : 추가
+- `노드.classList.remove("class 속성값")` : 삭제
+- `노드.classList.replace("class 속성값1", "class 속성값2")` : 속성값1을 속성값2로 수정
+- `노드.classList.toggle("class 속성값")` : 추가와 삭제 반복
+
+```html
+<div id="box" class="box bg-red">BOX</div>
+<script>
+  box.classList
+  // 하면 해당 클래스 관련 배열처럼 보이는 데이터 묶음과 사용할 수 있는 메소드들을 제공
+
+  box.classList.add('txt-white') // 클래스 추가
+  box.classList.remove('txt-white') // 클래스 제거
+  box.classList.add('bg-green', 'txt-yellow') // 클래스 여러개는 쉼표로 구분해서 추가
+  box.classList.replace('bg-red', 'bg-blue') // 첫번째 클래스 네임을 두번째 클래스 네임으로 수정
+
+  // 1초에 한번씩 클래스를 넣었다 뺐다 해준다.
+  setInterval(() => {
+    box.classList.toggle('bg-red')
+  }, 1000)
+</script>
+```
+
+클릭으로 발생한 이벤트의 `target` 에 클래스를 넣거나 빼주는 예제
+
+```html
+<ul id="color">
+  <li>Red</li>
+</ul>
+<script>
+  const color = document.getElementById('color')
+
+  color.onclick = function (e) {
+    const target = e.target // 클릭해서 발생한 이벤트의 target
+    if (target.tagName !== 'LI') return
+    target.classList.toggle('txt-pink')
+    // 그 타겟에 해당 클래스가 없으면 넣어주고 있으면 빼주는
+  }
+</script>
+```
+
+---
+
+# 3. 데이터 속성 조작
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>dataset 속성</title>
+  </head>
+  <body>
+    <button data-cnt="10">가방 구매</button>
+    <button data-cnt="0">신발 구매</button>
+    <script>
+      const buttonEls = document.querySelectorAll('button')
+      buttonEls.forEach(el => {
+        console.log(el.dataset) // DOMStringMap { cnt → "10" }, DOMStringMap { cnt → "0" }
+
+        //  📝 data-cnt 속성의 값만 가져오고 싶으면
+        //  console.log(el.dataset.cnt); // 10 0
+
+        // 📝 ata-cnt 속성의 값 변경
+        // el.dataset.cnt = 50;
+      })
+    </script>
+  </body>
+</html>
+```
+
+---
+
+# 4. 메서드로 속성 조작
+
+|                메서드 형식                 |      설명       |
+| :----------------------------------------: | :-------------: |
+|      `<노드>.getAttribute("속성명");`      | 속성값을 가져옴 |
+| `<노드>.setAttribute("속성명", "속성값");` |  속성값을 설정  |
+|    `<노드>.removeAttribute("속성명");`     |   속성을 삭제   |
+
+> 💡 classList 속성과 setAttribute() 메서드
+>
+> classList 속성으로 class 속성값을 추가하거나 삭제하면 기존 요소가 가지고 있던 class 속성값을 보존하면서 추가하거나 삭제한다는 특징이 있습니다. 그래서 다음 코드처럼 a 태그에 class 속성이 이미 있었다면 여기에 단순히 추가되는 형태로 코드가 작동합니다.
+>
+> ```html
+> <a href="#" class="fz20">link</a>
+> <script>
+>   const aEl = document.querySelector('a')
+>   // a 태그의 기존 class 속성값을 보존하면서 red-color 값 추가
+>   aEl.classList.add('red-color')
+> </script>
+>
+> <!-- 실행결과
+> <a href="#" class="fz20 red-color">link</a>
+> -->
+> ```
+>
+> 하지만 setAttribute() 메서드는 아예 속성값을 새로 설정하는 것이어서 기존 class 속성값을 보존하지 않습니다.
+>
+> ```html
+> <a href="#" class="fz20">link</a>
+> <script>
+>   const aEl = document.querySelector('a')
+>   // a 태그의 기존 class 속성값을 보존하지 않고 red-color 값 설정
+>   aEl.setAttribute('red-color')
+> </script>
+>
+> <!-- 실행결과
+> <a href="#" class="red-color">link</a>
+> -->
+> ```
+>
+> 이는 classList 속성의 remove() 메서드와 removeAttribute() 메서드에서도 똑같습니다. remove() 메서드는 기존 속성을 보존하면서 매개변수로 전달된 속성만 삭제하지만, removeAttribute() 메서드는 속성 자체를 삭제합니다.

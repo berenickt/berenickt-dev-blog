@@ -1,0 +1,511 @@
+---
+title: 'JS-04-데이터 타입(Data Types) - Object(객체)'
+date: 2023/01/01
+---
+
+# 1. 객체 타입(object)
+
+![js-3-1](https://raw.githubusercontent.com/berenickt/image-server/main/img/js-3-1.png)
+
+객체는 `여러 개의 데이터 타입을 함께 묶어 놓은 것`을 말하며 `키:값` 형태로 나타냅니다.
+
+![js-2-2](https://raw.githubusercontent.com/berenickt/image-server/main/img/js-2-2.png)
+
+- `원시 타입`은 어디에 선언되어 있느냐에 따라서 Data 영역 또는 Stack영역에 들어가고,
+  - **전역에 선언되어 있다면 Data**, **로컬에 선언되어 있다면 Stack**에 저장
+- `객체 타입`은 Heap 영역에 들어갑니다.
+  - 데이터 사이즈가 정해져 있지 않고 **동적으로 사이즈가 줄었다 늘었다 하는 것들(객체)이 Heap**에 저장
+
+> 어플리케이션이 메모리에 올라왔을 때, Code, Data, Stack, Heap의 4개의 구조로 구성
+>
+> - `Code` : 개발자들이 작성하는 **코드를 저장하는 공간**
+> - `Data` : 어플리케이션이 전반적인 필요로 하는 **변수, 데이터 등을 저장하는 공간**
+> - `Stack` : 어플리케이션이 함수를 호출하는 **실행 순서를 저장하는 공간**
+> - `Heap` : 어플리케이션에서 단순한 데이터가 아니라 **여러 개의 데이터타입을 묶은 복잡한 데이터(객체)를 저장하는 공간**
+
+```js
+let name = 'apple'
+let color = 'red'
+let display = '🍎'
+let orangeName = 'orange'
+
+let apple = {
+  name: 'apple',
+  color: 'red',
+  display: '🍎',
+}
+console.log(apple) // { name: 'apple', color: 'red', display: '🍎' }
+console.log(apple.name) // apple
+console.log(apple.color) // red
+console.log(apple.display) // 🍎
+```
+
+객체 타입의 내용은 Heap 영역에 저장되고 `apple` 변수는 객체의 주소를 가집니다.
+그래서 `apple.name`이라고 적으면, `apple`이 가리키고 있는 메모리 주소를 찾아가 해당 주소의 `name`을 출력합니다.
+
+---
+
+# 2. 값과 참조의 차이
+
+- `원시 타입`은 변수가 **메모리 값 자체**를 가리키고 있지만,
+- `객체 타입`은 **메모리 주소**(=참조 값)을 가리키고 있습니다.
+
+---
+
+## 2.1 Copy by Value
+
+- `Copy by Value` = 변수에 들어있는 메모리 값 자체를 복사하는 것
+- 원시타입
+
+```js
+// 원시타입은 값이 복사되어 전달됨
+let a = 1
+let b = a // 1
+b = 2
+console.log(a) // 1
+console.log(b) // 2
+```
+
+---
+
+## 2.2 Copy by Reference
+
+- `Copy by Reference` = 변수에 들어있는 메모리 주소를 복사하는 것
+- 객체 타입
+
+```js
+// 객체타입은 참조값(메모리주소, 레퍼런스)가 복사되어 전달됨
+let apple = {
+  // 0x1234
+  name: '사과',
+}
+let orange = apple // 0x1234
+orange.name = '오렌지'
+console.log(apple) // { name: '오렌지' }
+console.log(orange) // { name: '오렌지' }
+```
+
+---
+
+# 3. 객체란?
+
+객체 = 복합 데이터로 여러가지 데이터 타입이 들어있음, ‘키:값’형태
+
+- 객체 안에서 상태를 가지고 있는 데이터를 `속성(Property)`라고 하고,
+- 함수는 `메서드(Method)`라고 부릅니다.
+- cf. [MDN 객체](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Object)
+
+---
+
+## 3.1 객체 리터럴
+
+```js
+let apple = {
+  name: 'apple',
+  'hello-bye': '✋',
+  0: 1,
+  ['hello-bye1']: '✋',
+}
+
+// 속성, 데이터에 접근하기 위해서는
+apple.name // 마침표 표기법(dot notation)
+console.log(apple['hello-bye1']) // 대괄호 표기법 bracket notation
+apple['name']
+
+// 속성 추가
+apple.emoji = '🍎'
+console.log(apple.emoji)
+console.log(apple['emoji'])
+
+// 속성 삭제(delete)
+delete apple.emoji
+console.log(apple)
+```
+
+---
+
+## 3.2 객체에 동적으로 접근
+
+- [MDN 객체로 작업하기](https://developer.mozilla.org/ko/docs/Web/JavaScript/Guide/Working_with_Objects)
+
+```js
+const obj = {
+  name: '메시',
+  age: 20,
+}
+// 코딩하는 시점에, 정적으로 접근이 확정됨
+obj.name
+obj.age
+
+// 동적으로 속성에 접근하고 싶을때 대괄호 표기법 사용!
+function getValue(obj, key) {
+  return obj[key] // obj의 key 값 반환
+}
+console.log(getValue(obj, 'name')) // 메시
+
+// 새로운 '키:값' 추가
+function addKey(obj, key, value) {
+  obj[key] = value
+}
+addKey(obj, 'job', 'engineer')
+console.log(obj) // { name: '메시', age: 20, job: 'engineer' }
+
+// 키 삭제
+function deleteKey(obj, key) {
+  delete object[key]
+}
+```
+
+---
+
+## 3.3 key와 value 값 이름 똑같으면 축약 가능
+
+```js
+const x = 0
+const y = 0
+
+// 키와 값의 이름이 똑같다면 생략 가능
+const coordinate = { x, y } // { x: x, y: y };
+console.log(coordinate)
+
+// { name: name, age: age } 축약 버전
+function makeObj(name, age) {
+  return {
+    name,
+    age,
+  }
+}
+```
+
+---
+
+# 4. JS 객체 종류
+
+- `표준 빌트인 객체 (standard built-in objects/native objects/global object), 내장객체 `
+  - 표준 빌트인 객체는 ECMAScript 사양에 정의된 객체
+  - 애플리케이션 전역의 공통 기능을 제공
+  - 표준 빌트인 객체는 실행환경에 상관없이 사용할 수 있으며 **전역 객체의 프로퍼티**로서 제공
+    - 따라서 별도 선언없이 전역 변수처럼 언제나 참조할 수 있습니다.
+- `호스트 객체 (host objects)`
+  - 호스트 객체는 ECMAScript 사양에 정의되어 있지 않지만 실행환경에서 추가로 제공하는 객체
+  - 브라우저 환경에서는 DOM, BOM, Canvas, XMLHttpRequest, fetch, requestAnimationFrame, SVG, Web Storage, Web Component, Web Worker와 같은 클라이언트 사이트 Web API를 호스트 객체로 제공
+  - Node.js환경에서는 Node.js 고유 API를 호스트 객체로 제공
+- `사용자 정의 객체(user-defined objects)`
+  - 사용자 정의 객체는 사용자가 직접 정의한 객체를 말합니다.
+
+---
+
+# 5. 빌트인 객체
+
+## 5.1 래퍼 객체
+
+### 5.1.1 toString()
+
+```javascript
+// 래퍼 객체 (Wrapper Object)
+// 원시값을 필요에 따라서 관련된 빌트인 객체로 변환한다.
+const number = 123 // number 원시 타입
+
+// number 원시타입을 감싸고 있는 Number 객체로 감싸짐
+console.log(number.toString()) // 숫자를 문자열로 변환
+console.log(number) // number 원시 타입
+
+const text = 'text' // string 문자열 원시타입
+console.log(text)
+text.length // string 원시타입을 감싸고 있는 String 객체
+text.trim()
+```
+
+---
+
+## 5.2 글로벌 객체
+
+### 5.2.1 isFinite(), parseInt(), encodeURI()
+
+```javascript
+// 평소에는 가벼운 원시 객체를 사용하다가, 래퍼 객체는 꼭 필요할 떄만 변환해서 사용하고
+// 다시 원시 객체로 복귀
+// 글로벌 전역 변수들
+console.log(globalThis) // <ref *1> Object [global] { ...
+console.log(this) // {}, 전역 객체
+console.log(Infinity) // Infinity
+console.log(NaN) // NaN
+console.log(undefined) // undefined
+
+eval('const num = 2; console.log(num)') // 2, 자바스크립트 코드로 평가
+console.log(isFinite(1)) // true, 숫자가 유한한지 확인
+console.log(isFinite(Infinity)) // false
+
+console.log(parseFloat('12.43')) // 12.43, 문자열을 소수점 숫자로 변환
+console.log(parseInt('12.43')) // 12, 실수를 정수로 변환
+console.log(parseInt('11')) // 11
+
+// URL (URI, Uniform Resource Identifier 하위 개념)
+// 아스키 문자로만 구성되어야 함
+// 한글이나 특수문자는 이스케이프 처리해야 한다
+const URL = 'https://드림코딩.com' // 한글이 들어있는 주소
+const encoded = encodeURI(URL) // 이스케이프(정해진 다른 문자)로 인코딩
+console.log(encoded) // https://%EB%93%9C%EB%A6%BC%EC%BD%94%EB%94%A9.com
+
+const decoded = decodeURI(encoded) // 원래 한글 주소로 디코딩
+console.log(decoded) // https://드림코딩.com
+
+// 전체 URL이 아니라 부분적인 것은 전역함수 Component를 이용
+const part = '드림코딩.com'
+console.log(encodeURIComponent(part))
+```
+
+---
+
+## 5.3 불리언 함수
+
+- [MDN Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+- [MDN 거짓같은 값](https://developer.mozilla.org/ko/docs/Glossary/Falsy)
+- [MDN 참같은 값](https://developer.mozilla.org/ko/docs/Glossary/Truthy)
+
+```javascript
+const isTrue = new Boolean(true) // 객체를 사용하면 메모리를 더 사용함
+// const isTrue = true; 위에것보다 이것이 더 효율적
+console.log(isTrue.valueOf()) // true
+
+/**
+ * 거짓이 나오는 값
+ * Falshy
+ * 0
+ * -0
+ * null
+ * NaN
+ * undefined
+ * ''
+ */
+
+/**
+ * 참이 나오는 값
+ * Truthy
+ * 1
+ * -1
+ * '0'
+ * 'false'
+ * []
+ * {}
+ */
+```
+
+---
+
+## 5.4 숫자 함수
+
+- [MDN Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+### 5.4.1 Number 속성
+
+1. `MAX_VALUE` : 정수로 사용할 수 있는 가장 큰 숫자
+2. `MIN_VALUE`
+3. `MAX_SAFE_INTERGER` : 안전하게 사용할 수 있는 최대값
+4. `MIN_SAFE_INTEGER`
+5. `NaN` : 숫자가 아닌 것
+6. `NEGATIVE_INFINITY` : 음의 무한
+7. `POSITIVE_INFINITY` : 양의 무한
+8. `EPSILON` : 0과 1사이에서 나타낼 수 있는 가장 작은 숫자
+   - 약 2.2204460492503130808472633361816E-16 또는 2-52
+
+```js
+const num1 = 123
+const num2 = new Number(123) // 메모리 낭비
+console.log(typeof num1) // number
+console.log(typeof num2) // object
+
+// e+308 = 10^308
+console.log(Number.MAX_VALUE) // 정수로 사용할 수 있는 가장 큰 숫자, 1.7976931348623157e+308
+console.log(Number.MIN_VALUE)
+console.log(Number.MAX_SAFE_INTEGER) // 안전하게 사용할 수 있는 최대값
+console.log(Number.MIN_SAFE_INTEGER)
+console.log(Number.NaN) // 숫자가 아닌 것
+console.log(Number.NEGATIVE_INFINITY) // 음의 무한
+console.log(Number.POSITIVE_INFINITY) // 양의 무한
+
+// num1이 최대 정수값보다 작은 숫자인지 확인
+if (num1 < Number.MAX_VALUE) {
+}
+
+if (Number.EPSILON > 0 && Number.EPSILON < 1) {
+  // 0과 1사이에서 나타낼 수 있는 가장 작은 숫자
+  console.log(Number.EPSILON) // 2.220446049250313e-16
+}
+// 10진수를 2진수로 변환하고 계산한 다음 다시 10진수로 변환
+// 이 과정에서 정확하게 부동소수점까지 계산되지 않음
+// 그래서 작은 오차가 발생함
+// 이 오차까지 감지해주는 것이 EPSILON임
+```
+
+---
+
+### 5.4.2 Number 메서드
+
+1. `isNaN()` : 숫자인지 아닌지 확인
+2. `toExponential()` : 지수표기법 (매우 크거나 작은 숫자를 표기할때 사용, 10의 n승으로 표기)
+3. `toFixed()` : 반올림하여 문자열로 변환
+4. `toString()` : 문자열로 변환
+5. `toLocaleString()` : 해당 나라에 맞는 언어로 표현
+6. `toPrecision()` : 원하는 자릿수까지 유효하도록 반올림
+7. `isEqual()` : 같은지 참 거짓 평가
+
+```javascript
+// 1. 숫자인지 아닌지 확인
+if (Number.isNaN(num1)) {
+}
+// 2. 지수표기법 (매우 크거나 작은 숫자를 표기할때 사용, 10의 n승으로 표기)
+const num3 = 102 // e+2 = 10의 2승
+console.log(num3.toExponential()) // 1.02e+2
+
+// 3. 반올림하여 문자열로 변환
+const num4 = 1234.12
+console.log(num4.toFixed()) // 1234, 실수를 반올림한 정수로 변환
+
+// 4. 5.
+console.log(num4.toString()) // 1234.12, 문자열로 변환
+console.log(num4.toLocaleString('ar-EG')) // ١٬٢٣٤٫١٢, 그 나라에 맞는 언어로 표현
+
+// 6. 원하는 자릿수까지 유효하도록 반올림
+console.log(num4.toPrecision(5)) // 1234.1, 5자리까지만 표기
+console.log(num4.toPrecision(4))
+console.log(num4.toPrecision(2)) // 전체 자릿수 표기가 안될때는 지수표기법
+
+const num = 0.1 + 0.2 - 0.2 // 0.1라고 예상하지만 실제 값은 아래와 같음
+console.log(num) // 0.10000000000000003
+
+function isEqual(original, expected) {
+  return Math.abs(original - expected) < Number.EPSILON
+}
+console.log(isEqual(1, 1)) // true
+console.log(isEqual(0.1, 0.1)) // true
+console.log(isEqual(num, 0.1)) // true
+```
+
+---
+
+## 5.5 수학 관련 함수
+
+[MDN Math](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math)
+
+1. `abs` : 절대값
+2. `ceil` : 소수점 이하를 올림
+3. `floor` : 소수점 이하를 내림
+4. `round` : 소수점 이하를 반올림
+5. `trunc` : 정수만 반환
+6. `max / min` : 최대값, 최소값
+7. `pow` : 거듭제곱
+8. `sqrt` : 제곱근
+9. `random` : 0~1 사이의 랜덤한 값을 반환
+
+```javascript
+// Math
+// static properties, method
+console.log(Math.E) // 오일러의 상수, 자연로그의 밑, 2.718281828459045
+console.log(Math.PI) // 원주율 PI값, 3.141592653589793
+
+// 1~5. static method
+console.log(Math.abs(-10)) // 절대값, 10
+console.log(Math.ceil(1.4)) // 소수점 이하를 올림, 2
+console.log(Math.floor(1.4)) // 소수점 이하를 내림, 1
+console.log(Math.round(1.4)) // 소수점 이하를 반올림, 1
+console.log(Math.round(1.7)) // 2
+console.log(Math.trunc(1.5432)) // 정수만 반환, 1
+
+// 6. 최대, 최소값을 찾기
+console.log(Math.max(1, 3, 4)) // 4
+console.log(Math.min(1, 3, 4)) // 1
+
+// 7. 거듭제곱
+console.log(3 ** 2) // 9
+console.log(Math.pow(3, 2)) // 9
+
+// 8. 제곱근
+console.log(Math.sqrt(9)) // 3
+
+// 9. 0~1 사이의 랜덤한 값을 반환
+console.log(Math.random())
+
+// 1~10 사이의 랜덤한 값을 반환
+console.log(Math.round(Math.random() * 10 + 1))
+```
+
+---
+
+## 5.6 문자열 함수
+
+- [MDN String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+```javascript
+const textObj = new String('Hello World!')
+const text = 'Hello World!'
+console.log(textObj) // [String: 'Hello World!']
+console.log(text) // Hello World!
+console.log(text.length) // 12
+
+console.log(text[0]) // H
+console.log(text[1]) // e
+console.log(text[2]) // l
+console.log(text.charAt(0)) // H, 해당 위치의 문자를 반환
+console.log(text.charAt(1)) // e
+console.log(text.charAt(2)) // l
+
+console.log(text.indexOf('l')) // 2, l이 위치한 첫 인덱스를 반환
+console.log(text.lastIndexOf('l')) // 9, l이 위치한 마지막 인덱스를 반환
+
+console.log(text.includes('tx')) // false, tx라는 문자열이 들어있는지 반환
+console.log(text.includes('h')) // false, 소문자 h라는 문자열이 들어있는지 반환
+console.log(text.includes('H')) // true
+
+console.log(text.startsWith('He')) // true, He로 시작하는지 확인
+console.log(text.endsWith('!')) // true, !로 끝나는지 확인
+
+console.log(text.toUpperCase()) // HELLO WORLD! , 전부 대문자 변경
+console.log(text.toLowerCase()) // hello world! , 전부 소문자 변경
+
+console.log(text.substring(0, 2)) // He, 0부터 시작해서 2번쨰 인덱스 이전까지 가져오기
+console.log(text.slice(2)) // llo World!, 앞에서 2번위치까지 잘라내기
+console.log(text.slice(-2)) // d!, 뒤에서 부터 2번위치까지 잘라내기
+
+const space = '            space       '
+console.log(space.trim()) // space, 공백 제거
+
+// split : 스페이스별로 문자열을 끊어줌
+// 스페이스별로 끊어진 것 중에 두 덩어리를 붙여서 출력
+const longText = 'Get to the, point'
+console.log(longText.split(' ')) // [ 'Get', 'to', 'the,', 'point' ]
+console.log(longText.split(', ', 2)) // [ 'Get to the', 'point' ]
+```
+
+---
+
+## 5.7 날짜 관련 함수
+
+- [MDN Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)
+
+```javascript
+// 7.date.js
+// UTC기준 (협정 세계시, 1970년 1월 1일 UTC 자정과의 시간 차이를 밀리초 단위로 표기)
+console.log(new Date()) // 현재 시간을 출력
+console.log(new Date('Jun 5, 2022')) // 특정 시간을 출력하고 싶다면
+console.log(new Date('2022-12-17T03:24:00'))
+
+console.log(Date.now()) // UTC기준에서 현재 시간까지 걸린 초
+console.log(Date.parse('2022-12-17T03:24:00')) // 1671215040000
+
+const now = new Date()
+now.setFullYear(2023) // 연도를 설정
+now.setMonth(0) // 월을 설정, 0부터 시작, 0이 1월
+console.log(now.getFullYear())
+console.log(now.getDate()) // 0: 1
+console.log(now.getDay()) // 0 일요일일부터, 1... 6: 토요일
+console.log(now.getTime())
+console.log(now) // 2023-01-05T13:01:47.427Z
+
+console.log(now.toString())
+console.log(now.toDateString())
+console.log(now.toTimeString())
+console.log(now.toISOString()) // ISO 8601 형식으로 출력
+console.log(now.toLocaleString('en-US')) // 미국 형식, 1/5/2023, 10:02:10 PM
+console.log(now.toLocaleString('ko-KR')) // 한국 형식, 2023. 1. 5. 오후 10:02:10
+```

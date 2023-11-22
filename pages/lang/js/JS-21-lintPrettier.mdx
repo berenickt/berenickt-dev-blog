@@ -1,0 +1,213 @@
+---
+title: 'JS-21-ESLint & Prettier'
+date: 2023/01/05
+---
+
+# 1. ESLint
+
+오래된 스웨터의 보푸라기같은 것을 영어로 `린트(Lint)`라고 부릅니다.
+보푸라기가 많으면 옷이 보기에 예쁘지 않은데 코드에도 이런 보프라기처럼 들여쓰기를 맞추지 않은 경우,
+선언한 변수를 사용하지 않은 경우 등 보기에 예쁘지 않은 코드를 의미합니다.
+보푸라기가 있는 옷을 입을 수는 있듯이 이런 코드로 만든 어플리케이션도 동작은 합니다.
+
+그러나 코드의 가독성이 떨어지고 점점 유지보수하기가 힘들어 집니다.
+보푸라기를 제거하는 Lint roller처럼
+코드의 오류나 버그, 스타일 따위를 점검하는 것을 `린트(Lint)` 혹은 `린터(Linter)`라고 부릅니다.
+
+- https://eslint.org/docs/latest/rules/
+- 개발자들이 **특정한 규칙을 가지고 코드를 짤수있게 도와주는 라이브러리**
+- 주요 기능
+  - 자바스크립트를 쓰는 가이드 라인 제시 등 포맷터(formatter) 역할도 하지만
+  - 주요 기능은 **문법 오류 잡는 것**
+
+```bash
+$ npm i eslint # eslint 설치
+$ touch .eslintrc.js # .eslintrc.js 생성
+$ npm run lint # 린트 실행
+```
+
+규칙을 찾아서 `.eslintrc.js`에 적용합니다.
+
+```js
+// .eslintrc.js
+module.exports = {
+  extends: ['eslint:recommended'],
+}
+```
+
+---
+
+# 2. Prettier
+
+- 코드 형식을 맞추는데 사 용 작은따옴표(')를 사용할지 큰 따 옴표(")를 사용할지,
+- Indent 값을 2로 줄지 4로 줄지등등, 에러 찾는것이 아닌 **코드 포맷터 역할**
+
+```sh
+$ npm i prettier # prettier 설치
+$ npx prettier src/**/* --write # prettier 실행
+```
+
+아니면 **VSCode 확장 기능** 사용
+
+- 확장 기능은 혼자 사용할 떄 좋음
+- npm으로 설치는 여러 개발자와 같은 포맷을 유지할 떄 사용
+
+---
+
+## 2.1 옵션
+
+- https://prettier.io/docs/en/options.html
+
+---
+
+# 3. ESLint + Prettier 통합
+
+Prettier는 Eslint와 통합하는 방법을 제공합니다.
+서로 충돌하는 옵션이 있으면 프리티어 규칙을 사용하돌고 하는 도구입니다.
+
+```sh
+$ npm i eslint-config-prettier eslint-plugin-prettier
+```
+
+설정 파일을 eslint에 추가
+
+```js
+// .eslintrc.js
+module.exports = {
+  extends: ['eslint:recommended'],
+}
+```
+
+---
+
+# 4. 명령어 자동화
+
+1. Git Hook으로 자동화
+2. 에디터 확장 기능으로 자동화
+
+---
+
+## 4.1 에디터 확장 기능으로 자동화⭐
+
+1. VSCode 에디터의 확징기능(Estention)의 Eslint, Prettier 확장 기능 설치
+2. `setting.json` 설정 파일로 가서 eslint를 활성화
+
+```json
+// VSCode setting.json
+{
+  "eslint.enable": true, // eslint 활성화
+  "editor.codeActionsOnSave": {
+    // 저장할 떄마다 eslint 코드 고치기
+    "source.fixAll.eslint": true
+  }
+}
+```
+
+---
+
+# 5. 설정 파일 쓰는 옵션 정리
+
+## 5.1 VSCode setting.json설정
+
+```json
+{
+  /* ESLint, Prettier 언어별 설정 */
+  "eslint.enable": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "prettier.singleQuote": true,
+  "editor.formatOnSave": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[html]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "[javascript]": {
+    "editor.formatOnSave": true
+  },
+  // jsx
+  "[javascriptreact]": {
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true
+  }
+  // 위 언어들 외에도 저장 시 ESLint, Prettier 적용할 언어를 설정하면 된다.
+}
+```
+
+---
+
+## 5.2 .prettierrc.json
+
+```json
+{
+  "singleQuote": true,
+  "bracketSpacing": true,
+  "bracketSameLine": true,
+  "arrowParens": "avoid",
+  "printWidth": 120
+}
+```
+
+---
+
+## 5.3 .eslintrc.json
+
+```json
+{
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "commonjs": true,
+    "es2022": true
+  },
+  "globals": { "_": true },
+  "plugins": ["import", "html"],
+  "extends": "airbnb-base",
+  "rules": {
+    // "off" or 0 - turn the rule off
+    // "warn" or 1 - turn the rule on as a warning (doesn’t affect exit code)
+    // "error" or 2 - turn the rule on as an error (exit code is 1 when triggered)
+    // "no-var": "off",
+    "no-console": "warn",
+    "no-plusplus": "off",
+    "no-shadow": "off",
+    "vars-on-top": "off",
+    "no-underscore-dangle": "off", // var _foo;
+    "comma-dangle": "off",
+    "func-names": "off", // setTimeout(function () {}, 0);
+    "prefer-template": "off",
+    "no-nested-ternary": "off",
+    "max-classes-per-file": "off",
+    "consistent-return": "off",
+    "no-restricted-syntax": ["off", "ForOfStatement"], // disallow specified syntax(ex. WithStatement)
+    "prefer-arrow-callback": "error", // Require using arrow functions for callbacks
+    "require-await": "error",
+    "arrow-parens": ["error", "as-needed"], // a => {}
+    "no-param-reassign": ["error", { "props": false }],
+    "no-unused-expressions": [
+      "error",
+      {
+        "allowTernary": true, // a || b
+        "allowShortCircuit": true, // a ? b : 0
+        "allowTaggedTemplates": true
+      }
+    ],
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+    "max-len": [
+      "error",
+      {
+        "code": 120,
+        "ignoreComments": true,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true
+      }
+    ] // prettier의 printWidth 옵션 대신 사용
+  }
+}
+```

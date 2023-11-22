@@ -1,0 +1,279 @@
+---
+title: 'JS-DOM-07-이벤트 버블링, 이벤트 위임'
+date: 2023/01/29
+---
+
+# 1. 이벤트의 흐름
+
+계층적 구조에 포함되어 있는 HTML 요소에 이벤트가 발생할 경우 연쇄적 반응이 일어난다.
+즉, 이벤트가 전파(Event Propagation)되는데 전파 방향에 따라 다음과 같이 2개로 구분합니다.
+
+- `버블링(Event Bubbling)`
+  - 자식 요소에서 발생한 이벤트가 부모 요소로 전파
+  - cf. 거품이 퐁퐁퐁퐁 일어나듯이 이벤트가 퐁퐁퐁퐁 일어나 ‘버블링(Bubbling)’이라는 이름을 갖게 됨
+  - 이벤트 발생 요소에서부터 순서대로 최상위 부모 요소까지 퐁퐁퐁퐁 이벤트가 연달아 발생
+- `캡처링(Event Capturing)`
+  - 자식 요소에서 발생한 이벤트가 부모 요소부터 시작하여 이벤트를 발생시킨 자식 요소까지 도달
+
+> cf. 버블링과 캡처링은 둘 중에 하나만 발생하는 것이 아니라 캡처링부터 시작하여 버블링으로 종료합니다.
+
+즉, 이벤트가 발생했을 때 캡처링과 버블링은 순차적으로 발생합니다.
+
+---
+
+# 2. 이벤트 버블링
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <title>이벤트 버블링</title>
+    <style>
+      .upper {
+        background: gold;
+        width: 70px;
+        text-align: center;
+      }
+      .middle {
+        background: orange;
+        width: 50px;
+        text-align: center;
+      }
+      .lower {
+        background: pink;
+        width: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="upper" onClick="clicked(event)" id="물">
+      물
+      <div class="middle" onClick="clicked(event)" id="고">
+        고
+        <div class="lower" onClick="clicked(event)" id="기">기</div>
+      </div>
+    </div>
+    <script>
+      function clicked(event) {
+        alert(event.currentTarget.getAttribute('id'))
+      }
+    </script>
+  </body>
+</html>
+```
+
+위 코드를 실행하면 다음 그림과 같은 결과가 나옵니다.
+
+![js-dom-7-1](https://raw.githubusercontent.com/berenickt/image-server/main/img/js-dom-7-1.png)
+
+여기서 가장 내부에 자리 잡고 있는 `기`를 클릭하면 어떤 순서대로 이벤트가 실행될까요?
+이벤트 버블링이 default로 설정되어 있으므로 `기, 고, 물`의 순서대로 이벤트가 발생합니다.
+그러므로 위 코드라면 `‘기’ -> ‘고’ -> ‘물’`의 순서대로 알림창이 뜹니다.
+`고`를 클릭하면 `‘고’ -> ‘물’`의 순서로 알림창이 뜹니다.
+
+그렇다면 순서를 `‘물’ -> ‘고’ -> ‘기’`으로 만들려면 어떻게 해야 할까요? 바로 **이벤트 캡쳐**를 사용하면 됩니다.
+
+---
+
+# 3. 이벤트 캡처링
+
+**이벤트 캡쳐**를 사용하려면 addEventListener 내부에 capture 값을 명시적으로 true로 변경해줘야 합니다.
+기본값은 false이며, false는 이벤트 버블링, true는 이벤트 캡쳐를 의미합니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <title>이벤트 캡처링</title>
+    <!-- 생략 -->
+  </head>
+  <body>
+    <!-- 생략 -->
+    <script>
+      function clicked(event) {
+        alert(event.currentTarget.getAttribute('id'))
+      }
+      const divs = document.querySelectorAll('div')
+      divs.forEach(function (div) {
+        div.addEventListener('click', clicked, {
+          capture: true,
+        })
+      })
+    </script>
+  </body>
+</html>
+```
+
+`capture:true`로 설정해주고 다시 `기`를 클릭하면 이번에는 **반대 순서인 위에서 아래로 이벤트가 발생**합니다.
+이제는 `‘물’ -> ‘고’ -> ‘기’` 의 순서로 알림이 뜹니다.
+
+---
+
+# 4. 이벤트 전파 방지 : stopPropagation
+
+그렇다면 ‘**이벤트 버블링도 싫고, 이벤트 캡쳐도 싫으니 둘 다 하지마!**’라고 명령하려면?
+
+- 이벤트와 함께 실행될 함수 내부에 `event.stopPropagation()`을 넣어주면 됩니다.
+- cf. 프로파간다(propaganda)를 닮은 그 단어 ‘propagation’은 ‘번식, 증식, 전파’등의 의미를 갖고 있음
+
+따라서 ‘이벤트의 증식 또는 전파를 멈추겠다’는 의미로 `event.stopPropagation()`를 사용하면 됩니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <title>이벤트 전파 방지</title>
+    <!-- 생략 -->
+  </head>
+  <body>
+    <div class="upper" onClick="clicked(event)" id="물">
+      물
+      <div class="middle" onClick="clicked(event)" id="고">
+        고
+        <div class="lower" onClick="clicked(event)" id="기">기</div>
+      </div>
+    </div>
+
+    <script>
+      function clicked(event) {
+        event.stopPropagation() // 추가
+        alert(event.currentTarget.getAttribute('id'))
+      }
+    </script>
+  </body>
+</html>
+```
+
+이제 더 이상 ‘물고기’ 또는 ‘기고물’같은 단어를 완성하지 않습니다.
+그저 `기`를 누르면, `기`처럼 해당 문자만 띄웁니다.
+
+---
+
+# 5. target과 currentTarget 차이
+
+- `target`은 **이벤트가 발생한 바로 그 요소**를 직접 가리키고,
+- `currentTarget`은 **이벤트 리스너**(EventListener)**를 가진 요소**를 가리킵니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <title>target과 currentTarget 차이</title>
+    <style>
+      .upper {
+        background: gold;
+        width: 80px;
+        text-align: center;
+      }
+      .lower {
+        background: pink;
+        width: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="upper" onClick="clicked(event)" id="div">
+      <span class="lower" id="span">span</span>
+    </div>
+
+    <script>
+      function clicked(event) {
+        alert(event.target.id + ' clicked')
+      }
+    </script>
+  </body>
+</html>
+```
+
+위 코드를 실행하면 다음 그림과 같은 결과가 나옵니다.
+
+![js-dom-7-2](https://raw.githubusercontent.com/berenickt/image-server/main/img/js-dom-7-2.png)
+
+노랑은 div, 핑크는 span이며, 핑크가 노란색 위에 앉아있습니다.
+그런데 onClick 이벤트는 div에서 설정했지만 **노랑을 눌러도, 핑크를 눌러도 모두 이벤트가 발생**합니다.
+div에만 이벤트를 설정했는데, 왜 자식인 span도 이벤트를 상속받는 것일까요?
+바로 **이벤트 버블링, 이벤트 캡쳐링과 연관**이 있습니다.
+
+이벤트 발생에 따른 target은 다음과 같습니다.
+
+- 핑크 부분을 클릭
+  - `target` : 핑크 (핑크를 눌렀으므로 핑크가 이벤트 발생 시점이 됨)
+  - `currentTarget` : 노랑 (onClick 이벤트는 노랑이 갖고 있음)
+- 노란 부분을 클릭
+  - `target` : 노랑(노랑을 눌렀으므로 노랑이 이벤트 발생 시점이 됨)
+    `currentTarget` : 노랑(onClick 이벤트는 노랑이 갖고 있음)
+
+따라서 노랑을 누르면 ‘div clicked’, 핑크를 누르면 ‘span clicked’ 알림창을 띄웁니다.
+
+만약 핑크를 눌러도 이벤트를 가진 노랑의 속성에 접근하고 싶다면, `currentTarget`과 `getAttribute`를 사용하면 됩니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <title>target과 currentTarget 차이2</title>
+    <style>
+      .upper {
+        background: gold;
+        width: 80px;
+        text-align: center;
+      }
+      .lower {
+        background: pink;
+        width: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="upper" onClick="clicked(event)" id="div">
+      <span class="lower" id="span"> span </span>
+    </div>
+
+    <script>
+      function clicked(event) {
+        alert(event.currentTarget.getAttribute('id') + ' clicked')
+      }
+    </script>
+  </body>
+</html>
+```
+
+위 코드는 핑크, 노랑 둘 다 이벤트를 가진 노랑 속성에만 접근합니다.
+
+- `target`은 **누른 바로 그 것**
+- `currentTarget`은 **이벤트를 실행하는 바로 그 것**으로 이해하면 됩니다.
+
+---
+
+# 6. 이벤트리스너 안에서 쓰는 이벤트 함수들
+
+```js
+document.querySelector('.black-bg').addEventListener('click', function (e) {
+  e.target // 유저가 실제로 누른거
+  e.currentTarget // 이벤트리스너 달린곳, 여기서는 querySelector('.black-bg'), this와 동일
+  e.preventDefault() // 이벤트 기본동작 막아줌
+  e.stopPropagation() // 내 상위요소로 이벤트 버블링 막아줌
+})
+```
+
+이벤트리스너의 콜백함수에 파라미터 아무거나 추가하면, 이벤트관련 유용한 함수들을 사용가능합니다.
+파라미터 이름은 아무렇게나 작명하면 됩니다. 보통 대충 e라고 함
+
+- `e.target` : **실제 클릭한 요소** 알려줌 (**이벤트 발생한 곳**)
+- `e.currentTarget` : **지금 이벤트리스너가 달린 곳** 알려줌 (cf. **this라고 써도 똑같음**)
+
+  - 검은배경이 나오기 때문에 `e.target == e.currentTarget` 이렇게 써도 됨
+  - 아니면 `e.target == this` 이렇게 써도 됨
+
+- `e.preventDefault()` 실행하면 **이벤트 기본 동작을 막아줌**
+- `e.stopPropagation()` 실행하면 **내 상위요소로의 이벤트 버블링을 중단**해줌
+
+여기서 중요한건 `e.target`인데, 이벤트 버블링이 일어난다고 해도
+사용자가 실제로 클릭한 그 요소는 저 문법으로 찾아낼 수 있습니다.
+
+---
+
+# 참고
+
+- https://choonse.com/2022/01/14/651/
+- https://choonse.com/2022/01/14/605/

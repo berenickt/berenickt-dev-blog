@@ -1,0 +1,753 @@
+---
+title: '08-Grid 레이아웃'
+date: 2023/02/06 19:33:55
+---
+
+# 1. 실습 - 그리드 워밍업
+
+## 1.1 HTML
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>grid</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="grid-container">
+      <div class="grid-item red-box">A</div>
+      <div class="grid-item blue-box">B</div>
+      <div class="grid-item green-box">C</div>
+      <div class="grid-item grey-box">D</div>
+    </div>
+  </body>
+</html>
+```
+
+---
+
+## 1.2 초기 CSS
+
+```css
+.grid-container {
+  width: 300px;
+  height: 300px;
+  border: 4px solid black;
+  background-color: #fff;
+}
+.grid-item {
+  font-size: 20px;
+  text-align: center;
+  color: white;
+}
+.red-box {
+  background-color: red;
+}
+.blue-box {
+  background-color: blue;
+}
+.green-box {
+  background-color: green;
+}
+.grey-box {
+  background-color: grey;
+}
+```
+
+본격적으로 Grid Layout 속성을 공부하기 전에 워밍업 차원에서 실습 문제를 하나 풀어보겠습니다.
+코딩창에서 기본으로 제공된 코드를 실행하면 아래와 같이 보입니다.
+
+![CSS_8_1](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_8_1.png)
+
+이를 아래와 같이 보이도록 수정해주세요. 단, HTML 코드는 절대로 수정하면 안되며 오직 CSS 속성만 수정해서 해야 합니다.
+
+![CSS_8_2](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_8_2.png)
+
+---
+
+## 1.2 정답 CSS : float
+
+```css
+.grid-container {
+  width: 300px;
+  height: 300px;
+  border: 4px solid black;
+  background-color: #fff;
+}
+.grid-item {
+  font-size: 20px;
+  text-align: center;
+  color: white;
+
+  /* 정렬을 위한 속성 추가, float 속성을 활용 */
+  float: left;
+  width: 50%;
+  height: 150px;
+  line-height: 150px;
+}
+.red-box {
+  background-color: red;
+}
+.blue-box {
+  background-color: blue;
+}
+.green-box {
+  background-color: green;
+}
+.grey-box {
+  background-color: grey;
+}
+```
+
+---
+
+# 2. Grid Layout 이란?
+
+그리드 레이아웃(Grid Layout)은 `2차원 방식`으로 효과적인 레이아웃을 설계할 수 있도록 고안된 레이아웃 스타일입니다. 여기서 2차원 방식이란 마치 HTML의 테이블(table) 태그처럼 `수평(row)과 수직(column) 방향으로 레이아웃을 설계`하는 방식을 말합니다.
+
+이런 2차원 방식이 테이블 태그와 굉장히 유사한 점이 많아서, 보통 그리드 레이아웃에서는 `수평을 row`, `수직을 column`이라고 부릅니다. 참고로 그리드 레이아웃은 CSS에 플렉스 박스 레이아웃이 추가될 떄, 같이 추가된 개념으로 `플렉스 박스는 1차원`, `그리드 레이아웃은 2차원`이라는 차이가 있습니다. 그리고 그리드 레이아웃도 플렉스 박스 레이아웃 속성 못지 않게 그리드 레이아웃 관련 속성이 굉장히 많습니다.
+
+![CSS_8_3](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_8_3.png)
+
+---
+
+## 2.1 grid 용어
+
+![CSS_8_4](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_8_4.png)
+
+- `그리드 컨테이너(grid container)` : 어떤 HTML 요소에 display: grid를 적용한 해당 요소
+  - 레이아웃의 전체 내용을 담고 있는 최상위 부모 요소
+- `그리드 아이템(grid item)` : 컨테이너와 자식 관계에 있는 요소
+  - flexbox처럼 자식 요소만 그리드 아이템이 되며, 자손 요소는 아무것도 해당되지 않음
+- `그리드 셀(grid cell)` : 행과 열이 만나 이루어지는 하나의 공간
+  - `행(row)` : 그리드 레이아웃에서 가로줄을 의미
+  - `열(column)` : 그리드 레이아웃에서 세로줄을 의미
+  - `그리드 트랙(grid track)` : 행과 열을 합쳐서 부르는 말
+    - 그리드 라인 사이 공간을 의미
+- `그리드 라인(grid line)` : 그리드 행과 열을 그리는 선
+- `그리드 넘버(grid number)` : 그리드 라인에 붙는 번호
+- `그리드 갭(grid gap)` : 그리드 셀과 그리드 셀 사이의 간격
+
+---
+
+### 2.2.1 그리드 트랙
+
+![CSS_8_5](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_8_5.png)
+
+- 그리드 라인 사이 공간을 그리드 트랙이라고 합니다.
+- 방향에 따라 row track 또는 column track 으로 나눠지게 됩니다.
+- 위 그림에서 강조된 트랙은 `row 2 / 3 그리드 라인 사이에 위치한 트랙`입니다
+
+---
+
+## 2.2 준비
+
+### 2.2.1 index.html
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="basic-style.css" />
+    <link rel="stylesheet" href="grid.css" />
+    <title>CSS Grid Example</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="item pink-color">Item1</div>
+      <div class="item item2 blue-color">Item2</div>
+      <div class="item green-color">Item3</div>
+      <div class="item yellow-color">Item4</div>
+      <div class="item red-color">Item5</div>
+      <div class="item pink-color">Item6</div>
+      <div class="item blue-color">Item7</div>
+      <div class="item green-color">Item8</div>
+      <div class="item yellow-color">Item9</div>
+      <div class="item red-color">Item10</div>
+    </div>
+  </body>
+</html>
+```
+
+### 2.2.2 style.css
+
+```css
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+}
+
+.item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #181818;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.pink-color {
+  background-color: #d7bee2;
+}
+.blue-color {
+  background-color: #a9c7d8;
+}
+.green-color {
+  background-color: #c0df9f;
+}
+.yellow-color {
+  background-color: #f2e5a6;
+}
+.red-color {
+  background-color: #e89d9d;
+}
+```
+
+---
+
+### 2.2.3 grid.css
+
+```css
+.container {
+}
+.item2 {
+}
+```
+
+---
+
+# 3. Grid Containers
+
+## 3.1 display : Grid 선언
+
+rid Container(컨테이너)를 정의합니다. 정의된 컨테이너의 자식 요소들은 자동으로 Grid Items(아이템)로 정의됩니다.
+
+> 그리드를 사용하기 위해 컨테이너에 필수로 작성합니다!
+
+|      값       | 의미                                |
+| :-----------: | ----------------------------------- |
+|    `grid`     | Block 특성의 Grid Container를 정의  |
+| `inline-grid` | Inline 특성의 Grid Container를 정의 |
+
+```css
+.container {
+  padding: 10px;
+  /* 📝 grid : 그리드 컨테이너를 만들기 위한 속성값, 그리드 레이아웃의 시작  */
+  /* grid가 선언된 부모(container) 기준으로 자식(item)까지만 item으로 인식 */
+  display: grid;
+}
+
+.item2 {
+}
+```
+
+---
+
+## 3.2 행과 열
+
+### 3.2.1 grid-template-rows : 행 크기
+
+명시적 행(Track)의 크기를 정의합니다. 동시에 라인(Line)의 이름도 정의할 수 있습니다.
+
+- `fr`(fraction, 공간 비율) 단위를 사용할 수 있습니다.
+- `repeat()` 함수를 사용할 수 있습니다.
+
+> 사용 방법은 `grid-template-columns`와 같습니다.
+
+---
+
+### 3.2.2 grid-template-columns : 열 크기
+
+명시적 열(Track)의 크기를 정의합니다. 동시에 라인(Line)의 이름도 정의할 수 있습니다.
+
+- `fr`(fraction, 공간 비율) 단위를 사용할 수 있습니다.
+- `repeat()` 함수를 사용할 수 있습니다.
+
+> 사용 방법은 `grid-template-rows`와 같습니다.
+
+---
+
+### 3.3.3 예시
+
+```css
+.container {
+  padding: 10px;
+  display: grid;
+  /* 📝 행의 높이는 기본적으로 부모의 높이를 따라감 */
+  grid-template-rows: 100px 100px; /* 1행 100, 1행 100 */
+  grid-template-columns: 150px 150px; /* 1열 150, 2열 150 */
+
+  /* 📝 auto 값을 지정 */
+  /* 행과 열의 크기를 그리드 컨테이너에 맞춰 자동 지정 */
+  /* grid-template-columns : 100px auto; */
+}
+
+.item2 {
+}
+```
+
+---
+
+## 3.3 Grid Function
+
+### 3.3.1 repeat()
+
+`repeat()` 함수는 행/열(Track)의 크기 정의를 반복합니다. ‘반복되는 횟수’와 ‘행/열의 크기 정의’를 인수로 사용합니다.
+
+```css
+.container {
+  padding: 10px;
+  display: grid;
+  /* 📝 일정 값을 row track에 반복하고 싶다면 Repeat() 함수를 사용 */
+  grid-template-columns: repeat(2, 100px); /* 50px을 2개의 행에 반복 */
+}
+
+.item2 {
+}
+```
+
+---
+
+### 3.3.2 minmax()
+
+`minmax()` 함수는 행/열(Track)의 ‘최소/최대 크기’를 정의합니다.
+
+```css
+.container {
+  padding: 10px;
+  display: grid;
+  /* 📝 최소 제한너비와 최대 제한 너비를 minmax() 함수를 이용 */
+  /* minmax(최소, 최대) 함수 : 최소, 최대 값을 지정하는 함수 */
+  /* 모든 셀 최소 제한 너비 200px / 모든 셀 최대 제한 너비 자동(container의 나머지 공간 모두) */
+  grid-template-rows: repeat(2, minmax(200px, auto));
+}
+
+.item2 {
+}
+```
+
+### 3.3.3 fit-content()
+
+`fit-content()` 함수는 행/열(Track)의 크기를 그리드 아이템(Item)이 포함하는 내용(Contents) 크기에 맞춥니다. ‘내용의 최대 크기’를 인수로 사용합니다.
+
+---
+
+## 3.4 Grid Units
+
+### 3.4.1 fr (fraction: 분수, 부분)
+
+`fr`(fractional unit)은 사용 가능한 공간에 대한 비율을 의미합니다.
+
+```css
+.container {
+  padding: 10px;
+  display: grid;
+  grid-template-rows: 1fr 2fr;
+  grid-template-columns: 1fr 1fr 1fr; /* 1:1:1 비율로 적용 */
+  /* 100px 1fr 1fr = 100px로 지정하고 나머지는 1:1 비율로 적용, 추천❌ */
+  /* 단, grid-item이 독립적인 높이와 너비값을 가지고 있는 경우, grid-container를 초과하는 문제 발생 */
+}
+
+.item2 {
+}
+```
+
+---
+
+### 3.4.2 min-content
+
+그리드 아이템이 포함하는 내용(Contents)의 최소 크기를 의미합니다.
+
+### 3.4.3 max-content
+
+그리드 아이템이 포함하는 내용(Contents)의 최대 크기를 의미합니다.
+
+### 3.4.4 auto-fill, auto-fit
+
+행/열(Track)의 개수를 그리드 컨테이너(Container) 및 행/열 크기에 맞게 자동으로(암시적) 조정합니다. `repeat()` 함수와 같이 사용하며, 행/열과 아이템(Item) 개수가 명확할 필요가 없거나 명확하지 않은 경우 유용합니다.(반응형 그리드)
+
+> `auto-fill`과 `auto-fit`은 간단한 차이점을 제외하면 동일하게 동작합니다.
+
+```css
+.container {
+  padding: 10px;
+  display: grid;
+  /* 📝 auto-fill : 자동으로 채움 */
+  /* 최소 10%의 너비로 자동으로 채우기 */
+  /* grid-template-columns: repeat(auto-fill, minmax(10%, auto)); */
+
+  /* 📝 반응형 웹을 만들 떄, auto-fill이 자주 사용됨 */
+  /* 웹 브라우저 크기가 900px보다 크면 3개의 열 */
+  /* 900px보다 작다면 보장이 되게끔 2개의 열로, 더 작다면 1개의 열로 줄어듬  */
+  grid-template-columns: repeat(auto-fill, minmax(300px, auto));
+}
+
+.item2 {
+}
+```
+
+`auto-fill`과 `auto-fit`은 차이점은 그리드 컨테이너가 하나의 행/열(Track)에 모든 아이템을 수용하고 **남는 공간이 있을 때** 발생합니다.
+다음과 같이 `auto-fill`은 남는 공간(빈 트랙)을 그대로 유지하고, `auto-fit`은 남는 공간을 축소합니다.
+
+![CSS_8_6](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_8_6.png)
+
+---
+
+## 3.5 gap : 행열 간격 조정
+
+그리드 갭(grid gap)은 `gap` 속성으로 지정할 수 있습니다. 속성값으로는 크기 단위(px, rem, %, ...)를 사용할 수 있습니다.
+
+```css
+.container {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  /* 📝 gap : 행과 열을 기준으로 gap 지정 */
+  gap: 20px 10px; /* 행간격 20px, 열간격 10px */
+
+  /* 📝 column-gap : 열을 기준으로 gap 지정 */
+  /* 📝 row-gap : 행을 기준으로 gap 지정*/
+  /* column-gap: 10px; 행간격 10px */
+}
+```
+
+![CSS_8_7](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_8_7.png)
+
+---
+
+## 3.6 자동으로 행열 크기 조정
+
+### 3.6.1 grid-auto-rows, grid-auto-columns
+
+- `grid-auto-rows` : 암시적 행(Track)의 크기를 정의합니다.
+- `grid-auto-columns` : 암시적 열(Track)의 크기를 정의합니다.
+
+```css
+.container {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-auto-rows: minmax(150px, auto);
+  grid-gap: 10px;
+}
+```
+
+---
+
+## 3.7 주축, 교차축 정렬
+
+### 3.7.1 algin-content, justify-content
+
+- `algin-content`
+  - 그리드 콘텐츠(Contents)를 수직(열 축) 정렬합니다.
+  - 그리드 콘텐츠의 세로 너비가 그리드 컨테이너(Container)보다 작아야 합니다.
+- `justify-content`
+  - 그리드 콘텐츠(Contents)를 수평(행 축) 정렬합니다.
+  - 그리드 콘텐츠의 가로 너비가 그리드 컨테이너(Container)보다 작아야 합니다.
+
+|      값       | 의미                                                                  |
+| :-----------: | --------------------------------------------------------------------- |
+|    normal     | `stretch`와 같습니다. (기본값)                                        |
+|     start     | 시작점(위쪽) 정렬                                                     |
+|    center     | 수직 가운데 정렬                                                      |
+|      end      | 끝점(아래쪽) 정렬                                                     |
+| space-around  | 각 행 위아래에 여백을 고르게 정렬                                     |
+| space-between | 첫 행은 시작점에, 끝 행은 끝점에 정렬되고 나머지 여백으로 고르게 정렬 |
+| space-evenly  | 모든 여백을 고르게 정렬                                               |
+|    stretch    | 열 축을 채우기 위해 그리드 콘텐츠를 늘림                              |
+
+![CSS_8_8](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_8_8.png)
+
+```css
+.container {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 20%);
+  grid-template-rows: repeat(2, 20%);
+  /* 📝 justify-content : 그리드 아이템을 그리드 컨테이너 기준, 가로 방향에서 정렬 */
+  /* 📝 align-content : 그리드 아이템을 그리드 컨테이너 기준, 세로 방향에서 정렬 */
+  justify-content: space-evenly;
+  align-content: space-around;
+}
+
+.item2 {
+}
+```
+
+---
+
+### 3.7.2 place-content
+
+`align-content`와 `justify-content`의 단축 속성입니다. 하나의 값만 입력하면 두 속성에 모두 적용됩니다.
+
+> Edge(IE) 브라우저에서 지원하지 않는 속성입니다.
+
+---
+
+## 3.8 주축, 교차축 아이템 정렬
+
+### 3.8.1 align-items, justify-items
+
+- `align-items`
+  - 그리드 아이템(Items)들을 수직(열 축) 정렬합니다.
+  - 그리드 아이템의 세로 너비가 자신이 속한 그리드 행(Track)의 크기보다 작아야 합니다.
+- ` justify-items`
+  - 그리드 아이템(Items)들을 수평(행 축) 정렬합니다.
+  - 그리드 아이템의 가로 너비가 자신이 속한 그리드 열(Track)의 크기보다 작아야 합니다.
+
+|   값    | 의미                                     |
+| :-----: | ---------------------------------------- |
+| normal  | `stretch`와 같습니다. (기본값)           |
+|  start  | 시작점(위쪽) 정렬                        |
+| center  | 수직 가운데 정렬                         |
+|   end   | 끝점(아래쪽) 정렬                        |
+| stretch | 열 축을 채우기 위해 그리드 아이템을 늘림 |
+
+![CSS_8_9](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_8_9.png)
+
+```css
+.container {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  /* 📝 justify-items : 그리드 아이템을 그리드 셀 기준, 가로 방향에서 정렬 */
+  /* 📝 align-items : 그리드 아이템을 그리드 셀 기준, 세로 방향에서 정렬 */
+  justify-items: stretch;
+  align-items: center;
+}
+```
+
+---
+
+### 3.8.2 place-items
+
+`align-items`와 `justify-items`의 단축 속성입니다. 하나의 값만 입력하면 두 속성에 모두 적용됩니다.
+
+> Edge(IE) 브라우저에서 지원하지 않는 속성입니다.
+
+---
+
+# 4. Grid Items
+
+## 4.1 주축, 교차축 단일 아이템 정렬
+
+### 4.1.1 align-self, justify-self
+
+- `align-self`
+  - 단일 그리드 아이템(Item)을 수직(열 축) 정렬합니다.
+  - 그리드 아이템의 세로 너비가 자신이 속한 그리드 행(Track)의 크기보다 작아야 합니다.
+- `justify-self`
+  - 단일 그리드 아이템(Item)을 수평(행 축) 정렬합니다.
+  - 그리드 아이템의 가로 너비가 자신이 속한 그리드 열(Track)의 크기보다 작아야 합니다.
+
+|   값    | 의미                                     |
+| :-----: | ---------------------------------------- |
+| normal  | `stretch`와 같습니다. (기본값)           |
+|  start  | 시작점(위쪽) 정렬                        |
+| center  | 수직 가운데 정렬                         |
+|   end   | 끝점(아래쪽) 정렬                        |
+| stretch | 열 축을 채우기 위해 그리드 아이템을 늘림 |
+
+![CSS_8_10](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_8_10.png)
+
+### 4.1.2 place-self 단축 속성
+
+`align-self`와 `justify-self`의 단축 속성입니다. 하나의 값만 입력하면 두 속성에 모두 적용됩니다.
+
+> Edge(IE) 브라우저에서 지원하지 않는 속성입니다.
+
+---
+
+## 4.2 Grid 라인으로 통합
+
+### 4.2.1 grid-row-start, grid-row-end, grid-column-start, grid-column-end
+
+그리드 아이템(Item)을 배치하기 위해 그리드 선(Line)의 ‘시작 위치’와 ‘끝 위치’를 지정합니다.
+
+```css
+.container {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-auto-rows: minmax(150px, auto);
+  grid-gap: 10px;
+}
+
+.item2 {
+  grid-column-start: 2; /* 2 ~ 4 이전까지 (2 ~ 3) */
+  grid-column-end: 4;
+  grid-row-start: 1;
+  grid-row-end: 3;
+}
+```
+
+### 4.2.2 grid-row, grid-column
+
+이를 짧게 줄여서 사용할 수도 있습니다.
+
+```css
+.container {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-auto-rows: minmax(150px, auto);
+  grid-gap: 10px;
+}
+
+.item2 {
+  grid-column: 2 / 4;
+  grid-row: 1 / 3;
+}
+```
+
+라인을 카운트하기 귀찮으면 2개의 셀을 합치겠다는 의미로 `span` 키워드를 사용합니다. `span` 키워드와 ‘숫자’를 조합하면 ‘숫자’만큼 라인을 확장하는(`+`) 개념입니다. 명시하지 않으면 `span 1`이 기본값입니다.
+
+```css
+.container {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-auto-rows: minmax(150px, auto);
+  grid-gap: 10px;
+}
+
+.item2 {
+  grid-column: 2 / span 2;
+  grid-row: 1 / 3;
+}
+```
+
+제일 끝까지 하고 싶다면 -1을 지정하면 됩니다.
+
+```css
+.container {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-auto-rows: minmax(150px, auto);
+  grid-gap: 10px;
+}
+
+.item2 {
+  grid-column: 2 / -1;
+  grid-row: 1 / 3;
+}
+```
+
+---
+
+## 4.3 Grid area로 통합
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="basic-style.css" />
+    <link rel="stylesheet" href="grid.css" />
+    <title>CSS Grid Example</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="item header pink-color">Item1</div>
+      <div class="item main blue-color">Item2</div>
+      <div class="item aside green-color">Item3</div>
+      <div class="item footer yellow-color">Item4</div>
+    </div>
+  </body>
+</html>
+```
+
+### 4.3.1 grid-template-areas, grid-area
+
+- `grid-template-areas` : Container 적용
+- `grid-area` : Item 적용
+
+지정된 그리드 영역 이름(`grid-area`)을 참조해 그리드 템플릿을 생성합니다.
+
+```css
+.container {
+  padding: 10px;
+  display: grid;
+  grid-template-rows: repeat(3, 100px);
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-areas:
+    'header header header'
+    'main main aside'
+    'footer footer footer';
+}
+
+.header {
+  grid-area: header;
+}
+.main {
+  grid-area: main;
+}
+.aside {
+  grid-area: aside;
+}
+.footer {
+  grid-area: footer;
+}
+```
+
+![CSS_8_11](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_8_11.png)
+
+`.`(마침표)를 사용하거나 명시적으로 `none`을 입력해 빈 영역을 정의할 수 있습니다.
+
+```css
+.container {
+  padding: 10px;
+  display: grid;
+  grid-template-rows: repeat(3, 100px);
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-areas:
+    'header header header'
+    'main . .'
+    'main . aside'
+    'footer footer footer';
+}
+
+.header {
+  grid-area: header;
+}
+.main {
+  grid-area: main;
+}
+.aside {
+  grid-area: aside;
+}
+.footer {
+  grid-area: footer;
+}
+```
+
+![CSS_8_12](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_8_12.png)
+
+---
+
+# 6. 출처
+
+- [Heropy Tech CSS Grid 완벽 가이드](https://heropy.blog/2019/08/17/css-grid/)
+
+---
+
+# 7. 실습 : GRID GARDEN
+
+https://cssgridgarden.com/#ko

@@ -1,0 +1,268 @@
+---
+title: 'JS-03-데이터 타입(Data Types) - Primitive(원시)'
+date: 2023/01/01
+---
+
+# 1. 데이터 타입(Data Types) 종류
+
+JavaScript의 데이터 타입(Data Type)은 크게 `primitive(기본, 원시)`과 `reference(참조)`으로 구분합니다.
+
+![js-3-1](https://raw.githubusercontent.com/berenickt/image-server/main/img/js-3-1.png)
+
+- 원시 값(언어의 최고 로우레벨에서 직접 표현되는 불변 데이터)
+  - [Number 타입](https://developer.mozilla.org/ko/docs/Web/JavaScript/Data_structures#number_타입)
+  - [String 타입](https://developer.mozilla.org/ko/docs/Web/JavaScript/Data_structures#string_타입)
+  - [Boolean 타입](https://developer.mozilla.org/ko/docs/Web/JavaScript/Data_structures#boolean_타입)
+  - [Null 타입](https://developer.mozilla.org/ko/docs/Web/JavaScript/Data_structures#null_타입)
+  - [Undefined 타입](https://developer.mozilla.org/ko/docs/Web/JavaScript/Data_structures#undefined_타입)
+  - [Symbol 타입](https://developer.mozilla.org/ko/docs/Web/JavaScript/Data_structures#symbol_타입)
+  - [BigInt 타입](https://developer.mozilla.org/ko/docs/Web/JavaScript/Data_structures#bigint_타입)
+    - 임의 정밀도로 정수를 나타낼 수 있는 JavaScript 숫자 원시 값
+    - Number의 안전 한계를 넘어서는 큰 정수도 안전하게 저장하고 연산
+- [객체](https://developer.mozilla.org/ko/docs/Web/JavaScript/Data_structures#객체) (속성의 컬렉션)
+  - array
+  - funciton
+  - data
+  - RegExp
+  - Map, WeakMap
+  - Set, WeakSet
+
+---
+
+# 2. 원시타입
+
+## 2.1 숫자 타입(number)
+
+```js
+let integer = 123 // 정수
+let negative = -123 // 음수
+let double = 1.23 // 실수
+
+console.log(integer) // 123
+console.log(negative) // -123
+console.log(double) // 1.23
+
+let binary = 0b1111011 // 2진수
+let octal = 0o173 // 8진수
+let hex = 0x7b // 16진수
+
+console.log(binary) // 123
+console.log(octal) // 123
+console.log(hex) // 123
+
+console.log(0 / 123) // 0
+console.log(123 / 0) // Infinity
+console.log(123 / -0) // -Infinity
+console.log(123 / 'text') // NaN (Not a Number)
+
+// 참고 : 정말 큰 수를 표현할 떄는 뒤에 n을 붙여야 함
+let bigInt = 1234567890123456789012345678901234567890n
+console.log(bigInt)
+```
+
+> 💡Infinity에 대해
+>
+> cf. [TED - 0으로 나누면 안되는 이유, 자막있음](https://youtu.be/NKmGVE85GUU)
+>
+> 0은 역수를 가질 수 없음
+
+---
+
+## 2.2 문자열 타입(string)
+
+```js
+// 문자열 타입
+let string = '안녕하세요'
+string = `안녕!`
+console.log(string)
+
+// 작은 따옴표 표현
+string = "'안녕!'"
+console.log(string)
+
+// 특수문자 출력하는 법 : 이스케이프 표현
+string = '안녕!\n나야!\t\t 내 이름은\\\u09AC'
+console.log(string)
+
+let id = '메시'
+let greetings = "'안녕!, " + id + "🖐️\n즐거운 하루 보내요!'"
+console.log(greetings)
+```
+
+---
+
+## 2.2.1 템플릿 리터럴(Template Literal)
+
+```js
+// 템플릿 리터럴(Template Literal) ``
+greetings = `'안녕, ${id}🖐️
+즐거운 하루 보내요!'`
+console.log(greetings)
+```
+
+백틱으로 문자를 만드시면 문자 중간에 `${변수명}` 이렇게 쉽게 넣을 수 있습니다.
+
+- 문자 중간 엔터키 입력이 가능
+- 문자 중간에 변수를 집어넣을 때 편리
+- 자바스크립 문자로 HTML을 작성하실 때도 유용
+
+---
+
+## 2.3 불리언 타입(boolean)
+
+```js
+// 불리언 타입
+let 참 = true
+let 거짓 = false
+console.log(참) // true
+console.log(거짓) // false
+
+// 활용 예:
+let isFree = true
+let isActivated = false
+let isEntrolled = true
+console.log(isActivated) // false
+
+console.clear()
+
+// Falshy 거짓인 값
+console.log(!!0) // false
+console.log(!!-0)
+console.log(!!'')
+console.log(!!null)
+console.log(!!undefined)
+console.log(!!NaN)
+
+// Truthy 참인 값
+console.log(!!1) // ture
+console.log(!!-1)
+console.log(!!'text')
+console.log(!!{})
+console.log(!!Infinity)
+```
+
+---
+
+## 2.4 null과 undefined 타입
+
+- `undefined` : 값이 있는지 없는지 모름
+- `null` : 값이 없음
+
+```js
+// null, undefined
+let variable
+console.log(variable) // undefined : 값이 있는지 없는지 모름
+
+variable = null
+console.log(variable) // null : 값이 없다
+
+let activeItem // 아직 활성화된 아이템이 있는지 없는지 모르는 상태!
+activeItem = null // 활성화된 아이템이 없는 상태!
+
+console.log(typeof 123) // number
+console.log(typeof '123') // string
+
+console.log(typeof null) // object : null을 표현하기 위해 만든 object가 할당됨
+console.log(typeof undefined) // undefined
+```
+
+---
+
+## 2.5 symbol 타입
+
+map과 set을 배운 후에 symbol을 이해합니다. `symbol(심벌)`은 유일한 값을 나타날 떄, 유용하게 사용할 수 있습니다.
+
+- Symbol은 Symbol() 함수로 생성합니다.
+- 이때 생성된 Symbol은 객체가 아니라 **변경 불가능한 원시 타입의 값**입니다.
+
+```js
+let mySymbol = Symbol()
+
+let mySymbol2 = Symbol('something')
+// Symbol()에 문자열을 줄수 있는데 별다릇 뜻은 없고 주석 같은 개념이다.
+// 디버깅할때 이 심볼이 어느 심볼인지 구분하기 편하게 하기 위한 장치
+
+console.log(mySymbol) // Symbol()
+console.log(typeof mySymbol) // symbol
+```
+
+심볼은 유일성이 보장되는 자료형이기 때문에, 설명이 동일한 **심볼을 여러 개 만들어도 각 심볼값은 다릅니다.**
+
+```js
+let id1 = Symbol('id')
+let id2 = Symbol('id')
+
+alert(id1 == id2) // false
+```
+
+---
+
+### 2.5.1 Symbol.keyFor()
+
+`Symbol()` 은 고유한 심볼을 반환합니다.
+하지만 Symbol.for() 는 전역으로 존재하는 global symbol table 의 목록을 참조합니다.
+때문에 Symbol.for(token string) 으로 정의할때, token string 으로 정의 된 심볼이 있다면, 해당 심볼을 반환하게 됩니다.
+
+```js
+// 전역 Symbol 레지스트리에 foo라는 키로 저장된 Symbol이 없으면 새로운 Symbol 생성
+const s1 = Symbol.for('foo')
+
+// 전역 Symbol 레지스트리에 foo라는 키로 저장된 Symbol이 있으면 해당 Symbol을 반환
+const s2 = Symbol.for('foo')
+
+console.log(s1 === s2) // true
+```
+
+---
+
+### 2.5.2 Symbol.keyFor()
+
+`Symbol.keyFor`은 global symbol table로부터 존재하는 Symbol의 token string을 반환합니다.
+
+```js
+var token = Symbol.for('tokenString')
+console.log(Symbol.keyFor(token) === 'tokenString') // true
+```
+
+---
+
+### 2.5.3 Symbol.description
+
+일반 심볼 이름을 반환합니다.
+
+```js
+const shareSymbol = Symbol.for('myKey')
+console.log(Symbol.keyFor(shareSymbol)) // myKey
+
+const unsharedSymbol = Symbol('myKey')
+console.log(Symbol.keyFor(unsharedSymbol)) // undefined
+console.log(unsharedSymbol.description) // myKey
+```
+
+```js
+// Symbol(심벌) : 유일한 키를 생성할 수 있음 🔑
+const map = new Map()
+// const key1 = 'key';
+// const key2 = 'key';
+const key1 = Symbol('key')
+const key2 = Symbol('key')
+map.set(key1, 'Hello')
+console.log(map.get(key2)) // undefined
+console.log(key1 === key2) // false
+
+// 동일한 이름으로 하나의 키를 사용하고 싶다면, Symbol.for
+// 전역 심벌 레지스트리(Global Symbol Registry) = 전역적으로 심벌을 관리하고 재사용하는 곳
+const k1 = Symbol.for('key')
+const k2 = Symbol.for('key')
+console.log(k1 === k2) // true
+
+console.log(Symbol.keyFor(k1)) // key
+console.log(Symbol.keyFor(key1)) // undefined
+
+// 보안을 위해 외부에서 접근을 막는 Symbol
+// 결론 : 문자열이 같아도 유니크한 키값을 만들고 싶을 떄, Symbol을 사용
+const obj = { [k1]: 'Hello', [Symbol('key')]: 1 }
+console.log(obj) // { [Symbol(key)]: 'Hello', [Symbol(key)]: 1 }
+console.log(obj[k1]) // Hello
+console.log(obj[Symbol('key')]) // undefined
+```

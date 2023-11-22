@@ -1,0 +1,159 @@
+---
+title: 'JS-DOM-04-DOM Node 생성, 추가, 복제, 삭제'
+date: 2023/01/29
+---
+
+# 1. Node 콘텐츠 생성
+
+|     속성      | 설명                                                         |
+| :-----------: | ------------------------------------------------------------ |
+| `textContent` | 요소 노드의 모든 텍스트에 접근                               |
+|  `innerText`  | 요소 노드의 텍스트 중 웹 브라우저에 표시되는 텍스트에만 접근 |
+|  `innerHTML`  | 요소 노드의 텍스트 중 HTML 태그를 포함한 텍스트에만 접근     |
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>콘텐츠 조작</title>
+  </head>
+  <body>
+    <p id="title">Hello, <span style="display: none">JavaScript</span></p>
+    <script>
+      document.getElementById('title').textContent // Hello, Javascript!
+      document.getElementById('title').innerText // Hello,
+      document.getElementById('title').innerHTML // Hello, <span style="display: none;">JavaScript</span>
+
+      console.log(document.getElementById('title').textContent)
+      console.log(document.getElementById('title').innerText)
+      console.log(document.getElementById('title').innerHTML)
+    </script>
+  </body>
+</html>
+```
+
+콘텐츠 조작 속성은 접근한 노드의 콘텐츠를 가져올 뿐만 아니라 속성에 값을 할당하면,
+각 노드의 콘텐츠를 바꿀 수도 있습니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DOM Modify Set</title>
+  </head>
+  <body>
+    <p id="textContent"></p>
+    <p id="innerText"></p>
+    <p id="innerHTML"></p>
+    <script>
+      // 단순히 텍스트로 취급해서 값을 그대로 노드의 콘텐츠에 적용
+      document.querySelector('#textContent').textContent = `<strong>textContent</strong> 속성`
+      document.querySelector('#innerText').innerText = `<strong>innerText</strong> 속성`
+
+      // 태그로 인식해 노드의 콘텐츠에 적용
+      document.querySelector('#innerHTML').innerHTML = `<strong>innerHTML</strong> 속성`
+    </script>
+  </body>
+</html>
+```
+
+아래와 같은 `li` 태그가 있을 때,
+
+```html
+<li id="blue">Blue</li>
+<script>
+  const blue = document.getElementById('blue') // 아이디로 태그를 선택
+
+  blue.firstChild // "Blue" - 모든 노드를 반환하므로, text 노드만 가져옴
+  blue.firstElementChild // "null" - 노드의 요소만 반환
+
+  const blueTextNode = blue.firstChild
+
+  blueTextNode.nodeName // '#text'
+  blueTextNode.nodeType // 3
+  blueTextNode.nodeValue // 'Blue' - 특정 노드의 텍스트를 가져옴
+
+  blueTextNode.nodeValue = '파랑' // 이렇게 입력도 가능
+</script>
+```
+
+- `firstChild, firstElementChild` 로 해당 노드 및 해당 노드의 요소를 반환
+- `nodeName, nodeType, nodeValue` 를 사용하면 해당 노드의 값들을 불러옴
+
+---
+
+## 1.1 innerHTML 방법
+
+`ul` 태그 안에 `글자를 넣은 li` 태그를 만들고 싶다면,
+
+```js
+const newLi = document.createElement('li') // li 태그 만들고
+newLi.innerHTML = 'green' // 만든 li 태그 안에 글자 넣고
+const ul = document.getElementById('color') // ul 태그 만들고
+ul.appendChild(newLi) // 만든 ul 태그 안에 li 태그를 넣는다.
+```
+
+---
+
+## 1.2 createTextNode 방법
+
+`innerHTML` 사용하지 않고 만든다면, 아래처럼 `createTextNode` 를 쓸 수도 있습니다.
+
+```js
+const newLi2 = document.createElement('li') // li 태그 생성
+const newText = document.createTextNode('pink') // 텍스트 노드만 생성
+newLi2.appendChild(newText) // 텍스트 노드를 생성한 li 태그에 넣는다.
+```
+
+---
+
+# 2. Node 추가
+
+- 노드 생성
+  - `createElement()` : 요소 노드를 생성
+  - `createTextNode()` : 텍스트 노드를 생성
+  - `createAttribute()` : 속성 노드를 생성
+- 노드 연결
+  - `<기준 노드>.appendChild(<자식 노드>)`
+    - 기준 노드에 자식 노드를 연결
+  - `<기준 노드>.setAttributeNode(<속성 노드>)`
+    - 기준 노드에 속성 노드를 연결
+
+특정 요소 앞에 리스트를 추가하고 싶다면 `insertBefore` 를 사용합니다.
+
+```js
+ul.insertBefore(newLi2, red)
+// ul 에 newLi2 를 추가하는데 red 로 선택한 요소 앞에 넣어라
+```
+
+---
+
+# 3. Node 복제
+
+노드 복제할 때는 `cloneNode()` 를 사용합니다.
+
+```js
+const newBlack = newLi.cloneNode() // 빈 노드만 복제
+const newBlack = newLi.cloneNode(ture) // 노드의 요소까지 복제
+```
+
+---
+
+# 4. Node 삭제
+
+- 삭제 노드는 항상 부모 노드에서 `removeChild()` 메서드를 사용
+- 따라서 부모 노드를 반환하는 parentNode 속성으로 부모 노드에 접근해서 삭제
+- `parentNode.removeChild.(자식노드)`
+
+```js
+ul.removeChild(red)
+
+ul.removeChild(ul.firstElementChild) // ul 의 첫번째 자식요소
+ul.removeChild(ul.lastElementChild) // ul 의 마지막 자식요소
+```

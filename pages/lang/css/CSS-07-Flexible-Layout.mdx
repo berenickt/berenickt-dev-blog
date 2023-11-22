@@ -1,0 +1,876 @@
+---
+title: '07-Flexbox 레이아웃'
+date: 2023/02/06
+---
+
+# 1. 실습 - 워밍업
+
+본격적으로 Flexible Box Layout을 공부하기 전에 워밍업 차원에서 실습 문제를 하나 풀어보겠습니다.
+기본으로 제공되는 실습 코드를 실행하면 아래와 같이 보입니다.
+
+![CSS_7_1](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_7_1.png)
+
+이를 아래와 같이 보일 수 있도록 CSS 스타일을 적용해주세요.
+
+![CSS_7_2](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_7_2.png)
+
+---
+
+## 1.1 HTML
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>[실습] 워밍업</title>
+    <link href="style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- 기본 제공 HTML 코드 -->
+    <div class="flex-container">
+      <div class="flex-item red-box">A</div>
+      <div class="flex-item blue-box">B</div>
+      <div class="flex-item green-box">C</div>
+    </div>
+  </body>
+</html>
+```
+
+---
+
+## 1.2 CSS
+
+```css
+/* 기본 제공 CSS 코드 */
+.flex-container {
+  width: 300px;
+  height: 300px;
+  border: 4px solid black;
+}
+.flex-item {
+  width: 50px;
+  height: 50px;
+  color: white;
+  font-size: 20px;
+}
+.red-box {
+  background-color: red;
+}
+.blue-box {
+  background-color: blue;
+}
+.green-box {
+  background-color: green;
+}
+```
+
+문제를 푸는 방법은 크게 두 가지가 있습니다.
+
+1. `float 속성을 사용해서 정렬하는 방법`
+   - 텍스트는 text-align 속성을 사용해서 center 값으로 지정하면 수평 방향에서 중앙으로 정렬할 수 있습니다.
+   - 그리고 수직 방향에서 중앙 정렬은 line-height 속성의 값을 HTML 요소의 높이 값과 똑같이 지정하면 됩니다.
+   - (1.3)의 방법
+2. `display 속성의 값으로 inline-block으로 지정하는 방법`
+
+---
+
+## 1.3 CSS 정답 - float
+
+```css
+.flex-container {
+  width: 300px;
+  height: 300px;
+  border: 4px solid black;
+}
+.flex-item {
+  width: 50px;
+  height: 50px;
+  color: white;
+  font-size: 20px;
+  /* ⭐ 정렬을 위한 속성 추가 */
+  float: left;
+  text-align: center;
+  line-height: 50px;
+}
+.red-box {
+  background-color: red;
+}
+.blue-box {
+  background-color: blue;
+}
+.green-box {
+  background-color: green;
+}
+```
+
+---
+
+# 2. Flexible Box Layout이란?
+
+> MDN Flexbox : https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox
+
+`Flexible Box Layout`은 흔히 `Flexible Layout`라고도 불리며 `1차원 방식`으로 효과적으로 레이아웃을 설계할 수 있도록 고안된 레이아웃 스타일입니다. 여기서 `1차원`이란 `수평(가로, row)이나 수직(세로, column) 방향 중 한 방향으로만` 레이아웃을 설계하는 방식을 말합니다.
+
+`Flexible Box Layout`에는 이런 1차원 방식으로 HTML 요소를 디자인하는 속성들이 많이 추가되어서 과거보다 훨씬 간단하게 1차원 레이아웃을 구성할 수 있게 되었습니다. 워밍업으로 풀었던 CSS를 다시 보겠습니다.
+
+---
+
+## 2.1 CSS 정답 - Flexbox
+
+```css
+.flex-container {
+  width: 300px;
+  height: 300px;
+  border: 4px solid black;
+  background-color: #fff;
+  /* 자식관계에 있는 요소만 flex되기 떄문에 자식의 자식에서 또 flex 적용 가능 */
+  display: flex; /* parent의 자식요소인 .box를 수평 정렬 */
+}
+.flex-item {
+  width: 50px;
+  height: 50px;
+  color: white;
+  font-size: 20px;
+  /* .box의 자식요소인 text를 정렬 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.red-box {
+  background-color: red;
+}
+.blue-box {
+  background-color: blue;
+}
+.green-box {
+  background-color: green;
+}
+```
+
+---
+
+# 3. Flex Container
+
+## 3.1 display
+
+`display` 속성으로 Flex Container를 정의합니다.
+
+|     값      | 의미                                | 기본값 |
+| :---------: | ----------------------------------- | :----: |
+|    flex     | Block 특성의 Flex Container를 정의  |        |
+| inline-flex | Inline 특성의 Flex Container를 정의 |        |
+
+`flex`와 `inline-flex`는 차이는 단순합니다.
+`display: flex;`로 지정된 Flex Container는 Block 요소와 같은 성향(수직 쌓임)을 가지며,
+`display: inline-flex`로 지정된 Flex Container는 Inline(Inline Block) 요소와 같은 성향(수평 쌓임)을 가집니다.
+
+여기서 말하는 수직과 수평 쌓임은 Items가 아니라 Container라는 것에 주의합시다.
+두 값의 차이는 내부에 Items에는 영향을 주지 않습니다.
+
+![CSS_7_3](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_7_3.png)
+
+```css
+.flex-container {
+  width: 300px;
+  height: 300px;
+  border: 4px solid black;
+  background-color: #fff;
+  /* 플렉스 박스 레이아웃이 되고, 관련 속성을 사용할 수 있게 만듬 */
+  /* 정렬을 적용하려는 요소의 부모 요소에 flex를 지정 */
+  display: flex;
+}
+.flex-item {
+  width: 50px;
+  height: 50px;
+  color: white;
+  font-size: 20px;
+}
+.red-box {
+  background-color: red;
+}
+.blue-box {
+  background-color: blue;
+}
+.green-box {
+  background-color: green;
+}
+```
+
+---
+
+## 3.2 메인 축과 교차 축
+
+이렇게 수평정렬이 되는 이유를 알려면, Flexible Box Layout의 기본 개념이 필요합니다.
+
+![CSS_7_4](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_7_4.png)
+
+- `flex container`
+  - 메인축(main axis)과 교차축(cross axis) 개념이 생김
+  - 메인축의 기본값은 왼쪽에서 오른쪽으로
+  - 교차축의 기본값은 위에서 아래로
+- `flex item`
+  - flex container의 자식 관계에 있는 아이템
+  - 메인축의 방향으로 배치됨
+  - 메인축의 방향이 바뀌게 되면, flex item의 배치도 변경됨 (`flex-direction`)
+- `시작점(flex-start)`과 `끝점(flex-end)`
+
+---
+
+### 3.2.1 flex-direction: 메인 축 방향 결정
+
+`container에 적용하는 속성`으로 container안의 item의 메인축 방향을 설정합니다.
+
+|       값       | 의미                                         | 기본값 |
+| :------------: | -------------------------------------------- | :----: |
+|      row       | Itmes를 수평축(왼쪽에서 오른쪽으로)으로 표시 | `row`  |
+|  row-reverse   | Items를 `row`의 반대 축으로 표시             |        |
+|     column     | Items를 수직축(위에서 아래로)으로 표시       |        |
+| column-reverse | Items를 `column`의 반대 축으로 표시          |        |
+
+플렉스 박스 레이아웃은 기본으로 flex-direction 속성값이 row로 적용됩니다.
+flex-direction 속성값에 따라 주축 방향과 플렉스 아이템 배치가 다음 그림처럼 달라집니다.
+
+![CSS_7_5](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_7_5.png)
+
+```css
+.flex-container {
+  width: 300px;
+  height: 300px;
+  border: 4px solid black;
+  background-color: #fff;
+  /* 플렉스 박스 레이아웃이 되고, 관련 속성을 사용할 수 있게 만듬 */
+  /* 정렬을 적용하려는 요소의 부모 요소에 flex를 지정 */
+  display: flex;
+  /* 📝 flex-direction : 플렉스 컨테이너의 주축을 변경할 떄 사용 */
+  flex-direction: row;
+}
+.flex-item {
+  width: 50px;
+  height: 50px;
+  color: white;
+  font-size: 20px;
+}
+.red-box {
+  background-color: red;
+}
+.blue-box {
+  background-color: blue;
+}
+.green-box {
+  background-color: green;
+}
+```
+
+---
+
+### 3.2.2 justify-content: 메인 축 정렬
+
+주 축(main-axis)의 정렬 방법을 설정합니다.
+
+|      값       | 의미                                                                                    |
+| :-----------: | --------------------------------------------------------------------------------------- |
+|  flex-start   | Items를 시작점(flex-start)으로 정렬 (기본값)                                            |
+|   flex-end    | Items를 끝점(flex-end)으로 정렬                                                         |
+|    center     | Items를 가운데 정렬                                                                     |
+| space-between | 시작 Item은 시작점에, 마지막 Item은 끝점에 정렬되고 나머지 Items는 사이에 고르게 정렬됨 |
+| space-around  | Items를 균등한 여백을 포함하여 정렬                                                     |
+| space-evenly  | 플렉스 아이템 사이와 양끝의 간격이 균일하도록 정렬합니다.                               |
+
+![CSS_7_6](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_7_6.png)
+
+```css
+.flex-container {
+  width: 300px;
+  height: 300px;
+  border: 4px solid black;
+  background-color: #fff;
+  display: flex;
+  flex-direction: row;
+  /* 📝 justify-content : 주축의 방향에서 좌, 우, 중앙 정렬을 할 떄 사용 */
+  justify-content: center;
+}
+.flex-item {
+  width: 50px;
+  height: 50px;
+  color: white;
+  font-size: 20px;
+}
+.red-box {
+  background-color: red;
+}
+.blue-box {
+  background-color: blue;
+}
+.green-box {
+  background-color: green;
+}
+```
+
+---
+
+### 3.2.3 flex-wrap: 줄바꿈
+
+Items의 여러 줄 묶음(줄 바꿈)을 설정합니다.
+
+|      값      | 의미                                           |  기본값  |
+| :----------: | ---------------------------------------------- | :------: |
+|    nowrap    | 모든 Itmes를 여러 줄로 묶지 않음(한 줄에 표시) | `nowrap` |
+|     wrap     | Items를 여러 줄로 묶음                         |          |
+| wrap-reverse | Items를 `wrap`의 역 방향으로 여러 줄로 묶음    |          |
+
+![CSS_7_7](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_7_7.png)
+
+플렉스 박스 레이아웃은 플렉스 아이템의 개수를 늘려 플렉스 컨테이너를 초과하게 해도 플렉스 아이템이 절대로 줄 바꿈되지 않습니다.
+
+```css
+.flex-container {
+  width: 300px;
+  height: 300px;
+  border: 4px solid black;
+  background-color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+}
+.flex-item {
+  width: 101px;
+  height: 50px;
+  color: white;
+  font-size: 20px;
+}
+.red-box {
+  background-color: red;
+}
+.blue-box {
+  background-color: blue;
+}
+.green-box {
+  background-color: green;
+}
+```
+
+---
+
+## 3.3 align-content: 교차축 정렬 (2줄 이상)
+
+교차 축(cross-axis)의 정렬 방법을 설정합니다. 주의할 점은 `flex-wrap` 속성을 통해 Items가 여러 줄(2줄 이상)이고 여백이 있을 경우만 사용할 수 있습니다.
+
+> Items가 한 줄일 경우 `align-items` 속성을 사용하세요.
+
+|      값       | 의미                                                                                    |
+| :-----------: | --------------------------------------------------------------------------------------- |
+|    stretch    | Container의 교차 축을 채우기 위해 Items를 늘림 (기본값)                                 |
+|  flex-start   | Items를 시작점(flex-start)으로 정렬                                                     |
+|   flex-end    | Items를 끝점(flex-end)으로 정렬                                                         |
+|    center     | Items를 가운데 정렬                                                                     |
+| space-between | 시작 Item은 시작점에, 마지막 Item은 끝점에 정렬되고 나머지 Items는 사이에 고르게 정렬됨 |
+| space-around  | Items를 균등한 여백을 포함하여 정렬                                                     |
+
+![CSS_7_8](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_7_8.png)
+
+```css
+.flex-container {
+  width: 300px;
+  height: 300px;
+  border: 4px solid black;
+  background-color: #fff;
+  display: flex;
+  /* 📝 align-content : 2줄 이상일 떄, 교차축 정렬 */
+  align-content: center;
+  flex-wrap: wrap;
+}
+.flex-item {
+  width: 101px;
+  height: 50px;
+  color: white;
+  font-size: 20px;
+}
+.red-box {
+  background-color: red;
+}
+.blue-box {
+  background-color: blue;
+}
+.green-box {
+  background-color: green;
+}
+```
+
+---
+
+## 3.4 align-items: 교차축 정렬 (1줄)
+
+교차 축(cross-axis)에서 Items의 정렬 방법을 설정합니다. Items가 한 줄일 경우 많이 사용합니다.
+
+> 주의할 점은 Items가 `flex-wrap`을 통해 여러 줄(2줄 이상)일 경우에는 `align-content` 속성이 우선합니다.
+> 따라서 `align-items`를 사용하려면 `align-content` 속성을 기본값(`stretch`)으로 설정해야 합니다.
+
+|     값     | 의미                                                    |
+| :--------: | ------------------------------------------------------- |
+|  stretch   | Container의 교차 축을 채우기 위해 Items를 늘림 (기본값) |
+| flex-start | Items를 각 줄의 시작점(flex-start)으로 정렬             |
+|  flex-end  | Items를 각 줄의 끝점(flex-end)으로 정렬                 |
+|   center   | Items를 가운데 정렬                                     |
+|  baseline  | Items를 문자 기준선에 정렬                              |
+
+![CSS_7_9](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_7_9.png)
+
+```css
+.flex-container {
+  width: 300px;
+  height: 300px;
+  border: 4px solid black;
+  background-color: #fff;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  /* 📝 align-items : 교차축 방향에서 플렉스 아이템을 정렬할 떄 사용 */
+  /* stretch : 교차축 방향을 꽉차게 늘리라는 의미, height가 지정되어 있으면 무시됨 */
+  align-items: center;
+}
+.flex-item {
+  width: 50px;
+  height: 50px; /* stretch 속성값을 위해 height 지워보기 */
+  color: white;
+  font-size: 20px;
+}
+.red-box {
+  background-color: red;
+}
+.blue-box {
+  background-color: blue;
+}
+.green-box {
+  background-color: green;
+}
+```
+
+---
+
+## 3.5 flex-flow: 단축 속성
+
+`container에 적용하는 속성`으로 flex-direction 속성과 flex-wrap 속성을 한 번에 사용할 수 있는 단축 속성입니다.
+다음처럼 작성된 flex 속성이 있다고 해 봅시다.
+
+```css
+.flex-container {
+  width: 300px;
+  height: 300px;
+  border: 4px solid black;
+  background-color: #fff;
+  display: flex;
+  /* flex-direction: column; */
+  /* flex-wrap: nowrap; */
+  /* flex-direction 속성과 flex-wrap 속성을 한 번에 사용할 수 있는 단축 속성 */
+  flex-flow: column nowrap;
+}
+.flex-item {
+  width: 101px;
+  height: 50px;
+  color: white;
+  font-size: 20px;
+}
+.red-box {
+  background-color: red;
+}
+.blue-box {
+  background-color: blue;
+}
+.green-box {
+  background-color: green;
+}
+```
+
+---
+
+# 4. Flex Items
+
+HTML을 다음과 같이 수정하겠습니다.
+
+```html
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flexbox</title>
+    <link href="style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="flex-container">
+      <div class="flex-item red-box">A</div>
+      <div class="flex-item blue-box">BBBBB</div>
+      <div class="flex-item green-box">C</div>
+    </div>
+  </body>
+</html>
+```
+
+---
+
+## 4.1 order: Item의 순서를 설정
+
+Item의 순서를 설정합니다. Item에 숫자를 지정하고 숫자가 클수록 순서가 밀립니다. 음수가 허용됩니다.
+
+> HTML 구조와 상관없이 순서를 변경할 수 있기 때문에 유용합니다.
+
+|  값  | 의미               | 기본값 |
+| :--: | ------------------ | :----: |
+| 숫자 | Item의 순서를 설정 |  `0`   |
+
+![CSS_7_10](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_7_10.png)
+
+---
+
+## 4.2 flex 단축 속성
+
+Item의 너비(증가, 감소, 기본)를 설정하는 단축 속성입니다.
+
+|     값      | 의미                                 | 기본값 |
+| :---------: | ------------------------------------ | :----: |
+|  flex-grow  | Item의 증가 너비 비율을 설정         |  `0`   |
+| flex-shrink | Item의 감소 너비 비율을 설정         |  `1`   |
+| flex-basis  | Item의 (공간 배분 전) 기본 너비 설정 | `auto` |
+
+```css
+/* flex: 증가너비 감소너비 기본너비; */
+flex: 1 1 20px; /* 증가너비 감소너비 기본너비 */
+flex: 1 1; /* 증가너비 감소너비 */
+flex: 1 20px; /* 증가너비 기본너비 (단위를 사용하면 flex-basis가 적용됩니다) */
+```
+
+---
+
+### 4.2.1 flex-basis: 기본 너비 설정
+
+Item이 감소하는 너비의 비율을 설정합니다. 숫자가 크면 더 많은 너비가 감소합니다.
+Item이 가변 너비가 아니거나, 값이 0이면 효과가 없습니다.
+
+| 값   | 의미                         | 기본값 |
+| ---- | ---------------------------- | ------ |
+| 숫자 | Item의 감소 너비 비율을 설정 | `1`    |
+
+![CSS_7_11](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_7_11.png)
+
+```css
+* {
+  box-sizing: border-box;
+}
+.flex-container {
+  width: 100%;
+  height: 300px;
+  border: 4px solid black;
+  background-color: #fff;
+  display: flex;
+}
+.flex-item {
+  color: white;
+  font-size: 20px;
+  /* 📝 flex-basis : flex-item의 기본 크기를 50으로 지정 */
+  /* flex-item의 너비는 자동으로 content 너비만큼 적용됨 */
+  /* 50px이 되지 않는 플렉스 아이템들은 50px로, 50px이 넘는 플렉스 아이템은 콘텐츠 너비만큼 적용  */
+  flex-basis: 50px;
+}
+.red-box {
+  background-color: red;
+}
+.blue-box {
+  background-color: blue;
+}
+.green-box {
+  background-color: green;
+}
+```
+
+---
+
+### 4.2.2 flex-grow: 증가 너비 비율 설정
+
+Item의 증가 너비 비율을 설정합니다. 숫자가 크면 더 많은 너비를 가집니다. Item이 가변 너비가 아니거나, 값이 `0`일 경우 효과가 없습니다.
+
+|  값  | 의미                         | 기본값 |
+| :--: | ---------------------------- | :----: |
+| 숫자 | Item의 증가 너비 비율을 설정 |  `0`   |
+
+모든 Items의 총 증가 너비(`flex-grow`)에서 각 Item의 증가 너비의 비율 만큼 너비를 가질 수 있습니다. 예를 들어, Item이 3개이고 증가 너비가 각각 `1`, `2`, `1`이라면,
+
+- 첫 번째 Item은 총 너비의 25%(1/4)을,
+- 두 번째 Item은 총 너비의 50%(2/4)를,
+- 세 번째 Item은 총 너비의 25%(1/4)을 가지게 됩니다.
+
+![CSS_7_12](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_7_12.png)
+
+```css
+* {
+  box-sizing: border-box;
+}
+.flex-container {
+  width: 100%;
+  height: 300px;
+  border: 4px solid black;
+  background-color: #fff;
+  display: flex;
+}
+.flex-item {
+  color: white;
+  font-size: 20px;
+  flex-basis: 50px;
+}
+/* 📝 flex-grow : flex-basis의 크기 값을 제외하고 나머지 여백을 일정한 비율로 나눠가지는 속성 */
+/* 속성값으로는 비율에 해당하는 값을 적용 */
+/* 자식 요소에 1:2:1 비율로 적용함 */
+.red-box {
+  background-color: red;
+  flex-grow: 1;
+}
+.blue-box {
+  background-color: blue;
+  flex-grow: 2;
+}
+.green-box {
+  background-color: green;
+  flex-grow: 1;
+}
+```
+
+---
+
+### 4.2.3 flex-shrink: 감소 너비 비율을 설정
+
+Item이 감소하는 너비의 비율을 설정합니다. 숫자가 크면 더 많은 너비가 감소합니다.
+Item이 가변 너비가 아니거나, 값이 0이면 효과가 없습니다.
+
+|  값  | 의미                         | 기본값 |
+| :--: | ---------------------------- | :----: |
+| 숫자 | Item의 감소 너비 비율을 설정 |  `1`   |
+
+![CSS_7_13](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_7_13.png)
+
+```css
+* {
+  box-sizing: border-box;
+}
+.flex-container {
+  width: 100%;
+  height: 300px;
+  border: 4px solid black;
+  background-color: #fff;
+  display: flex;
+}
+.flex-item {
+  color: white;
+  font-size: 20px;
+  flex-basis: 50px;
+  /* 📝 flex-shrink : flex-item이 flex-basis 속성으로 설정된 크기보다 더 작아질 수 있는지 결정 */
+  /* 속성값은 0 또는 1(기본값)을 사용 */
+  /* 0은 작아질 수 없다, 1은 작아질 수 있다 */
+  /* 브라우저의 너비가 줄어들어, flex-basis의 값이 보장되지 않을 떄 자동으로 줄어듬 */
+  /* 이는 flex-shrink의 기본값이 1이기 때문 */
+  /* 0으로 지정하면, 브라우저의 넓이가 flex-basis의 값이 보장되지 않을 때, 최소 크기를 보장받습니다. */
+  /* 단, flexbox의 전체적인 영역은 브라우저 영역을 빠져나가면서 적용됨 */
+  flex-shrink: 0;
+}
+.red-box {
+  background-color: red;
+}
+.blue-box {
+  background-color: blue;
+}
+.green-box {
+  background-color: green;
+}
+```
+
+---
+
+## 4.3 align-self : 교차축에서 개별 item 정렬
+
+교차 축(cross-axis)에서 개별 Item의 정렬 방법을 설정합니다.
+`align-items`는 Container 내 모든 Items의 정렬 방법을 설정합니다.
+필요에 의해 일부 Item만 정렬 방법을 변경하려고 할 경우 `align-self`를 사용할 수 있습니다.
+이 속성은 `align-items` 속성보다 우선합니다.
+
+|     값     | 의미                                               |
+| :--------: | -------------------------------------------------- |
+|    auto    | Container의 `align-items` 속성을 상속받음 (기본값) |
+|  stretch   | Container의 교차 축을 채우기 위해 Item을 늘림      |
+| flex-start | Item을 각 줄의 시작점(flex-start)으로 정렬         |
+|  flex-end  | Item을 각 줄의 끝점(flex-end)으로 정렬             |
+|   center   | Item을 가운데 정렬                                 |
+|  baseline  | Item을 문자 기준선에 정렬                          |
+
+![CSS_7_14](https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_7_14.png)
+
+---
+
+## 4.4 word-break: 콘텐츠 짤리면 줄넘김
+
+```css
+* {
+  box-sizing: border-box;
+}
+.flex-container {
+  width: 100%;
+  height: 300px;
+  border: 4px solid black;
+  background-color: #fff;
+  display: flex;
+}
+.flex-item {
+  color: white;
+  font-size: 20px;
+  flex-basis: 50px;
+  /* 📝 모든 플렉스 아이템에 강제로 동일한 너비를 갖게하고 싶다면 */
+  width: 40px;
+  /* 이때, 콘텐츠가 짤리는 경우에 발생하는데, 이를 해결하려면 아래 코드 적용 */
+  word-break: break-all;
+}
+.red-box {
+  background-color: red;
+}
+.blue-box {
+  background-color: blue;
+}
+.green-box {
+  background-color: green;
+}
+```
+
+---
+
+# 5. 출처
+
+- [Heropy Tech CSS Flex 완벽가이드](https://heropy.blog/2018/11/24/css-flexible-box/)
+
+---
+
+# 6. Flex 게임 : Flexbox Froggy
+
+https://flexboxfroggy.com/#ko
+
+---
+
+# Level 1 ~ 4 : **justify-content**
+
+```css
+parent {
+  justify-content: flex-start; /* flex-end, center, space-between, space-around, space-evenly */
+}
+```
+
+**기본 축으로 정렬**한다.
+
+기본값은 flex-start로 자식 요소의 시작 방향으로 정렬한다.
+
+- `flex-end`은 종료 방향, center는 가운데 방향,
+- `space-between`은 좌우 사이 간격을 균일하게, space-around는 주위 간격을 균일하게,
+- `space-evenly`는 균일하게 배치하면서 양 끝의 간격에도 여백을 적용한다.
+
+---
+
+# Level 5 ~ 7 : **align-items**
+
+```css
+parent {
+  align-items: flex-start; /* flex-end, center, space-between, space-around, space-evenly */
+}
+```
+
+**반대 축으로 정렬**한다. 값은` justy-content`와 동일하다.
+
+---
+
+# Level 8 ~ 13 : **flex-direction**
+
+```css
+parent {
+  flex-direction: row; /* row-reverse, column, column-reverse */
+}
+```
+
+자식 요소의 기본축 정렬 방향을 변경한다. 기본값은 row로 기본축을 가로로 지정한다.
+
+- `column`은 세로,
+- `row-reverse`와 `column-reverse`는 각각 가로, 세로 역순으로 정렬한다.
+
+---
+
+# Level 14, 15 : **order**
+
+```css
+child {
+  order: 숫자;
+}
+```
+
+자식 요소의 순서를 지정한다.
+
+---
+
+# Level 16, 17 : **align-self**
+
+```css
+child {
+  align-self: flex-start; /* flex-end, center, space-between, space-around, space-evenly */
+}
+```
+
+선택한 자식 요소만 정렬을 바꿀 수 있다.
+
+---
+
+# Level 18, 19 : **flex-wrap**
+
+```css
+parent {
+  flex-wrap: nowrap; /* wrap */
+}
+```
+
+자식 요소에 줄 바꿈을 할지 적용한다. 기본값은 `nowrap`으로 줄 바꿈을 하지 않는다.
+값을 `wrap`으로 하면 자식 요소들이 줄 바꿈을 한다.
+
+---
+
+# Level 20 : **flex-flow**
+
+```css
+parent {
+  flex-flow: flex-direction flex-wrap;
+}
+```
+
+`flex-direction`과 `flex-wrap`을 한꺼번에 적용한다.
+
+---
+
+# Level 21 ~ 24 : **align-content**
+
+```css
+parent {
+  align-content: flex-start; /* flex-end, center, space-between, space-around, space-evenly */
+}
+```
+
+`align-items`와 같은 축으로 정렬한다.
+
+차이점은 `align-items`은 줄 바꿈이 없을 때 사용하고, `align-content`는 줄 바꿈이 있을 때 사용한다.
+
+---
+
+# 추가 : flex-grow와 flex-shrink
+
+```css
+child {
+  flex-grow: 숫자;
+  flex-shrink: 숫자;
+}
+```
+
+- `flex-grow`는 기본값은 0으로,
+  - 해당 숫자를 늘리면, 크기를 늘렸을 때 남은 공간만큼 다른 자식 요소들의 크기 대비 더 많이 늘어난다.
+- `flex-shrink`는 기본값은 1로,
+- 해당 숫자를 늘리면 크기를 줄였을 때 다른 자식 요소들의 크기 대비 더 많이 줄어든다.

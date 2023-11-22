@@ -1,0 +1,92 @@
+---
+title: 'JS-DOM-08-textContent, innerText, innerHTML 차이'
+date: 2023/01/30
+---
+
+요소에 접근해 데이터를 설정하거나 가져올 때 사용하는 프로퍼티인 `textContent, innerText, innerHTML`를 사용합니다.
+
+# 1. textContent
+
+```html
+<div id="1" onClick="(check(event))">
+  click
+  <div id="2">child1</div>
+  <div id="3">
+    child2
+    <div id="4">grandchild</div>
+  </div>
+</div>
+
+<script>
+  const check = event => {
+    console.log(event.target.textContent)
+  }
+</script>
+```
+
+---
+
+# 2. innerText
+
+```html
+<div id="1" onClick="(check(event))">
+  click
+  <div id="2">child1</div>
+  <div id="3">
+    child2
+    <div id="4">grandchild</div>
+  </div>
+</div>
+
+<script>
+  const check = event => {
+    console.log(event.target.innerText)
+  }
+</script>
+```
+
+---
+
+# 3. innerHTML
+
+```html
+<div id="1" onClick="(check(event))">
+  click
+  <div id="2">child1</div>
+  <div id="3">
+    child2
+    <div id="4">grandchild</div>
+  </div>
+</div>
+
+<script>
+  const check = event => {
+    console.log(event.target.innerHTML)
+  }
+</script>
+```
+
+---
+
+# 4. 정리
+
+- `textContent`
+  - **text/plain으로 파싱하여 모든 요소를 반환**
+  - script, style 요소를 포함해 CSS를 사용해 숨겨진 요소도 함께 반환하며,
+  - 요소의 원시 텍스트를 사용하므로 **성능이 좋습니다.**
+- `innerText`
+  - **text/plain으로 파싱하여 렌더링 후의 요소를 반환**
+  - script, style 요소는 반환하지 않으며 숨겨진 요소도 반환하지 않음
+  - 자식 노드를 모두 제거하고 하나의 텍스트로 반환되며 **성능은 보통**
+- `innerHTML`
+  - **text/html로 파싱하여 요소의 html, xml 전체를 반환**
+  - html을 다루므로 보안 이슈 중 하나인 XSS(Cross Site Scripting)에 취약
+  - HTML5에서는 innerHTML에 삽입된 script 태그는 실행되지 않도록 변경되었지만,
+  - img등 다른 태그를 통해 접근하면 여전히 취약점이 남습니다.
+  - 따라서 innerHTML은 별도로 문제 방지를 위한 설정이 없다면 **사용을 권장하지 않습니다**.
+
+---
+
+# 참고
+
+- https://choonse.com/2022/02/13/924/

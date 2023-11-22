@@ -1,0 +1,512 @@
+---
+title: '03-Type-interface'
+date: 2023/01/08
+---
+
+# 1. interface(인터페이스)
+
+`interface` 문법을 쓰면, **object 자료형의 타입을 보다 편리하게 지정가능**합니다.
+
+- cf. interface : 상호 간에 정의한 약속 혹은 규칙
+
+```typescript
+let person = { name: '메시', age: 36 }
+
+// 'age를 속성으로 갖는 객체'를 파라미터로 받음
+function logAge(obj: { age: number }) {
+  console.log(obj.age)
+}
+logAge(person) // 28
+```
+
+이렇게 인자를 받을 때 단순한 타입 뿐만 아니라 객체의 속성 타입까지 정의할 수 있죠.
+만약 위 코드에 interface를 적용하면 어떤 모습일까요?
+
+**type을 미리 정의하고 싶으면 interface 키워드**를 이렇게 만들어봅시다.
+
+```typescript
+// 1. interface로 객체 타입을 정의
+interface personAge {
+  age: number
+}
+
+// 2. 파라미터는 personAge타입으로 받는다.
+function logAge(obj: personAge) {
+  console.log(obj.age)
+}
+
+// 3. interface 타입 속성의 개수와 일치하지 않아도됨
+let person = { name: '메시', age: 28 }
+logAge(person)
+```
+
+그리고 위 코드를 보면, 파라미터로 interface를 받을 때,
+**interface의 속성 개수**와 **파라미터로 받는 객체의 속성 개수**가 일치하지 않아도 됩니다.
+즉, interface에 정의된 속성, 타입의 조건만 만족하면, 객체의 속성 개수가 많아도 상관없습니다.
+
+---
+
+# 2. 옵션 속성 (?)
+
+```typescript
+interface interface_이름 {
+  속성?: 타입
+}
+```
+
+옵션 속성을 사용하면, 정의되어 있는 속성을 꼭 사용하지 않아도 됩니다.
+
+- 사용법은 속성의 끝에 `?`를 붙이면 됩니다.
+- Optional Parameter를 사용하는 경우 해당 매개변수는 필수 매개변수의 뒤쪽으로 가야 됨
+
+예시
+
+```typescript
+interface FootballPlayer {
+  name: string
+  age?: number // 📝 옵션속성(?) : 사용해도 되고, 안해도 되고
+}
+
+let centerForard = {
+  name: '메시',
+}
+
+// SoccerPlayer 타입을 파라미터로 받는 함수
+function Team(player: FootballPlayer) {
+  console.log(player.name) // 메시
+}
+
+// age가 없어도 동작함
+Team(centerForard)
+```
+
+---
+
+## 2.1 장점
+
+단순히 interface를 사용할 때 속성을 선택적으로 적용할 수 있다는 것 뿐만 아니라,
+interface에 정의되어 있지 않은 속성에 대해서 인지시켜줄 수 있습니다.
+
+```typescript
+interface FootballPlayer {
+  name: string
+  age?: number // 📝 옵션속성(?) : 사용해도 되고, 안해도 되고
+}
+
+let centerForard = {
+  name: '메시',
+}
+
+// SoccerPlayer 타입을 파라미터로 받는 함수
+function Team(player: FootballPlayer) {
+  console.log(player.addrees)
+  // ^ Error: Property 'addrees' does not exist on type 'FootballPlayer' 🌐
+}
+
+// age가 없어도 동작함
+Team(centerForard)
+```
+
+interface에 정의되어 있지 않은 속성에 대해서 오류를 표시합니다.
+마찬가지로 오타가 났어도 알려줍니다.
+
+---
+
+# 3. 읽기 전용 속성
+
+`readonly` 속성을 붙이면, **객체를 처음 생성할 때만 값을 할당**하고, 그 이후에는 변경할 수 없습니다.
+
+```typescript
+interface FootballPlayer {
+  readonly name: string
+}
+
+let centerForard: FootballPlayer = {
+  name: '메시',
+}
+
+centerForard.name = '호날두'
+// ^ error: 읽기 전용 속성이므로 'name'에 할당할 수 없음
+```
+
+---
+
+## 3.1 읽기 전용 배열
+
+배열을 선언할 때 `ReadonlyArray<T>` 타입을 사용하면 읽기 전용 배열을 생성할 수 있습니다.
+
+```typescript
+// ReadonlyArray로 선언하면 배열의 내용을 변경 불가능
+let arr: ReadonlyArray<number> = [1, 2, 3]
+arr.splice(0, 1) // error
+arr.push(4) // error
+arr[0] = 100 // error
+```
+
+---
+
+# 4. 객체 선언과 관련된 타입 체크
+
+타입스크립트는 interface를 이용하여 객체를 선언할 때 좀 더 엄밀한 속성 검사를 진행합니다.
+
+```ts
+interface FootballPlayer {
+  name?: string // name이라 적혀있음
+}
+
+function Team(player: FootballPlayer) {
+  console.log(player.name) // 메시
+}
+
+// 😅 names라고 오타났음
+Team({ names: '호날두' }) // Error : Object literal에 적혀진 속성만 지정해야 함
+// Object literal may only specify known properties,
+// but 'names' does not exist in type 'FootballPlayer'.
+// Did you mean to write 'name'?
+```
+
+---
+
+## 4.1 Type Assertion(타입 덮어쓰기)
+
+만약 이런 타입 추론을 무시하고 싶다면, `as` 키워드를 사용해 다음과 같이 선언합니다.
+
+```typescript
+function addOne(x: number | string) {
+  // x라는 변수는 number라고 확신
+  // 무조건 숫자가 들어올 것이라는 사실을 알고 있어야 안전하게 쓸 수 있음
+  return (x as number) + 1
+}
+console.log(addOne(2))
+```
+
+as 키워드는 타입을 개발자 맘대로 주장하는 역할이라 때문에 엄격한 타입체크기능을 잠깐 안쓰겠다는 뜻과 동일합니다. 그래서 **as 문법은 이럴 때 쓰도록 합시다**.
+
+- 타입에러가 나는지 모르겠는 상황에 **임시로 에러해결용**
+- 어떤 타입이 들어올지 **정말 100% 확실하게 알고 있는데 컴파일러 에러가 방해**할 때
+
+대부분의 상황에선 as 보다 훨씬 엄격하고 좋은 type narrowing으로 해결할 수 있습니다.
+
+```ts
+interface FootballPlayer {
+  name?: string // name이라 적혀있음
+}
+
+function Team(player: FootballPlayer) {
+  console.log(player.name)
+}
+
+let centerForard = {
+  names: '호날두', // 😅 names라고 오타났음
+}
+
+Team(centerForard as FootballPlayer) // 호날두
+```
+
+만약 interface의 정의하지 않은 속성들을 추가로 사용하고 싶을 때는 아래와 같은 방법을 사용합니다.
+
+```ts
+interface FootballPlayer {
+  name?: string
+  [propName: string]: any // 1. 정의하지 않은 속성들을 추가로 사용하고 싶을 때
+}
+
+function Team(player: FootballPlayer) {
+  console.log(player.name)
+}
+
+let centerForard = {
+  names: '호날두',
+  age: 38, // 2. 정의하지 않은 속성 사용하기
+}
+
+Team(centerForard as FootballPlayer)
+```
+
+---
+
+# 5. 함수 타입
+
+interface는 함수의 타입을 정의할 때에도 사용할 수 있습니다.
+
+```ts
+// 함수의 타입 정의
+interface login {
+  (id: string, password: string): boolean
+}
+
+// 함수의 파라미터 타입과 반환값의 타입 정의
+let loginUser: login
+loginUser = (id: string, pw: string) => {
+  console.log('로그인함')
+  return true
+}
+```
+
+---
+
+## 5.1 인터페이스와 함수
+
+```typescript
+interface User {
+  name: string
+}
+
+const Leo: User = { name: '메시' }
+
+function showName() {
+  // this가 어떤 타입인지 알 수 없어서 에러 뜸
+  console.log(this.name) // Error : 'this' implicitly has type 'any'
+}
+
+const a = showName.bind(Leo)
+a()
+```
+
+this의 타입을 정의하려면 첫 번째 매개변수로 this의 타입을 정의해야 합니다.
+
+```typescript
+interface User {
+  name: string
+}
+
+const Leo: User = { name: '메시' }
+
+function showName(this: User) {
+  console.log(this.name)
+}
+
+const a = showName.bind(Leo)
+a() // 메시
+```
+
+만약 다른 매개변수가 있더라도 맨 앞에 this의 타입을 정의해줄 수 있습니다.
+이 때는 매개변수를 받더라도 this가 아닌 다음 요소에 받은 매개변수가 들어갑니다.
+
+```typescript
+interface User {
+  name: string
+}
+
+const Leo: User = { name: '메시' }
+
+function showName(this: User, age: number, gender: 'm' | 'f') {
+  console.log(this.name, age, gender)
+}
+
+const a = showName.bind(Leo)
+a(36, 'm')
+```
+
+---
+
+## 5.2 오버로딩
+
+매개변수로 number 타입의 요소를 받는지, string 타입의 요소를 받는지에 따라 다른 결과값을 반환하고 싶을 수 있습니다.
+
+```typescript
+interface User {
+  name: string
+  age: number
+}
+
+function join(name: string, age: number | string): User | string {
+  if (typeof age === 'number') {
+    return {
+      name,
+      age,
+    }
+  } else {
+    return '나이를 숫자로 입력하셈'
+  }
+}
+
+// 둘다 User나 String 객체를 반환하는 것에 확신이 없어서 둘 다 에러
+const Leo: User = join('메시', 37) // Error
+const Cristiano: string = join('호날두', '39') // Error
+```
+
+이 문제를 해결하기 위해서는 함수 오버로딩을 사용합니다. 어떤 타입의 age를 받았을 때 어떤 타입의 리턴값을 반환할 것인지를 명확하게 해줘야 합니다.
+
+```typescript
+interface User {
+  name: string
+  age: number
+}
+
+// **** 함수 오버로딩
+// age가 string이면 string타입의 리턴값,
+// age가 number이면 User타입의 리턴값을 반환한다고 명시적으로 작성
+function join(name: string, age: string): string
+function join(name: string, age: number): User
+function join(name: string, age: number | string): User | string {
+  if (typeof age === 'number') {
+    return {
+      name,
+      age,
+    }
+  } else {
+    return '나이를 숫자로 입력하셈'
+  }
+}
+
+const Leo: User = join('메시', 37)
+const Cristiano: string = join('호날두', '39')
+```
+
+---
+
+# 6. class 타입
+
+C#이나 Java처럼 TS도 클래스가 일정 조건을 만족하도록 타입 규칙을 정할 수 있습니다.
+
+```ts
+interface Player {
+  name: string
+  newLeage(PlayerName: string): void
+}
+
+class KoreaPlayer implements Player {
+  name: string = '손흥민'
+  newLeage(newPlayer: string) {
+    this.name = newPlayer
+  }
+  constructor() {}
+}
+```
+
+---
+
+# 7. interface를 클래스에 상속 : implements
+
+만들어준 인터페이스는 implements를 통해 사용할 수 있습니다.
+
+```ts
+interface Car {
+  color: String
+  wheels: Number
+  start(): void
+}
+
+class BMW implements Car {
+  color = 'red'
+  wheels = 4
+  start() {
+    console.log('움직이기')
+  }
+}
+```
+
+생성자가 들어가도 큰 차이는 없습니다.
+
+- 주의할 점 : 인터페이스에서 선언한 속성들은 모두 들어가야 함
+
+```typescript
+interface Car {
+  color: String
+  wheels: Number
+  start(): void
+}
+
+class BMW implements Car {
+  color = 'red'
+  wheels = 4
+  // 생성자가 들어가더라도
+  // 인터페이스에서 선언한 속성(property)는 모두 들어가야 함
+  constructor(c: string) {
+    this.color = c
+  }
+  start() {
+    console.log('움직이기')
+  }
+}
+
+const b = new BMW('green')
+console.log(b) // BMW { color: 'green', wheels: 4 }
+```
+
+---
+
+# 8. 인터페이스 확장 : extends
+
+class와 마찬가지로 interface도 interface 간 확장이 가능합니다.
+
+```ts
+// Person 인터페이스
+interface Person {
+  name: string
+}
+
+// 'Person 인터페이스'를 상속받은 'Developer 인터페이스'
+interface Developer extends Person {
+  skill: string
+}
+
+// 두 인터페이스의 속성들을 모두 정의해야 함
+let frontEnd = {} as Developer
+frontEnd.name = '메시'
+frontEnd.skill = 'TypeScript'
+```
+
+다음과 같이 interface를 여러 개 상속받아 사용할 수 있습니다.
+
+```ts
+interface Person {
+  name: string
+}
+
+interface Employee {
+  id: number
+  salary: number
+}
+
+// Person과 Employee 인터페이스들을 상속받음
+interface Developer extends Person, Employee {
+  language: string
+}
+
+const dev: Developer = {
+  id: 10,
+  name: '메시',
+  salary: 10000,
+  language: 'TypeScript',
+}
+```
+
+---
+
+# 8. 하이브리드 타입
+
+JS의 유연하고 동적인 타입 특성에 따라, interface도 여러 가지 타입을 조합하여 만들 수 있습니다.
+e.g. 함수 타입이면서 객체 타입을 정의할 수 있는 interface
+
+```ts
+interface Counter {
+  (start: number): string
+  interval: number
+  reset(): void
+}
+
+function getCounter(): Counter {
+  let counter = function (start: number) {} as Counter
+  counter.interval = 123
+  counter.reset = function () {}
+  return counter
+}
+
+let c = getCounter()
+c(10)
+c.reset()
+c.interval = 5.0
+```
+
+---
+
+# 10. type vs interface
+
+type과 interface의 가장 큰 차이점은 **타입의 확장 가능 / 불가능 여부**입니다.
+
+- `interface` : 확장(extends 키워드) 가능
+- `type` : 확장(extends 키워드) 불가능
+
+따라서, 가능한한 `type` 보다는 `interface`로 선언해서 사용하는 것을 추천합니다.
