@@ -1,1 +1,665 @@
-# 시작페이지
+
+# 4. Sass
+
+- [Sass 공식 사이트](https://sass-lang.com/)
+  - CSS을 확장하는 Preprocessing
+  - [Sass 가이드](https://sass-lang.com/guide)
+- cf. [MDN CSS 전처리기](https://developer.mozilla.org/ko/docs/Glossary/CSS_preprocessor)
+
+---
+
+## 4.1 예제 : 가이드 따라해보기
+
+```sh
+$ npm install sass
+```
+
+---
+
+### 4.1.1 App.js
+
+```jsx
+import './App.css';
+import Example from './components/SassExample/Example';
+// import EmotionExample from './components/EmotionExample/EmotionExample';
+// import StyledComponentsExample from './components/StyledComponentsExample/StyledComponentsExample';
+
+export default function App() {
+  return (
+    <div className='App'>
+      <Example />
+      {/* <EmotionExample /> */}
+      {/* <StyledComponentsExample /> */}
+    </div>
+  );
+}
+```
+
+---
+
+### 4.1.2 Example.jsx
+
+```jsx
+// src/components/SassExample/Example.jsx
+import React from 'react';
+import './Example.scss';
+
+export default function Example() {
+  return (
+    <div>
+      <p>Example</p>
+      <p className='font'>Example</p>
+    </div>
+  );
+}
+```
+
+---
+
+## 4.2 예제1 : Variables
+
+```scss
+// src/components/SassExample/Example.scss
+$font-stack: Helvetica, sans-serif;
+$primary-color: red;
+
+.font {
+  font: 100% $font-stack;
+  color: $primary-color;
+}
+```
+
+---
+
+## 4.3 예제2 : Nesting
+
+```jsx
+// src/components/SassExample/Example.jsx
+import React from 'react';
+import './Example.scss';
+
+export default function Example() {
+  return (
+    <div>
+      <p>Example</p>
+      <p className='font'>Example</p>
+      <nav>
+        <ul>
+          <li>123</li>
+          <li>
+            <a>456</a>
+          </li>
+        </ul>
+      </nav>
+      <ul>
+        <li>123</li>
+        <li>
+          <a>456</a>
+        </li>
+      </ul>
+    </div>
+  );
+}
+```
+
+```scss
+// src/components/SassExample/Example.scss
+// 1. Variables
+$font-stack: Helvetica, sans-serif;
+$primary-color: red;
+
+.font {
+  font: 100% $font-stack;
+  color: $primary-color;
+}
+
+.text {
+  font: 100% $font-stack;
+}
+
+// 2. Nesting
+nav {
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: inline-block;
+  }
+
+  a {
+    display: block;
+    padding: 6px 12px;
+    text-decoration: none;
+  }
+}
+```
+
+---
+
+## 4.4 예제3 : Modules
+
+```scss
+// src/components/SassExample/foundation/_base.scss
+$font-stack: Helvetica, sans-serif;
+$primary-color: hotpink;
+
+.base {
+  font: 100% $font-stack;
+  color: $primary-color;
+}
+```
+
+```scss
+// src/components/SassExample/Example.scss
+@use 'foundation/_base.scss'; // 3. Modules
+
+// 생략
+
+// 3. Modules
+.inverse {
+  background-color: base.$primary-color;
+  color: white;
+}
+```
+
+```jsx
+// src/components/SassExample/Example.jsx
+import React from 'react';
+import './Example.scss';
+
+export default function Example() {
+  return (
+    <div>
+      <p>Example</p>
+      <p className='font'>Example</p>
+      <nav>
+        <ul>
+          <li>123</li>
+          <li>
+            <a>456</a>
+          </li>
+        </ul>
+      </nav>
+      <ul>
+        <li>123</li>
+        <li>
+          <a>456</a>
+        </li>
+      </ul>
+      <p className='base'>Hello,</p>
+      <p className='inverse'>Hello,</p>
+    </div>
+  );
+}
+```
+
+---
+
+## 4.5 예제4 : Mixins
+
+```scss
+// src/components/SassExample/Example.scss
+@use 'foundation/_base.scss'; // 3. Modules
+
+// 생략
+
+// 4. Mixins
+@mixin theme($theme: DarkGray) {
+  background: $theme;
+  box-shadow: 0 0 1px rgba($theme, 0.25);
+  color: #fff;
+}
+
+.info {
+  @include theme;
+}
+.alert {
+  @include theme($theme: DarkRed);
+}
+.success {
+  @include theme($theme: DarkGreen);
+}
+```
+
+```jsx
+// src/components/SassExample/Example.jsx
+import React from 'react';
+import './Example.scss';
+
+export default function Example() {
+  return (
+    <div>
+      <p>Example</p>
+      <p className='font'>Example</p>
+      <nav>
+        <ul>
+          <li>123</li>
+          <li>
+            <a>456</a>
+          </li>
+        </ul>
+      </nav>
+      <ul>
+        <li>123</li>
+        <li>
+          <a>456</a>
+        </li>
+      </ul>
+      <p className='base'>Hello,</p>
+      <p className='inverse'>Hello,</p>
+      <p className='info'>Hello,</p>
+      <p className='alert'>Hello,</p>
+      <p className='success'>Hello,</p>
+    </div>
+  );
+}
+```
+
+---
+
+## 4.6 예제5 : Extend/Inheritance
+
+```scss
+// src/components/SassExample/Example.scss
+@use 'foundation/_base.scss'; // 3. Modules
+
+// 생략
+
+// 5. Extend/Inheritance
+/* This CSS will print because %message-shared is extended. */
+%message-shared {
+  border: 1px solid #ccc;
+  padding: 10px;
+  color: #333;
+}
+
+.message {
+  @extend %message-shared;
+}
+
+.success2 {
+  @extend %message-shared;
+  border-color: green;
+}
+
+.error {
+  @extend %message-shared;
+  border-color: red;
+}
+
+.warning {
+  @extend %message-shared;
+  border-color: yellow;
+}
+```
+
+```jsx
+// src/components/SassExample/Example.jsx
+import React from 'react';
+import './Example.scss';
+
+export default function Example() {
+  return (
+    <div>
+      <p>Example</p>
+      <p className='font'>Example</p>
+      <nav>
+        <ul>
+          <li>123</li>
+          <li>
+            <a>456</a>
+          </li>
+        </ul>
+      </nav>
+      <ul>
+        <li>123</li>
+        <li>
+          <a>456</a>
+        </li>
+      </ul>
+      <p className='base'>Hello,</p>
+      <p className='inverse'>Hello,</p>
+      <p className='info'>Hello,</p>
+      <p className='alert'>Hello,</p>
+      <p className='success'>Hello,</p>
+      <p className='message'>message</p>
+      <p className='success2'>success2,</p>
+      <p className='error'>error,</p>
+      <p className='warning'>warning,</p>
+    </div>
+  );
+}
+```
+
+---
+
+## 4.7 예제6 : @if and @else
+
+- https://sass-lang.com/documentation/at-rules/control/if
+
+```scss
+// src/components/SassExample/Example.scss
+@use 'foundation/_base.scss'; // 3. Modules
+
+// 생략
+
+// 6. @if and @else
+@mixin avatar($size, $circle: false) {
+  width: $size;
+  height: $size;
+  background-color: aqua;
+
+  @if $circle {
+    border-radius: $size / 2;
+  }
+}
+
+.square-av {
+  @include avatar(100px, $circle: false);
+}
+.circle-av {
+  @include avatar(100px, $circle: true);
+}
+```
+
+```jsx
+// src/components/SassExample/Example.jsx
+import React from 'react';
+import './Example.scss';
+
+export default function Example() {
+  return (
+    <div>
+      <p>Example</p>
+      <p className='font'>Example</p>
+      <nav>
+        <ul>
+          <li>123</li>
+          <li>
+            <a>456</a>
+          </li>
+        </ul>
+      </nav>
+      <ul>
+        <li>123</li>
+        <li>
+          <a>456</a>
+        </li>
+      </ul>
+      <p className='base'>Hello,</p>
+      <p className='inverse'>Hello,</p>
+      <p className='info'>Hello,</p>
+      <p className='alert'>Hello,</p>
+      <p className='success'>Hello,</p>
+      <p className='message'>message</p>
+      <p className='success2'>success2,</p>
+      <p className='error'>error,</p>
+      <p className='warning'>warning,</p>
+      <div className='square-av'>square-av,</div>
+      <div className='circle-av'>circle-av,</div>
+    </div>
+  );
+}
+```
+
+---
+
+## 4.8 예제7 : @function
+
+https://sass-lang.com/documentation/at-rules/function
+
+```scss
+// src/components/SassExample/Example.scss
+@use 'foundation/_base.scss'; // 3. Modules
+
+// 셍략
+
+// @function
+@function pow($base, $exponent) {
+  $result: 1;
+  @for $_ from 1 through $exponent {
+    $result: $result * $base;
+  }
+  @return $result;
+}
+
+.sidebar {
+  float: left;
+  margin-left: pow(4, 3) * 1px;
+}
+```
+
+```jsx
+// src/components/SassExample/Example.jsx
+import React from 'react';
+import './Example.scss';
+
+export default function Example() {
+  return (
+    <div>
+      <p>Example</p>
+      <p className='font'>Example</p>
+      <nav>
+        <ul>
+          <li>123</li>
+          <li>
+            <a>456</a>
+          </li>
+        </ul>
+      </nav>
+      <ul>
+        <li>123</li>
+        <li>
+          <a>456</a>
+        </li>
+      </ul>
+      <p className='base'>Hello,</p>
+      <p className='inverse'>Hello,</p>
+      <p className='info'>Hello,</p>
+      <p className='alert'>Hello,</p>
+      <p className='success'>Hello,</p>
+      <p className='message'>message</p>
+      <p className='success2'>success2,</p>
+      <p className='error'>error,</p>
+      <p className='warning'>warning,</p>
+      <div className='square-av'>square-av,</div>
+      <div className='circle-av'>circle-av,</div>
+      <div className='sidebar'>sidebar,</div>
+    </div>
+  );
+}
+```
+
+---
+
+## 4.9 에제8 : @error
+
+```scss
+// src/components/SassExample/Example.scss
+@use 'foundation/_base.scss'; // 3. Modules
+
+// 생략
+
+// @error
+@mixin reflexive-position($property, $value) {
+  @if $property != left and $property != right {
+    @error "Property #{$property} must be either left or right.";
+  }
+
+  $left-value: if($property == right, initial, $value);
+  $right-value: if($property == right, $value, initial);
+
+  left: $left-value;
+  right: $right-value;
+  [dir='rtl'] & {
+    left: $right-value;
+    right: $left-value;
+  }
+}
+
+.sidebar {
+  @include reflexive-position(top, 12px); // 에러날 곳을 띄워줄 수 있다.
+  //       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  // Error: Property top must be either left or right.
+}
+```
+
+뒤 예제를 위해 확인이 끝나면 주석 처리
+
+---
+
+## 4.10 예제9 : Interpolation
+
+https://sass-lang.com/documentation/style-rules/declarations#interpolation
+
+벤더 프리픽스
+
+```scss
+// src/components/SassExample/Example.scss
+@use 'foundation/_base.scss'; // 3. Modules
+
+// 생략
+
+// Interpolation
+@mixin prefix($property, $value, $prefixes) {
+  @each $prefix in $prefixes {
+    -#{$prefix}-#{$property}: $value;
+  }
+  #{$property}: $value;
+}
+
+.gray {
+  @include prefix(filter, grayscale(50%), moz webkit o ms);
+}
+
+.button {
+  @include prefix(background, linear-gradient(red, yellow), moz webkit o ms);
+}
+```
+
+```jsx
+// src/components/SassExample/Example.jsx
+import React from 'react';
+import './Example.scss';
+
+export default function Example() {
+  return (
+    <div>
+      <p>Example</p>
+      <p className='font'>Example</p>
+      <nav>
+        <ul>
+          <li>123</li>
+          <li>
+            <a>456</a>
+          </li>
+        </ul>
+      </nav>
+      <ul>
+        <li>123</li>
+        <li>
+          <a>456</a>
+        </li>
+      </ul>
+      <p className='base'>Hello,</p>
+      <p className='inverse'>Hello,</p>
+      <p className='info'>Hello,</p>
+      <p className='alert'>Hello,</p>
+      <p className='success'>Hello,</p>
+      <p className='message'>message</p>
+      <p className='success2'>success2,</p>
+      <p className='error'>error,</p>
+      <p className='warning'>warning,</p>
+      <div className='square-av'>square-av,</div>
+      <div className='circle-av'>circle-av,</div>
+      <div className='sidebar'>sidebar,</div>
+      <div className='gray'>Grays</div>
+      <div className='button'>button</div>
+    </div>
+  );
+}
+```
+
+---
+
+## 4.11 예제10 : in-sassscript
+
+https://sass-lang.com/documentation/interpolation#in-sassscript
+
+```scss
+// src/components/SassExample/Example.scss
+@use 'foundation/_base.scss'; // 3. Modules
+
+// 생략
+
+// In SassScript
+@mixin inline-animation($duration) {
+  $name: inline-#{unique-id()};
+
+  @keyframes #{$name} {
+    @content;
+  }
+
+  animation-name: $name;
+  animation-duration: $duration;
+  animation-iteration-count: infinite;
+}
+
+.pulse {
+  @include inline-animation(2s) {
+    from {
+      background-color: yellow;
+    }
+    to {
+      background-color: red;
+    }
+  }
+}
+```
+
+```jsx
+// src/components/SassExample/Example.jsx
+import React from 'react';
+import './Example.scss';
+
+export default function Example() {
+  return (
+    <div>
+      <p>Example</p>
+      <p className='font'>Example</p>
+      <nav>
+        <ul>
+          <li>123</li>
+          <li>
+            <a>456</a>
+          </li>
+        </ul>
+      </nav>
+      <ul>
+        <li>123</li>
+        <li>
+          <a>456</a>
+        </li>
+      </ul>
+      <p className='base'>Hello,</p>
+      <p className='inverse'>Hello,</p>
+      <p className='info'>Hello,</p>
+      <p className='alert'>Hello,</p>
+      <p className='success'>Hello,</p>
+      <p className='message'>message</p>
+      <p className='success2'>success2,</p>
+      <p className='error'>error,</p>
+      <p className='warning'>warning,</p>
+      <div className='square-av'>square-av,</div>
+      <div className='circle-av'>circle-av,</div>
+      <div className='sidebar'>sidebar,</div>
+      <div className='gray'>Grays</div>
+      <div className='button'>button</div>
+      <div className='pulse'>pulse</div>
+    </div>
+  );
+}
+```

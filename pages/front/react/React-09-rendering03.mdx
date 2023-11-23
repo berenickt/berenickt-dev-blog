@@ -1,0 +1,118 @@
+---
+title: '09-Rendering - Render Props - 작성중'
+date: 2022/12/22
+---
+
+# 1. Render Props
+
+Render Props = **무엇을 렌더링 할지 컴포넌트에 알려주는 함수**
+
+- **React 컴포넌트 간에 코드를 공유하기 위해 함수 props를 이용**하는 법
+- 코드 재사용을 위한 방법 중 하나 `( Composition | HOC | Render Props ... )`
+- Render = (뭔가) 제공, 주다
+- Render Props를 사용하는 라이브러리는 [React Router](https://reacttraining.com/react-router/web/api/Route/Route-render-methods), [Downshift](https://github.com/paypal/downshift), [Formik](https://github.com/jaredpalmer/formik)
+
+- c.f. https://ko.reactjs.org/docs/render-props.html
+
+```jsx
+<DataProvider render={(data) => <h1>Hello {data.target}</h1>} />
+```
+
+Render Props 패턴으로 구현된 컴포넌트는 자체적으로 렌더링 로직을 구현하는 대신,
+React 엘리먼트 요소를 반환하고 이를 호출하는 함수를 사용한다.
+
+---
+
+# 2. 횡단 관심사(Cross-Cutting Concerns)
+
+Cross-Cutting Concerns
+
+- 컴포넌트 A, B, C 간의 공통된 기능을 할 떄, **핵심 적인 기능이 아닌 중간중간 삽입되어야 할 기능들**
+- e.g. 로깅, 보안, 트랜잭션 처리 등 비즈니스 핵심적인 기능이 아닌 다양한 횡단 관심이 발생
+- c.f. `관점 지향 프로그래밍(Aspect Oriented Programming; AOP)`
+  - 횡단 관심사(cross-cutting concern)의 분리를 허용함으로써, 모듈성을 증가시키는 것이 목적인 프로그래밍 패러다임
+  - 다시 말해, 코드 상에서 각각의 관점을 **핵심적인 관점과, 부가적인 관점으로 나누어보고**,
+    - 그 관점을 기준으로 **각각 분리**하는 것을 의미
+
+---
+
+# 3. 예시
+
+마우스를 따라다니는 이미지를 붙이고 싶으면?
+
+```jsx
+import React, { useState } from 'react';
+import styled from 'styled-components';
+
+// 마우스가 움직일 때마다 좌표를 알 수 있는 Mouse 컴포넌트
+export default function Mouse() {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (event) => {
+    setMousePosition({ x: event.clientX, y: event.clientY });
+  };
+
+  return (
+    <div style={{ height: '100vh' }} onMouseMove={handleMouseMove}>
+      <Image position={mousePosition} />
+      Mouse X = {mousePosition.x} Y = {mousePosition.y}
+    </div>
+  );
+}
+
+// styled components 라이브러리를 사용해서 이미지 대신 사용함
+const Image = styled.div`
+  width: 30px;
+  height: 30px;
+  background-color: red;
+  position: absolute;
+  left: ${({ position }) => position.x}px;
+  top: ${({ position }) => position.y}px;
+`;
+```
+
+위와 같이 하드코딩하면, 다른 이미지를 렌더링 하고 싶을 땐 또다시 하드코딩으로 바꿔야 한다.
+
+```jsx
+import Mouse from './components/renderProps/Mouse';
+import Image from './components/renderProps/Image';
+
+export default function App() {
+  return (
+    <div>
+      {/* Mouse 컴포넌트에 render props로 렌더링 할 컴포넌트를 넘김 */}
+      <Mouse render={(position) => <Image position={position} />} />
+    </div>
+  );
+}
+```
+
+그래서 재사용을 위해서는 Mouse 컴포넌트에 render props로 렌더링 할 컴포넌트를 넘겨준다.
+
+```jsx
+import React, { useState } from 'react';
+
+// 1. props로 render를 받음
+export default function Mouse({ render }) {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (event) => {
+    setMousePosition({ x: event.clientX, y: event.clientY });
+  };
+
+  return (
+    <div style={{ height: '100vh' }} onMouseMove={handleMouseMove}>
+      {render(mousePosition)}
+      마우스의 X좌표 = {mousePosition.x}, Y좌표 = {mousePosition.y}
+    </div>
+  );
+}
+```
+
+Mouse 컴포넌트에서 props로 render를 받아서 사용하게 되면 어떤 이미지를 넘겨주어도 사용 가능
+
+---
+
+# [참고]
+
+- [React 공식문서 Render Props](https://reactjs.org/docs/render-props.html)

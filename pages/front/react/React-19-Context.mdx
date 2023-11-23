@@ -1,0 +1,231 @@
+---
+title: 'State Management 기본 - Context API'
+date: 2022/12/29
+---
+
+# 1. State Management(상태관리)
+
+14에서 쓴 Context 복습
+
+## 1.1 Prop Drilling (Props로만 데이터를 전달하면 발생하는 문제)
+
+![React_14_2](https://raw.githubusercontent.com/berenickt/image-server/main/img/React_14_2.png)
+
+> `Prop Drilling` = Props로만 데이터를 전달하면 발생하는 문제
+
+일반적으로 컴포넌트에게 데이터를 전달해주어야 할 때 Props를 통해 전달합니다.
+
+```jsx
+export default function App() {
+  return <GrandParent value='Hello World!' />;
+}
+
+function Parent({ value }) {
+  return <Child value={value} />;
+}
+
+function Child({ value }) {
+  return <Message value={value} />;
+}
+
+function Message({ value }) {
+  return <div>Received: {value}</div>;
+}
+```
+
+그런데 **자식이 많은 컴포넌트에 데이터를 전달**해야 하는 경우,
+**여러 컴포넌트를 거쳐 연달아서 Props를 설정해**주어야 하기 때문에 불편하고 실수할 수 있는 가능성이 존재합니다.
+이렇게 **많은 자식을 가진 컴포넌트에 state값을 전달하려면 Context를 사용**하면 됩니다.
+
+**Context API** (리액트 기본 문법)
+
+- props 전송없이 state 공유 가능
+- 2가지 문제 때문에 많이 쓰이지 않음
+  - state 변경시 쓸데없는 컴포넌트까지 전부 재렌더링되어 성능 이슈
+  - 컴포넌트 재활용이 어려움
+- Context API보다는 redux같은 외부 라이브러리를 많이 사용
+- [Official React Context Docs](https://reactjs.org/docs/context.html)✔️
+
+---
+
+# 2. Context API
+
+- 리액트 기본 문법
+- `context  = state 보관함`
+- props 없이 state 공유할 때 사용하지만, **성능과 재활용 관점에서 문제가 있어서 많이 사용 안함**
+  - state 변경시 쓸데없는 컴포넌트까지 전부 재렌더링되어 성능 이슈
+  - useContext()를 쓰고 있는 컴포넌트는 나중에 **다른 파일에서 재사용할 때 Context를 import 하는게 귀찮음**
+- 위 문제들로 인해 라이브러리를 사용함
+- React v16.3부터 사용하기 쉽게 많이 개선됨
+
+  - 과거에는 리액트의 Context가 굉장히 불편해서 전역 상태 관리 라이브러리를 사용했었음
+  - 이제는 Context를 사용하기 편해져서 단순히 전역적인 상태를 관리하기 위함이라면 더 이상 사용해야 할 이유 X
+  - 그렇지만 상태 관리 라이브러리는 상태 관리를 더욱 편하고, 효율적으로 할 수 있게 해주는 기능들을 제공
+
+- Redux, 리액트 라우터, styled-components 등의 라이브러리들은 Context API를 기반으로 구현되어 있음
+- 중첩해서 사용한 컴포넌트가 많을 때 편리한 문법
+
+  - e.g. 로그인한 유저 정보, 테마(다크 테마), 선호하는 언어 등
+
+- Context에서 다루는 값은 꼭 전역적일 필요가 없습니다.
+
+  - Context는 재사용성이 높은 컴포넌트를 만들때도 매우 유용함
+
+- **중첩된 컴포넌트가 적으면 그냥 props쓰는게 편함**
+- c.f. [Velog - 다른 사람들이 안 알려주는 리액트에서 Context API 잘 쓰는 방법](https://velog.io/@velopert/react-context-tutorial)
+- cf. [Velopert - Velog 리액트에서 Context API 잘 쓰는 법](https://velog.io/@velopert/react-context-tutorial)
+
+---
+
+## 2.1 예제 1 : Context 기본 사용법
+
+```jsx
+import { createContext, useContext } from 'react';
+
+// 1. Context 만들기
+// - createContext()로 Context 만들 수 있음
+// - 기본 값을 설정하고 싶다면, createContext 함수에 인자로 기본 값을 넣어주면 됨
+const MyContext = createContext('기본값');
+
+export default function App() {
+  // 2. Context 객체 안에는 Provider라는 컴포넌트가 들어있음
+  // Provider 컴포넌트에 공유하고자 하는 값을 value 라는 Props로 설정하면,
+  // 자식 컴포넌트들에서 해당 값에 바로 접근 가능
+  return (
+    <>
+      <MyContext.Provider value='Hello World'>
+        <Parent />
+      </MyContext.Provider>
+      <Parent />
+    </>
+  );
+}
+
+function Parent() {
+  return <Child />;
+}
+
+function Child() {
+  return <Message />;
+}
+
+function Message() {
+  // 3. Context 안에 있던 state 사용하려면, useContext() 사용
+  // - useContext() : Context 해체해주는 함수, 공유했던 모든 state가 담겨있음
+  const value = useContext(MyContext);
+  return <div>데이터 도착함!😁 : {value}</div>;
+}
+```
+
+---
+
+## 2.2 예제 2 : Dark Theme
+
+### 2.2.1 Context 생성
+
+```js
+// Context/ThemeContext.js
+import React from 'react';
+
+export const themes = {
+  light: {
+    foreground: '#000000',
+    background: '#eeeeee',
+  },
+  dark: {
+    foreground: '#ffffff',
+    background: '#222222',
+  },
+};
+
+// createContext()로 Context 만들 수 있음
+export const ThemeContext = React.createContext(themes.dark);
+```
+
+새 Context를 만들 때는 createContext 함수를 사용합니다. 파라미터에는 해당 Context의 기본 상태를 지정합니다.
+
+- c.f. Context를 만들 때 반드시 contexts 디렉터리에 만들 필요는 없습니다. 경로는 마음대로 정해도 됨
+
+---
+
+### 2.2.2 Provider
+
+```jsx
+// Context/Example
+import React, { Component } from 'react';
+import ThemeButton from './ThemeButton';
+import { ThemeContext, themes } from './ThemeContext';
+
+export default class Example extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      theme: themes.light,
+    };
+    this.toggleTheme = () => {
+      this.setState((prev) => ({
+        theme: prev.theme === themes.dark ? themes.light : themes.dark,
+      }));
+    };
+  }
+  render() {
+    // 📝 Context에 저장된 데이터를 사용하기 위해, Context의 Provider를 사용
+    // - 공유를 원하는 state를 value 안에 적어주면 됩니다.
+    // - ThemeContext로 감싼 모든 컴포넌트와 그 자식컴포넌트는 state를 props 전송없이 직접 사용가능
+    // 📝 데이터를 사용하려는 컴포넌트에서 Context의 Consumer를 사용 → useContext()로 대체 가능
+    return (
+      <div>
+        <ThemeContext.Provider value={this.state.theme}>
+          <ThemeButton changeTheme={this.toggleTheme} />
+          <ThemeContext.Consumer>{(theme) => <div style={{ height: 300, width: 300, backgroundColor: theme.background }}></div>}</ThemeContext.Consumer>
+        </ThemeContext.Provider>
+        <ThemeButton />
+      </div>
+    );
+  }
+}
+```
+
+---
+
+### 2.2.3 useContext()
+
+```jsx
+// context/ThemeButton.jsx
+import React, { useContext } from 'react';
+import { ThemeContext } from './ThemeContext';
+
+export default function ThemeButton(props) {
+  // Context 안에 있던 state 사용하려면
+  // (1) 만들어둔 Context를 import
+  // (2) useContext() 안에 넣기
+  // -- useContext()는 Context 해체해주는 함수, 공유했던 모든 state가 담겨있음
+  const theme = useContext(ThemeContext);
+  return (
+    <button {...props} onClick={props.changeTheme} style={{ backgroundColor: theme.background, color: theme.foreground }}>
+      버튼
+    </button>
+  );
+}
+```
+
+App 컴포넌트에 추가
+
+```jsx
+import Example from './components/3-10_Context/Example';
+
+export default function App() {
+  return (
+    <>
+      <Example />
+    </>
+  );
+}
+```
+
+---
+
+# [참고]
+
+- React Context 사용법 : https://www.daleseo.com/react-context/
+- [Context 한국 공식문서](https://ko.reactjs.org/docs/context.html)

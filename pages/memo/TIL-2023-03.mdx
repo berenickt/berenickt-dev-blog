@@ -1,0 +1,189 @@
+---
+title: 'TIL(Today I Learned) - 2023년 3월'
+date: 2023/04/02
+---
+
+## 2주
+
+### 2023/03/07
+
+- Emotion으로 디자인 실습
+- 로그인창에 잘못된 입력값을 넣으면, 밑에 띄워줄 메시지
+
+### 2023/03/08
+
+- PlayGround를 이용한 GraphQL 요청
+- postman/swagger를 이용한 REST API 요청
+- API 명세서보고 데이터 요청하는 법
+
+### 2023/03/09
+
+- 동기/비동기
+- PlayGround를 이용한 GraphQL 요청을 VSCode에서 구현
+- Axios를 이용한 REST API 요청 VSCode에서 구현
+
+### 2023/03/10
+
+- Next.js에서 GraphQL 요청을 정적 라우팅, 동적 라우팅
+- 조건부 렌더링(삼항연산자, &&연산자, 옵셔널 체이닝)
+
+------
+
+## 3주
+
+### 2023/03/13
+
+* 리액트 폴더 구조 container / presentational 패턴
+* Atomic 패턴
+* Props
+  * 단방향 데이터 흐름(부모에 => 자식으로만)
+* src 폴더
+  * commmons : 공통 기능
+  * component : 컴포넌트(기능)
+    * commons : 2번 이상 공통으로 쓸 컴포넌트
+    * units : 1번만 쓸 컴포넌트
+* export vs export default
+
+### 2023/03/14
+
+* emotion에 props 던지기
+  * 입력이 다 작성 완료되면, 버튼 색 변경
+* setState 원리
+* Next router 사용시 주의할 점
+  * 다이나믹 라우팅 폴더가 있어야만 사용가능
+* map & filter
+  * Map과 HTML 연결
+  * map의 index를 key로 사용시 발생하는 문제점
+  * React에서 Key가 필요한 이유
+* 화살표 함수 () => {} vs () => () 차이점
+  * 소괄호 ()로 감싸진 부분이 return, return문을 작성하지 않아도 리턴
+  * 중괄호{}로 감싸진 함수는 return문이 없다면 반환값이 없음
+* refetchQueries : 삭제 후 바로 화면에 반영 (mutaion쓸 떄 사용)
+  * 데이터가 변경 되었을 경우 최신 데이터로 다시 fetch
+
+### 2023/03/15
+
+* GraphQL 페이지 수정시 폴더 구조
+* 컴포넌트 재사용성
+  * 페이지 등록 페이지를 수정 페이지로도 사용
+  * Emotion props.drilling으로 상태값으로 색상 조정
+* router.query.number 사용시 주의점
+
+### 2023/03/16
+
+* 페이지 수정화면에 등록한 정보를 input의 defaultValue와 state로 가져오기
+* Next.js TS 세팅법
+
+### 2023/03/17
+
+* early-exit 패턴 : if문에서 조건이 거짓이면 무언가를 실행하는 방식
+* graphql-codegen 설치 및 graphQL types 자동 생성
+  * package.json에 `generate : graphql-codegen`
+* typescript 심화 (Pick, Omit, Partical, Required, Union, Record)
+
+------
+
+## 4주
+
+### 2023/03/20
+
+* 이벤트 전파와 버블링
+  * 버블링 : **특정 화면 요소에서 이벤트가 발생**하였을때, **해당 이벤트가 더 상위의 화면 요소들로 전달되는 특성**
+    * `event.target.id`가 아닌 `event.currentTarget.id`를 사용하여 버블링을 막아줄 수 있음
+    * `event.stopPropagation()` : event가 상위로 올라가는 것(이벤트 버블링)을 막아줌
+  * `캡쳐링`은 **버블링과 반대**로 **상위에서 하위로 이벤트가 전파되는 단계**
+* 프로젝트에 ESLint, Prettier 세팅법
+  * ESLint 규칙 정하기
+
+### 2023/03/21
+
+* ant-Design 아이콘
+* 라이브러리 - Daumpostcode
+* state와 prev
+  * prev === 임시 저장공간
+
+### 2023/03/22
+
+* Next.js 레이아웃 구조
+* 레이아웃 폴더구조 분리 및 Hidden영역 설정
+* 글로벌 스타일 적용하기 (+ 폰트)
+  * 경량화 폰트 woff, worff2
+  * `FOIT(Flash of Invisible Text)`: 브라우저가 웹 폰트를 다운로드하기 전에 텍스트가 보이지 않는 현상
+  * `FOUT(Flash of Unstyled Text)`: 브라우저가 웹 폰트를 다운로드하기 전에 텍스트가 대체 글꼴로 렌더링되는 현상
+* 라이브러리 : 캐러셀 이미지 (React-slick)
+
+### 2023/03/23
+
+* 페이지네이션
+* state 끌어올리기
+
+### 2023/03/24
+
+* emotion storybook
+* 얕은 복사와 깊은 복사 및 댓글수정
+  * `얕은 복사(Shallow Copy)`와 `깊은 복사(Deep Copy)`
+  * 얕은복사 (shallow copy,  중첩 객체 복사 with 스프레드 연산자)
+  * 깊은 복사 (deep copy, 깊이가 2 이상 데이터 복사)
+    * `JSON.stringify`와 `JSON.parse`라는 메소드
+  * lodash : 객체를 복사할 때마다 깊은 복사 라이브러리
+    * `_.cloneDeep(value)`
+* 댓글 수정하기
+* 무한스크롤
+
+------
+
+## 5주
+
+### 2023/03/27
+
+* inputs 리팩토링
+* 클래스 컴포넌트와 생명주기
+  * componentDidMount, componentDidUpdate, componentWillUnmount
+* this 바인딩( .bind (this) )
+* 함수형 컴포넌트의 생명주기 훅 useEffect
+* Dogs 오픈 API 추가
+  * https://github.com/public-apis/public-apis
+  * react-query
+  * useEffect와 open-api
+
+### 2023/03/28
+
+* open API 끌어오기
+* CORS 에러
+  * `옛날 SOP 정책`: 무조건 origin이랑 똑같은 백엔드로만 요청이 가능
+    * e.g. 네이버는 네이버 URL만, 다음은 다음 URL만 요청 가능
+    * cf. `SOP, Same-Origin-Policy(동일 출처 정책)`
+  * `요즘 CORS 정책` : 주소가 달라도 데이터를 허용
+    * e.g. 백엔드에서 CORS를 허용할지, 허용안할지 선택
+    * cf. `Cross Origin Resource Sharing, 줄여서 CORS(콜스)` 부름
+* 백엔드 구조, 웹서비스 구조, 프론트엔드 서버
+* DB
+  * `ODM(object document mapping)` : 객체 doucemnt(문서형)
+    * 종류 : mongoose
+  * `ORM(object relation mapping)` : 객체 relation(관계형)
+    * 종류 : typeORM, sequalize, prisma 등
+* DB 관리 프로그램 : DBeaver
+* 백엔드 구축
+
+### 2023/03/29
+
+* 백엔드 ApooloServrer 게시판 CRUD API 만들기
+* 백엔드 ApooloServrer 상품 CRUD API 만들기
+* BaaS : 파이어베이스 세팅 및 공식문서 보고 데이터 추가, 삭제
+  * `BaaS(Backend As A Serveice)`
+  * `SasS(Sofrware As A Service)` e.g. 구글 문서, 노션
+  * `PaaS(Platform As A Service)`
+  * `IaaS(Infra As A Service)` e.g. AWS EC2, S3
+* On-site -> IaaS -> PaaS -> SaaS 순
+
+### 2023/03/30
+
+* 이미지 업로드 프로세스 (이미지 서버, 스토리지 포함)
+  * DB에 이미지, 영상을 저장
+  * 이미지 검증 실습
+* 이미지 게시글에 등록
+
+
+
+
+

@@ -1,0 +1,173 @@
+---
+title: 'Data Fetching 라이브러리 - REST API 기반'
+date: 2023/01/08
+---
+
+# 1. Data Fetching 라이브러리 종류
+
+- JS에서 기본 제공하는 fetch
+- REST 라이브러리
+  - [SWR 공식 사이트](https://swr.vercel.app/)✔️
+  - [React Query - TanStack Query 공식 사이트](https://github.com/TanStack/query)✔️
+  - [Axios 공식 사이트](https://axios-http.com/docs/intro)
+  - [RTK Query 공식 사이트](https://redux-toolkit.js.org/rtk-query/overview)
+- GraphQL 라이브러리
+  - [Apollo 공식 사이트](https://www.apollographql.com)✔️
+  - [Relay 공식 사이트](https://relay.dev/)
+  - [urql 공식 사이트](https://formidable.com/open-source/urql/)
+
+---
+
+# 2. API
+
+- **API (Application Programming Interface)** : 서로 다른 프로그램간에 소통할 수 있게 도와주는 통신 규약
+  - 웹에서 사용하면 '**서버와 고객간의 통신 규약**'
+  - 풀어말하면 '**서버에게 요청해서 데이터 가져오는 방법**'
+- e.g. "**누군가 /write로 접속하면 write.html을 보내주세요**"같은 건 서버의 API
+  - `write.html`을 보고싶으면 `/write`로 접속하라는 API를 정의
+
+> 💡 서버(Server) = 알바생
+>
+> - **요청을 받으면 데이터를 보내주는 기계**
+> - 알바생을 영어로 Server라고 함.
+>   - (음식을) 서빙(Serving)한다 = 무언가를 갖다준다.
+>   - (컴퓨터) 서버(Server) = 무언가를 갖다주는 컴퓨터
+> - e.g. 웹서버 = “웹툰 페이지 주세요“하면, 웹툰 페이지를 가져다주는 기계
+> - 전문용어로는 클라이언트의 요청을 받으면 서비스, 데이터를 제공하는 컴퓨터 혹은 프로그램
+
+> 💡 GET 요청 = 읽기 요청
+>
+> - 무언가 읽는 요청
+> - e.g. 브라우저 주소창에 URL 입력란이 GET 요청하는 곳임
+>   - 브라우저 주소창에 웹툰 주소창을 치면, 서버는 웹툰 페이지를 가져다줌
+
+---
+
+# 3. RSET API란?
+
+- `REST(Representational State Transfer)`
+- 웹의 창시자(HTTP) 중의 한 사람인 Roy Fielding의 2000년 논문에 의해서 소개
+  - HTTP 요청 시스템(GET, POST, PUT, DELETE)
+  - REST 원칙에 의해서 쓰면 인터넷 세상이 평화로워짐 (이라고 졸업논문씀)
+- "웹 API 짤 때 REST 원칙을 지켜서 짜면 좋다”고 하는 **API 디자인 패턴**
+- 말 그대로 형식이기에 특정 기술에 제한받지 않음
+- 총 6개의 원칙이 존재
+- cf. [그런 REST API로 괜찮은가](https://youtu.be/RP_f5dMoHFc)
+- cf. 옛날에는 SOAP라는 걸 사용했다고 함
+
+---
+
+## 3.1 REST 6 원칙
+
+### 3.1.1 Uniform Interface⭐
+
+**인터페이스는 일관성이 있어야한다**
+
+- **하나의 URL로는 하나의 데이터**를 가져와야함 (하나를 가져오기 위한 두개의 URL을 만들지 말자)
+- **간결하고 예측가능하게 짜세요** (URL 하나를 알면 둘을 알게)
+- **URL 이름짓기 관습을** 잘 따라주세요
+
+> 💡 URI 와 URL
+>
+> - `URI` : **자료를 넘버링하고 분류하고 지칭하는 방법**
+> - `URL` : **URL과 비슷하지만 조금 더 큰 의미**
+
+---
+
+### 3.1.2 Client-server 역할 구분
+
+고객들은 URL 하나만 알면, 서버에 있는 자료를 갖다쓸 수 있습니다.
+**고객에게 서버역할을 맡기거나 고객에게 DB에 있는 자료를 직접 꺼내라고 하든지 그런 식으로 코드를 짜면 안된다**.
+
+---
+
+### 3.1.3 Stateless
+
+**요청들은 각각 독립적으로 처리**되어야 한다.
+
+- 요청1이 성공해야 요청2를 보내주고, **요청간의 의존성이 존재하는 코드를 짜시면 안됩니다**.
+- 다시 말해, **요청하나 만으로 자료를 가져오기 충분하도록 요청에 필요한 모든 정보들을 실어 보내는게 좋다**
+
+---
+
+### 3.1.4 Cacheable
+
+- **요청을 통해 보내는 자료들은 캐싱이 가능해야 한다.**
+- **캐싱가능하다고 표시하거나 캐싱 기간을 설정**해주어야 한다
+
+> 💡 캐싱(Caching)
+>
+> 네이버를 방문하면 브라우저는 자동으로 자주 사용하는 이미지 파일, CSS 파일 등을 하드에 저장해놓습니다.
+> e.g. 별로 바뀔일 없는 네이버 로고나 아이콘
+>
+> **하드에 저장해놓고 네이버 방문할 때 “네이버서버에 네이버 로고주세요~”라고 요청하지 않고 하드에서 불러옵니다**.
+> 이 행위를 **캐싱**이라고 합니다.
+
+---
+
+### 3.1.5 Layered System
+
+**여러개의 레이어를 거쳐서 요청을 처리하게 만들어도 된다**
+
+- 요청처리하는곳, DB에 저장하는곳 이런 여러가지 단계를 거쳐서 요청을 처리해도 된다.
+
+---
+
+### 3.1.6 Code on Demand
+
+서버는 **고객에게 실제 실행가능한 코드를 전송**해줄 수도 있습니다.
+
+---
+
+## 3.2 좋은 URL 이름짓기 관습
+
+- instagram.com/explore/tags/kpop
+- instagram.com/explore/tags/food
+- facebook.com/natgeo/photos
+- facebook.com/bbc/photos
+
+위 URL은 좋은 API들입니다.
+왜냐면 `facebook.com/bbc/photos` 이거만 봐도 BBC 뉴스 페북 계정의 사진첩인지 알 수 있습니다.
+
+정리하면 이런 특징을 가지고 있는데, 따라하면 됩니다.
+
+- 단어들을 **동사보다는 명사 위주**로 구성
+- 응용해서 **다른 정보들을 쉽게 가져올 수 있을 정도로 일관성** 있음
+- **대충 봐도 어떤 정보가 들어올지 예측이 가능해야** 함
+- 띄어쓰기는 **언더바(\_)대신 대시(-)기호** 사용
+- **파일 확장자 쓰지 말기** (`.html` 이런거)
+- **하위 문서들을 뜻할 땐 / 기호를 사용**함 (하위폴더같은 느낌)
+
+여러가지가 있습니다. 이것만 잘 지켜주시면 예쁜 서버 API들이 완성됩니다.
+
+---
+
+## 3.3 HTTP 메서드
+
+메서드들이 특정 용도에 제한되어 있지 않음. POST 하나로 데이터 읽고 수정하고 지우고 다 할 수 있지만,
+각 요청의 의도에 맞게 **RESTful하게 API를 만들기 위해서는 목적에 따라 구분해서 사용**해야 함
+
+- `GET` : 데이터를 Read(조회)할 떄 사용
+- `POST` (BODY 포함)
+  - 새로운 정보를 Create(추가)하는데 사용
+  - Body에 새 데이터 정보를 실어서 보냄
+- `PUT` (BODY 포함)
+- `PATCH` (BODY 포함)
+  - 데이터가 변경될 때, PUT 또는 PATCH를 사용해서 변경(Update)될 새 정보들을 Body에 실어서 보냄
+  - PUT과 PATCH는 쓰는 곳마다 다르지만,
+  - 정석은
+    - PUT은 정보를 통쟤로 변경할 떄
+    - PATCH는 일부 정보만 특정 방식으로 변경할 떄
+- `DELETE` : 데이터 삭제 요청
+
+---
+
+# 3. SWR
+
+- https://swr.vercel.app/ko
+
+---
+
+# 4. React Query
+
+- https://tanstack.com/query/v4/?from=reactQueryV3&original=https://react-query-v3.tanstack.com/

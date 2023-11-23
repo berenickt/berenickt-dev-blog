@@ -1,0 +1,159 @@
+---
+title: "05-복구 - revert, reset, restore"
+date: 2023/01/11
+---
+
+# 1. 파일 복구하는 법
+
+git은 버전관리 프로그램이기 때문에, 
+언제든지 이전 commit으로 되돌아가거나, 문제가 되는 commit 내역을 취소하거나 그럴 수 있습니다. 
+
+* `git restore` : 파일 하나 복구
+* `git revert` : commit 복구
+* `git reset` : 시간 되돌리기
+
+------
+
+## 1.1 새 프로젝트 생성
+
+깔끔한 상태에서 시작하기 위해 새 작업폴더 만들어서 다시 시작합시다. 
+새 작업폴더에서 `git init`하고 commit 몇 번 해봅시다. 저는 파일 3개 만들고 만들 때 마다 commit 합니다.
+
+```bash
+# Git장인2 라는 새 폴더 생성 후 이동
+git init
+
+# commit 3번 정도
+# a파일 만들고 commit
+git add .
+git commit -m 'a파일 생성'
+
+# b파일 만들고 commit
+git add .
+git commit -m 'b파일 생성'
+
+# c파일 만들고 commit
+git add .
+git commit -m 'c파일 생성'
+
+# 여러분의 commit 내역을 한 줄로 이쁘게 보여줌
+git log --oneline
+```
+
+노란 문자들은 **commit의 고유 id** 입니다. 고유 id를 이용해야 "그 고유 id로 되돌려주세요~" 이런 명령들이 가능합니다. 
+
+------
+
+# 2. git restore : 파일 하나 복구
+
+파일 하나가 잘못되었을 경우 ctrl + z 여러번 눌러도 되겠지만, 수정사항이 너무 많다면 명령어 하나로 처리할 수 있습니다.
+
+```bash
+# c폴더의 내용을 아무렇게나 수정
+
+# 최근 commit 된 상태로 현재 파일의 수정내역을 되돌리기
+# 📝 git restore 파일명 
+git restore c
+
+# 입력한 파일이 특정 커밋아이디 시점으로 복구
+# 📝 git restore --source 커밋아이디 파일명 
+git restore --source (자기 b파일 커밋 아이디) b
+
+# 복구랑 상관없지만 이러면 특정 파일을 staging 취소
+# 📝 git restore --staged 파일명
+git restore --staged c
+```
+
+------
+
+# 3. git revert : commit 복구
+
+commit 하나를 취소하고 싶으면 `git revert` 사용하면 됩니다.
+실은 없애는건 아니고 commit 하나를 취소한 commit을 하나 생성해줍니다. 
+
+```bash
+# 그 커밋아이디에서 일어난 일만 취소
+# git revert 커밋아이디 
+git revert (자기 b파일 커밋 아이디)
+```
+
+실행하면 아마 에디터가 뜰 텐데 맘대로 커밋메세지 수정하고 닫으면 끝입니다.
+
+![git_5_1](https://raw.githubusercontent.com/berenickt/image-server/main/img/git_5_1.png)
+
+revert 명령시 가끔 Vim 에디터가 뜨는 사람들이 있을겁니다.
+커밋 메세지 수정하라는건데 i 눌러서 수정하고 싶으면 하고, esc 눌러서 나올 수 있습니다.
+그리고 :wq 누르면 커밋 메세지가 저장됩니다.
+
+에디터 닫고나면, `git log --oneline`으로 확인하면, 새로운 커밋이 생성되고 b파일만 삭제되어있습니다. 
+(그 커밋id 이후에 했던 파일이나 커밋들은 영향없이 유지됨)
+
+git log 다시 해보면 revert 해줬다는 commit이 자동으로 생성되어있고, 작업폴더에서 a, c 파일은 있지만 b 파일은 삭제됩니다. 
+결론은 revert 명령어 쓰면 특정 커밋에서 있던 일을 지워버릴 수 있습니다.
+
+------
+
+##  3.1 기타 명령어
+
+```bash
+git revert 커밋아이디1 커밋아이디2 # revert 할 때 동시에 여러개의 commit id 입력가능
+git reverst HEAD # 그냥 최근 했던 commit 1개만 revert(취소)
+
+# merge 명령으로 인해 새로 만들어진 commit도 revert 가능
+# 그럼 merge가 취소되겠군요. 필요하면 찾아보셈
+```
+
+------
+
+# 4. git reset : 시간 되돌리기
+
+git reset 명령어를 사용하면 **특정 commit 시절로 아예 모든걸 되돌릴 수 있습니다**. 
+
+```bash
+# 그 커밋이 생성될 때로 시간을 되돌려줌
+# 작업폴더 내의 파일도 그 시절로 돌아감
+# 📝 git reset --hard 커밋아이디
+git reset --hard (자기 b파일 커밋 아이디)
+
+git log --oneline
+```
+
+* commit2로 `reset --hard`해버리면, commit2 이후의 미래 기억을 모두 잃습니다. 
+
+지금 기억을 다 포기하고 인생을 7살로 리셋해준다고 하면 돌아갈 것입니까?
+인생이 어느정도 궤도에 오른 사람들은 돌아가기 힘듭니다.
+
+마찬가지로 **git reset**은 그냥 **프로젝트 망하면 쓰거나, 아니면 짧은 거리를 돌아갈 때 쓰도록** 합시다. 
+
+------
+
+## 4.1 협업 시 reset 사용금지
+
+* 여러명이서 협업하는 리포지토리에는 **보통 reset 쓰면 안됩니다.** 갑자기 소스코드가 사라지는거니까요.
+* untracked 파일들은 (git add 안해놓은 파일들은) 사라지지않고 유지됩니다. 
+* git clean 명령어 찾아서 쓰면 untracked 파일들도 다 지울 수 있습니다. 
+
+------
+
+## 4.2 reset시 옵션 설정가능
+
+a, b, c 파일을 만들면서 각각 commit을 했다고 칩시다. 
+git reset 뒤에 hard / soft / mixed 설정을 넣을 수 있는데 
+
+```bash
+# 그 커밋이 생성될 때로 시간을 되돌려줌
+# 작업폴더 내의 파일도 그 시절로 돌아감
+git reset --hard (자기 b파일 커밋 아이디) # a, b파일은 남아있고 c 파일이 삭제
+
+# 📝 리셋인데 변동사항 지우지 말고 스테이징 해놓기
+git reset --soft (자기 b파일 커밋 아이디) # a, c파일은 남아있고 b 파일은 staging area에 남아있음
+# 이제 commit 하거나 그럴 수 있습니다.
+
+# 📝 리셋인데 변동사항 지우지 말고 unstage 해놓기
+git reset --mixed (자기 b파일 커밋 아이디) # a, c파일은 남아있고 b 파일은 staging 되지 않은 상태
+# 이제 git add 하고 commit 하거나 그럴 수 있습니다. 
+```
+
+결론은 reset하면서 파일을 아예 지워버리는게 아니라, 
+검토하고 다시 commit 하고 싶으면 `--soft`, `--mixed` 사용해봅시다. 
+실은 git reset 어쩌구만 하면 --mixed 옵션이 자동으로 발동됩니다.

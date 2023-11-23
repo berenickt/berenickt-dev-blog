@@ -1,0 +1,258 @@
+---
+title: 'TIL(Today I Learned) - 2023년 4월'
+date: 2023/05/12
+---
+
+## 1주
+
+### 2023/04/03
+
+- 검색 기능 구현
+- 검색 프로세스 이해
+- 검색 - 디바운싱 & 쓰로틀링
+
+  - `디바운싱(debounce, 쿵쾅거리다)`
+    - 정의 : **마지막 입력**을 기준으로, **특정 시간 이내에 추가 입력이 없으면 1번 실행하는 것**
+      - 즉, 마지막 한 번 요청
+    - **연이어 발생한 이벤트를 하나의 그룹으로 묶어 처리하는 방식**
+    - 주로 그룹에서 마지막, 혹은 처음에 처리된 함수를 처리하는 방식으로 사용됩니다.
+    - 마지막 호출이 발생한 후 일정 시간이 지날때까지 추가적 입력이 없을때 실행이 됩니다.
+    - 디바운싱이 사용되는 대표적 예제로는 `검색 기능`이 있습니다.
+  - `쓰로틀링(throttling)`
+    - 정의 : **최초 입력**을 기준으로, **특정 시간 이내에 발생한 추가 입력을 무시하는 것**
+      - 즉, 먼저 한 번 요청
+    - 연이어 발생한 이벤트에 대해 일정한 `delay`를 포함시켜, **연속적으로 발생하는 이벤트는 무시하는 방식**
+    - 즉, 지정한 `delay`동안 호출된 함수는 무시합니다.
+    - 쓰로틀링이 사용되는 대표적 예제는 `무한스크롤 기능`이 있습니다
+
+- Lodash 라이브러리 디바운싱 사용법
+
+### 2023/04/04
+
+- 이미지 수정
+- graphql-variables의 실체
+- REST-API의 문제점과 endpoint
+
+  - `endpoint`란? API가 서버에서 리소스에 접근할 수 있도록 가능하게 하는 URL
+
+- GraphQL과 REST-API의 관계
+
+  - 오버페칭(Over Fetching), 언더페칭(Under Fetching)
+
+- global state의 이해와 fetchpoilcy
+
+  - Redux의 문제점 : fetchPolicy 사용이 힘듬
+  - apollo-client의 fetchPolicy : Apollo-Cache
+    - Apollo-Client로 Global State를 만들게되면 `Apollo-Cache`라는곳에 저장
+    - 이를 Apollo-client의 `fetchPolicy(fetch 정책)`라고 합니다.
+
+- Recoil 세팅 및 사용
+
+  - Recoil State 저장소(store) : atom
+
+- 정규식 (정규표현식)으로 로그인, 비밀번호 등 검증
+
+### 2023/04/05
+
+- 로그인의 역사 : 쿠키/세션
+
+  - 메모리 세션(session)을 이용한 로그인
+  - 컴퓨터 여러 대로 접속을 분산
+  - Redis(임시 DB)에 로그인 정보 저장
+
+- 로그인의 역사 : JWT 로그인
+- 암호화와 JWT 토큰
+
+  - 단방향 암호화(해싱) 양방향 암호화
+
+- JWT의 이상한 점 : 내용을 확인 가능
+
+### 2023/04/06
+
+- accessToken의 저장과 next.js의 렌더링 원리
+
+  - 브라우저 저장소의 종류
+
+- 권한 분기와 HOF / HOC
+  - 호이스팅, 스코프체인, 클로저
+
+### 2023/04/07
+
+- 비회원 장바구니 구현
+- 폼 라이브러리(react-hook-form)
+- 검증 라이브러리(yup)와 공통컴포넌트 재사용
+
+---
+
+## 2주
+
+### 2023/04/10
+
+- 구조분해 할당, rest 파라미터
+- Custom Hooks
+  - custom hooks로 useAuth 만들기
+  - custom hooks로 useMoveToPage 만들기
+- 타입스크립트의 generic
+  - any vs unknown
+  - Generic 타입 응용
+  - Generic 타입 실무 활용 (HOC)
+    - Closure - 기초(Generic)
+    - Closure - 기초(Generic) - 화살표 함수
+    - Closure - 기초(Generic) - HOC
+
+### 2023/04/11
+
+- 카카오 맵 API (Kakao Map API)
+- SPA와 CSR에 대한 이해기반 카카오 CSR 이슈 보완
+  - Next.js의 Link 태그
+  - script 태그의 비동기 작동 이슈
+  - 카카오 맵 Custom
+- refetch의 문제점과 개선방법
+  - refetchQueries - 더이상 사용 x
+  - cache-state 직접 업데이트
+
+### 2023/04/12
+
+- 웹 에디터 (React-quill) 이해 및 실습
+  - dynamic import
+- 크로스 사이트 스크립트(XSS)
+  - Dompurify 설치
+- dompurify 와 하이드레이션
+  - OWASP TOP 10
+  - Hydration Issue
+
+### 2023/04/13
+
+- 결제 프로세스 이해와 개발자의 일정 고려
+  - 결제 프로세스
+  - 결제의 역사 (카드사, PG (Payment Gateway), 결제 솔루션)
+  - 포인트 충전 과정
+  - 개발자의 일정 고려하기
+- 결제 솔루션 외부 API (아임포트) 사용
+  - 웹훅노티피케이션 (무통장 입금 프로세스)
+  - 백엔드 API로 결제 데이터 넘겨주기
+  - 모바일 결제
+- 프론트엔드에서의 시간관련 이벤트 및 이벤트 루프
+  - 시간관련 이벤트
+  - 정기결제 크론탭
+  - JS의 이벤트 루프 (Event Loop)
+  - Task Queue
+  - 싱글 스레드
+  - 프로세스와 스레드
+    - 컨텍스트 스위칭(context-switching, 문맥전환)
+  - 블로킹 vs 논블로킹
+
+### 2023/04/14
+
+- 비동기의 진화 과정
+  - Callback과 비동기 처리 (콜백 지옥)
+  - Promise (프로미스 체인)
+  - Async/Await
+- 비동기 실습 및 태스크 큐
+  - 나만의 axios 만들기
+    - callback으로 만들기
+    - promise로 만들기
+  - 매크로 태스크 큐 vs 마이크로 태스크 큐
+  - 태스크 큐들 간의 실행 우선순위
+- await와 마이크로큐의 관계
+  - isSubmitting을 활용한 중복뮤테이션 방지
+  - await와 마이크로 큐의 관계
+
+---
+
+## 3주
+
+### 2023/04/17
+
+- refreshToken 구조이해 및 마이크로 서비스의 이해
+  - `AccessToken`은 **1~2시간 정도의 짧은 만료 기한**을 가지고 있고,
+  - `RefreshToken`은 **2주~1개월 정도의 긴 만료 기한**을 가지고 있습니다.
+  - `로컬/세션 스토리지`의 경우 **보안에 취약**하기 때문에 토큰을 취급할 때에는 사용하지 않고
+  - `쿠키`에 **RefreshToken**을 담아서 받아오게 됩니다.
+    - `쿠키`는 `로컬/세션 스토리지`와 달리 백엔드와 연동이 가능함
+  - 쿠키의 secure / httpOnly 옵션
+- 마이크로 서비스 아키텍쳐 (Micro Service Architecture)
+- Observable과 fromPromise
+  - 새로고침시 토큰 유지하는 방법
+- Observable
+  - apollo-client의 flatmap
+
+### 2023/04/18
+
+- 메모이제이션(Memoization) : useCallback(),useMemo()
+- 컴포넌트 단위에서의 메모이제이션 : React.memo
+- map과 memo의 관계
+  - key값을 uuid로 설정시 문제점
+- Call-Tree로 이해하는 Critical Rendering Path
+  - CRP(Critical Rendering Path)
+  - Reflow(Layout)와 Repaint(Paint)
+  - prefetch(프리페치)
+  - preload(프리로드)
+
+### 2023/04/19
+
+- 이미지 임시 URL
+  - 이미지 미리보기 (임시 URL 생성)
+  - readAsDataURL()
+- Promise.all 을 사용한 다중 이미지 업로드
+- 이미지 성능 높이기
+  - `LazyLoad`
+    - **페이지를 읽어주는 시점에 중요하지 않은 리소스 로딩을 추후에 하는 기술**
+    - e.g. **스크롤이 내려가면서 이미지가 필요한 때가 되면 로드**
+    - e.g. 이미지가 10장이 넘는 페이지가 있다고 가정할 때 이미지를 모두 다 로드가 될 때까지 기다리면,
+      - 페이지의 로딩을 길어지게 될 것입니다.
+      - 하지만, 맨 위의 화면에 보이는 이미지만 로드를 한 후에,
+      - 스크롤을 내리면서 이미지가 보여져야 할 때마다 이미지를 로드한다면, 데이터의 낭비를 막을 수 있습니다!
+  - `PreLoad`
+    - **페이지를 읽어줄 때 미리 리소스를 받아놓는 기술**
+    - e.g. 이미지가 10장이 넘는 페이지가 있다고 가정
+      - `LazyLoad`의 경우에는 **필요할 때마다 데이터를 로드하는 방법**이라면,
+      - `PreLoad`의 경우에는 **모든 데이터들을 미리 로드해놓고 대기하는 방식**
+- [PageSpeed Insights (web.dev)](https://pagespeed.web.dev/)
+- 이미지 라이브러리 (React-lazy-load, React-dropzone, react-avator-editor, ant-design)
+- [Wappalyzer - Technology profiler - Chrome 웹 스토어 (google.com)](https://chrome.google.com/webstore/detail/wappalyzer-technology-pro/gppongmhjkpfnbhagpmjfkannfbllamg?hl=ko) :
+  - 다른 사이트가 무슨 기술로 만들어졌는지 보여주는 도구
+- [기업으로 검색 | 코드너리 (codenary.co.kr)](https://www.codenary.co.kr/company/list)
+  - 기업들이 쓰는 기술 확인
+
+### 2023/04/20
+
+- Optimistic-UI (옵티미스틱 UI, 낙관적 UI)
+- OG - OpenGraph
+  - `scraping(스크래핑, 긁는다)`
+    - **1번 가져오기**
+    - 특정 사이트의 한 페이지를 쭉 긁어와 1번 가져오는 것을 의미
+    - cf. 스크래핑 라이브러리 : cheerio
+  - `crawling(크롤링, 헤엄치다)`
+    - **일정 주기로 계속 가져오기**
+    - 특정 사이트에서 돌아다니며, **버튼을 클릭해 여러 페이지를 가지고 오는 것**을 의미
+    - 즉, **여러번의 스크래핑을 한 것**이 `크롤링`이라고 생각하시면 됩니다.
+    - cf, 크롤링 라이브러리 : puppeteer
+  - 메타 태그와 OpenGraph
+- SSR의 이해 : 서버사이드 렌더링이 필요한 이유
+  - OG태그에서의 서버사이드 렌더링
+  - SEO(Search Engine Optimization) 검색 엔진 최적화
+
+---
+
+## 4주
+
+### 2023/04/24
+
+* 테스트 코드 짜는 방법 with jest, cypress
+
+### 2023/04/25
+
+* 정적페이지 배포 AWS S3
+
+### 2023/04/26
+
+* 동적페이지 배포 AWS EC2
+
+### 2023/04/27
+
+* Docker
+
+### 2023/04/28
+
+* Git WorkFlow, Trello

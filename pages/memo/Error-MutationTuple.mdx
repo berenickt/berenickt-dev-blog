@@ -1,0 +1,47 @@
+---
+title: "Error-Next-GraphQL-MutationTuple<any, OperationVariables, DefaultContext, ApolloCache<any>>형식"
+date: 2023/05/15
+
+---
+
+# 1. graphQL TS : {} 오타 에러
+
+`Next-GraphQL-MutationTuple<any, OperationVariables, DefaultContext, ApolloCache<any>>형식`
+
+```tsx
+export default function MyMemo() {
+  // **** PlayGround
+  const { data } = useQuery(FETCH_POST_MEMOS)
+  
+  // 💥 에러) 
+  // MutationTuple<any, OperationVariables, DefaultContext, ApolloCache<any>>' 형식에
+  // 'deletePostMemo' 속성이 없습니다.
+  // 해결 -> {}를 []로 고치기 (오타)
+  // const {deletePostMemo} = useMutation(DELETE_POST_MEMO)
+  const {deletePostMemo} = useMutation(DELETE_POST_MEMO)
+
+  // **** 저장된 메모 단일 삭제
+  const onClickDeleteMemo = async (event: MouseEvent<HTMLButtonElement>) => {
+    try {
+      await deletePostMemo({
+        variables: {
+          memoId: event.currentTarget.id,
+        },
+        refetchQueries: [{ query: FETCH_POST_MEMOS }],
+      })
+      Modal.success({ content: '메모가 삭제되었습니다.' })
+    } catch (error) {
+      if (error instanceof Error) Modal.error({ content: error.message })
+    }
+  }
+
+  // prettier-ignore
+  return (
+    <MyMemoUI
+      data={data}
+      onClickDeleteMemo={onClickDeleteMemo}
+    />
+  )
+}
+```
+

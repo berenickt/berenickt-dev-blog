@@ -1,1 +1,362 @@
-# 시작페이지
+# 3. Emotion
+
+- https://emotion.sh/docs/introduction
+
+---
+
+## 3.1 예제 : 공식문서 따라해보기
+
+```sh
+$ npm i @emotion/styled @emotion/react
+```
+
+---
+
+## 3.2 예제1 : 기본 사용법
+
+### 3.2.1 App.js
+
+```jsx
+import './App.css';
+import EmotionExample from './components/EmotionExample/EmotionExample';
+// import StyledComponentsExample from './components/StyledComponentsExample/StyledComponentsExample';
+
+export default function App() {
+  return (
+    <div className='App'>
+      <EmotionExample />
+      {/* <StyledComponentsExample /> */}
+    </div>
+  );
+}
+```
+
+### 3.2.2 EmotionExample
+
+```jsx
+// src/components/EmotionExample/EmotionExample.jsx
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react';
+import styled from '@emotion/styled';
+
+const Button = styled.button`
+  padding: 32px;
+  background-color: hotpink;
+  font-size: 24px;
+  border-radius: 4px;
+  color: black;
+  font-weight: bold;
+  &:hover {
+    color: white;
+  }
+`;
+
+const color = 'white';
+
+const style = css`
+  color: hotpink;
+`;
+
+const SomeComponent = ({ children }) => (
+  <div css={style}>
+    Some hotpink text.
+    {children}
+  </div>
+);
+
+const anotherStyle = css({
+  textDecoration: 'underline',
+});
+
+const P = (props) => (
+  <p
+    css={{
+      margin: 0,
+      fontSize: 12,
+      lineHeight: '1.5',
+      fontFamily: 'Sans-Serif',
+      color: 'black',
+    }}
+    {...props} // <- props contains the `className` prop
+  />
+);
+
+const ArticleText = (props) => (
+  <P
+    css={{
+      fontSize: 14,
+      fontFamily: 'Georgia, serif',
+      color: 'darkgray',
+    }}
+    {...props} // <- props contains the `className` prop
+  />
+);
+
+const AnotherComponent = () => <div css={[anotherStyle, style]}>Some text with an underline.</div>;
+
+const danger = css`
+  color: red;
+`;
+
+const base = css`
+  background-color: darkgreen;
+  color: turquoise;
+`;
+
+export default function EmotionExample() {
+  return (
+    <>
+      <div
+        css={css`
+          padding: 32px;
+          background-color: hotpink;
+          font-size: 24px;
+          border-radius: 4px;
+          &:hover {
+            color: ${color};
+          }
+        `}
+      >
+        Hover to change color.
+      </div>
+      <Button>Hello</Button>
+      <SomeComponent />
+      <AnotherComponent />
+      <P>PPPPP</P>
+      <ArticleText>Article</ArticleText>
+      <div>
+        <div css={base}>This will be turquoise</div>
+        <div css={[danger, base]}>This will be also be turquoise since the base styles overwrite the danger styles.</div>
+        <div css={[base, danger]}>This will be red</div>
+      </div>
+    </>
+  );
+}
+```
+
+- react에 특화 : @emotion/react
+- css props : jsx를 대체
+- styled components : styled-component + @
+- composition : css안에서 css 사용
+
+---
+
+## 3.3 예제2 : Media Queries
+
+https://emotion.sh/docs/media-queries
+
+```jsx
+// src/components/EmotionExample/EmotionExample.jsx
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react';
+
+export default function EmotionExample() {
+  return (
+    <>
+      <p
+        css={css`
+          font-size: 30px;
+          @media (min-width: 420px) {
+            font-size: 50px;
+          }
+        `}
+      >
+        Some text!
+      </p>
+    </>
+  );
+}
+```
+
+---
+
+## 3.3 예제3 : Global Styles
+
+https://emotion.sh/docs/globals
+
+```jsx
+// src/components/EmotionExample/EmotionExample.jsx
+/** @jsxImportSource @emotion/react */
+import { Global, css } from '@emotion/react';
+
+export default function EmotionExample() {
+  return (
+    <>
+      <p
+        css={css`
+          font-size: 30px;
+          @media (min-width: 420px) {
+            font-size: 50px;
+          }
+        `}
+      >
+        <Global
+          styles={css`
+            p {
+              color: hotpink !important;
+            }
+          `}
+        />
+        Some text!
+      </p>
+      <p>Hello, world!</p>
+    </>
+  );
+}
+```
+
+---
+
+## 3.4 예제4 : Keyframes
+
+- https://emotion.sh/docs/keyframes
+
+```jsx
+// src/components/EmotionExample/EmotionExample.jsx
+/** @jsxImportSource @emotion/react */
+import { Global, css, keyframes } from '@emotion/react';
+
+const bounce = keyframes`
+  from, 20%, 53%, 80%, to {
+    transform: translate3d(0,0,0);
+  }
+
+  40%, 43% {
+    transform: translate3d(0, -30px, 0);
+  }
+
+  70% {
+    transform: translate3d(0, -15px, 0);
+  }
+
+  90% {
+    transform: translate3d(0,-4px,0);
+  }
+`;
+
+export default function EmotionExample() {
+  return (
+    <>
+      <p
+        css={css`
+          font-size: 30px;
+          @media (min-width: 420px) {
+            font-size: 50px;
+          }
+        `}
+      >
+        <Global
+          styles={css`
+            p {
+              color: hotpink !important;
+            }
+          `}
+        />
+        Some text!
+      </p>
+      <p>Hello, world!</p>
+      <div
+        css={css`
+          animation: ${bounce} 2s ease infinite;
+        `}
+      >
+        some bouncing text!
+      </div>
+    </>
+  );
+}
+```
+
+---
+
+## 3.5 예제5 : Class Names
+
+https://emotion.sh/docs/class-names
+
+```jsx
+// src/components/EmotionExample/EmotionExample.jsx
+/** @jsxImportSource @emotion/react */
+import { Global, css, keyframes, ClassNames } from '@emotion/react';
+
+const bounce = keyframes`
+  from, 20%, 53%, 80%, to {
+    transform: translate3d(0,0,0);
+  }
+
+  40%, 43% {
+    transform: translate3d(0, -30px, 0);
+  }
+
+  70% {
+    transform: translate3d(0, -15px, 0);
+  }
+
+  90% {
+    transform: translate3d(0,-4px,0);
+  }
+`;
+
+// this might be a component from npm that accepts a wrapperClassName prop
+let SomeComponent = (props) => (
+  <div className={props.wrapperClassName}>
+    in the wrapper!
+    <div className={props.className}>{props.children}</div>
+  </div>
+);
+
+export default function EmotionExample() {
+  return (
+    <>
+      <p
+        css={css`
+          font-size: 30px;
+          @media (min-width: 420px) {
+            font-size: 50px;
+          }
+        `}
+      >
+        <Global
+          styles={css`
+            p {
+              color: hotpink !important;
+            }
+          `}
+        />
+        Some text!
+      </p>
+      <p>Hello, world!</p>
+      <div
+        css={css`
+          animation: ${bounce} 2s ease infinite;
+        `}
+      >
+        some bouncing text!
+      </div>
+      <ClassNames>
+        {({ css, cx }) => (
+          <SomeComponent
+            wrapperClassName={css({ color: 'green' })}
+            className={css`
+              color: hotpink;
+            `}
+          >
+            from children!!
+          </SomeComponent>
+        )}
+      </ClassNames>
+    </>
+  );
+}
+```
+
+---
+
+## 3.6 Styled Component vs Emotion
+
+- 기능 : Fallbacks, &, Global, keyframes
+- styled-component, Emotion 라이브러리 처음에는 조금 달랐지만, 이제 거의 유사해졌다.
+- https://github.com/jsjoeio/styled-components-vs-emotion
+- https://npmtrends.com/@emotion/core-vs-@emotion/react-vs-styled-components
+  - trend : emotion이 우세
+  - 사이즈 / 속도 : emotion이 우세
+- styled-components도 css를 서포트

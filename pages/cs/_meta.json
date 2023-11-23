@@ -1,5 +1,10 @@
 {
   "intro": "컴퓨터과학 로드맵",
+  "-- tech --": {
+    "type": "separator",
+    "title": "tech"
+  },
+  "tech": "잡지식",
   "-- 자료구조-알고리즘 --": {
     "type": "separator",
     "title": "자료구조-알고리즘"

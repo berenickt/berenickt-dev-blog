@@ -1,0 +1,148 @@
+---
+title: "03-branch & merge"
+date: 2023/01/11
+---
+
+# 1. branch : 프로젝트 복사본
+
+코드짜다보면 갑자기 새로운 기능을 추가하거나 그래야하는 경우가 있습니다.
+그럴 때는 원본파일에 코드를 추가하고 커밋해도 되겠지만, 
+혹시나 잘못해서 지금까지 짰던 프로그램이 망가지거나 그러면 어떻게하죠? 
+
+안전하게 새로운 기능을 추가하고 싶으면 **프로젝트의 복사본을 만들어서 거기에 먼저 개발**합니다.
+git 안에선 branch 기능을 이용해서 복사본을 쉽게 만들 수 있습니다.
+
+* `branch = 프로젝트 복사본`
+
+------
+
+## 1.1 프로젝트에 새 기능 필요
+
+프로젝트 새 코드를 추가하고 싶으면, 코드를 직접 수정하는 것이 아니라, 프로젝트 사본을 만들어서 거기서 개발합니다.
+e.g. 쇼핑몰에 쿠폰 기능을 추가하고 싶음
+
+------
+
+## 1.2 branch 생성 및 이동
+
+```bash
+# 프로젝트 사본 1개 생성
+# 📝 git branch 브랜치이름 
+$ git branch coupon
+
+# 브랜치 이동
+# 📝 git switch 브랜치이름
+$ git switch coupon
+
+# 현재 브랜치 위치
+$ git status
+On branch coupon
+```
+
+다시 메인 브랜치로 되돌아가고 싶으면, `git switch main` 하면 됩니다. 
+
+* 사용자 컴퓨터의 설정에 따라 main 말고 master 일 수도 있음
+
+ coupon 브랜치로 이동했으면 거기서 개발하고 commit 맘대로 할 수 있습니다.
+
+```coupon.txt
+aaaaaaaaaaa // coupon 브랜치에서 작업 중임
+```
+
+```bash
+git add .
+git commit -m '파일만들었음'
+```
+
+
+
+저번 장부터 commit 하던 곳은 **main branch 또는 master branch**라고 부르고, 
+coupon branch에서 작업한 내용은 원래 브랜치인 main branch에 아무런 영향이 없습니다.
+
+```sh
+git switch main # main 브랜치로 이동
+# coupon 브랜치에서 만든 coupon.txt는 사라짐
+# 왜냐하면 coupon 브랜치에서 작업했으니까
+
+# ---------------------------------------------------------------------------
+# 📝 coupon 브랜치에서 새로운 파일 만들어서 코드짜고 commit 몇번 해보십시오. 
+# master/main 브랜치에서도 기존 파일들에 commit 몇번 해봅시다. 
+git switch coupon
+# coupon.txt 아무렇게나 수정 후
+git add .
+git commit -m '파일만들었음2'
+
+git switch main
+# app.txt 아무렇게나 수정 후
+git add .
+git commit -m 'main브랜치 수정'
+
+# branch 와 commit 내역을 한 눈에 그래프로 보고 싶으면
+git log --graph --oneline --all
+```
+
+> **git log 하면 나오는 HEAD**는 현재 위치를 의미
+
+------
+
+# 2. merge : branch 합치기
+
+branch에서 코드를 다 작성했으면, 원본코드가 있는 master 또는 main 브랜치에 합치면 됩니다.
+**브랜치를 합치는걸** 전문용어로 **merge**라고 합니다.
+
+```sh
+git switch main
+git merge 브랜치명 
+```
+
+merge 하고 싶으면
+
+1. main/master 브랜치로 다시 이동하고
+2. `git merge 브랜치명`입력하면 합쳐집니다.
+
+예를 들어, `git merge coupon`이러면 coupon 브랜치의 코드들이 main/master 브랜치에 합쳐집니다.
+
+merge 하고 나서 `git log` 이런거 해보면 이쁘게 합쳐줬다고 알려줍니다.
+
+------
+
+## 2.1 merge conflict(충돌)
+
+근데 합칠(merge) 때 주의사항이 있는데,
+master 브랜치와 coupon 브랜치에서 같은 파일, 같은 줄을 수정했을 경우 **merge conflict**가 발생합니다.
+
+이 경우 에디터로 해당 파일을 열어보면 충돌사항이 적혀있습니다. 둘 중 어떤 코드를 적용할지 고르면 되는데, 
+<<<< / >>>> / ==== 이런 쓸데없는 것들은 다 지우고 원하는 코드만 남기면 됩니다.
+(VSCode 에디터의 경우 Accept Incoming Change 어쩌구 버튼들을 제공해주는데 그거 누르면 편리합니다)
+
+어떤 코드를 남길지 결정했으면
+
+```bash
+# git add 파일명
+# git commit -m '메세지'
+
+git add .
+git commit -m '충돌 해결'
+```
+
+입력하면 새로운 commit 을 생성해주며 merge conflict 해결 + 브랜치 합치기 완료입니다.
+
+------
+
+# 3. 정리⭐
+
+```bash
+git branch 브랜치명 # 브랜치 생성
+git switch 브랜치명 # 브랜치 이동
+
+# 브랜치 합치기는 main/master 브랜치로 이동 후
+git merge 브랜치명 # 브랜치 합치기
+
+# 브랜치마다 commit 내역을 그래프로 보고싶으면
+git log --graph --oneline --all
+
+# 브랜치 합칠 때 conflict가 발생하면
+# 파일열어서 수정 후 git add, git commit
+git add 파일명
+git commit -m '메세지'
+```

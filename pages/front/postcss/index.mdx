@@ -1,1 +1,75 @@
-# 시작페이지
+
+# 5. PostCSS
+
+- https://postcss.org/
+- 일반 CSS 파일은 똑같은 class명이 존재할 때, 나중에 정의된 똑같은 class명이 앞에 정의된 class명을 덮어버림
+- 이렇게 이름 충돌이 발생하면, CSS BEM 규칙을 적용하거나 하면되는데, 이렇게 이름을 일일히 지정해주면 귀찮음
+- 그래서 이를 해결하기 위해 PostCSS가 등장했는데, 일반 css파일에 `파일명.module.css`이라고 붙여두면,
+  - class명이 똑같더라도 덮어씌워주지 않습니다.
+
+---
+
+## 5.1 예제
+
+버튼 컴포넌트 2개 생성
+버튼1
+
+```jsx
+import React from 'react';
+import styles from './Button1.module.css';
+
+export default function Button1() {
+  return <button className={styles.button}>Button1</button>;
+}
+```
+
+```css
+/* Button1.module.css */
+.button {
+  background-color: aqua;
+}
+```
+
+버튼2
+
+```jsx
+import React from 'react';
+import styles from './Button2.module.css';
+
+export default function Button2() {
+  return <button className={styles.button}>Button2</button>;
+}
+```
+
+```css
+/* Button2.module.css */
+.button {
+  background-color: plum;
+}
+```
+
+App에 적용
+
+```jsx
+import './App.css';
+import Button1 from './components/Button1';
+import Button2 from './components/Button2';
+
+export default function App() {
+  return (
+    <>
+      <Button1 />
+      <Button2 />
+    </>
+  );
+}
+```
+
+---
+
+# 6. 스타일링 라이브러리 정리
+
+어떤 라이브러리를 선택할 지는 개발자(본인)에게 달려있음
+
+- 반응형 웹을 대응하기 위해 media query를 많이 쓰고, 딱히 design system이 없던 곳에서 sass
+- 개발 편의성을 생각하면 CSS in JS를 쓸듯 emotion

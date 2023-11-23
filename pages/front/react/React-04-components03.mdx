@@ -1,0 +1,180 @@
+---
+title: '04-Components Basic - Props vs State'
+date: 2022/12/22
+---
+
+# 1. State
+
+- [Component State](https://reactjs.org/docs/faq-state.html)
+- React v16.8 이전 버전에서는 함수형 컴포넌트에 staet를 사용 불가능했음
+- 리액트 v16.8 업데이트 이후 `Hooks`라는 기능이 도입되면서, 함수형 컴포넌트에 staet를 사용 가능
+- 그래서 리액트에는 두 가지 종류의 `state`가 있음
+  1.  `클래스형 컴포넌트`에서 쓰는`state`
+  2.  `함수형 컴포넌트`에서 `useState()`라는 함수를 통해 사용하는 `state`
+- `State` = 바뀌는 데이터
+
+---
+
+## 1.1 함수형 컴포넌트에서 state 사용
+
+> 💡 JS 문법 : Destructuring (비구조화 할당)
+>
+> Array에 있는 데이터들을 변수로 쉽게 저장하고 싶으면 쓰는 문법
+>
+> ```js
+> /* 배열에 있는 값이 유용해서 변수로 빼려면? */
+> // 📝 기존 방법
+> let num = [1, 2];
+> let a = num[0];
+> let b = num[1];
+>
+> //  📝 Destructuring 문법 : Array에 있는 값을 변수로 빼줌
+> // 왼쪽 오른쪽 형식을 똑같이 맞춰주시면 자동으로 알아서 변수가 생성됨
+> let [c, d] = [1, 2];
+> ```
+
+state 쓰려면 react로부터 import 해와야 합니다.
+
+```jsx
+import { useState } from 'react'; // 추가
+
+function App() {
+  // [초기변수, 변경도와주는 함수] = useState(초기값)
+  let [a, b] = useState('저쩌구'); // ['저쩌구', state변경을 도와주는 함수]
+  // a 변수에는 '저쩌구'라는 값이 초기값으로 할당
+  // b 함수는 a 변수의 값의 수정을 도와주는 함수가 항당
+
+  return <h1>{a}</h1>;
+}
+```
+
+---
+
+## 1.2 변수 대신 state 쓰는 이유
+
+- `state` = **값이 변하는 변수같은 거**
+  - 변동사항이 생기면 state쓰는 HTML도 자동으로 재렌더링해줌
+  - e.g. 상품명, 글제목, 가격처럼 자주 변할 것 같은 데이터들
+- 그렇다면 바뀌지 않는 데이터들은? state로 굳이 저장할 필요없음
+  - e.g. 로고같은 것들
+
+---
+
+# 2. Props
+
+- `Props` = 컴포넌트 속성을 설정할 때 사용하는 요소
+  - **부모의 state 가져오기**
+  - **함수 파라미터**랑 같은 문법
+- 컴포넌트 2개가 부모/자식 관계인 경우엔 가능
+- 부모 컴포넌트의 state를 자식 컴포넌트로 전송
+- c.f. properties(속성)의 약어
+- c.f. https://reactjs.org/docs/components-and-props.html
+- c.f. https://ko.reactjs.org/docs/components-and-props.html
+
+---
+
+## 2.1 컴포넌트 합성(Composing Components)
+
+- 컴포넌트 합성(Composing) = **여러 개의 컴포넌트들을 하나로 만드는 것**
+
+```jsx
+// 1. 부모 컴포넌트의 state를 자식 컴포넌트 <Modal>에 전송
+export default function Composition() {
+  return (
+    <div>
+      <Welcome name='메시' />
+      <Welcome name='호날두' />
+      <Welcome name='네이마르' />
+    </div>
+  );
+}
+
+// 2. 자식컴포넌트 만드는 곳에 가서 props라는 파라미터 등록 후`props.받아온 부모state`로 사용
+function Welcome(props) {
+  return <h1>Hello, {props.name}</h1>;
+}
+```
+
+---
+
+## 2.2 컴포넌트 추출(Extracting Components)
+
+- 컴포넌트 추출(Extracting) = **하나로 된 컴포넌트에서 의미있는 값들을 분리(추출)**
+
+```jsx
+function formatDate(date) {
+  return date.toLocaleDateString();
+}
+
+function Comment(props) {
+  return (
+    <div className='Comment'>
+      <div className='UserInfo'>
+        <img className='Avatar' src={props.author.avatarUrl} alt={props.author.name} />
+        <div className='UserInfo-name'>{props.author.name}</div>
+      </div>
+      <div className='Comment-text'>{props.text}</div>
+      <div className='Comment-date'>{formatDate(props.date)}</div>
+    </div>
+  );
+}
+
+const comment = {
+  date: new Date(),
+  text: 'I hope you enjoy learning React!',
+  author: {
+    name: 'Hello Kitty',
+    avatarUrl: 'http://placekitten.com/g/64/64',
+  },
+};
+
+export default function Extraction() {
+  return <Comment date={comment.date} text={comment.text} author={comment.author} />;
+}
+```
+
+위 코드에서 의미있는 값들을 추출(분리)하면 아래처럼 추출(분리)할 수 있음
+
+```jsx
+function formatDate(date) {
+  return date.toLocaleDateString();
+}
+
+// Comment 컴포넌트 안에 있던 여러 데이터들을 의미있는 값들을 기준으로 분리함
+// 이렇게 분리하면 재사용성 좋음
+function Avatar(props) {
+  return <img className='Avatar' src={props.user.avatarUrl} alt={props.user.name} />;
+}
+
+function UserInfo(props) {
+  return (
+    <div className='UserInfo'>
+      <Avatar user={props.user} />
+      <div className='UserInfo-name'>{props.user.name}</div>
+    </div>
+  );
+}
+
+function Comment(props) {
+  return (
+    <div className='Comment'>
+      <UserInfo user={props.author} />
+      <div className='Comment-text'>{props.text}</div>
+      <div className='Comment-date'>{formatDate(props.date)}</div>
+    </div>
+  );
+}
+
+const comment = {
+  date: new Date(),
+  text: 'I hope you enjoy learning React!',
+  author: {
+    name: 'Hello Kitty',
+    avatarUrl: 'http://placekitten.com/g/64/64',
+  },
+};
+
+export default function Extraction() {
+  return <Comment date={comment.date} text={comment.text} author={comment.author} />;
+}
+```

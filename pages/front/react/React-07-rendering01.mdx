@@ -1,0 +1,59 @@
+---
+title: '07-Rendering - Component Life Cycle'
+date: 2022/12/22
+---
+
+# 1. Component Life Cycle
+
+컴포넌트한테도 인생이 있음. 컴포넌트는
+
+1. **생성**이 될 수도 있고 (**mount**)
+2. **재렌더링**이 될 수도 있고 (**update**)
+3. **삭제**가 될 수도 있습니다. (**unmount**)
+
+컴포넌트의 인생을 배우는 이유는 **컴포넌트 인생 중간중간에 간섭할 수 있기 때문**입니다.
+
+- 간섭이 뭐냐면? 그냥 코드실행
+  - **컴포넌트가 장착이 될 때, 특정 코드를 실행**
+  - **컴포넌트가 업데이트될 때, 특정 코드를 실행**
+
+예시
+
+- "**App 컴포넌트 등장 전에** 이것좀 해줘"
+- "**App 컴포넌트 사라지기 전에** 이것좀 해줘"
+- "**App 컴포넌트 업데이트 되고나서** 이것좀 해줘"
+
+이렇게 코드좀 실행해달라고 간섭할 수 있는데, 간섭은 `갈고리(Hooks)`를 달아서 합니다.
+그래서 저걸 **Lifecycle hook**이라고 부름
+
+---
+
+# 2. class 컴포넌트에서 Life Cycle
+
+```jsx
+// 이렇게 class 문법을 사용해서 선언함
+class App extends Component {
+  componentDidMount() {
+    // App 컴포넌트가 로드되고나서 실행할 코드
+  }
+  componentDidUpdate() {
+    // App 컴포넌트가 업데이트 되고나서 실행할 코드
+  }
+  componentWillUnmount() {
+    // App 컴포넌트가 삭제되기전에 실행할 코드
+  }
+  render() {
+    const name = 'react';
+    return <div className='react'>{name}</div>;
+  }
+}
+```
+
+- https://ko.reactjs.org/docs/react-component.html
+  - 예전에 작성한 코드를 볼 떄, 유지보수해야할 떄 찾아서 보기
+
+---
+
+# [참고] 공식문서
+
+- [The Component Lifecycle](https://reactjs.org/docs/react-component.html#the-component-lifecycle) (컴포넌트의 생명주기)

@@ -5,7 +5,7 @@
     "title": "CSR"
   },
   "react": "react",
-  "-- SSR --": {
+  "-- SSR & SSG --": {
     "type": "separator",
     "title": "SSR "
   },
@@ -16,6 +16,11 @@
   },
   "rest": "REST-API",
   "graphql": "GralhQL",
+  "-- Router --": {
+    "type": "separator",
+    "title": "Router"
+  },
+  "react-router": "react-router",
   "-- State Management --": {
     "type": "separator",
     "title": "State Management"

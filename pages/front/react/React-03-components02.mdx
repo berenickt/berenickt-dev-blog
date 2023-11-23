@@ -1,0 +1,144 @@
+---
+title: '03-Components Basic - Component'
+date: 2022/12/22
+---
+
+# 1. Components란?
+
+- `Components` = 독립되고 재사용가능한 단위 모듈
+  - e.g. 유저가 사용하는 시스템에 대한 조작장치
+    - **page** : 모든 구성요소를 포함하는 가장 큰 단위로 single template와 multi-page template로 구분
+    - **dialog** : 대화상자
+    - **header bar** : 상단에 위치하면서 제목을 표시하고 페이지 이동과 관련된 버튼이 위치
+    - **footer bar** : 페이지 하단에 위치하면서 버튼이 위치
+    - **navbars** : 일반적으로 header bar나 footer bar 내에 위치하면서 특정한 페이지로 이동하는 메뉴의 역할
+    - **button** : 버튼
+    - **form** : 사용자로부터 데이터를 입력받는 컨트롤
+    - **list view** : 여러개의 항목을 열거하는데 사용되는 컨트롤
+  - e.g. 최신식 음식점
+    - 키오스크
+    - 음식 만드는 인간
+    - 서빙하는 인간
+    - 손님앉을 자리
+    - 식재료 보관함 등등
+- `React` = Components들을 조합한 것들
+- 공식 문서
+  - [Components and Props](https://reactjs.org/docs/components-and-props.html)
+  - [Components in Depth](https://reactjs.org/docs/react-component.html)
+
+---
+
+# 2. Component를 선언하는 2가지 방법
+
+컴포넌트를 선언하는 방식은 두 가지입니다.
+
+1.  `클래스형 컴포넌트` : 옛날에 나온 거
+2.  `함수형 컴포넌트` : 권장하는 방식
+
+---
+
+## 2.1 클래스형 컴포넌트
+
+- React 초창기 방식, 이제 안씀
+- 함수형 컴포넌트과 차이점
+  - 뒤에서 배울 `state`기능 및 라이프사이클 기능을 사용 가능
+  - 임의 메서드를 정의할 수 있음
+  - `render()` 함수가 꼭 있어야 함
+
+```jsx
+// 이렇게 class 문법을 사용해서 선언함
+class App extends Component {
+  componentDidMount() {
+    // App 컴포넌트가 로드되고나서 실행할 코드
+  }
+  componentDidUpdate() {
+    // App 컴포넌트가 업데이트 되고나서 실행할 코드
+  }
+  componentWillUnmount() {
+    // App 컴포넌트가 삭제되기전에 실행할 코드
+  }
+  render() {
+    const name = 'react';
+    return <div className='react'>{name}</div>;
+  }
+}
+```
+
+---
+
+## 2.2 함수형 컴포넌트
+
+- React에서 권장하는 방식
+
+```jsx
+import React from 'react';
+import './App.css';
+
+function App() {
+  const name = '리액트';
+  return <div className='react'>{name}</div>;
+}
+
+export default App;
+```
+
+- 장점
+  - 클래스형 컴포넌트보다 보기 좋음
+  - 메모리 자원도 클래스형 컴포넌트보다 덜 사용함
+- 단점
+  - `state`와 라이프사이클 API의 사용 불가능,
+  - 위 단점은 리액트 v16.8 업데이트 이후 `Hooks`라는 기능이 도입되면서 해결됨
+
+---
+
+## 2.3 컴포넌트 생성 스니펫
+
+VSCode 확장 Reacts Code snippets을 사용하거나, 또는 직접 `global.code-snippets.json`을 작성해도 됩니다.
+`Ctrl + Shift + P`를 치고 `global.code-snippets`를 찾습니다.
+
+- **스니펫(snippet) = 코드 빨리 생성하기 위해 템플릿(=틀)을 만들어둔 약어 모음집**
+
+```json
+{
+  // Place your snippets for javascriptreact here. Each snippet is defined under a snippet name and has a prefix, body and
+  // description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+  // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the
+  // same ids are connected.
+  // Example:
+  // "Print to console": {
+  // 	"prefix": "log",
+  // 	"body": [
+  // 		"console.log('$1');",
+  // 		"$2"
+  // 	],
+  // 	"description": "Log output to console"
+  // }
+  "reactFunction": {
+    "prefix": "rfc",
+    "body": "import React from 'react';\n\nexport default function ${1:${TM_FILENAME_BASE}}() {\n\treturn (\n\t\t<div>\n\t\t\t\n\t\t</div>\n\t);\n}\n\n",
+    "description": "Creates a React Function component"
+  },
+  "reactStatelessImplicitReturn": {
+    "prefix": "rsi",
+    "body": "import React from 'react';\n\nexport const ${1:${TM_FILENAME_BASE}} = (props) => (\n\t\t\t$0\n\t);",
+    "description": "Creates a React Function component"
+  },
+  "Import Module CSS": {
+    "prefix": "icss",
+    "body": ["import styles from './$TM_FILENAME_BASE.module.css'"],
+    "description": "Import PostCSS"
+  },
+  "ClassName": {
+    "prefix": "cn",
+    "body": ["className={styles.$1}"],
+    "description": "Adding className"
+  }
+}
+```
+
+- `rfc` : react 컴포넌트 생성
+- `rsi`
+- `icss` : postCSS 추가
+- `cn` : className 추가
+
+이제 빈 폴더에 위 명령어 입력하고 `Shift + Enter`하면 스니펫(코드 틀)이 자동 생성됨

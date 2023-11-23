@@ -1,0 +1,129 @@
+---
+title: "08-Github - branch로 협업 - pull request"
+date: 2023/01/11
+---
+
+# 1. 신기능 개발할려고 branch
+
+신기능을 만들고 싶으면 main 브랜치에 코드짜다가 프로젝트 망치지 말고,
+다른 브랜치를 만들어서 거기에 개발하는 것도 안전하고 좋다고 했습니다.
+
+원격 repository (저장소)에도 브랜치를 만들 수 있습니다. 브랜치 생성하려면 
+
+1. **github.com에서 브랜치** 직접 만들어도 되고
+1. 아니면 **로컬에서 만든 브랜치를 올려도** 브랜치생성이 가능합니다. 
+
+------
+
+## 1.1 github 사이트에서 브랜치 생성
+
+main 브랜치명 버튼 누르면 브랜치를 바꾸하거나 새로 만들 수 있습니다. 심심하면 하나 만들어보거나 하면 됩니다.
+
+------
+
+## 1.2 로컬 repository에서 브랜치 생성
+
+로컬저장소에서 브랜치생성해서 원격저장소로 `git push` 해도 됩니다.
+예를 들면, 지금 사이트를 하나 만들고 있는데 사이트 방문자들 컴퓨터에 몰래 비트코인 채굴기를 심는 기능을 만든다고 칩시다. 
+
+```bash
+# git clone으로 복사해온 작업폴더(GIT 장인3)에서 새 브랜치 생성
+git branch mining 
+git switch mining
+
+# d 라는 폴더 만들어서 commit
+git add .
+git commit -m 'd 만들었음'
+
+# a파일 첫 번쨰 줄 수정
+git add .
+git commit -m 'a 수정'
+
+# ------------------------------------------
+# 충돌 일으키기
+git switch main
+
+# 메인 브랜치에서 a파일 첫 번쨰 줄 수정
+git add .
+git commit -m 'a 수정2'
+
+# 로컬 브랜치를 원격에 올리고 싶으면
+# 📝 git push 원격저장소주소 로컬브랜치명
+git push origin mining
+```
+
+GitHub의 레포지토리에 가서, 새로고침해보면 mining 브랜치가 올라갑니다.
+
+------
+
+## 1.3 참고
+
+초급자은 특정 브랜치만 올리는 일이 잦습니다.
+
+```bash
+git push 원격저장소주소 로컬브랜치명 # 특정 로컬저장소 브랜치 -> 원격저장소
+git push 원격저장소주소 # 모든 로컬저장소 브랜치 -> 원격저장소
+```
+
+------
+
+# 3. Pull request
+
+브랜치만들면 뭐합니까. 그걸 main 브랜치와 합쳐야 기능이 완성되지 않겠습니까. 
+합치려면 `git merge` 명령어로 합치고 `git push`하면 끝인데, 
+팀끼리 일하는 경우 merge하기 전에 토론하거나 검토하거나 그래야하는 경우가 많습니다. 
+그래서 github.com은 **pull request**라는 기능이 있습니다. 그냥 쉬운 말로 **merge request**입니다. 
+
+이거 누르면 내 브랜치좀 merge 해달라는 요청을 할 수 있고, 팀원끼리 merge전에 코드검토가 가능합니다. 
+github.com 웹사이트에서 pull request를 열고 싶으면
+
+* 아무나 상단 Pull requests 메뉴에서 초록버튼 누르면 pull request 생성이 가능
+* 그 다음 어떤 브랜치를 어디에 합칠 것인지 선택하고, 하단 commit·변경내역을 보고, 초록버튼 누르면 pull request가 열림
+* 그럼 Pull requests 메뉴에서 이렇게 확인가능한데, 누르면 토론할 수 있는 곳도 있습니다. 
+  * 거기서 코드 리뷰하면 됨
+* 잘 된것 같아 merge하기로 했으면, merge 할 때 여러 옵션이 있는데 택하면 됩니다. 
+  * 이번에는 Squash and mege해보겠습니다.
+
+이제 mining에서 만든 코드가 잘 통합(merge = pull request)된 것을 볼 수 있습니다.
+
+------
+
+## 3.1 create a merge commit
+
+새로운 merge commit을 하나 생성해주는 3-way merge를 실행해줍니다. 
+
+* **main 브랜치 조회 시 합쳐진 브랜치의 commit 내역도** 전부 나옴 
+* 터미널에 `git log --oneline --graph` 해보면 **합쳐진 브랜치도 그림으로 나옴** 
+* 그래서 commit 내역이 많으면 복잡하고 더러워보일 수 있습니다. 
+
+------
+
+## 3.2 squash and merge
+
+* **합쳐질 브랜치의 commit 내역을 하나로 합쳐서 main 브랜치에 신규 commit을 생성**해줍니다.
+* `git log --oneline --graph`해보면 **합쳐진 브랜치 안나옴** 
+* commit을 하나로 합쳐서 main 브랜치로 순간이동 시켜주는 행위라 **사람들이 깔끔하다고 좋아합니다**. 
+
+------
+
+## 3.3 rebase and merge
+
+* **합쳐질 브랜치를 main 브랜치 최신 commit으로 rebase하고나서 fast-forward merge** 비슷한걸 해줍니다.
+* 결과는 **squash and merge와 비슷한데 합쳐질 브랜치의 commit 내역이 전부 보존**됩니다. 
+* 애도 `git log --oneline --graph` 해보면 **합쳐진 브랜치 안나옴**
+
+------
+
+# 4. 결론
+
+* github 등 원격 저장소에도 브랜치만들 수 있습니다. 
+* Pull request (merge)할 땐 3개 중 맘대로 하면 됩니다.
+
+------
+
+# 5. 참고 : revert 쓰지말기
+
+원격저장소의 commit 내역을 과거로 되돌리고 싶으면, 
+로컬에서 `git reset --hard` 이런거 쓰고, `git push -f` 하면 가능하긴 한데, 
+해당 브랜치를 공동작업중인 사람들이 모두 영향받기 때문에 그러지 않는게 좋습니다.
+github.com 사이트엔 revert 버튼이 있긴 한데, 그거 쓰면 예전 코드로 되돌려주는 commit을 만들어주는 식으로 동작합니다. 

@@ -1,0 +1,227 @@
+---
+title: '13-Hooks - Basic Hooks (useState, useEffect)'
+date: 2022/12/22
+---
+
+# 1. Hooks = 컴포넌트 인생에 간섭하는 함수
+
+Hooks는 버전 16.8부터 React 요소로 새로 추가됨
+왜 도입되었냐면? 기존의 클래스형 컴포넌트들은 복잡해지면 이해하기 어려워짐
+
+- "**Detail 컴포넌트 등장 전에** 이것좀 해줘"
+- "**Detail 컴포넌트 사라지기 전에** 이것좀 해줘"
+- "**Detail 컴포넌트 업데이트 되고나서** 이것좀 해줘"
+
+이렇게 코드좀 실행해달라고 간섭할 수 있는데, 간섭은 `갈고리(Hooks)`를 달아서 합니다. 그래서 저걸 **Lifecycle hook**이라고 부름
+
+---
+
+# 2. 과거 클래스형 컴포넌트 Lifecycle hook 쓰는 법
+
+- 옛날에는 안에 함수명을 저렇게 써주면 각각 특정 Lifecycle에서 코드를 실행할 수 있었습니다.
+- 현재는 권장되는 방식이 아님
+
+```jsx
+class Detail2 extends React.Component {
+  componentDidMount() {
+    // Detail2 컴포넌트가 로드되고나서 실행할 코드
+  }
+  componentDidUpdate() {
+    // Detail2 컴포넌트가 업데이트 되고나서 실행할 코드
+  }
+  componentWillUnmount() {
+    // Detail2 컴포넌트가 삭제되기전에 실행할 코드
+  }
+}
+```
+
+---
+
+# 3. useState Hook
+
+- [Using the State Hook](https://reactjs.org/docs/hooks-state.html)
+- `state` = 컴포넌트의 상태
+
+  - e.g. 시계라는 컴포넌트가 있다면?
+    - 현재 시간
+
+- 기본적인 Hook으로, `함수형 컴포넌트`에서도 가변적인 상태를 지닐 수 있게 해줌
+
+```jsx
+import React, { useState } from 'react'; // useState 불러오기
+
+export default const Counter = () => {
+  // [변하는 초기값을 담을 변수, 왼쪽초기값의 변경을 도와주는 함수]  = useState(초기값 설정);
+  const [value, setValue] = useState(0);
+
+  return (
+    <div>
+      <p>현재 카운터 값은 {value}입니다.</p>
+      <button onClick={() => setValue(value + 1)}>+1</button>
+      <button onClick={() => setValue(value - 1)}>-1</button>
+    </div>
+  );
+};
+```
+
+---
+
+# 4. useEffect Hook
+
+- [Using the Effect Hook](https://reactjs.org/docs/hooks-effect.html)
+- `useEffect` = 리액트 **컴포넌트가 렌더링될 때마다 특정 작업을 수행하도록 설정**할 수 있는 Hook
+- useEffect 안에 적은 코드는 HTML 렌더링 이후에 동작
+- 시간이 오래 걸리는 작업이 있다면? **useEffect에 넣어두기!**
+  - useEffect 안에 적으면 HTML 보여주고 나서 시간이 오래 걸리는 작업 실행
+  - 조금이라도 HTML 렌더링이 빠른 사이트를 원하면, useEffect 안에 넣어놓기
+- React 만든사람이 이 함수를 useEffect라고 작명한 이유
+  - 함수안에 코드짤 때 **함수의 핵심기능 외에 쓸데없는 기능**들을 프로그래밍 용어로 `side effect`라고 부름
+  - useEffect도 컴포넌트의 핵심 기능은 HTML 렌더링이라 **그거 외의 쓸데없는 기능들은 useEffect 안에** 적으라는 소리
+  - 오래걸리는 반복연산, 서버에서 데이터가져오는 작업, 타이머다는거 이런건 useEffect 안에 많이 적기
+
+```jsx
+import {useState, useEffect} from 'react';
+
+function Detail(){
+  useEffect(()=>{
+    // 여기적은 코드는 컴포넌트 로드 & 업데이트 마다 실행됨
+  });
+  return ...
+}
+```
+
+---
+
+## 4.1 useEffect 2가지 형태
+
+```jsx
+// 1. 함수의 인자로 콜백함수만 받는 경우
+// - 컴포넌트가 렌더링 될때 마다 실행
+// - 컴포넌트가 맨 처음 화면에 렌더링 & 다시 렌더링될 떄
+useEffect(() => {
+  // 작업
+});
+
+// 2. 함수의 인자로 (콜백함수, 배열)을 받는 경우
+// - (1) 컴포넌트가 맨 처음 화면 렌더링될 떄 실행
+// - (2) 배열 요소 안에 있는 value값이 바뀔 떄 실행
+// - 2번쨰 배열 요소로 빈 배열[]을 전달하면, (1)만 실행됨
+useEffect(() => {
+  // 작업
+}, [value]);
+```
+
+---
+
+## 4.2 Clean Up (정리 작업)
+
+```jsx
+useEffect(() => {
+  // 작업
+  return () => {
+    // 예를 들어, 등록한 리스너를 제거해주는 작업을 여기서 함
+    // 작업 정리
+  };
+}, []);
+```
+
+---
+
+## 4.3 예제1 : useEffect 사용
+
+```jsx
+import React, { useState, useEffect } from 'react';
+
+function App() {
+  const [count, setCount] = useState(1);
+  const [name, setName] = useState('');
+
+  const handleCountUpdate = () => {
+    setCount(count + 1);
+  };
+
+  const handleInputChange = (e) => {
+    setName(e.target.value);
+  };
+
+  // // 렌더링마다 매번 실행 - 렌더링 이후
+  // useEffect(() => {
+  //   console.log('렌더링');
+  // });
+
+  // // 마운트 + [count]가 변경될 떄만 useEffect 실행
+  // useEffect(() => {
+  //   console.log('🍉count 변화');
+  // }, [count]);
+
+  // // 마운트 + [name]이 변경될 떄만 useEffect 실행
+  // useEffect(() => {
+  //   console.log('🍊name 변화');
+  // }, [name]);
+
+  // 맨 처음 렌더링될 떄만 실행
+  useEffect(() => {
+    console.log('마운팅');
+  }, []);
+
+  return (
+    <div>
+      <button onClick={handleCountUpdate}>업데이트</button>
+      <span>count : {count} </span>
+      <br />
+      <input type='text' value={name} onChange={handleInputChange} />
+      <span>name : {name}</span>
+    </div>
+  );
+}
+
+export default App;
+```
+
+---
+
+## 4.4 예제2 : useEffect & Clean Up
+
+```jsx
+import React, { useState, useEffect } from 'react';
+
+function App() {
+  const [showTimer, setShowTimer] = useState(false);
+
+  return (
+    <div>
+      {showTimer && <Timer />}
+      <button onClick={() => setShowTimer(!showTimer)}>Toggle Timer</button>
+    </div>
+  );
+}
+
+const Timer = (props) => {
+  useEffect(() => {
+    const timer = setInterval(() => {
+      console.log('타이머 돌아가는중');
+    }, 1000);
+
+    // 정리 작업
+    return () => {
+      clearInterval(timer);
+      console.log('타이머가 종료되었습니다.');
+    };
+  }, []);
+
+  return (
+    <div>
+      <span>타이머를 시작합니다. 콘솔 확인하세요.</span>
+    </div>
+  );
+};
+
+export default App;
+```
+
+---
+
+# [참고] 공식문서
+
+- [Introduction to Hooks](https://reactjs.org/docs/hooks-intro.html)
+- [Hooks Reference](https://reactjs.org/docs/hooks-reference.html)

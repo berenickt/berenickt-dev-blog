@@ -1,0 +1,434 @@
+---
+title: 'vscode - extention 쓰는 것 정리'
+date: 2023/01/20
+---
+
+# 1. 기본
+
+- [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)⭐
+- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)⭐
+- [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)⭐
+- [Image preview](https://marketplace.visualstudio.com/items?itemName=kisstkondoros.vscode-gutter-preview)⭐
+- [Svg Preview](https://marketplace.visualstudio.com/items?itemName=goessner.mdmath)
+- [indent-rainbow](https://marketplace.visualstudio.com/items?itemName=oderwat.indent-rainbow)⭐
+  - 들여쓰기 한 부분에 무지개색으로 칠해줘서 들여쓰기가 명확하게 되서 가독성을 높여줌
+- [cdnjs](https://marketplace.visualstudio.com/items?itemName=JakeWilson.vscode-cdnjs)
+- [Bracket Select](https://marketplace.visualstudio.com/items?itemName=chunsen.bracket-select)⭐
+  - `alt + a`로 괄호 안의 문자열을 선택
+- [Surround](https://marketplace.visualstudio.com/items?itemName=yatki.vscode-surround)⭐
+  - 코드를 선택하고 `ctrl + shift + T`를 누르고 제어문을 선택하면 자동완성
+- [Font Awesome Gallery](https://marketplace.visualstudio.com/items?itemName=tomasvergara.vscode-fontawesome-gallery)
+- [Project Manager](https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager)⭐
+- [project-tree](https://marketplace.visualstudio.com/items?itemName=zhucy.project-tree)
+- [tldraw](https://marketplace.visualstudio.com/items?itemName=tldraw-org.tldraw-vscode) : 그림 그릴 떄
+
+---
+
+# 2. 번역
+
+- [korToEng](https://marketplace.visualstudio.com/items?itemName=jaehyeon48.kortoeng) : 변수 지을 떄, ⭐
+
+  - Window : `Ctrl + F12`로 한 -> 영 번역
+  - MacOS : `Cmd + F12`
+
+- [Google Translate](https://marketplace.visualstudio.com/items?itemName=hancel.google-translate)
+  - 번역할 거 드래그하고, `Ctrl + Shift + T`누르면, 밑에 줄에 번역해줌
+  - 번역할 거 드래그하고, `Shift + Alt + T`누르면, 번역 결과 후보 단어 선택 뜸
+  - 설정에서 `First Language를 zh-cn(중국어)에서 ko로 변경`
+
+---
+
+# 3. 설정(User.setting.json)
+
+## 주석 색 변경, 이탤릭체 해제
+
+```json
+/* 주석 색상, litalic font 해제 설정 */
+"editor.tokenColorCustomizations": {
+"textMateRules": [
+  {
+    "scope": [
+      "comment",
+      "comment.block",
+      "comment.block.documentation",
+      "comment.line",
+      "constant",
+      "constant.character",
+      "constant.character.escape",
+      "constant.numeric",
+      "constant.numeric.integer",
+      "constant.numeric.float",
+      "constant.numeric.hex",
+      "constant.numeric.octal",
+      "constant.other",
+      "constant.regexp",
+      "constant.rgb-value",
+      "emphasis",
+      "entity",
+      "entity.name",
+      "entity.name.class",
+      "entity.name.function",
+      "entity.name.method",
+      "entity.name.section",
+      "entity.name.selector",
+      "entity.name.tag",
+      "entity.name.type",
+      "entity.other",
+      "entity.other.attribute-name",
+      "entity.other.inherited-class",
+      "invalid",
+      "invalid.deprecated",
+      "invalid.illegal",
+      "keyword",
+      "keyword.control",
+      "keyword.operator",
+      "keyword.operator.new",
+      "keyword.operator.assignment",
+      "keyword.operator.arithmetic",
+      "keyword.operator.logical",
+      "keyword.other",
+      "markup",
+      "markup.bold",
+      "markup.changed",
+      "markup.deleted",
+      "markup.heading",
+      "markup.inline.raw",
+      "markup.inserted",
+      "markup.italic",
+      "markup.list",
+      "markup.list.numbered",
+      "markup.list.unnumbered",
+      "markup.other",
+      "markup.quote",
+      "markup.raw",
+      "markup.underline",
+      "markup.underline.link",
+      "meta",
+      "meta.block",
+      "meta.cast",
+      "meta.class",
+      "meta.function",
+      "meta.function-call",
+      "meta.preprocessor",
+      "meta.return-type",
+      "meta.selector",
+      "meta.tag",
+      "meta.type.annotation",
+      "meta.type",
+      "punctuation.definition.string.begin",
+      "punctuation.definition.string.end",
+      "punctuation.separator",
+      "punctuation.separator.continuation",
+      "punctuation.terminator",
+      "storage",
+      "storage.modifier",
+      "storage.type",
+      "string",
+      "string.interpolated",
+      "string.other",
+      "string.quoted",
+      "string.quoted.double",
+      "string.quoted.other",
+      "string.quoted.single",
+      "string.quoted.triple",
+      "string.regexp",
+      "string.unquoted",
+      "strong",
+      "support",
+      "support.class",
+      "support.constant",
+      "support.function",
+      "support.other",
+      "support.type",
+      "support.type.property-name",
+      "support.variable",
+      "variable",
+      "variable.language",
+      "variable.name",
+      "variable.other",
+      "variable.other.readwrite",
+      "variable.parameter"
+    ],
+    "settings": { "fontStyle": " " } // 주석과 키워드, 파라미터에 적용된 이탤릭 폰트스타일 해제
+  }
+],
+"comments": "#5b9463" // 주석 색상변경
+```
+
+---
+
+## 괄호 색상
+
+옵션에 bracket pair 다 키기
+
+괄호 색상 커스터마이징
+
+```json
+{
+  "editor.bracketPairColorization.enabled": true,
+  "workbench.colorCustomizations": {
+    "editorBracketHighlight.foreground1": "#5caeef",
+    "editorBracketHighlight.foreground2": "#dfb976",
+    "editorBracketHighlight.foreground3": "#c172d9",
+    "editorBracketHighlight.foreground4": "#4fb1bc",
+    "editorBracketHighlight.foreground5": "#97c26c",
+    "editorBracketHighlight.foreground6": "#abb2c0",
+    "editorBracketHighlight.unexpectedBracket.foreground": "#db6165"
+  }
+}
+```
+
+---
+
+## 전체 세팅
+
+```json
+{
+  "editor.accessibilitySupport": "on",
+  "prettier.printWidth": 100,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "workbench.iconTheme": "material-icon-theme",
+  "audioCues.volume": 20,
+  "tabnine.experimentalAutoImports": true,
+  "terminal.integrated.env.osx": {},
+  "window.zoomLevel": 1,
+  "autoprefixer.formatOnSave": true,
+  "editor.formatOnSave": true,
+  "audioCues.chatResponsePending": "off",
+  "audioCues.terminalCommandFailed": "off",
+  "audioCues.taskFailed": "off",
+  "audioCues.taskCompleted": "off",
+  "audioCues.onDebugBreak": "off",
+  "audioCues.notebookCellCompleted": "off",
+  "audioCues.notebookCellFailed": "off",
+  "audioCues.diffLineDeleted": "off",
+  "audioCues.diffLineInserted": "off",
+  "audioCues.diffLineModified": "off",
+  "audioCues.lineHasBreakpoint": "off",
+  "audioCues.lineHasError": "off",
+  "audioCues.lineHasFoldedArea": "off",
+  "audioCues.lineHasInlineSuggestion": "off",
+  "audioCues.noInlayHints": "off",
+  "workbench.colorTheme": "Catppuccin Macchiato",
+  // 이탤릭체 해제
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": [
+          "comment",
+          "comment.block",
+          "comment.block.documentation",
+          "comment.line",
+          "constant",
+          "constant.character",
+          "constant.character.escape",
+          "constant.numeric",
+          "constant.numeric.integer",
+          "constant.numeric.float",
+          "constant.numeric.hex",
+          "constant.numeric.octal",
+          "constant.other",
+          "constant.regexp",
+          "constant.rgb-value",
+          "emphasis",
+          "entity",
+          "entity.name",
+          "entity.name.class",
+          "entity.name.function",
+          "entity.name.method",
+          "entity.name.section",
+          "entity.name.selector",
+          "entity.name.tag",
+          "entity.name.type",
+          "entity.other",
+          "entity.other.attribute-name",
+          "entity.other.inherited-class",
+          "invalid",
+          "invalid.deprecated",
+          "invalid.illegal",
+          "keyword",
+          "keyword.control",
+          "keyword.operator",
+          "keyword.operator.new",
+          "keyword.operator.assignment",
+          "keyword.operator.arithmetic",
+          "keyword.operator.logical",
+          "keyword.other",
+          "markup",
+          "markup.bold",
+          "markup.changed",
+          "markup.deleted",
+          "markup.heading",
+          "markup.inline.raw",
+          "markup.inserted",
+          "markup.italic",
+          "markup.list",
+          "markup.list.numbered",
+          "markup.list.unnumbered",
+          "markup.other",
+          "markup.quote",
+          "markup.raw",
+          "markup.underline",
+          "markup.underline.link",
+          "meta",
+          "meta.block",
+          "meta.cast",
+          "meta.class",
+          "meta.function",
+          "meta.function-call",
+          "meta.preprocessor",
+          "meta.return-type",
+          "meta.selector",
+          "meta.tag",
+          "meta.type.annotation",
+          "meta.type",
+          "punctuation.definition.string.begin",
+          "punctuation.definition.string.end",
+          "punctuation.separator",
+          "punctuation.separator.continuation",
+          "punctuation.terminator",
+          "storage",
+          "storage.modifier",
+          "storage.type",
+          "string",
+          "string.interpolated",
+          "string.other",
+          "string.quoted",
+          "string.quoted.double",
+          "string.quoted.other",
+          "string.quoted.single",
+          "string.quoted.triple",
+          "string.regexp",
+          "string.unquoted",
+          "strong",
+          "support",
+          "support.class",
+          "support.constant",
+          "support.function",
+          "support.other",
+          "support.type",
+          "support.type.property-name",
+          "support.variable",
+          "variable",
+          "variable.language",
+          "variable.name",
+          "variable.other",
+          "variable.other.readwrite",
+          "variable.parameter"
+        ],
+        "settings": { "fontStyle": " " } // 주석과 키워드, 파라미터에 적용된 이탤릭 폰트스타일 해제
+      }
+    ],
+    "comments": "#5b9463" // 주석 색상변경
+  },
+  "prettier.semi": false,
+  "markdown-preview-github-styles.lightTheme": "dark",
+  "prettier.jsxSingleQuote": true,
+  "prettier.singleQuote": true
+}
+```
+
+---
+
+# 4. 코드편집
+
+- 문(if, try)으로 감쌀려는 코드를 드래그한 후 `Ctrl + Shipft + P` 누르고, surround 검색
+  - if, try 문 등을 감쌀 떄(wrap) 사용
+- [TODO Highlight](https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight)
+  - 주석 쓸 떄 `// TODO:`, `// FIXME:`로 쓰면 하이라이트 해줌
+
+---
+
+# 5. 마크다운
+
+- [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
+- [Markdown+Math](https://marketplace.visualstudio.com/items?itemName=goessner.mdmath)
+- [Markdown PDF](https://marketplace.visualstudio.com/items?itemName=yzane.markdown-pdf)
+- [vscode-pdf](https://marketplace.visualstudio.com/items?itemName=tomoki1207.pdf)
+
+---
+
+# 6. 테마 및 아이콘
+
+- 테마
+  - [Atom Material Theme](https://marketplace.visualstudio.com/items?itemName=tobiasalthoff.atom-material-theme)⭐
+  - [Catppuccin for VSCode](https://marketplace.visualstudio.com/items?itemName=DanMeeusen.deep-default-dark-vscode-theme)⭐
+  - [One Dark Theme](https://marketplace.visualstudio.com/items?itemName=mskelton.one-dark-theme)⭐
+  - [One Monokai 80s Theme](https://marketplace.visualstudio.com/items?itemName=axiomaticstudios.one-monokai-80s)⭐
+  - [Tokyo Night](https://marketplace.visualstudio.com/items?itemName=enkia.tokyo-night)⭐
+- 아이콘
+  - [vscode-icons](https://marketplace.visualstudio.com/items?itemName=vscode-icons-team.vscode-icons)
+  - [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme)⭐
+- VSCode 왼쪽 네비게이션 아이콘 변경
+  - [Fluent Icons](https://marketplace.visualstudio.com/items?itemName=miguelsolorio.fluent-icons)⭐
+
+---
+
+# 7. HTML, CSS
+
+- [Auto Rename Tag](https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-rename-tag) : 자동으로 태그 열고 닫고 해주는 확장툴
+- [Auto Close Tag](https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-close-tag) : HTML 같은 앞의 태그의 이름을 지정하면 뒤에 태그도 자동으로 바꿔주는 확장툴
+- [HTML CSS Support](https://marketplace.visualstudio.com/items?itemName=ecmel.vscode-html-css)
+- [HTML End Tag Labels](https://marketplace.visualstudio.com/items?itemName=anteprimorac.html-end-tag-labels)
+- [HTML to CSS autocompletion](https://marketplace.visualstudio.com/items?itemName=solnurkarim.html-to-css-autocompletion) : CSS 파일에서 HTMl의 class나 id에 이름을 띄워주는 확장 프로그램
+- [px to rem & rpx & vw (cssrem)](https://marketplace.visualstudio.com/items?itemName=cipchk.cssrem)
+- [Autoprefixer](https://marketplace.visualstudio.com/items?itemName=mrmlnc.vscode-autoprefixer)
+- [CSS Navigation](https://marketplace.visualstudio.com/items?itemName=pucelle.vscode-css-navigation)
+  - HTML 같은 파일에서 class에 적용된 CSS 속성으로 바로 이동하게 해주는 확장툴
+  - `<Ctrl> + <마우스 클릭>`을 하면 해당 CSS로 이동
+  - 예전에는 [CSS Peek](https://marketplace.visualstudio.com/items?itemName=pranaygp.vscode-css-peek) 썻음
+
+---
+
+# 8. JS
+
+- [Code Runner](https://marketplace.visualstudio.com/items?itemName=formulahendry.code-runner)
+- [Console Ninja](https://marketplace.visualstudio.com/items?itemName=WallabyJs.console-ninja)
+  - 콘솔 내용 미리 보여줌
+- [JavaScript (ES6) code snippets](https://marketplace.visualstudio.com/items?itemName=xabikos.JavaScriptSnippets)
+- [Javascript Auto Backticks](https://marketplace.visualstudio.com/items?itemName=chamboug.js-auto-backticks)
+
+---
+
+# 9. Git
+
+- [Git Graph](https://marketplace.visualstudio.com/items?itemName=mhutchie.git-graph)
+- [Gitmoji](https://marketplace.visualstudio.com/items?itemName=seatonjiang.gitmoji-vscode)
+
+---
+
+# 10. React / Native
+
+- [Auto Import ES6, TS, JSX, TSX](https://marketplace.visualstudio.com/items?itemName=NuclleaR.vscode-extension-auto-import)
+- [ES7+ React/Redux/React-Native snippets](https://marketplace.visualstudio.com/items?itemName=dsznajder.es7-react-js-snippets)
+  - `rfc` : 함수형 컴포넌트 생성⭐
+  - `rcc` : 클래스형 컴포넌트 생성
+  - `rsi` : 화살표함수 컴포넌트 생성
+  - `uses` : useState 스니펫⭐
+  - [다른 Snippet 명령어](https://github.com/ults-io/vscode-react-javascript-snippets/blob/HEAD/docs/Snippets.md)
+
+---
+
+# 11. TailwindCSS
+
+- [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
+- [Tailwind CSS Highlight](https://marketplace.visualstudio.com/items?itemName=ellreka.tailwindcss-highlight)
+
+---
+
+# 12. Styled-components
+
+- [vscode-styled-components](https://marketplace.visualstudio.com/items?itemName=styled-components.vscode-styled-components)
+
+---
+
+# 13. C/C++
+
+- [Clang-Format](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format)
+
+---
+
+# 13. 정신건강/재미
+
+- [vscode-pets](https://marketplace.visualstudio.com/items?itemName=tonybaloney.vscode-pets)
+  - VScode 탐색기 밑에 VS Code Pets로 동물들보며 멘탈잡게 도와줌

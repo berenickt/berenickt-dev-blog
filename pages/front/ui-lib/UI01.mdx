@@ -1,0 +1,1000 @@
+---
+title: 'UI 라이브러리'
+date: 2022/12/28
+---
+
+# 1. UI 라이브러리 종류
+
+- [Onsen UI](https://onsen.io/)
+- [Ant Design](https://ant.design/)
+- [React Semantic UI](https://react.semantic-ui.com/)
+- [React BootStrap](https://react-bootstrap.github.io/)
+  - [bootstrap](https://getbootstrap.com/)
+    - 유명한 front-end open source toolk
+    - JQuery과 강하게 결합되어 있음 / 반응형 웹 개발에 특화
+  - 반응형 웹 : xs / md / lg
+  - Sass : @import 해서 쓸 수 있음
+  - 익숙한 UI : Bootstrap 을 그대로 가져옴
+- [Material UI](https://mui.com/)✔️
+- [TailwindCSS 공식사이트](https://tailwindcss.com)✔️
+- [React spring](https://www.react-spring.dev/)
+- [Framer Motion](https://www.framer.com/motion/)
+
+---
+
+# 2. Onsen UI
+
+- [Onsen UI Get Start](https://onsen.io/v2/guide/#getting-started)
+
+  - 모바일 케이스 대응
+  - 아이콘 (Font Awesome, Ionicons)
+  - 문서 최신화는 잘 안됨(React에 불친절)
+
+- https://onsen.io/v2/guide/react/#react
+
+## 2.1 예제 : 공식문서 따라해보기
+
+```sh
+$ npx create-react-app ui
+$ cd ui
+$ npm install onsenui react-onsenui --save # Onsen UI 설치
+$ npm start
+```
+
+---
+
+## 2.2 예제1 : 기본 사용법
+
+### 2.2.1 App.js
+
+```jsx
+import './App.css';
+// Webpack CSS import, 밑에 2줄 import해야 쓸 수 있음
+import 'onsenui/css/onsenui.css';
+import 'onsenui/css/onsen-css-components.css';
+import OnesenUIExample from './components/OnsenUI/OnesenUIExample';
+
+export default function App() {
+  return (
+    <div className='App'>
+      <OnesenUIExample />
+    </div>
+  );
+}
+```
+
+---
+
+### 2.2.2 OnsenUIExample
+
+- https://onsen.io/v2/api/react/Button.html
+
+```jsx
+// src/components/OnsenUI/OnsenUIExample.jsx
+import ButtonExample from './ButtonExample';
+import { Page } from 'react-onsenui';
+
+export default function OnesenUIExample() {
+  return (
+    <Page>
+      <ButtonExample />
+    </Page>
+  );
+}
+```
+
+---
+
+### 2.2.2 ButtonExample
+
+```jsx
+// src/components/OnsenUI/ButtonExample.jsx
+import { Button } from 'react-onsenui';
+
+export default function ButtonExample() {
+  const hnadleClick = () => {
+    alert('눌렀음!');
+  };
+  return (
+    <>
+      <Button onClick={hnadleClick} modifier='large--cta'>
+        Tap Me
+      </Button>
+      <br />
+      <br />
+      <Button onClick={hnadleClick} disabled={true}>
+        disabled
+      </Button>
+      <br />
+      <br />
+      <Button onClick={hnadleClick} modifier='outline'>
+        outline
+      </Button>
+      <br />
+      <br />
+      <Button onClick={hnadleClick} modifier='light'>
+        light
+      </Button>
+      <br />
+      <br />
+      <Button onClick={hnadleClick} modifier='quiet'>
+        quiet
+      </Button>
+      <br />
+      <br />
+      <Button onClick={hnadleClick} modifier='cta'>
+        cta
+      </Button>
+      <br />
+      <br />
+      <Button onClick={hnadleClick} modifier='large-quiet'>
+        large-quiet
+      </Button>
+      <br />
+      <br />
+      <Button onClick={hnadleClick} modifier='material'>
+        material
+      </Button>
+      <br />
+      <br />
+      <Button onClick={hnadleClick} modifier='material-flat'>
+        material-flat
+      </Button>
+    </>
+  );
+}
+```
+
+---
+
+## 2.3 예제2: Action Sheet
+
+- https://onsen.io/v2/api/react/ActionSheet.html
+
+```jsx
+// src/components/OnsenUI/ActionSheetExample.jsx
+import { useState } from 'react';
+import { ActionSheetButton, ActionSheet, Button } from 'react-onsenui';
+
+export default function ActionSheetExample() {
+  const [open, setOpen] = useState(false);
+  const handleClick = () => {
+    setOpen(true);
+  };
+  return (
+    <div>
+      <Button onClick={handleClick}>Action Sheet 열기</Button>
+      <ActionSheet isOpen={open} title='action sheet'>
+        <ActionSheetButton>Label 1</ActionSheetButton>
+        <ActionSheetButton>Label 2</ActionSheetButton>
+        <ActionSheetButton>Label 4</ActionSheetButton>
+        <ActionSheetButton modifier='destructive'>Cancel</ActionSheetButton>
+        <ActionSheetButton>Save</ActionSheetButton>
+      </ActionSheet>
+    </div>
+  );
+}
+```
+
+```jsx
+// src/components/OnsenUI/OnsenUIExample.jsx
+import ButtonExample from './ButtonExample';
+import { Page } from 'react-onsenui';
+import ActionSheetExample from './ActionSheetExample';
+
+export default function OnesenUIExample() {
+  return (
+    <Page>
+      <ActionSheetExample />
+      <ButtonExample />
+    </Page>
+  );
+}
+```
+
+---
+
+## 2.4 예제3 : List
+
+```jsx
+import React from 'react';
+import { Checkbox, List, ListItem } from 'react-onsenui';
+
+export default function CheckBoxExample() {
+  return (
+    <List>
+      <ListItem tappable>
+        <label class='left'>
+          <Checkbox input-id='check-1'></Checkbox>
+        </label>
+        <label for='check-1' class='center'>
+          Apple
+        </label>
+      </ListItem>
+      <ListItem tappable>
+        <label class='left'>
+          <Checkbox input-id='check-2' checked></Checkbox>
+        </label>
+        <label for='check-2' class='center'>
+          Banana
+        </label>
+      </ListItem>
+    </List>
+  );
+}
+```
+
+```jsx
+// src/components/OnsenUI/OnsenUIExample.jsx
+import ButtonExample from './ButtonExample';
+import { Page } from 'react-onsenui';
+import ActionSheetExample from './ActionSheetExample';
+import CheckBoxExample from './CheckBoxExample';
+
+export default function OnesenUIExample() {
+  return (
+    <Page>
+      <CheckBoxExample />
+      <ActionSheetExample />
+      <ButtonExample />
+    </Page>
+  );
+}
+```
+
+---
+
+## 2.5 예제4 : Fab + Icon
+
+- https://onsen.io/v2/api/js/ons-fab.html
+- https://onsen.io/v2/api/js/ons-icon.html
+  - 아이콘 지원
+    - https://fontawesome.com/
+    - [Ionicons](http://ionicons.com/)
+    - [Material Design Iconic Font](http://zavoloklom.github.io/material-design-iconic-font/)
+
+```jsx
+import React from 'react';
+import { Fab, Icon } from 'react-onsenui';
+
+export default function FabExample() {
+  return (
+    <div>
+      <Fab position='bottom right'>
+        <Icon icon='fa-space-shuttle'></Icon>
+      </Fab>
+    </div>
+  );
+}
+```
+
+OnsenUIExample.jsx에 추가
+
+---
+
+# 3. Ant Design
+
+- https://ant.design/docs/react/introduce
+- https://ant.design/docs/react/use-with-create-react-app
+- https://ant.design/components/overview/
+- React 기반
+- Day.js 권장, Moment.js 제거 추천
+- Design 철학 : 단순한 컴포넌트 제공 + @
+- typography : 다양한 사이즈의 Text 제공
+
+```sh
+$ npm install antd
+```
+
+---
+
+## 3.1 예제1 : 기본 사용법
+
+### 3.1.1 App.js
+
+```jsx
+// Webpack CSS import
+// import 'onsenui/css/onsenui.css';
+// import 'onsenui/css/onsen-css-components.css';
+// import OnesenUIExample from './components/OnsenUI/OnesenUIExample';
+import '~antd/dist/antd.css'; // 추가-----------------
+import AntDesignExample from './components/AntDesign/AntDesignExample';
+
+export default function App() {
+  return (
+    <>
+      <AntDesignExample />
+      {/* <OnesenUIExample /> */}
+    </>
+  );
+}
+```
+
+---
+
+### 3.1.2 AntDesignExample
+
+```jsx
+//  src\components\AntDesign\AntDesignExample.jsx
+import React from 'react';
+import GetStart from './GetStart';
+
+export default function AntDesignExample() {
+  return (
+    <div>
+      <GetStart />
+    </div>
+  );
+}
+```
+
+---
+
+### 3.1.3 GetStart
+
+```jsx
+import { useState } from 'react';
+import { DatePicker, message, Alert } from 'antd';
+
+export default function GetStart() {
+  const [date, setDate] = useState(null);
+  const handleChange = (value) => {
+    message.info(`Selected Date: ${value ? value.format('YYYY-MM-DD') : 'None'}`);
+    setDate(value);
+  };
+  return (
+    <div style={{ width: 400, margin: '100px auto' }}>
+      <DatePicker onChange={handleChange} />
+      <div style={{ marginTop: 16 }}>
+        <Alert message='Selected Date' description={date ? date.format('YYYY-MM-DD') : 'None'} />
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+## 3.2 예제2 : Icon
+
+- https://ant.design/components/icon
+
+```sh
+$ npm install --save @ant-design/icons
+```
+
+### 3.2.1 IconExample
+
+```jsx
+import { SearchOutlined } from '@ant-design/icons';
+import { Button, Tooltip, Space } from 'antd';
+
+export default function IconExample() {
+  return (
+    <Space direction='vertical'>
+      <Space wrap>
+        <Tooltip title='search'>
+          <Button type='primary' shape='circle' icon={<SearchOutlined />} />
+        </Tooltip>
+        <Button type='primary' shape='circle'>
+          A
+        </Button>
+        <Button type='primary' icon={<SearchOutlined />}>
+          Search
+        </Button>
+        <Tooltip title='search'>
+          <Button shape='circle' icon={<SearchOutlined />} />
+        </Tooltip>
+        <Button icon={<SearchOutlined />}>Search</Button>
+      </Space>
+      <Space wrap>
+        <Tooltip title='search'>
+          <Button shape='circle' icon={<SearchOutlined />} />
+        </Tooltip>
+        <Button icon={<SearchOutlined />}>Search</Button>
+        <Tooltip title='search'>
+          <Button type='dashed' shape='circle' icon={<SearchOutlined />} />
+        </Tooltip>
+        <Button type='dashed' icon={<SearchOutlined />}>
+          Search
+        </Button>
+        <Button icon={<SearchOutlined />} href='https://www.google.com' />
+      </Space>
+    </Space>
+  );
+}
+```
+
+---
+
+# 4. React Semantic UI
+
+- https://react.semantic-ui.com/usage
+- Semantic = 의론적인 웹 (기계가 이해할 수 있는 웹페이지, 웹 접근성)
+
+```sh
+$ npm install semantic-ui-react semantic-ui-css
+```
+
+```js
+import 'semantic-ui-css/semantic.min.css';
+```
+
+---
+
+## 4.1 예제1 : 기본 사용법
+
+### 4.1.1 App.js
+
+```jsx
+// Webpack CSS import
+// import 'onsenui/css/onsenui.css';
+// import 'onsenui/css/onsen-css-components.css';
+// import OnesenUIExample from './components/OnsenUI/OnesenUIExample';
+// import AntDesignExample from './components/AntDesign/AntDesignExample';
+
+import 'semantic-ui-css/semantic.min.css';
+import ReactSemanticUIExample from './components/ReactSemanticUI/ReactSemanticUIExample';
+
+export default function App() {
+  return (
+    <>
+      <ReactSemanticUIExample />
+      {/* <AntDesignExample /> */}
+      {/* <OnesenUIExample /> */}
+    </>
+  );
+}
+```
+
+---
+
+### 4.1.2 ButtonExampleLabeledBasic
+
+```jsx
+import { Button, Icon, Label } from 'semantic-ui-react';
+
+export default const ButtonExampleLabeledBasic = () => (
+  <div>
+    <Button as="div" labelPosition="right">
+      <Button color="red">
+        <Icon name="heart" />
+        Like
+      </Button>
+      <Label as="a" basic color="red" pointing="left">
+        2,048
+      </Label>
+    </Button>
+    <Button as="div" labelPosition="right">
+      <Button basic color="blue">
+        <Icon name="fork" />
+        Fork
+      </Button>
+      <Label as="a" basic color="blue" pointing="left">
+        2,048
+      </Label>
+    </Button>
+  </div>
+);
+```
+
+---
+
+### 4.1.3 ReactSemanticUIExample
+
+```jsx
+// src/components/ReactSemanticUI/ReactSemanticUIExample.jsx
+import ButtonExampleLabeledBasic from './ButtonExampleLabeledBasic';
+
+export default function ReactSemanticUIExample() {
+  return (
+    <>
+      <ButtonExampleLabeledBasic />
+    </>
+  );
+}
+```
+
+---
+
+# 5. React BootStrap
+
+- BootStrap
+
+  - 유명한 front-end 오픈소스 toolkit
+  - jQuery와 강하게 결합 / 반응형 웹에 특화
+
+- React BootStrap
+  - BootStrap 개발팀들이 jQuery제거하고 React에 맞게 생성한 라이브러리
+  - 반응형 웹 : xs | md | lg
+  - Sass : @import해서 쓸 수 있음
+  - 익숙한 UI : Bootstrap을 그대로 가져옴
+  - https://react-bootstrap.github.io/
+
+```sh
+npm install react-bootstrap bootstrap
+```
+
+---
+
+## 5.1 예제1 : 기본 사용법
+
+- https://react-bootstrap.github.io/getting-started/why-react-bootstrap/
+
+### 5.1.1 App.js
+
+```jsx
+// Webpack CSS import
+// import 'onsenui/css/onsenui.css';
+// import 'onsenui/css/onsen-css-components.css';
+// import OnesenUIExample from './components/OnsenUI/OnesenUIExample';
+// import AntDesignExample from './components/AntDesign/AntDesignExample';
+// import 'semantic-ui-css/semantic.min.css';
+// import ReactSemanticUIExample from './components/ReactSemanticUI/ReactSemanticUIExample';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import ReactBootstrapExample from './components/ReactBootstrap/ReactBootstrapExample';
+
+export default function App() {
+  return (
+    <>
+      <ReactBootstrapExample />
+      {/* <ReactSemanticUIExample /> */}
+      {/* <AntDesignExample /> */}
+      {/* <OnesenUIExample /> */}
+    </>
+  );
+}
+```
+
+---
+
+### 5.1.2 AlertDismissible
+
+```jsx
+import React, { useState } from 'react';
+import { Alert, Button } from 'react-bootstrap';
+
+export default function AlertDismissible() {
+  const [show, setShow] = useState(false);
+
+  return (
+    <>
+      <Alert show={show} variant='success'>
+        <Alert.Heading>How's it going?!</Alert.Heading>
+        <p>
+          Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis consectetur purus sit amet fermentum.
+        </p>
+        <hr />
+        <div className='d-flex justify-content-end'>
+          <Button onClick={() => setShow(false)} variant='outline-success'>
+            Close me y'all!
+          </Button>
+        </div>
+      </Alert>
+
+      {!show && <Button onClick={() => setShow(true)}>Show Alert</Button>}
+    </>
+  );
+}
+```
+
+---
+
+### 5.1.3 ReactBootstrapExample
+
+```jsx
+import React from 'react';
+import AlertDismissible from './AlertDismissible';
+
+export default function ReactBootstrapExample() {
+  return (
+    <div>
+      <AlertDismissible />
+    </div>
+  );
+}
+```
+
+---
+
+## 5.2 예제2 : 반응형
+
+```css
+/* grid.css */
+.col-color {
+  border: 1px solid red;
+  background-color: pink;
+}
+```
+
+```jsx
+import { Container, Row, Col } from 'react-bootstrap';
+import './grid.css';
+
+export default function GridExample() {
+  return (
+    <Container>
+      {/* Stack the columns on mobile by making one full-width and the other half-width */}
+      <Row>
+        <Col xs={12} md={8} className='col-color'>
+          xs=12 md=8
+        </Col>
+        <Col className='col-color' xs={6} md={4}>
+          xs=6 md=4
+        </Col>
+      </Row>
+
+      {/* Columns start at 50% wide on mobile and bump up to 33.3% wide on desktop */}
+      <Row>
+        <Col className='col-color' xs={6} md={4}>
+          xs=6 md=4
+        </Col>
+        <Col className='col-color' xs={6} md={4}>
+          xs=6 md=4
+        </Col>
+        <Col className='col-color' xs={6} md={4}>
+          xs=6 md=4
+        </Col>
+      </Row>
+
+      {/* Columns are always 50% wide, on mobile and desktop */}
+      <Row>
+        <Col className='col-color' xs={6}>
+          xs=6
+        </Col>
+        <Col className='col-color' xs={6}>
+          xs=6
+        </Col>
+      </Row>
+    </Container>
+  );
+}
+```
+
+```jsx
+import AlertDismissible from './AlertDismissible';
+import GridExample from './GridExample';
+
+export default function ReactBootstrapExample() {
+  return (
+    <div>
+      <GridExample />
+      <AlertDismissible />
+    </div>
+  );
+}
+```
+
+---
+
+## 5.3 예제3 : 버튼
+
+```jsx
+import { Button, ButtonGroup } from 'react-bootstrap';
+
+export default function ButtonExample() {
+  return (
+    <>
+      <ButtonGroup size='lg' className='mb-2'>
+        <Button>Left</Button>
+        <Button>Middle</Button>
+        <Button>Right</Button>
+      </ButtonGroup>
+      <br />
+      <ButtonGroup className='mb-2'>
+        <Button>Left</Button>
+        <Button>Middle</Button>
+        <Button>Right</Button>
+      </ButtonGroup>
+      <br />
+      <ButtonGroup size='sm'>
+        <Button>Left</Button>
+        <Button>Middle</Button>
+        <Button>Right</Button>
+      </ButtonGroup>
+    </>
+  );
+}
+```
+
+ReactBootstrapExample.jsx에 추가
+
+---
+
+# 6. Material UI
+
+- https://m3.material.io/
+  - 구글이 2014년 안드로이드 스마트폰에 적용하면서 알려짐
+  - 구글이 선도하는 디자인 시스템이라 업데이트가 자주 이루어지고 체계적임
+- https://mui.com/core/
+- [각종 테마들](https://mui.com/store/?utm_source=docs&utm_medium=referral&utm_campaign=home-store)
+
+---
+
+## 6.1 예제 1 : 기본 사용법
+
+- https://mui.com/material-ui/getting-started/installation/
+
+```sh
+npm install @mui/material @emotion/react @emotion/styled # 기본 설치
+npm install @mui/icons-material # Icons
+```
+
+---
+
+### 6.1.1 index.html
+
+index.html에 다음 link 태그 추가
+
+```html
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+```
+
+- 각각 Roboto font, Icons
+  - https://mui.com/material-ui/getting-started/installation/#roboto-font
+  - https://mui.com/material-ui/getting-started/installation/#icons
+
+---
+
+### 6.1.2 App.js
+
+- https://mui.com/material-ui/getting-started/usage/#quickstart
+
+```jsx
+// Webpack CSS import
+// import 'onsenui/css/onsenui.css';
+// import 'onsenui/css/onsen-css-components.css';
+// import OnesenUIExample from './components/OnsenUI/OnesenUIExample';
+// import AntDesignExample from './components/AntDesign/AntDesignExample';
+// import 'semantic-ui-css/semantic.min.css';
+// import ReactSemanticUIExample from './components/ReactSemanticUI/ReactSemanticUIExample';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+// import ReactBootstrapExample from './components/ReactBootstrap/ReactBootstrapExample';
+import MaterialUIExample from './components/MaterialUI/MaterialUIExample';
+
+export default function App() {
+  return (
+    <>
+      <MaterialUIExample />
+      {/* <ReactBootstrapExample /> */}
+      {/* <ReactSemanticUIExample /> */}
+      {/* <AntDesignExample /> */}
+      {/* <OnesenUIExample /> */}
+    </>
+  );
+}
+```
+
+---
+
+### 6.1.3 ButtonExample
+
+```jsx
+import Button from '@mui/material/Button';
+
+export default function ButtonExample() {
+  return <Button variant='contained'>Hello World</Button>;
+}
+```
+
+---
+
+### 6.1.4 MaterialUIExample
+
+```jsx
+import ButtonExample from './ButtonExample';
+
+export default function MaterialUIExample() {
+  return (
+    <div>
+      <ButtonExample />
+    </div>
+  );
+}
+```
+
+---
+
+## 6.2 공식 사이트 CRA 예제
+
+- https://github.com/mui/material-ui/tree/master/examples/create-react-app
+- 위 Github를 clone(복제)하거나 Zip으로 다운받아 만들어놓은 예제를 볼 수 있다.
+- 아니면 공식 사이트에 예제별로 Code SandBox가 잘 되어 있다.
+
+---
+
+## 6.3 예제3 : Grid
+
+- https://mui.com/material-ui/react-grid/#basic-grid
+
+```jsx
+import * as React from 'react';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
+
+export default function BasicGrid() {
+  return (
+    <Box sx={{ flexGrow: 1 }}>
+      <Grid container spacing={2}>
+        <Grid item xs={8}>
+          <Item>xs=8</Item>
+        </Grid>
+        <Grid item xs={4}>
+          <Item>xs=4</Item>
+        </Grid>
+        <Grid item xs={4}>
+          <Item>xs=4</Item>
+        </Grid>
+        <Grid item xs={8}>
+          <Item>xs=8</Item>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+}
+```
+
+MaterialUIExample에 추가
+
+---
+
+# 7. Tailwindcss
+
+https://tailwindcss.com/docs/installation
+
+- Utility-first CSS framework,
+- 즉 미리 정의된 CSS의 특성들을 `class` 를 통해 불러와 적용시키는 형태의 CSS 프레임워크
+- 원하는 `html` 요소에 `class` 을 부여해주면 바로 사용이 가능하다
+
+cf. VSCode 확장기능
+
+- Tailwind CSS IntelliSense : 클래스명 자동완성
+- Tailwind Docs : 문서 찾아볼 떄 Ctrl + Shipt + P로 검색
+
+---
+
+## 7.1 예제 1 : 기본 사용법
+
+https://tailwindcss.com/docs/installation
+
+```sh
+npm install -D tailwindcss
+npx tailwindcss init
+```
+
+tailwindcss를 사용하고자 하는 경로, 파일 작성(**확장자명은 띄워쓰면 안됨**)
+
+```js
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ['./src/**/*.{html,js,jsx,ts,tsx}'],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+```
+
+전역 CSS에 다음 코드 추가 (CRA에서는 index.css 맨 위에 추가)
+
+```css
+@tailwind base; /* tailwind 기본 스타일 및 확장된 스타일 주입 */
+@tailwind components; /* tailwind 기본 컴포넌트 클래스 및 확장된 컴포넌트 클래스 주입 */
+@tailwind utilities; /* tailwind 기본 유틸리티 클래스 및 확장된 유틸리티 클래스 주입 */
+```
+
+---
+
+### 7.1.1 Background
+
+```jsx
+import React from 'react';
+
+export default function Background() {
+  return (
+    <div className='bg-gray-700' style={{ height: 600 }}>
+      <div style={{ height: 100 }}>
+        <div style={{ height: 'inherit' }} class='bg-sky-500/100'></div>
+        <div style={{ height: 'inherit' }} class='bg-sky-500/75'></div>
+        <div style={{ height: 'inherit' }} class='bg-sky-500/50'></div>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+### 7.1.2 TailwindExample
+
+```jsx
+import Background from './Background';
+
+export default function TailwindExample() {
+  return (
+    <div>
+      <Background />
+    </div>
+  );
+}
+```
+
+---
+
+### 7.1.3 App.js
+
+```jsx
+// Webpack CSS import
+// import 'onsenui/css/onsenui.css';
+// import 'onsenui/css/onsen-css-components.css';
+// import OnesenUIExample from './components/OnsenUI/OnesenUIExample';
+// import AntDesignExample from './components/AntDesign/AntDesignExample';
+// import 'semantic-ui-css/semantic.min.css';
+// import ReactSemanticUIExample from './components/ReactSemanticUI/ReactSemanticUIExample';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+// import ReactBootstrapExample from './components/ReactBootstrap/ReactBootstrapExample';
+// import MaterialUIExample from './components/MaterialUI/MaterialUIExample';
+import TailwindExample from './components/Tailwind/TailwindExample';
+
+export default function App() {
+  return (
+    <>
+      <TailwindExample />
+      {/* <MaterialUIExample /> */}
+      {/* <ReactBootstrapExample /> */}
+      {/* <ReactSemanticUIExample /> */}
+      {/* <AntDesignExample /> */}
+      {/* <OnesenUIExample /> */}
+    </>
+  );
+}
+```
+
+---
+
+## 7.2 Tailwind CSS Tutorial
+
+- [Tailwind CSS Tutorial(The Net Ninja from youtube)](https://www.youtube.com/watch?v=bxmDnn7lrnk&list=PL4cUxeGkcC9gpXORlEHjc5bgnIi5HEGhw)
+
+---
+
+## 7.3 참고 : Prettier
+
+```sh
+npm install -D prettier prettier-plugin-tailwindcss
+```
+
+해당 플러그인은 tailwindcss 공식 Prettier 플러그인입니다.
+클래스명을 tailwindcss가 정한 기준대로 나열해주니 한결 코드가 깔끔해짐
+
+- https://tailwindui.com/templates?ref=sidebar
+  - 템플릿도 제공함
+
+---
+
+# 8. 정리
+
+- 필요에 따라서 라이브러리를 찾고(alternatives)
+- 공식 문서로 라이브러리에 대해 파악하고(Introduction)
+- 공식 문서 따라 설치하고(Installation)
+- 공식 문서 예제(Examples) 따라해보고 api 문서 보고 적용해본다
+
+라이브러리의 트렌드 또한 빠르게 변한다.
+2년전에 당연했던 선택들이 지금은 당연하지 않다.
+결국 스스로 새로운 라이브러리를 적용해보는 능력(경험)이 관건!
+
+라이브러리의 적용은 정답이 없다. 맞는 것도 없지만 틀린 것도 없다.
+만든 이의 설명과 가이드에 따라 내 프로젝트에 적용하는 것으로 성공적임
+계속 시도 / 반복 시도 / 새로운 기술에 대한 호기심과 궁금증으로 Just do it!

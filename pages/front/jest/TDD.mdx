@@ -1,0 +1,233 @@
+---
+title: 'React 테스트 주도 개발(TDD)'
+date: 2023/01/08
+---
+
+# 1. 테스트 주도 개발(TDD)
+
+## 1.1 Test Driven Development(TDD)
+
+- 실제 코드를 작성하기 전에 테스트 코드를 먼저 작성
+- 테스트 코드를 작성한 후 **그 테스트 코드를 Pass 할 수 있는 실제 코드를 작성**
+
+---
+
+# 1.2 TDD를 하면 좋은 점
+
+- TDD를 하면, 코드에 안정감이 부여
+- 개발하는데 많은 시간이 소요되는 부분은 디버깅 부분이라서, TDD를 사용하면 디버깅 시간이 줄어들고 개발 시간도 줄어듬
+- 소스 코드 하나하나를 더욱 신중하게 짤 수 있기 때문에 깨끗한 코드가 나올 확률이 높음
+
+---
+
+# 2. React Testing Library
+
+Create React App로 리액트 앱을 생성하면 기본적으로 테스팅 할 때, React Testing Library를 사용합니다.
+
+- Airbnb에서 만든 Enzyme을 대처하는 솔루션
+  - cf. `Enzyme` : 다른 테스트 솔루션 , 구성 요소의 세부 정보를 테스트
+  - 차이점
+    - `Enzyme` : 구현 주도 테스트 (Implementation Driven Test)
+    - `React Testing Library` : 행위 주도 테스트 (Behavior Driven Test)
+- React 구성 요소 작업을 위한 API를 추가하여 DOM Testing Library 위에 구축
+- DOM Testing Library란 Dom 노드(Node)를 테스트하기 위한 가벼운 솔루션
+- **Create React App으로 생성된 프로젝트는 React Testing Library를 지원**
+- 그렇지 않은 경우 npm으로 추가
+  - `npm install --save-dev @testing-library/react`
+- cf. [React Testing Library 공식문서](https://testing-library.com/docs/react-testing-library/intro/)
+
+---
+
+# 3. Jest
+
+- FaceBook이 만들어진 테스팅 프레임워크
+- React Testing Library와 같이 같이 사용됨
+- 최소한의 설정으로 동작하며 Test Case를 만들어서 어플리케이션 코드가 잘 돌아가는지 확인
+- 단위 (Unit) 테스트를 위해서 이용
+- **Create React App으로 생성된 프로젝트는 Jest를 지원**
+- 그렇지 않은 경우 npm으로 추가
+  - `npm install jest --save-dev`
+- Jest가 Test 파일을 찾을 떄 다음 이름 규칙을 가진 파일 등은 전부 Test 파일로 판단함
+  - `파일명.test.js`
+  - `파일명.spec.js`
+  - `tests 폴더` 안에 들어있는 파일
+- cf. [Jest 공식문서](https://jestjs.io/)
+
+---
+
+## 3.1 Jest 파일 구조
+
+```sh
+📦 describe # 여러 관련 테스트를 그룹화하는 블록
+├─ test(it) # 개별 테스트를 수행하는 곳. 각 테스트를 작은 문장처럼 설명
+│  ├─ expect # 값을 테스트할 때마다 사용,
+│  ├─ # expect 함수 혼자서는 거의 사용 되지 않으며 matcher와 함께 사용
+│  └─ matcher # 다른 방법으로 값을 테스트 할 때 사용
+├─ test(it)
+├─ test(it)
+└─ test(it)
+```
+
+---
+
+### 3.1.1 test(it) 예시
+
+```sh
+📦 describe 과일
+└─ it 사과
+└─ it 바나나
+```
+
+---
+
+### 3.1.2 expect, matcher 예시
+
+```js
+test("2+2는 4임", () => {
+  expect(2 + 2).toBe(4); // toBe(4) 부분이 matcher
+})
+
+test("2+2는 5가 아님", () => {
+  expect(2 + 2)not.toBe(4); // not.toBe(4) 부분이 matcher
+})
+```
+
+---
+
+## 3.2 CRA Test
+
+- Create React App으로 생성된 프로젝트의 `App.test.js`가 기본 테스트가 진행되는 곳임
+- `npm test`로 실행
+  - 실행해보면 a를 누르면 전체 실행
+  - q를 누르면 빠져나올 수 있음
+
+```jsx
+// App.test.js
+import { render, screen } from '@testing-library/react';
+import App from './App';
+
+test('renders learn react link', () => {
+  // ** render : DOM에 컴포넌트를 랜더링하는 함수
+  // 인자로 랜더링할 React 컴포넌트가 들어감
+  render(<App />);
+
+  // render의 인자로 들어있는 컴포넌트에 learn react라는 텍스트가 들어있는지 없는지 테스트
+  const linkElement = screen.getByText(/learn react/i);
+  expect(linkElement).toBeInTheDocument();
+});
+```
+
+---
+
+## 3.3 쿼리 함수
+
+- cf. [Testing Library 공식 문서 About Queries](https://testing-library.com/docs/queries/about/)
+- 쿼리는 페이지에서 요소를 찾기 위해 테스트 라이브러리가 제공하는 방법
+- 여러 유형의 쿼리(`"get", "find", "query"`)가 존재
+- 상황에 맞게 적절하게 사용해야 함
+
+### 3.3.1 get, find, query
+
+`getBy...`
+
+- 쿼리에 대해 일치하는 노드를 반환하고 일치하는 요소가 없거나 둘 이상의 일치가 발견되면, **오류를 발생**
+- 둘 이상의 요소가 예쌍되는 경우에는 대신 getAllBy 사용
+
+---
+
+`findBy...`
+
+- 주어진 쿼리와 일치하는 요소가 발견되면 **Promise를 반환**
+- 요소 가 발견되지 않거나 기본 제한 시간인 1000ms 후에 둘 이상의 요소가 발견되면 약속이 거부
+- 둘 이 상의 요소를 찾아야 하는 경우 findAllBy를 사용
+- getBy + waitFor = findBy
+
+---
+
+`queryBy...`
+
+- 쿼리에 대해 일치하는 노드를 반환 하고 일치하는 **요소가 없으면 null을 반환**
+- 존재하지 않는요소를 어설션하는데 유용
+- 둘 이상의 일치 항목이 발견되면 오류가 발생
+- 확인된 경우 대신 queryAllBy 사용
+
+---
+
+`"waitFor`
+
+- 일정 기간 동안 기다려야 할 때 waitFor를 사용
+- 기대가 통과할 때까지 기다릴 수 있음
+
+---
+
+### 3.3.2 정리
+
+cf. https://testing-library.com/docs/queries/about/#types-of-queries
+
+|     Type of Query     |   0 Matches   |    1 Match     |  >1 Matches  | Retry (Async/Await) |
+| :-------------------: | :-----------: | :------------: | :----------: | :-----------------: |
+|  **Single Element**   |               |                |              |                     |
+|      `getBy...`       |  Throw error  | Return element | Throw error  |         No          |
+|     `queryBy...`      | Return `null` | Return element | Throw error  |         No          |
+|      `findBy...`      |  Throw error  | Return element | Throw error  |         Yes         |
+| **Multiple Elements** |               |                |              |                     |
+|     `getAllBy...`     |  Throw error  |  Return array  | Return array |         No          |
+|    `queryAllBy...`    |  Return `[]`  |  Return array  | Return array |         No          |
+|    `findAllBy...`     |  Throw error  |  Return array  | Return array |         Yes         |
+
+---
+
+# 4. CRA에서 eslint
+
+cf. 리액트 개발할 떄, Create React App에서는기본 eslint가 설정있음
+
+- 하지만, VS Code에서 바로 에러 확인할 수 없고,
+- 앱을 시작했을 때 터미널 상에서 볼 수 있음
+
+대신 `package.json`에 **eslintConfig 부분 지우고**
+
+- `.eslintrc.json` 파일 생성하면,
+- PROBELMS 탭에서 ESLint에서 주는 기본적인 경고들을 확인 가능
+
+```json
+// .eslintrc.json
+{
+  "extends": ["react-app", "react-app/jest"]
+}
+```
+
+---
+
+## 4.1 eslint 플러그인
+
+eslint에서 기본으로 제공하지 않는 다양한 규칙을 플러그인을 통해 사용 가능
+
+- e.g. react에 관련된 린트설정을 위해서는 eslintplugin-react를 사용
+- e.g. react hooks에 관련 규칙을 적용하려면 eslint-plugin-react-hooks를 사용
+- `eslint-plugin-testing-library`
+  - render로 Dom 그리는 부분
+- `eslint-plugin-jest-dom`
+  - expect-matcher로 테스트
+
+```sh
+npm install eslint-plugin-testing-library eslint-plugin-jest-dom
+```
+
+---
+
+### 4.1.1 내부 설정
+
+```json
+// .eslintrc.json
+{
+  "plugins": ["testing-library", "jest-dom"],
+  "extends": ["react-app", "react-app/jest", "plugin:testing-library/react", "plugin:jest-dom/recommend"]
+}
+```
+
+- `plugins 항목 `
+  - 플러그인 추가 추가할 때, eslint-plugin- 부분 생략가능
+- `extends 항목`
+  - 플러그인을 추가한 후에 규칙을 정해줘야 사용가능
+  - extends 항목에 사용하고자 하는 규칙을 설정
+  - vue, angular, react 중 react를 위한 규칙 recommended는 추천이 되는 걸 사용

@@ -1,0 +1,759 @@
+---
+title: '20-State Management 라이브러리 - Redux/Toolkit'
+date: 2022/12/30
+---
+
+# 1. State Management(상태관리)
+
+![React_14_2](https://raw.githubusercontent.com/berenickt/image-server/main/img/React_14_2.png)
+
+**Context API** (리액트 기본 문법)
+
+- props 전송없이 state 공유 가능
+- 2가지 문제 때문에 많이 쓰이지 않음
+  - state 변경시 쓸데없는 컴포넌트까지 전부 재렌더링되어 성능 이슈
+  - 컴포넌트 재활용이 어려움
+- Context API보다는 redux같은 외부 라이브러리를 많이 사용
+
+---
+
+## 1.1 왜 상태 관리 도구가 필요한가?
+
+- React에서 State는 component 안에서 관리됨
+- 자식 컴포넌트들 간의 다이렉트 데이터 전달은 불가능
+- 자식 컴포넌트들 간의 데이터를 주고 받을 때는 상태를 관리하는 부모 컴포넌트를 통해서 주고 받음
+- 그런데 자식이 많아진다면 상태 관리가 매우 복잡해짐
+- **상태를 관리하는 상위 컴포넌트에서 계속 내려 받아야한다.** → `Props drilling` 이슈
+- 그래서 상태 관리의 복잡성을 해결해주는 라이브러리를 활용함
+
+---
+
+## 1.2 State Management 라이브러리 종류
+
+props 없이 state를 공유할 수 있게 도와주는 라이브러리들
+
+- [Recoil - Official Website](https://recoiljs.org/)✔️
+  - Context 만을 사용하여 글로벌 상태 관리를 하는 것이 어느정도 제한이 있어서,
+  - Meta 개발팀에서 이를 개선하기 위해 만든 상태 관리 라이브러리
+  - 공식적으로는 23/01 기준 experimental 단계
+- [MobX Official Website](https://mobx.js.org/)
+- [Redux Toolkit - ReduxJS](https://redux-toolkit.js.org/)
+  - 옛날부터 써왔던 라이브러리라 사용자가 가장 많음
+  - [2022 통계](https://tsh.io/state-of-frontend/)에 따르면 약 48%의 개발자들이 리액트 프로젝트에서 리덕스 사용
+  - 그래서 유지보수를 하고 있는 프로젝트에서 리덕스를 사용중이기 때문이 확률이 큼
+  - Redux 만든사람이 Redux의 문제점을 인식하고, Redux를 개선한 Redux Toolkit을 만듬
+  - 리덕스는 리액트에 종속되는 라이브러리가 아님
+  - 다른 UI 라이브러리/프레임워크와 함께 사용 가능
+  - cf. [Velog - 리덕스(Redux)는 왜 쓰는 건데⁉](https://velog.io/@wooder2050/%EB%A6%AC%EB%8D%95%EC%8A%A4Redux%EB%8A%94-%EC%99%9C-%EC%93%B0%EB%8A%94-%EA%B1%B4%EB%8D%B0)
+  - cf. [Velog - Redux 어떻게 써야 잘 썼다고 소문이 날까?](https://velog.io/@velopert/using-redux-in-2021)
+  - cf. https://ko.redux.js.org/introduction/installation
+  - 리덕스의 문제점
+    - 보일러 플레이트가 많음
+      - 단순히 하나의 상태를 바꾸기 위해서 요청을 전달하는 action을 만들고,
+      - 상태를 바꿔주는 reducer를 만들고, 필요에 따라 middleware까지 만져야 함
+    - 특정 어플리케이션에서는 과한 기술일 수 있음
+      - 상태가 별로 없으면 props 쓰는 게 편함
+- [Zustand - Official Website](https://github.com/pmndrs/zustand)✔️
+
+  - Zustand는 독일어로 상태라는 의미
+
+- [Official React Context Docs](https://reactjs.org/docs/context.html)✔️
+
+---
+
+## 1.3 전역 상태 관리 라이브러리는 언제 쓰나?
+
+- cf. [Velopert - Velog 리액트에서 Context API 잘 쓰는 법](https://velog.io/@velopert/react-context-tutorial)
+- 과거에는 리액트의 Context가 굉장히 불편해서 전역 상태 관리 라이브러리를 사용하는 것이 당연했음
+- 이제는 사용하기 편해져서 단순히 전역적인 상태를 관리하기 위함이라면 더 이상 사용해야 할 이유X
+- 단, 상태 관리 라이브러리는 상태 관리를 더욱 편하고, 효율적으로 할 수 있게 해주는 기능들을 제공해주는 도구임
+- e.g. Redux의 경우
+
+  - 액션과 리듀서라는 개념을 사용하여 상태 업데이트 로직을 컴포넌트 밖으로 분리
+  - 상태가 업데이트 될 때 실제로 의존하는 값이 바뀔 때만 컴포넌트가 리렌더링 되도록 최적화
+
+- e.g. MobX의 경우
+
+  - Redux와 마찬가지로 상태 업데이트 로직을 컴포넌트 밖으로 분리
+  - 함수형 리액티브 프로그래밍 방식을 도입하여 mutable한 상태가 리액트에 보여지게 해줌
+  - 상태 업데이트 로직을 더욱 편하게 작성할 수 있게 해주며 최적화
+
+- e.g. Recoil, Jotai, Zustand의 경우
+  - Context를 일일이 만드는 과정을 생략하고 Hook 기반으로 아주 편하게 전역 상태 관리
+
+---
+
+## 1.4 MVC 패턴과 Flux 패턴
+
+### 1.4.1 MVC 패턴
+
+![react_19_1](https://raw.githubusercontent.com/berenickt/image-server/main/img/react_19_1.png)
+
+`MVC 패턴(Model-View-Controller)`
+
+- 데이터를 다루는 로직(Controller), 데이터(Model), 사용자 인터페이스(View)를 나누어
+  어플리케이션을 구현하는 하나의 개발 모델
+- Controller는 Model의 데이터를 조회하거나 업데이트하는 역할을 하며, Model의 변화는 View에 반영
+
+---
+
+### 1.4.2 MVC 패턴의 문제점
+
+![react_19_2](https://raw.githubusercontent.com/berenickt/image-server/main/img/react_19_2.png)
+
+기존 MVC 패턴을 가진 대규모 애플리케이션에서 구조가 너무 복잡해지고 예측성이 떨어지는 문제점에 직면
+
+- MVC 구조는 앱이 커지면서 굉장히 복잡해졌다고 한다.
+- View가 다양한 상호작용을 위해 여러개의 Model을 동시에 업데이트하는 상황이 나타났기 때문
+
+이 문제를 해결하기 위해서는 **좀 더 예측 가능한 형태로 코드를 구조화하는 것**이 필요했고,
+
+- Facebook은 **React**와 **Flux**를 이용해서 그것을 달성하고자 했다고 한다.
+
+---
+
+### 1.4.3 Flux 패턴
+
+`Flux 패턴` : 단방향 데이터 흐름을 가지는 패턴
+
+![react_19_3](https://raw.githubusercontent.com/berenickt/image-server/main/img/react_19_3.png)
+
+- `Action`
+  - 첫 흐름을 발생시키는 요소이며 Dispatcher에게 해당 액션 메시지를 보내줌
+  - **타입(type)**과 **데이터(payload)**를 가지고 있다
+
+```json
+{
+  "type": "EVENT_TYPE",
+  "data": {
+    "name": "Huurray"
+  }
+}
+```
+
+- `Dispatcher`
+  - **Flux의 모든 데이터 흐름을 관리**하는 **중앙허브**
+  - Store들이 등록해놓은 Action Type에 대한 맞춤 Callback이 있다.
+  - 그래서 Action이 넘어오면 Store들이 타입에 맞는 Store의 Callback을 실행하도록 해준다.
+- `Store`
+  - **데이터**와 **데이터를 가공하는 로직**을 가지고 있다.
+  - Action이 넘어오면 등록된 Callback을 활용해 타입에 맞는 로직을 실행하고 데이터를 업데이트해준다.
+  - Store는 변경된 데이터를 View에게 알려주고,
+  - 자신의 컴포넌트 트리에 속해 있는 자식 노드 모두를 다시 랜더링하게 한다.
+- `View`
+  - Flux에서의 View는 MVC의 뷰와는 달리 화면을 보여주는것 외에도 **Controller**의 성격또한 가지고 있다.
+  - 최상위 View는 Store에서 데이터를 가져와 이를 자식 View 로 내려보내주는 역할을 하고 있다.
+  - 각 요소들은 단방향 흐름에서 순서대로 역할이 수행되고,
+  - 또 다시 새로운 데이터 변경이 있으면 처음부터 이 흐름이 다시 시작된다.
+  - 이렇게 하면 데이터 처리에 예외가 없다.
+  - Facebook은 이 Flux 패턴을 고안하고 View의 역할로 **React**를 이용했다.
+
+---
+
+## 1.5 immutability(불변함)
+
+- mutate = 변화하다
+- mutable = 변화 가능한
+- mutability = 변화가능함
+- immutability = 변화가능하지 않음
+  - 데이터의 원본이 훼손되는 것을 막는 것을 의미
+
+데이터의 CRUD(Create, Read, Update, Delete) 중에 중요한 건 Create, Read입니다.
+생성이 없다면 읽을 수 없음, 모든 정보는 존재하고 있다면, 생성과 읽기로 이루어짐.
+이를 `원본(origin)`이라고 함
+
+그 다음으로 중요한 건 수정과 삭제입니다. IT에서 수정과 삭제는 흔한 일이지만, 수정과 삭제가 안되거나 힘든 시스템이 있습니다.
+e.g. 인쇄되어 배포된 종이책, 역사, 회계, 블록체인
+
+이처럼 많은 정보들이 불변할 수 밖에 없습니다. 그렇지만 인터넷에서 가변(수정, 삭제)는 너무 쉽게 일어납니다.
+무질서한 수정과 삭제로 원본이 훼손되는 것을 막는 방법을 살펴볼 것입니다.
+cf. 그렇다고 수정과 삭제가 꼭 나쁜 것만은 아닙니다.
+
+---
+
+# 2. Redux
+
+- https://redux-toolkit.js.org/
+- Redux 개발자도구
+  - [크롬](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd)
+  - [파이어폭스](https://addons.mozilla.org/en-US/firefox/addon/reduxdevtools/)
+- cf. [Nomard Coder Redux 무료강의](https://nomadcoders.co/redux-for-beginners/lobby)
+- cf. [상태 관리 라이브러리의 미학: Redux 또는 MobX 를 통한 상태 관리](https://velog.io/@velopert/redux-or-mobx)
+
+---
+
+## 2.1 개념
+
+### 2.1.1 액션 (Action)
+
+- 상태에 어떠한 변화가 필요하게 될 땐, `액션`이란 것을 발생시킵니다.
+- 이는, **하나의 객체로 표현**되는데요, 액션 객체는 다음과 같은 형식으로 이뤄져있습니다.
+
+```javascript
+{
+  type: 'TOGGLE_VALUE';
+}
+```
+
+`액션 객체`는 `type` **필드를 필수적으로 가지고 있어야** 하고, 그 외의 값들은 개발자 마음대로 넣어줄 수 있습니다. 예시:
+
+```javascript
+{
+  type: "ADD_TODO",
+  data: {
+    id: 0,
+    text: "리덕스 배우기"
+  }
+}
+{
+  type: "CHANGE_INPUT",
+  text: "안ㄴ"
+}
+```
+
+---
+
+### 2.1.2 액션 생성함수 (Action Creator)
+
+- **액션을 만드는 함수**
+- 단순히 **파라미터를 받아와서 액션 객체 형태로** 만들어줌
+
+```javascript
+function addTodo(data) {
+  return {
+    type: 'ADD_TODO',
+    data,
+  };
+}
+
+// 화살표 함수로도 만들 수 있습니다.
+const changeInput = (text) => ({
+  type: 'CHANGE_INPUT',
+  text,
+});
+```
+
+---
+
+### 2.1.3 리듀서 (Reducer)
+
+- **변화를 일으키는 함수**입니다.
+- 리듀서는 두가지의 파라미터를 받아옵니다.
+- 리듀서는, 현재의 상태와, 전달 받은 액션을 참고하여 새로운 상태를 만들어서 반환합니다.
+
+```javascript
+function reducer(state, action) {
+  // 상태 업데이트 로직
+  return alteredState;
+}
+```
+
+자세한건, 추후 직접 구현하면서 알아보겠습니다.
+
+> 💡 Reduce
+>
+> - to change something into a simpler or more general form
+> - **단순하게 줄이다라는 의미보다 변경이라는 의미에 가까움**
+> - 수학에서 어떤 복잡한 수학문제를 간단하게 만들어 푸는 방법을 reduction이라고 함
+> - "고쳐나간다" (간단하게만들기위해서, 혹은 특정규칙을 적용하기위해서)
+> - 주어진 상태를 고쳐나가는 함수형 프로그래밍에서 자주보이는 reduce()함수
+> - 리덕스에서의 reduce()는 현재상태(previousState)를 새로운상태(newState)로 변경할때 쓰는 함수
+> - 리듀서가 reduce()함수에서 사용하는 콜백함수이기때문에 리듀서라고 불림
+>
+> **리액트(React) 상태(State) 생성자(Producer)**
+>
+> - 액션(Action)이 날라오면 리듀서(Reducer)가 스토어(Store)의 상태(State)를 변경시키는 방식으로 동작
+
+---
+
+### 2.1.4 스토어 (Store)
+
+- **state들을 보관하는 파일**
+- 리덕스에서는 한 애플리케이션 당 하나의 스토어를 만듭니다.
+- 스토어 안에는, 현재의 앱 상태와, 리듀서가 들어가있고, 추가적으로 몇가지 내장 함수들이 있습니다.
+
+---
+
+### 2.1.5 디스패치 (dispatch)
+
+- 스토어의 내장함수 중 하나
+- 디스패치는, **액션을 발생 시키는 것**이라고 이해하시면 됩니다.
+- dispatch 라는 함수에는 **액션을 파라미터로 전달**합니다.. dispatch(action) 이런식으로 말이죠.
+  - 그렇게 호출을 하면, 스토어는 리듀서 함수를 실행시켜서
+  - 해당 액션을 처리하는 로직이 있다면 액션을 참고하여 새로운 상태를 만들어줍니다.
+
+---
+
+### 2.1.6 구독 (subscribe)
+
+- 구독 또한 스토어의 내장함수 중 하나
+- subscribe 함수는, **함수 형태의 값을 파라미터로 받아옵니다**.
+- subscribe 함수에 특정 함수를 전달해주면, 액션이 디스패치 되었을 때 마다 전달해준 함수가 호출됩니다.
+
+---
+
+# 3. 리덕스 without 리액트
+
+- 리덕스는 리액트에 종속되지 않습니다. 리액트에서 사용하려고 만든거긴 하지만,
+- 실제로 다른 UI 라이브러리나 프레임워크와 함께 사용 될 수도 있습니다 (예: angular-redux, ember-redux...)
+- 물론, 바닐라 자바스크립트와도 함께 사용할 수도 있습니다.
+
+다음 링크를 클릭해주세요:
+
+- [Velopert 강의 SandBox 초기본](https://codesandbox.io/s/pj9jonlxxm)
+- [실습한 것](https://codesandbox.io/s/vanilla-js-redux-boilerplate-forked-vnb19f?file=/src/index.js:340-457)
+
+---
+
+## 3.1 DOM 레퍼런스 가져오기
+
+```javascript
+// index.js
+import { createStore } from 'redux';
+
+const lightDiv = document.getElementsByClassName('light')[0];
+const switchButton = document.getElementById('switch-btn');
+
+const counterHeadings = document.getElementsByTagName('h1')[0];
+const plusButton = document.getElementById('plus-btn');
+const minusButton = document.getElementById('minus-btn');
+```
+
+- 따로 UI 라이브러리를 사용하지 않기 때문에 DOM 을 직접 건들임
+- DOM API 들을 사용하여 HTML 상에 나타나고 있는 각 요소들에 대한 레퍼런스 만듬
+
+---
+
+## 3.2 액션 타입 정의
+
+```js
+// index.js
+// 생략
+
+// **** 액션 타입 정의
+const TOGGLE_SWITCH = 'TOGGLE_SWITCH';
+const INCREMENT = 'INCREMENT';
+const DECREMENT = 'DECREMENT';
+```
+
+- 프로젝트에서 상태에 변화를 일으키는것을 하나의 액션으로 보고, 그 액션에 대한 이름을 정해주는 과정
+- 이름은 문자열 형태로, 주로 대문자로 작성하며 액션 이름은 고유해야 하고, 중복되면 안됨
+
+---
+
+## 3.3 액션 생성 함수 정의
+
+```js
+// index.js
+// 생략
+
+// **** 액션 생성함수 정의
+// 액션 생성 함수 : 액션 객체를 만드는 함수
+// 액션 객체는 type 값을 필수
+// 나머지 액션에서 참고하고 싶은 값들은 마음대로
+const toggleSwitch = () => ({ type: TOGGLE_SWITCH });
+const increment = (diff) => ({ type: INCREMENT, diff });
+const decrement = () => ({ type: DECREMENT });
+```
+
+- 액션 객체를 만드는 함수를, 액션 생성 함수라고 부름
+- 액션 객체는 type 값을 필수로 들고있어야 하며, 나머지 액션에서 참고하고 싶은 값들은 개발자 마음대로
+
+---
+
+## 3.4 초기값 설정
+
+```js
+// index.js
+// 생략
+
+// **** 초깃값 설정
+const initialState = {
+  light: false,
+  counter: 0,
+};
+```
+
+---
+
+## 3.5 리듀서 함수 정의
+
+```js
+// index.js
+// 생략
+
+// **** 리듀서 함수 정의
+// 리듀서 : 변화를 일으키는 함수
+function reducer(state = initialState, action) {
+  switch (action.type) {
+    case TOGGLE_SWITCH:
+      return {
+        ...state, // 기존의 값은 그대로 두면서 새로운 값을 덮어쓰는 방식(스프레드 연산자)
+        light: !state.light, // light 값 반전시키기
+      };
+    case INCREMENT:
+      return {
+        ...state,
+        counter: state.counter + action.diff,
+      };
+    case DECREMENT:
+      return {
+        ...state,
+        counter: state.counter - 1,
+      };
+    default:
+      // 지원하지 않는 액션의 경우 상태 유지
+      return state;
+  }
+}
+```
+
+- 리듀서는 변화를 일으키는 함수
+- 파라미터로는 state 와 action 을 받아옴
+  - 리듀서 함수가 가장 처음 호출 될 때는 state 가 undefined
+  - state가 undefined 로 주어졌을땐 initialState 를 사용하도록 설정하기위해 파라미터쪽에서 기본값이 설정
+
+---
+
+## 3.6 스토어 만들기
+
+```js
+// index.js
+// 생략
+
+// **** 스토어 만들기
+// createStore 함수를 사용, 파라미터는 리듀서 함수를 전달
+const store = createStore(reducer);
+```
+
+- 스토어를 만들땐 createStore 함수를 사용
+- 파라미터는 리듀서 함수를 전달
+
+---
+
+## 3.7 render() 구현
+
+```js
+// index.js
+// 생략
+
+// **** render 함수 만들기
+const render = () => {
+  const state = store.getState(); // 현재 상태를 가져옵니다.
+  const { light, counter } = state; // 편의상 비구조화 할당
+  if (light) {
+    lightDiv.style.background = 'green';
+    switchButton.innerText = '끄기';
+  } else {
+    lightDiv.style.background = 'gray';
+    switchButton.innerText = '켜기';
+  }
+  counterHeadings.innerText = counter;
+};
+
+render();
+```
+
+- 스토어의 현재 상태를 가져올 땐 스토어의 내장함수 `getState`를 사용
+
+---
+
+## 3.8 스토어 구독(subscribe) 하기
+
+```javascript
+// **** 예시임
+const listener = () => console.log('업데이트 됐어요!');
+const unsubscribe = store.subscribe(listener);
+// 나중에 unsubscribe();
+```
+
+- 스토어의 상태가 바뀔 때 마다, 우리는 render 함수를 호출해줘야 함
+- 그러려먼, 스토어를 구독해주어야 합니다.
+- 구독을 할 때에는 스토어의 내장함수 `subscribe`를 사용
+
+```js
+// index.js
+// 생략
+
+// **** 구독하기
+store.subscribe(render);
+```
+
+- subscribe 함수의 파라미터로는, 함수형태의 값을 전달
+- 전달된 함수는, 액션이 디스패치 될 때 마다 호출이 됨
+- subscribe 를 호출하면 반환값으로 구독을 해제하는 unsubscribe()를 받는데 나중에 필요해질 때 호출하면 됨
+- cf. 리액트 없이 하기 때문에 이렇게 subscribe 함수에 대한 사용법을 익혀보고 있지만, 나중엔 리액트에서 리덕스를 쉽게 사용하기 위해 react-redux 라는걸 사용하게 되는데 해당 라이브러리에서 대신 해주므로 리액트 프로젝트에서 subscribe 를 직접 해야 되는 일은 특별한 상황을 제외하고는 거의 없음
+
+---
+
+## 3.9 이벤트 달아주기, 액션 발생시키기
+
+```js
+// index.js
+// 생략
+
+// **** 이벤트 달아주기, 액션 발생 시키기
+// 액션을 발생시키는것을 디스패치(dispatch) 라고 함
+// 디스패치를 할 땐, 스토어의 내장함수 dispatch 를 사용
+switchButton.onclick = () => {
+  store.dispatch(toggleSwitch());
+};
+
+plusButton.onclick = () => {
+  store.dispatch(increment(5));
+};
+
+minusButton.onclick = () => {
+  store.dispatch(decrement());
+};
+```
+
+- 액션을 발생시키는것을 `디스패치 (dispatch)`라고 부름
+- 디스패치를 할 땐, 스토어의 내장함수 dispatch 를 사용
+- 파라미터는 액션 객체를 전달
+
+https://codesandbox.io/s/vvzqnvw17y
+
+한번 버튼들을 눌러보세요. 값이 잘 바뀌나요? 모두 다 정상 작동한다면, 개념 부분의 키워드를 다시 한번 쭉 훑어보셈
+
+---
+
+# 4. 리덕스 with 리액트
+
+## 4.1 리덕스의 3가지 규칙
+
+1. `하나의 앱에선 스토어 1개만 만들어서 사용`
+   1. 여러개의 스토어를 사용하는것은 사실 가능하기는 하나, 권장하지 않음
+2. `상태는 읽기전용`
+   - 리액트에서 state 를 업데이트 해야 할 때, setState 를 사용하고,
+   - 배열을 업데이트할 떄는 배열 자체에 push 를 직접 하지 않고,
+     - concat 같은 함수를 사용해 기존의 배열은 수정하지 않고
+     - 새로운 배열을 만들어서 교체하는 방식으로 업데이트
+   - 엄청 깊은 구조로 되어있는 객체를 업데이트를 할 때도 마찬가지로,
+     1. 기존의 객체는 건들이지 않고 `Object.assign` 을 사용하거나 spread 연산자 (`...`) 를 사용
+   - 리덕스에서도 마찬가지로 기존의 상태는 건들이지 않고 새로운 상태를 생성하여 업데이트
+   - **리덕스에서 불변성을 유지해야 하는 이유**는
+     - 내부적으로 데이터가 변경 되는 것을 감지하기 위하여 [shallow equality](https://redux.js.org/docs/faq/ImmutableData.html#how-redux-uses-shallow-checking) 검사를 하기 때문
+     - 이로 인해 객체의 변화를 감지할 때 객체의 깊숙한 안쪽까지 비교를 하는 것이 아니라,
+     - 겉핥기 식으로 비교를 하여 좋은 성능을 유지할 수 있음
+     - 여기서는 Immer.js 를 사용하여 불변성을 유지하며 상태를 관리하는 방법을 배움
+3. `변화를 일으키는 함수(리듀서)는 순수한 함수여야 합니다.`
+   - 리듀서 함수는 이전 상태와, 액션 객체를 파라미터로 받음
+   - 이전의 상태는 절대로 건들이지 않고, 변화를 일으킨 새로운 상태 객체를 만들어서 반환함
+   - 똑같은 파라미터로 호출된 리듀서 함수는 **언제나 똑같은 결과값을 반환**해야만 함
+
+동일한 input이라면 언제나 동일한 output이 있어야 합니다.
+그런데 new Date(), 랜덤숫자, 네트워크 요청같은 실행마다 다른 결과값이 나오는 작업들은 리듀서 함수 바깥에서 처리해야 합니다.
+이를 위해 리덕스 미들웨어를 사용합니다.
+
+---
+
+## 4.2 리액트에서 리덕스를 쓰려면
+
+다음 라이브러리들이 설치되어야 합니다.
+
+- **redux**: 리덕스 모듈
+- **react-redux**: 리액트 컴포넌트에서 리덕스를 사용하기위한 유용한 도구들이 들어가있습니다.
+- **redux-actions**: 이 라이브러리를 꼭 설치 할 필요는 없습니다. 단, 알아두면 굉장히 유용합니다.
+
+실습
+
+- cf. [리덕스를 리액트와 함께 사용하기](https://velog.io/@velopert/Redux-3-리덕스를-리액트와-함께-사용하기-nvjltahf5e)
+- [Velopert sandbox 초기본](https://codesandbox.io/s/nr66kv15xm)
+- [실습한 것](https://codesandbox.io/s/colorful-counter-forked-vr34p0?file=/src/components/WaitingList.js)
+
+---
+
+## 4.3 Immer.js를 사용한 불변성 관리
+
+- cf. [Immutable.js 혹은 Immer.js 를 사용한 더 쉬운 불변성 관리](https://velog.io/@velopert/20180908-1909-작성됨-etjltaigd1)
+
+---
+
+# 5. 공식문서 예제 따라해보기
+
+- https://react-redux.js.org/tutorials/quick-start
+
+```sh
+npm install @reduxjs/toolkit react-redux
+```
+
+---
+
+## 5.1 Redux Store 만들기
+
+store = state들을 보관하는 파일
+
+```jsx
+// app/store.js
+import { configureStore } from '@reduxjs/toolkit';
+
+export default configureStore({
+  reducer: {},
+});
+```
+
+---
+
+## 5.2 Redux State Slice 생성
+
+```jsx
+// src/index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import { Provider } from 'react-redux'; // 추가
+import store from './app/store';
+
+// Start the mocking conditionally.
+if (process.env.NODE_ENV === 'development') {
+  const { worker } = require('./mocks/browser');
+  worker.start();
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    {/* 추가 */}
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </React.StrictMode>
+);
+```
+
+- Provider라는 컴포넌트와 아까 작성한 파일을 import
+- `<Provider store={import해온거}>` 이걸로 `<App/>` 을 감싸면 됩니다.
+- 그럼 이제 `<App>`과 그 모든 자식 컴포넌트들은 store.js에 있던 state를 맘대로 꺼내쓸 수 있음
+
+---
+
+## 5.3 Store에 Slice Reducer 추가
+
+Redux store에 state 보관하는 법
+
+1. `createSlice()`로 state 만들고
+2. `configureStore()`안에 등록
+
+```jsx
+// features/counter/counterSlice.js
+import { createSlice } from '@reduxjs/toolkit';
+
+// 1. createSlice()로 state 만들기
+export const counterSlice = createSlice({
+  name: 'counter',
+  initialState: {
+    value: 0,
+  },
+  reducers: {
+    // Redux Toolkit은 immer를 사용하여 "불변성"을 보장합니다.
+    // 불변성을 보장하면 더 쉽게 예측 가능한 상태를 유지할 수 있습니다.
+    increment: (state) => {
+      state.value += 1;
+    },
+    decrement: (state) => {
+      state.value -= 1;
+    },
+    incrementByAmount: (state, action) => {
+      state.value += action.payload;
+    },
+  },
+});
+
+// Action creators는 reducer 함수 별로 생성됩니다.
+export const { increment, decrement, incrementByAmount } = counterSlice.actions;
+
+export default counterSlice.reducer;
+```
+
+```jsx
+// app/store.js
+import { configureStore } from '@reduxjs/toolkit';
+import counterReducer from '../features/counter/counterSlice';
+
+// 2. configureStore() 안에 등록
+export default configureStore({
+  reducer: {
+    counter: counterReducer,
+  },
+});
+```
+
+---
+
+## 5.4 컴포넌트에서 State, Actions 사용
+
+```jsx
+import { useDispatch, useSelector } from 'react-redux';
+import { decrement, increment, incrementByAmount } from './counterSlice';
+
+export default function Counter() {
+  const count = useSelector((state) => state.counter.value);
+  const dispatch = useDispatch();
+
+  return (
+    <div>
+      <div>
+        <button onClick={() => dispatch(increment())}>Increment</button>
+        <span>{count}</span>
+        <button onClick={() => dispatch(decrement())}>Decrement</button>
+        <button onClick={() => dispatch(incrementByAmount(5))}>+5</button>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+## 5.5 비교용 Counter2
+
+```jsx
+import { useDispatch, useSelector } from 'react-redux';
+import { decrement, increment, incrementByAmount } from '../features/counter/counterSlice';
+
+export default function Counter2() {
+  const count = useSelector((state) => state.counter.value);
+  const dispatch = useDispatch();
+
+  return (
+    <div>
+      <div>
+        <button onClick={() => dispatch(increment())}>Increment</button>
+        <span>{count}</span>
+        <button onClick={() => dispatch(decrement())}>Decrement</button>
+        <button onClick={() => dispatch(incrementByAmount(5))}>+5</button>
+      </div>
+    </div>
+  );
+}
+```
+
+```jsx
+import './App.css';
+import TestMocking from './components/TestMocking';
+import Counter from './features/counter/Counter';
+import Counter2 from './components/Counter2';
+
+export default function App() {
+  return (
+    <div className='App'>
+      <TestMocking />
+      <Counter />
+      <br />
+      <br />
+      <br />
+      <Counter2 />
+    </div>
+  );
+}
+```
+
+---
+
+# [참고]
+
+- cf. [Velog - 상태 관리 라이브러리의 미학: Redux 또는 MobX 를 통한 상태 관리](https://velog.io/@velopert/redux-or-mobx)
+- cf. [Velog 리덕스(Redux)는 왜 쓰는 건데⁉](https://velog.io/@wooder2050/%EB%A6%AC%EB%8D%95%EC%8A%A4Redux%EB%8A%94-%EC%99%9C-%EC%93%B0%EB%8A%94-%EA%B1%B4%EB%8D%B0)
+- cf. [Velog React의 탄생과 Flux 패턴](https://velog.io/@huurray/React%EC%9D%98-%ED%83%84%EC%83%9D%EA%B3%BC-Flux-%ED%8C%A8%ED%84%B4%EC%97%90-%EB%8C%80%ED%95%98%EC%97%AC)

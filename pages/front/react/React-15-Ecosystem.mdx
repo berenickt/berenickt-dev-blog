@@ -1,0 +1,108 @@
+---
+title: '15-라이브러리 생태계, 날짜 라이브러리'
+date: 2022/12/28
+---
+
+# 1. 라이브러리 vs 프레임워크
+
+- `라이브러리`는 개발 편의를 위한 도구의 모음
+  - e.g. 라이브러리는 공구
+  - 리액트는 도구 모음
+  - 이미 잘 만들어둔 도구들을 가져다가 쓰면서 리액트 생태계의 이점을 누리자
+  - 리액트와 밀접하게 관련된 라이브러리도 있고, 그렇지 않은 라이브러리도 있음
+  - 라이브러리의 사용법을 익히기 보다 라이브러리를 찾고/적용하는 과정을 익혀 혼자 할 수 있는 힘을 기르자
+- `프레임워크`는 기반 구조까지 잡혀있음
+  - e.g. 프레임워크는 공장
+
+---
+
+# 2. 라이브러리 적용 과정
+
+필요 > 검색 > 사용법 파악 > 적용
+
+- 필요
+  - 특정 기능이 필요해짐(직접 구현하기에는 조금 벅참)
+  - 더 나은 도구가 필요
+  - 트렌드에 따른 새로운 기술에 대한 호기심
+- 검색
+  - 필요 그대로를 검색
+  - github / npm trends / 프론트엔드 커뮤니티 / 기술 블로그
+  - 유사한 라이브러리들을 후보로 비교(기능 / 성능 / 사이즈 / 인기 / 최신 ...)
+- 사용법 파악
+  - 공식 문서
+  - github 코드 검색(실제 용례)
+  - 기술 블로그의 적용하기 예제
+- 적용
+  - POC(Proof of concept)
+  - 프로젝트 (일부/전체)에 적용
+
+---
+
+# 3. 날짜 라이브러리
+
+## 3.1 Moment
+
+[Moment 공식문서](https://momentjs.com/)
+
+- 2011년부터~ 명실상부 Date 라이브러리 선두였으나,
+- 새로운 자바스크립트의 흐름에 맞지 않아 더이상 업데이트 안하기를 선언
+- 제일 큰 이슈는 사이즈
+  - tree shaking 알고리즘이 제대로 워킹하지 않음
+- 다른 라이브러리들을 추천함(Luxon / Day.js / date-fns / js-Joda)
+
+```sh
+$ npm i moment
+$ npm i moment-timezone
+```
+
+---
+
+## 3.2 Day.js
+
+[Day.js 공식문서](https://day.js.org/)
+
+- 가볍다
+- 문서도 정갈
+- 간단한 기능들을 적용할때는 좋을 듯
+- 써보다가 필요한 기능이 추가로 있다면 다른 라이브러리 고려
+
+---
+
+## 3.3 date-fns
+
+[date-fns 공식문서](https://date-fns.org/)
+
+- 커버리지가 제일 높은 라이브러리
+- Most comprehensive(가장 포괄적인)
+- Modular support tree-shakin
+- Immutable & Pure & FP & I18
+
+---
+
+## 3.4 라이브러리를 고르는 기준
+
+- 다양한 기준이 존재
+  - 기능 / 성능 / 번들 사이즈 / tree shaking(안쓰는 기능은 빌드하지 않기)
+  - 문서 가독성 / 인기 / 관리 상태(최근 관리) / 관리 주체
+- 기준을 토대로 Time / Date 라이브러리를 고른다면?
+  - 가벼운게 최우선이라면 Day.js
+  - FP 패러다임을 따르거나 tree-shaking이 필요하다면 date-fns
+- Moment 안좋음
+  - 기능 / 성능 / Mutable so so
+  - 사이즈 / tree shaking BAD
+  - 관리 BAD
+  - 문서 가독성 BAD
+- Dayjs 중간
+  - 기능 / 성능 OK
+  - 사이즈 GOOD / tree shaking BAD
+  - 관리 GOOD
+  - 문서 가독성 GOOD
+- date-fns 좋음
+  - 기능 / 성능 OK
+  - 사이즈 GOOD / tree shaking GOOD
+  - 관리 GOOD
+  - 문서 가독성 GOOD
+- 라이브러리를 선택하는데 도움을 주는 도구들
+  - [사이즈, bundlephobia](https://bundlephobia.com)
+  - [인기, npm trend의 moment, day.js, date-fns 비교](https://npmtrends.com/date-fns-vs-dayjs-vs-luxon-vs-moment)
+  - [기능 및 성능](https://github.com/you-dont-need/You-Dont-Need-Momentjs/blob/master/README.md)

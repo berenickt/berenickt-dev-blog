@@ -1,0 +1,85 @@
+---
+title: 'Data Fetching 라이브러리 - GraphQL 기반'
+date: 2023/01/08
+---
+
+# 1. REST API의 문제점
+
+## 1.1 Over-Fatching
+
+- **필요한 정보보다 더 많은 데이터를 전달받는 것**
+- 불필요한 리소스 낭비가 발생
+- 필요한 정보만 골라내는 추가 작업이 발생
+  - e.g. id, url, category, tag, data 형태를 가진 데이터가 있다고 가정하면
+  - url과 tag 정보만 필요한데, id, data, categor 다른 필요없는 데이터까지 가져옴
+  - 또 id만 필요하거나, id와 data만 필요하거나 등의 모든 요청을 고려해 API를 설계하기 힘듬
+
+---
+
+## 1.2 Uner-Fetching
+
+- **필요한 데이터를 만들기 위해 여러 번의 호출이 필요**
+- 추가적인 리소스 요청이 발생
+- 여러 요청을 통해 전달받은 정보를 조합하는 추가 작업이 발생
+  - e.g. 사진의 리스트와 카테고리 리스트가 동시에 필요하면? 2번의 API 호출이 필요
+  - e.g. id 1번, id 3번, 카테고리 리스트가 동시에 필요하면? 3번의 API 호출이 필요
+
+---
+
+## 1.3 API마다 다른 URL이 존재
+
+REST API는 API마다 다른 URL이 존재해서
+
+- API를 만든다면? **일일히 이름을 지어줘야 합니다.**
+- API를 사용한다면? **API URL을 계속해서 확인해야 합니다.**
+
+---
+
+# 2. GraphQL
+
+기존 REST API의 3가지 문제점을 해결하기 위해 Facebook에서,
+**정보를 요청하는 쪽에서 원하는 형태로 정보를 가져오고 수정할 수 있는** Query Language를 만들었습니다.
+
+- `GrqphQL = Graph Query Language`
+- 데이터베이스 또는 데이터 관리 시스템에 접근하기 위한 언어
+- **한 번의 요청으로 앱에 필요한 모든 데이터를 가져옴**
+- Server API로 정보를 주고받는 것에 특화된 Query Language
+- Graph QL은 Structed Query Language(이하 sql)와 마찬가지로 쿼리 언어임
+- GraphQL 라이브러리
+  - [Apollo 공식 사이트](https://www.apollographql.com)✔️
+  - [Relay 공식 사이트](https://relay.dev/)
+  - [urql 공식 사이트](https://formidable.com/open-source/urql/)
+
+> 💡 REST API 와 GraphQL 정리
+>
+> |                   REST                   |                  GraphQL                   |
+> | :--------------------------------------: | :----------------------------------------: |
+> | 요청은 쉽지만 응답받는 데이터는 비효율적 | 요청은 복잡하지만 응답받는 데이터는 효율적 |
+>
+> - API의 특성을 고려하여 REST나 GraphQL 중 선택해서 사용하면 됨
+> - REST API 서버를 그대로 두고, 이를 GraphQL 서버로 전환해도 됨
+>   - 두 형태를 제공해 사용자가 필요에 따라 선택하는 것도 좋은 방법 중 하나
+
+---
+
+## 2.1 Operation type
+
+- `Query` : 데이터 조회
+- `Mutation` : 데이터 수정
+- `Subscription` : 주로 실시간 애플리케이션 구현을 위해 사용
+
+---
+
+## 2.2 GraphQL 사이트
+
+- https://graphql.org/
+- https://graphql-kr.github.io/learn/
+- cf. [얄판한 GraphQL & Apollo 강좌 무료](https://youtu.be/9BIXcXHsj0A)
+
+GraphQL은 API 테스트를 위한 UI를 자체적으로 제공해줌
+
+---
+
+# 2. APOLLO
+
+https://www.apollographql.com/

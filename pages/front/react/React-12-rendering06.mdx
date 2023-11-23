@@ -1,0 +1,151 @@
+---
+title: '12-Rendering - High Order Components(고차 컴포넌트)'
+date: 2022/12/22
+---
+
+# 1. Higher-Order Components
+
+- 고차 컴포넌트(HOC, Higher Order Component)
+  - **컴포넌트를 인자로 받거나 반환하는 반환하는 함수**
+  - 장점 : **컴포넌트 로직을 재사용**할 수 있음
+  - 결국 재사용할려고 씀
+
+```jsx
+const EnhancedComponent = higherOrderComponent(WrappedComponent);
+```
+
+컴포넌트는 props를 UI로 변환하는 반면에, 고차 컴포넌트는 컴포넌트를 새로운 컴포넌트로 변환합니다.
+
+---
+
+# 2. 예시
+
+2개의 컴포넌트(Button, Input)를 만듭니다.
+
+```jsx
+export default function Button() {
+  return <button>버튼</button>;
+}
+```
+
+```jsx
+export default function Input() {
+  return <input defaultValue='input 기본값' />;
+}
+```
+
+```jsx
+import Input from './components/12_HOC/Input';
+import Button from './components/12_HOC/Button';
+
+export default function App() {
+  return (
+    <>
+      <Input />
+      <Button />
+    </>
+  );
+}
+```
+
+이 상태에서 공통적인 기능을 넣고싶다면?
+
+1. HOC으로 하기
+   - 함수형 컴포넌트가 생기고 hook이 도입된 이후, HOC을 사용하는 경우는 많이 줄어들고 있음
+   - HOC이 보통 클래스형 컴포넌트에서 LifeCycle을 고려한 재사용 가능한 로직을 만들기 위해 사용되기 때문
+   - 함수형 컴포넌트에서는 거의 대부분 hook으로 대체 가능
+   - 대표적 HOC인 Redux 라이브러리의 connect만 봐도, useSelector와 useDispatch를 사용하는게 직관적이고 간편
+2. Custom Hook으로 하기 - 14에 나옴
+
+---
+
+## 2.1 공통 기능 넣기
+
+```jsx
+import { useState, useEffect } from 'react';
+
+export default function Button() {
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return loading ? <p>로딩 중...</p> : <button>버튼</button>;
+}
+```
+
+만약 Button 컴포넌트의 기능들을 모든 컴포넌트에 넣고싶다면?
+
+- 해당 로직을 HOC로 분리
+- HOC는 이름 지을 떄는 with로 시작하는게 관행임
+
+```jsx
+import React, { useEffect, useState } from 'react';
+
+export default function withLoading(Component) {
+  // 로딩화면을 3초 보여준 후에 컴포넌트를 보여주는 기능
+  const WithLoaindgComponent = (props) => {
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+      const timer = setTimeout(() => setLoading(false), 3000);
+
+      return () => clearTimeout(timer);
+    }, []);
+
+    return loading ? <p>로딩 중...</p> : <Component {...props} />;
+  };
+
+  return WithLoaindgComponent;
+}
+```
+
+위와 같이 기능을 분리하고, 다음처럼 재사용하고 싶은 컴포넌트를 인자로 붙여주면 됩니다.
+
+```jsx
+import withLoading from './withLoading';
+
+function Button() {
+  return <button>버튼</button>;
+}
+
+export default withLoading(Button); // HOC함수(재사용할 컴포넌트)
+```
+
+```jsx
+import withLoading from './withLoading';
+
+function Input() {
+  return <input defaultValue='input 기본값' />;
+}
+
+export default withLoading(Input); // HOC함수(재사용할 컴포넌트)
+```
+
+---
+
+# 3. 주의사항
+
+- render 메서드 안에 고차 컴포넌트 사용 X
+
+  - React는 가상 DOM으로 기존 서브트리를 업데이트할지 새 노드를 추가할지 결정함
+  - 이전 렌더링된 컴포넌트와 동일하면, 새 서브 트리와 비교해 재귀적으로 업데이트함
+
+- 정적 메서드는 반드시 따로 복사
+
+  - 컴포넌트에 HOC를 적용하면, 기존 컴포넌트는 컨테이너의 컴포넌트로 감싸짐
+  - 새 컴포넌트는 기존 컴포넌트의 정적 메서드를 가지고 있지 않음
+  - [hoist-non-react-statics](https://github.com/mridgway/hoist-non-react-statics)를 사용해 모든 non-React 정적 메서드를 자동으로 복사함
+
+- ref는 전달안됨
+  - React는 ref를 prop이 아닌 key처럼 특별하게 취급해서
+
+---
+
+# [참고]
+
+- https://reactjs.org/docs/higher-order-components.html
+- https://ko.reactjs.org/docs/higher-order-components.html
