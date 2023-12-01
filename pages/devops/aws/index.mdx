@@ -22,3 +22,184 @@ AWS는 200개가 넘는 수 많은 서비스가 있습니다.
 - 하나의 서비스를 마스터하고 넘어가는 것이 아닌, 적절히 공부 후 다음 서비스를 공부하기
     - AWS 서비스들은 긴밀하게 연결되어 있어서,
     - 다른 서비스를 모르면 완벽하게 이해 불가능함
+
+---
+
+## 3. 서비스별 중요도
+
+| 티어    | 서비스                                                                                | 관련 서비스                                             |
+| ----- | -------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| 필수    | EC2, IAM(계정/빌링 설정)                                                               | EBS, ELB, Auto Scaling, Budgets, Cost&Usage Report |
+| 매주 중요 | VPC, S3, RDS                                                                         | Aurora                                             |
+| 중요    | SOS, CloudFront, CloudFormation, CloudWatch, Route 53, SNS, System Manager, CloudTrail |
+
+---
+
+### 3.1 Amazon EC2
+
+Amazon Elastic Compute Cloud(EC2)
+- 안전하고 크기 조정이 가능한 컴퓨팅 파워를 클라우드에서 제공하는 웹 서비스
+- 개발자가 더 쉽게 웹 규모의 클라우드 컴퓨팅 작업을 할 수 있도록 설계됨
+- 클라우드 컴퓨팅 === 컴퓨터 빌려쓰기
+    - `EC2 : 컴퓨터 빌려쓰는 서비스`
+    - 즉, AWS에서 가장 중요한 서비스
+- AWS에서 가장 중요한 서비스로 컴퓨팅 파워를 빌리는 서비스
+    - 서버를 빌리는 서비스
+    - 거의 모든 AWS 서비스는 직 간접적으로 EC2와 연결됨
+
+EC2 내부에서만 세부적으로 굉장히 많은 내용들이 있습니다.
+
+---
+
+### 3.2 AWS IAM
+
+AWS Identify and Access Management(IAM)
+- AWS 서비스와 리소스에 대한 엑세스를 안전하게 관리할 수 있는 서비스
+- 또한, 사용자 및 그룹을 만들고 관리하며, AWS 리소스에 대한 액세스를 허용 및 거부할 수 있다.
+- AWS의 보안 및 관리를 담당하는 글로벌 서비스
+- 주요 기능
+    - AWS 계정 관리 및 리소스/사용자/서비스의 권한 제어
+        - 임시 권한 부여
+        - 서비스 사용을 위한 인증 정보 부여
+    - 사용자 생성, 관리, 계정의 보안
+        - Multi-factor Authentication
+        - 사용자의 패스워드 정책 관리
+
+맨 처음 입문 시, 살짝 맛보고 다른 서비스 공부했다 다시 깊게 공부하기
+
+---
+
+### 3.3 Virtual Private Cloud(VPC)
+
+Virtual Private Cloud(VPC)
+- 사용자의 AWS 계정 전용 가상 네트워크를 제공하는 서비스
+- AWS 클라우드에서 다른 가상 네트워크와 논리적으로 분리되어 있다.
+- EC2 인스턴스와 같은 AWS 리소스를 VPC에서 실행할 수 있닫.
+- IP 주소 범위와 VPC 범위를 설정하고 서브넷을 관리할 그룹을 연결한 다음 라우팅 테이블을 구성한다.
+- `VPC === 가상으로 존재하는 데이터센터`
+- 원하는 대로 사설망을 구축 가능
+    - 부여된 IP 대역을 분할하여 사용 가능
+- VPC 사용 사례
+    - EC2, RDS, Lambda 등의 AWS의 컴퓨팅 서비스 실행
+    - 다양한 서브넷 구성
+    - 보안 설정(IP Block, 인터넷에 노출되지 않는 EC2 등 구성)
+- cf. 네트워크 지식이 꼭 필요함
+
+---
+
+### 3.4 Simple Storage Service(S3)
+
+Amazon Simple Storage Service(S3)
+- 업계 최고의 확장성과 데이터 가용성 및 보안과 성능을 제공하는 개체 스토리지 서비스
+- 99% 내구성을 제공하도록 설계, 전 세계 기업의 수백만 앱을 위한 데이터 저장함
+- cf. S가 3개라서 S3라고 부름
+- `객체 스토리지 서비스` : 파일 보관만 가능 `<-->` Block Storage Service(EBS, EFS 등)
+    - 어플리케이션 설치 불가능
+    - 파일 보관만 하는 서비스이기에 게임 깔아서 쓸 수 있는 스토리지(e.g. HDD SSD)와는 다름
+- 무제한 용량
+    - 하나의 객체는 0Byte에서 5TB의 용량
+    - 99%의 내구성
+    - 즉, 왠만하면 파일이 없어지지 않는다.
+
+---
+
+### 3.5 Amazon Relational Database Service(RDS)
+
+Amazon Relational Database Service(RDS)
+- `RDS === 관계형 데이터베이스를 클라우드화 시킨 서비스`
+- 관계형 데이터베이스를 간편하게 설정, 운영 및 확장할 수 있다.
+- 하드웨어 프로비저닝, DB 설정, 패치 및 백업과 같은 시간 소모적인 관리 작업을 자동화하면서
+    - 비용 효율적이고 크기 조정 가능한 용량을 제공
+- 사용자가 애플리케이션에 집중하여 애플리케이션에 필요한 빠른 성능, 고가용성 등을 제공
+- RDBS(관계형 DB 시스템) `<-->` NoSQL(DynamoDB, DocumentDb, ElasticCache)
+- 암호화 지원
+- 자동 백업 지원
+- 별도 인프라 같은 이중화를 고민할 필요가 없는 것이 장점
+
+---
+
+## 4. AWS EC2 관련 서비스
+
+![AWS EC2 관련 서비스](https://raw.githubusercontent.com/berenickt/image-server/main/img/aws-ec2-service.png)
+
+- `EBS` : 가상의 하드드라이브가 연동되어 있음
+- `인스턴스` (패밀리, 구매옵션 등)
+    - 이것에 대해 인스턴스 타입, 인스턴스 크기, 서버 크기, CPU, 메모리 등
+    - 비용을 모두 지불할 지, 약정으로 할지, 쓰는 만큼만 낼 지 등
+- `user data`
+    - EC2를 구동할 떄, 실제 실행하고 싶은 스크립트를 수정 가능
+- 가상의 하드드라이브를 저장하기 위해서 `스냅샷`, 즉 이미지를 보관할 수 있다.
+- 이것들을 합쳐 `AMI`라는 EC2를 프로비전하기 위한 하나의 논리적 정보 단위를 만들 수 있다.
+- `Role` : EC2의 다양한 서비스
+- `Instance Template` : 전송하기 위한 권한을 부여하는 Role(역할)들을 모아 
+    - 인스턴스 템플릿, 즉 이것들을 모두 모아 템플릿화 시킬 수 있고,
+- 인스턴스 템플릿이 되면, EC2를 자동으로 스케일링 해주는 `Auto Scaling`
+    - (e.g. 트래픽이 많으면 서버를 더 많이 빌린다는지, 없으면 서버를 적게 빌림)
+- `Elastic Load Balancing` : 많은 EC2 인스턴스들 혹은 많은 서버들에다가 트래픽을 분산시켜줌
+- `Elastic network interface` -> `Elastic IP address`
+    - EC2 자체에도 네트워크 인터페이스가 있고 이를 IP를 고정하는 방법들이 존재
+- `Security Group` : 방화벽 역할을 하는 보안 그룹도 설정 가능
+- 이렇게 설정하고 나면, AWS의 다양한 서비와 또 연관된다.
+    - `Role(역할)`은 `AWS IAM`과 연관
+    - `Auto Scaling`은 EC2가 새로 만들어졌다 필요없으면 사라지는 것 등에 자유로움
+        - 그래서 이런 데이터들을 하드웨어에 저장한 것이 아니라 밖으로 빼서
+        - `S3, RDS, EFS(NFS 기반 스토리지 서비스)` 같은 것들을 활용하게 된다.
+- 그림을 보다시피, EC2 하나의 토픽이 다양한 서비스와 연관되어 있다.
+- 그러니 한 번에 마스터하는 것이 아니라, 적절히 활용하다 필요하면 더 학습하는 식으로 공부한다.
+
+---
+
+## 5. 분야별 AWS 서비스
+
+AWS 기초적인 서비스를 만들었다면, 각각의 분야에 걸맞는 다양한 AWS 서비스를 공부하면 된다.
+
+| 분야            | 서비스                                                                                                           | 관련 서비스/주제                      |
+| ------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| 컨테이너          | EKS - 쿠버네티스를 매니지드 서비스로 제공                                                                                     | Amazon ECR, Docker, Kubernetes |
+|               | ECS - 컨테이너를 매니지드 서비스를 제공                                                                                      | cf. ^ ECR - AWS판 도커허브          |
+|               | Fargate - 서버리스 기반으로 컨테이너를 제공                                                                                  |
+| 서버리스          | Lambda - (AWS에서 제일 중요 서비스 2위)                                                                                 | Serverless Framework, AWS SAM  |
+|               | DynamoDB - NoSQL, 서버리스 DB                                                                                     |                                |
+|               | API Gateway, SQS, Step Functions, EventBridge, AppSync, CloudFront                                            |
+| DevOps 인프라 관리 | IAM, CloudFormation, CloudTrail                                                                               | Terraform, DATADOG, AWS CDK    |
+|               | Organizations, CodePipeline, Config, Health Dashboard                                                         |
+| 보안            | IAM, CloudTrail, Firewall Manager, Detective, Shield, Security Hub, WAF, Network Firewall                     |
+| 네트워크          | VPC, PrivateLink, Transit Gateway, Route 53, Site-to-Stie VPN, CloudFront, Global Accelerator, Direct Connect |
+
+---
+
+## 6. 기초 다음에는?
+
+목표 세우기 : 자격증 도건 or 실무에 적용
+
+자격증 : AWS의 사용 방식 별/수준별 다양한 자격증이 있음
+- `기초 단계` 
+    - Practitioner : 기초 자격증
+- `Associate 단계` : 조금의 실무 지식, 실습을 많이 해야함
+    - Solutions Architect가 가장 무난
+- `Professional 단계` : 어려움, 2년 이상의 경험
+- `Speciality 단계` : 머신러닝, DB, 데이터분석, 네트워킹, 보안 등 각 분야별 스페셜 자격증
+- 다양한 플랫폼(유데미/인프런 등)의 인강 교육
+- 실제 업무 경험이 있으면 훨씬 수월
+
+실무
+- 책 : 다양한 입문서
+    - AWS 교과서
+- 비용 관련
+    - AWS 비용 최저가 바이블
+- AWS는 변화 속도가 빠르게 변하기 때문에 상황에 따라 옛날 책은 안맞는 경우가 있음
+- 역시 다양한 인강 교육을 통해 학습 가능
+- 다만 실무는 이론 외에 실제 실습해보는게 가장 실력향상에 좋음
+- 이외에 AWS 공식 프로그램(Builder Program, Skill Builder) 등 활용 가능
+    - cf. Builder Program은 무료, Skill Builder는 유료
+- AWS는 혼자 공부하지 말고, 커뮤니티를 적극 이용
+    - AWS는 전 세계 가장 높은 점유율 보유 (한국 60% 이상)
+    - 즉, 누군가 똑같은 고민을 했을 확률이 높음
+    - 관련 커뮤니티에서 효율적으로 고민 해결이 가능함
+    - 카톡 오픈 채팅방, 페북 커뮤니티 등
+    - 이외에 AWS KRUG 소모임(한국 지역별 AWS 사용자 모임) 참여 추천
+    - cf. KRUG는 1달에 1번 열림
+
+## 7. Reference
+
+- https://www.youtube.com/watch?v=iX6X0rNmgzY&t=283s
