@@ -3,20 +3,20 @@
     "type": "separator",
     "title": "error"
   },
-  "Error-MutationTuple" : "Error-MutationTuple",
-  "Error-React-props-DOM" : "Error-React-props-DOM",
+  "Error-MutationTuple": "Error-MutationTuple",
+  "Error-React-props-DOM": "Error-React-props-DOM",
   "-- Link --": {
     "type": "separator",
     "title": "Link"
   },
-  "Link-Collection" : "Web 디자인 관련 Link 모음",
-  "Program-Tool-Collection" : "다이어그램 툴 모음",
+  "Link-Collection": "Web 디자인 관련 Link 모음",
+  "Program-Tool-Collection": "다이어그램 툴 모음",
   "-- VSCode --": {
     "type": "separator",
     "title": "VSCode"
   },
-  "VSCode-Extention" : "VSCode-Extention",
-  "VSCode-Shortcuts" : "VSCode-Shortcuts",
+  "VSCode-Extention": "VSCode-Extention",
+  "VSCode-Shortcuts": "VSCode-Shortcuts",
   "-- english --": {
     "type": "separator",
     "title": "english"
@@ -26,7 +26,8 @@
     "type": "separator",
     "title": "memo"
   },
-  "wisesaying" : "좋아하는 글귀들",
+  "wisesaying": "좋아하는 글귀들",
+  "7-habits-top-developers": "상위 1% 엔지니어의 7가지 간단한 습관",
   "-- blog --": {
     "type": "separator",
     "title": "blog"
@@ -39,23 +40,22 @@
     "type": "separator",
     "title": "CheatSheet"
   },
-  "CheatSheet-Git" : "CheatSheet-Git",
-  "CheatSheet-GitHub" : "CheatSheet-GitHub",
-  "CheatSheet-JS-DataAlgo-Ref" : "CheatSheet-JS-DataAlgo-Ref",
-  "CheatSheet-Linux" : "CheatSheet-Linux",
+  "CheatSheet-Git": "CheatSheet-Git",
+  "CheatSheet-GitHub": "CheatSheet-GitHub",
+  "CheatSheet-JS-DataAlgo-Ref": "CheatSheet-JS-DataAlgo-Ref",
+  "CheatSheet-Linux": "CheatSheet-Linux",
   "-- 회고 --": {
     "type": "separator",
     "title": "회고"
   },
-  "TIL-2023-03" : "TIL-2023-03",
-  "TIL-2023-04" : "TIL-2023-04",
-  "Philosophy-01" : "나를 정의하는 질문",
-  "Experience-IGP" : "Experience-IGP",
+  "TIL-2023-03": "TIL-2023-03",
+  "TIL-2023-04": "TIL-2023-04",
+  "Philosophy-01": "나를 정의하는 질문",
+  "Experience-IGP": "Experience-IGP",
   "-- 독서 --": {
     "type": "separator",
     "title": "독서"
   },
-  "Reading-Other-01" : "타분야 책 추천",
-  "Info-Reading-Book-Tip" : "기술서적 공부법"
-  
+  "Reading-Other-01": "타분야 책 추천",
+  "Info-Reading-Book-Tip": "기술서적 공부법"
 }
