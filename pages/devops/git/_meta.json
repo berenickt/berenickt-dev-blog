@@ -1,14 +1,14 @@
 {
-  "Git-01": "Git-01",
-  "Git-02": "Git-02",
-  "Git-03": "Git-03",
-  "Git-04": "Git-04",
-  "Git-05": "Git-05",
-  "Git-06": "Git-06",
-  "Git-07": "Git-07",
-  "Git-08": "Git-08",
-  "Git-09": "Git-09",
-  "Git-10": "Git-10",
-  "Git-11": "Git-11"
+  "Git-01": "01-git 왜 쓰나",
+  "Git-02": "02-add, commit, diff",
+  "Git-03": "03-branch, merge",
+  "Git-04": "04-merge 방법론",
+  "Git-05": "05-파일 복구(restore, revert, reset)",
+  "Git-06": "06-Github-원격저장소",
+  "Git-07": "07-pull, fetch, merge",
+  "Git-08": "08-branch, pull request",
+  "Git-09": "09-Git Flow 전략",
+  "Git-10": "10-stash",
+  "Git-11": "11-Github 꾸미기"
 
 }

@@ -1,7 +1,7 @@
 {
   "intro": "devOps 로드맵",
+  "aws": "aws",
   "git": "git",
   "docker": "docker",
-  "kubernetes": "kubernetes",
-  "aws": "aws"
+  "kubernetes": "kubernetes"
 }
