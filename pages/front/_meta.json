@@ -1,5 +1,6 @@
 {
   "intro": "Front 로드맵",
+  "front-architecture": "프론트엔드 역사와 미래(feat. 상태관리)",
   "-- Admins --": {
     "type": "separator",
     "title": "CSR"

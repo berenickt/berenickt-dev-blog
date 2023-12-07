@@ -1,0 +1,163 @@
+---
+title: '프론트엔드 역사와 미래(feat. 아키텍쳐)'
+date: 2023/12/07
+---
+
+## 1. 프론트엔드의 탄생과 현재, 미래
+
+### 1.1 Web 1.0 (1990~2000초)
+
+- 1990, 웹이 탄생 (HTML, HTTP)
+- 1994, 동적 페이지 탄생, CGI(Common Gate Interface), (e.g. PHP)
+- 1995, JavaScript 탄생, 동작 제어
+- 1996, CSS 탄생, 브라우저 애니메이션용 Flash 탄생
+- 구글 검색 엔진, MS의 Explorer 대중화, e-커머스 등의 `닷컴 열풍`
+
+---
+
+### 1.2 Web 2.0
+
+- 2001년, 닷컴버블로 IT 산업의 거품이 꺼짐
+- 2000년 초, 애플의 Flash 퇴출 운동
+- 2005년, 구글의 크롬 브라우저(V8 엔진)와 Map으로 Ajax(비동기)의 등장
+    - 백엔드와 프론트엔드의 전문성을 분리(프론트엔드의 탄생)
+- 크로스 브라우저 호환성을 위해 웹 표준이 등장
+- DOM을 쉽게 쓰기 위해 jQuery가 등장
+- 2009년, V8엔진 기반 Node.js와 npm 등장
+- SPA 프레임워크인 구글 Angular가 등장
+- 2013년, 페이스북에서 Angular가 너무 무거워서 라이브러리인 React 등장
+- 2015년, 페이스북의 크로스 플랫폼을 위한 React Native 등장
+- 미래, serverless하게?
+
+---
+
+### 1.3 Web 3.0
+
+- 블록체인 기반의 탈중앙화된 인터넷(e.g. 비트코인)
+
+### 1.4 참고
+
+- https://yozm.wishket.com/magazine/detail/1289/
+
+---
+
+## 2. 프론트엔드 아키텍쳐의 역사
+
+1. HTML, CSS, JS의 탄생: 관심의 분리와 느슨한 결합
+2. jQuery까지의 시대: DOM을 쉽게 쓰자
+3. HTML + JS를 합치자: `MVC 컴포넌트 방식`의 탄생
+    - MVC 패턴으로 만들려고하는 backbon.js 프레임워크가 등장
+4. 데이터 바인딩 + 템플릿 = `MVVM 웹 프레임워크`
+    - knockout.js와 angular 등의 등장으로 MVVM 아키텍쳐가 등장
+    - 이후 React, Vue, Angular로 3대장으로 정착
+5. `Container - Presenter 방식` : 컴포넌트 간 데이터 교환이 너무 복잡
+    - 데이터 조작을 다루는 `Container 컴포넌트`
+    - 뷰를 보여주는 `Presenter 컴포넌트`
+    - Container에서 props를 Presenter로 내려주면서 로직을 한군데에 모으고, 
+    - 화면을 다루는 View 방식이 재사용 형태의 아키텍처 주류가 됨
+6. `Flux 패턴과 Redux` : Props Drill 문제 대두
+    - 상위 props들을 하위 컴포넌트로 전달할 때,
+    - 중간 컴포넌트에서 사용하지 않는 props를 추가해야 하는 Props Driling 문제가 대두됨
+    - 이에, 비즈니스 로직을 컴포넌트 계층구조가 아닌,
+        - View와 비즈니스 로직을 분리해 단방향 데이터 구조를 가지는 Flux 패턴이 등장
+    - Redux 등을 통해 FLux 패턴이 주류가 됨
+    - 이렇게 비즈니스 로직을 컴포넌트에서 분리하고, 별도로 관리하는 도구들이 등장
+        - 이 도구들을 `상태관리(State Management)`라고 부름
+        - e.g. Redux, Vuex(vue진영), Mobx(클래스 데코레이터로 좀 더 쉽게 사용)
+7. `Hooks 패턴과 Context, Recoil, Zustand, jotai` : Redux 너무 복잡하다. 쉽게 가자
+    - Redux는 너무 많은 보일러플레이트(여러 곳에서 재사용되며, 반복적으로 비슷한 형태를 띠는 코드)가 필요
+    - React 팀에서 Hooks를 통해 외부 비즈니스 로직을 쉽게 연동함
+        - Context를 통해 Props Driling 없이도 상위 Props를 하위 컴포넌트로 전달 가능해짐
+    - React 팀에서 Hook API만으로 전역 상태관리가 한계가 있었음
+        - 그래서 Atom이라 불리는 전역 객체를 이용해 데이터를 기록하고,
+        - 변경감지를 통해 View로 전달하는 형태의 `상태관리 도구`들이 등장
+        - e.g. Recoil, Zustands, Jotai
+        - cf. Redux 팀도 Redux 버리고, Redux toolkit이라는 상태관리 도구를 쓰길 권장
+8. `React Query, SWR, Redux Query` : 서버 API 관리 도구
+    - 프론트엔드에서 전역 상태 관리가 필요한 이유? 서버와 API떄문
+    - 웹의 데이터는 CRUD는 서버에서 이루어지고, 비즈니스 로직이 대부분 백엔드에 보관됨
+    - 그래서 View는 서버 데이터 보여주고, 서버에 Action을 전달만 하는 도구가 등장
+        - 백엔드와 직접 연동해 로딩, 캐싱, 무효화, 업데이트 로직을 단순화
+        - 이로 인해 API를 통한 전역 상태 관리가 단순해짐
+9. 기타...
+    - 연산자, 함수를 그래도 사용해 로컬에서 데이터 변경감지하는 전력 관리 기능 도구
+        - React의 Valtio 라이브러리
+    - 기존 상태관리 도구들의 단점인 복잡한 상용구와 중첩 객체를 쉽게 풀어낸 도구
+        - Hookstate 라이브러리 
+
+---
+
+### 2.1 프론트엔드에서 MV* 아키텍쳐
+
+1. `순수 MVC 아키텍쳐` 
+    - `Model(데이터)` : (e.g. JS Obejct, 서버 API, 서버에 있는 DB 등)
+    - `View(화면)` : HTML, CSS
+    - `Controller(컨트롤러)` : Model, View 사이의 중간자 역할
+    - 초창기 웹은 DB를 Model로 보고,
+    - HTML, CSS, JS를 View로 보고,
+    - 라우터를 통해 새 HTML을 보여주는 백앤드 영역을 Controller라 취급
+    - PHP, JSP 등
+2. `jQuery MVC 아키텍쳐`
+    - ajax로 받는 데이터를 Model로 보고,
+    - HTML, CSS를 View로 보고,
+    - JS가 중간에서 서버 데이터 받아서 이벤트 처리하고 서버에 데이터 전달하는 Controller 역할
+3. `MVVM 아키텍쳐`
+    - jQuery의 문제점 : 
+        - 데이터를 찾고, 수정, 이벤트 연결, 수정 등 반복적인 패턴을 발견
+        - `{{ }}, <?= ?>, <%= %>`와 같은 치환자로 개발, but 수정할 부분을 일일히 찾아야 함
+    - 2013년 angualar.js가 나와 `템플릿`과 `바인딩` 개념이 등장
+    - Controller의 역할을 기존 jQuery DOM 조작방식에서 템플릿과 바인딩을 통한 선언적 방법으로 변경됨
+    - `Model`은 그대로 데이터 관련
+    - `View`도 그대로 HTML, CSS
+    - Controller는 View를 그리는 Model만 다루게 되었다는 의미로 `ViewModel`로 변경
+    - 이를 MVVM 아키텍쳐라고 부르며 React, Vue, Angualar2, Svelte 등이 존재
+    - 위 4개의 라이브러리(프레임워크)들 모두 템플릿과 바인딩 문법을 쓰는 방식이 다를 뿐 똑같음
+4. `Flux 아키텍쳐`
+    - MVC 기반이 아닌 단방향 패턴 (Action > Dispatcher > Store > View)
+        - `View(사용자가 클릭한거)`에서 `Action(이벤트 같은거)` 호출,
+        - `Dispatcher(배달하는 놈)`를 통해 `Store(저장소)`에 데이터 보관,
+        - Store에서 다시 View로 전달
+    - Flux 패턴 구현 라이브러리 Redux 등장
+    - Flux 아키텍쳐 단점
+        - 너무 많은 보일러 플레이트로 인해 문법이 장황함
+        - 위 이유로 학습하기 어려움
+5. `MVI 아키텍쳐`
+    - 기존 Flux 패턴의 Dispatch, Action과 Update 인터페이스를 전부
+    - Observable를 이용한 `스트림(Stream) 방식`으로 비동기 문제를 해결
+    - 현재 ios와 android의 새 아키텍쳐로 부상 중
+        - 단방향 아키텍쳐
+        - 선언적 프로그래밍을 통한 Controller
+        - 뷰와 비지니스 로직의 분리(상태관리)
+        - 반응형 프로그래밍
+        - 서버와의 연동을 Controller로 간주하는 움직임
+6. 현대 아키텍쳐들은 크게 4방향으로 발전 중
+    1. Context와 hook, props 상속
+        - Redux 너무 복잡하니 쓰지말자.
+        - Props Driling이 문제면, Props만 새로 뚫지 않는 방법을 제공하자.
+        - 그래서 React 기본 기능인 Context API 쓰자
+    2. Atomic 패턴 - Recoil, jotai, Vue Composition, Svelte Store
+        - Action ~ Dispatch ~ Reducer와 같은 복잡한 구조를 없애보자
+        - 컴포넌트 외부에서 공통의 데이터를 set, get을 하면서 동시에 동기화
+            - View와 Model은 분리
+            - 중간의 과정은 자율에 맡기고 간단하게 Model에 접근법만 알자
+            - 동기화, 동시성 처리가 중요
+    3. React-Query, SWR(MVC의 개념 확대)
+        - Model : 서버와 fetch
+        - View : React
+        - Controller : query와 mutation이란 2가지 인터페이스를 통해 서버 상태 관리
+        - 캐싱, 동기화, refetch 등을 관리
+    4. GrahphQL, firebase - Schema Based 아키텍쳐
+        - 먼저 스키마를 정의하고, 스키마 기반으로 데이터 교환
+        - Model : 서버 데이터
+        - View : React
+        - Controller : query와 mutation 통신을 통해 view에게 데이터를 전달하는 방식
+
+어떤 것이든 칼 같이 딱 떨어지지 않는다. 왜냐면 계속 발전하기 떄문...
+무슨 `MV*` 뭐시기든 저시기든, 결국 Model과 View 사이에 무언가를 조정하는 것이다. 
+
+---
+
+### 2.2 참고
+
+- https://yozm.wishket.com/magazine/detail/1663/
+- https://velog.io/@teo/%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C%EC%97%90%EC%84%9C-MV-%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90%EB%9E%80-%EB%AC%B4%EC%97%87%EC%9D%B8%EA%B0%80%EC%9A%94
