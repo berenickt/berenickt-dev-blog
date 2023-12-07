@@ -123,20 +123,32 @@ Nextra를 사용하면 pages 디렉토리 안의 모든 파일이 MDX로 렌더�
 ---
 type: page
 title: About
-date: 2023-02-07
+date: 2023/12/08
 ---
 
-## 2. Your Name
+# 여러분의 친절한 이웃, 베르닉트
 
-Hello! I'm Yewon Noh
+> Email. dhktjdyd12@naver.com
 
-- 💻 Junior Developer, interested in Web and App.
-- 📈 I mainly use Spring, and I enjoy learning new technology.
+사용자 중심의 개발를 지향하는 낙천주의자입니다. <br/>
+머리 속 생각을 정리하는 글을 쓰는 것을 즐깁니다.
 
----
+사람이 행복을 느끼는 알고리즘이 무엇일지 고민한 끝에, <br/>
+중요하게 여기는 가치는 성장, 베풂이라 생각합니다. <br/>
 
-- GitHub [@yewon-Noh](https://github.com/yewon-Noh)
-- Velog [@yewo2nn16](https://velog.io/@yewo2nn16)
+출처를 남기려고 노력하지만, 작업을 하다가 까먹을 수 있습니다. <br/>
+정확한 출처 표기를 하지 못했다면 죄송합니다.
+
+> 잡설
+>
+> 제가 가장 좋아하는 캐릭터는 스파이더맨과 조커입니다. <br/>
+> 두 캐릭터의 공통점은 온갖 역경과 고난이 그들에게 온다는 것입니다. <br/>
+> 그렇지만 결정적인 차이점은 스파이더맨에게는 자신을 끝까지 믿어주는 한 사람, 메이 숙모가 있다는 것이고, <br/>
+> 조커는 그러한 사람이 없단 점입니다. <br/>
+>
+> 한 사람의 인생에서 단 1명이라도 자신을 믿어준다는 것은 <br/>
+> 어마어마한 변화를 불러일으킬 수 있다는 점을 보여주는 예시가 아닐까 생각이 듭니다. <br/>
+> 내가 사랑하는 가족, 친구들이 어려운 시기에 따뜻한 말 한마디 건네보는 건 어떨까요?
 ```
 
 ---
@@ -187,15 +199,15 @@ yarn add next-seo
 import { DefaultSeo } from 'next-seo'
 
 const DEFAULT_SEO = {
-  title: 'yewonlog',
-  description: "yewon-Noh's Tech Blog",
+  title: 'berenickt',
+  description: "berenickt's Dev Blog",
   canonical: 'https://www.carrotins.com',
   openGraph: {
     type: 'website',
     locale: 'ko_KR',
-    url: 'https://yewonlog.vercel.app/',
-    title: "yewonlog - Yewon-Noh's Tech Blog",
-    siteName: 'yewonlog',
+    url: 'https://berenickt.vercel.app/',
+    title: "berenickt - Yewon-Noh's Dev Blog",
+    siteName: 'berenickt',
     images: [
       {
         url: '/images/image.png',
@@ -204,11 +216,6 @@ const DEFAULT_SEO = {
         alt: '이미지',
       },
     ],
-  },
-  twitter: {
-    handle: '@handle',
-    site: '@site',
-    cardType: 'summary_large_image',
   },
 }
 
