@@ -1,7 +1,24 @@
 {
   "intro": "devOps 로드맵",
+  "-- AWS --": {
+    "type": "separator",
+    "title": "AWS"
+  },
   "aws": "aws",
+  "-- 버전관리 도구 --": {
+    "type": "separator",
+    "title": "버전관리 도구"
+  },
   "git": "git",
+  "-- 컨테이너 도구 --": {
+    "type": "separator",
+    "title": "컨테이너 도구"
+  },
   "docker": "docker",
-  "kubernetes": "kubernetes"
+  "kubernetes": "kubernetes",
+  "-- CI/CD 도구 --": {
+    "type": "separator",
+    "title": "CI/CD"
+  },
+  "jenkins": "jenkins"
 }
