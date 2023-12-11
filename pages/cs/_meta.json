@@ -1,10 +1,8 @@
 {
   "intro": "컴퓨터과학 로드맵",
-  "-- Tech --": {
-    "type": "separator",
-    "title": "Tech"
+  "terms-principles": {
+    "title" : "용어 & 원리"
   },
-  "tech": "잡지식",
   "-- 1. 자료구조 & 알고리즘 --": {
     "type": "separator",
     "title": "1. 자료구조 & 알고리즘"

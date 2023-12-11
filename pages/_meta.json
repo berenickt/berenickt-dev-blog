@@ -1,30 +1,34 @@
 {
   "front": {
-    "title": "Front",
-    "type": "page"
+    "type": "page",
+    "title": "Front"
   },
   "back": {
-    "title": "Back",
-    "type": "page"
+    "type": "page",
+    "title": "Back"
   },
   "devops": {
-    "title": "DevOps",
-    "type": "page"
+    "type": "page",
+    "title": "DevOps"
   },
   "cs": {
-    "title": "CS",
-    "type": "page"
+    "type": "page",
+    "title": "CS"
   },
   "lang": {
-    "title": "Lang",
-    "type": "page"
+    "type": "page",
+    "title": "Lang"
   },
   "memo": {
-    "title": "Memo",
-    "type": "page"
+    "type": "page",
+    "title": "Memo"
   },
   "index": {
+    "type": "page",
     "title": "About",
-    "type": "page"
+    "display": "hidden",
+    "theme": {
+      "typesetting": "article"
+    }
   }
 }
