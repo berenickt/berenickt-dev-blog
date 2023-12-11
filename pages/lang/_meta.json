@@ -2,17 +2,17 @@
   "intro": "언어별 특징",
   "-- html & css --": {
     "type": "separator",
-    "title": "html & css"
+    "title": "HTML & CSS"
   },
-  "html": "html",
-  "css": "css",
-  "-- js & ts --": {
+  "html": "HTML",
+  "css": "CSS",
+  "-- JavaScript & TypeScript --": {
     "type": "separator",
-    "title": "js & ts"
+    "title": "JavaScript & TypeScript"
   },
-  "js": "js",
+  "js": "JavaScript",
   "js-dom": "js-dom",
-  "ts": "ts",
+  "ts": "TypeScript",
   "-- others --": {
     "type": "separator",
     "title": "others"

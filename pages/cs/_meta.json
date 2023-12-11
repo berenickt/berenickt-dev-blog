@@ -1,36 +1,59 @@
 {
   "intro": "컴퓨터과학 로드맵",
-  "-- tech --": {
+  "-- Tech --": {
     "type": "separator",
-    "title": "tech"
+    "title": "Tech"
   },
   "tech": "잡지식",
-  "-- 자료구조-알고리즘 --": {
+  "-- 1. 자료구조 & 알고리즘 --": {
     "type": "separator",
-    "title": "자료구조-알고리즘"
+    "title": "1. 자료구조 & 알고리즘"
   },
-  "js-dataAlgo": "js-dataAlgo",
-  "data-structure": "data-structure",
-  "algorithm": "algorithm",
-  "-- 컴퓨터구조-운영체제 --": {
+  "dataAlgo-js": "자료구조&알고리즘-js",
+  "dataAlgo-py": "자료구조&알고리즘-py",
+  "backjoon": "백준",
+  "programmers": "프로그래머스",
+  "-- 2. 디자인패턴 --": {
     "type": "separator",
-    "title": "컴퓨터구조-운영체제"
+    "title": "2. 디자인패턴"
   },
-  "computer-architecture" : "computer-architecture",
-  "operating-system": "operating-system",
-  "-- 유닉스시스템 --": {
+  "design-pattern" : "디자인 패턴",
+  "-- 3. 이산수학 & 선형대수 --": {
     "type": "separator",
-    "title": "유닉스시스템"
+    "title": "3. 이산수학 & 선형대수"
   },
-  "unix-system": "unix-system",
-  "-- 네트워크 --": {
+  "discrete-mathematics" : "이산수학",
+  "linear-algebra" : "선형대수",
+  "-- 4. 컴퓨터구조 & 운영체제 --": {
     "type": "separator",
-    "title": "네트워크"
+    "title": "4. 컴퓨터구조 & 운영체제"
   },
-  "network": "network",
-  "-- 디자인패턴 --": {
+  "computer-architecture" : "컴퓨터구조",
+  "operating-system": "운영체제",
+  "-- 5. 유닉스 시스템 --": {
     "type": "separator",
-    "title": "디자인패턴"
+    "title": "5. 유닉스 시스템"
   },
-  "design-pattern" : "design-pattern"
+  "unix-system": "UNIX 시스템",
+  "-- 6. 네트워크 --": {
+    "type": "separator",
+    "title": "6. 네트워크"
+  },
+  "network": "네트워크",
+  "http": "HTTP",
+  "-- 7. 컴파일러 --": {
+    "type": "separator",
+    "title": "7. 컴파일러"
+  },
+  "compiler": "컴파일러",
+  "-- 8. 소프트웨어공학 --": {
+    "type": "separator",
+    "title": "8. 소프트웨어공학"
+  },
+  "software-engineering": "소프트웨어공학",
+  "-- 9. 보안 --": {
+    "type": "separator",
+    "title": "9. 보안"
+  },
+  "security": "보안"
 }

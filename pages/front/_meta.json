@@ -1,51 +1,71 @@
 {
   "intro": "Front 로드맵",
   "front-architecture": "프론트엔드 역사와 미래(feat. 상태관리)",
-  "-- Admins --": {
+  "-- 1. CSR --": {
     "type": "separator",
-    "title": "CSR"
+    "title": "1. CSR"
   },
-  "react": "react",
-  "-- SSR & SSG --": {
+  "react": "React",
+  "-- 2. SSR & SSG --": {
     "type": "separator",
-    "title": "SSR "
+    "title": "2. SSR & SSG"
   },
-  "next": "next.js",
-  "-- Data Fetching --": {
+  "next": "Next.js",
+  "-- 3. Data Fetching --": {
     "type": "separator",
-    "title": "Data Fetching"
+    "title": "3. Data Fetching"
   },
-  "rest": "REST-API",
-  "graphql": "GralhQL",
-  "-- Router --": {
+  "rest": "REST",
+  "graphql": "GraphQL",
+  "-- 4. Router --": {
     "type": "separator",
-    "title": "Router"
+    "title": "4. Router"
   },
   "react-router": "react-router",
-  "-- State Management --": {
+  "-- 5. State Management --": {
     "type": "separator",
-    "title": "State Management"
+    "title": "5. State Management"
   },
-  "redux-toolkit": "redux-toolkit",
-  "recoil": "recoil",
-  "mobx": "mobx",
-  "zustand": "zustand",
-  "-- Styling-library --": {
+  "redux-toolkit": "Redux-toolkit",
+  "recoil": "Recoil",
+  "mobx": "Mobx",
+  "zustand": "Zustand",
+  "-- 6. Styling 라이브러리 --": {
     "type": "separator",
-    "title": "Styling-library"
+    "title": "6. Styling 라이브러리"
   },
-  "sass": "sass",
-  "emotion": "emotion",
-  "styled-components": "styled-components",
-  "postcss": "postcss",
-  "-- UI-library --": {
+  "sass": "Sass",
+  "emotion": "Emotion",
+  "styled-components": "Styled Components",
+  "postcss": "PostCSS",
+  "-- 7. UI 라이브러리 --": {
     "type": "separator",
-    "title": "UI-library"
+    "title": "7. UI 라이브러리"
   },
   "ui-lib": "ui-library",
-  "-- TEST --": {
+  "-- 8. Test 라이브러리 --": {
     "type": "separator",
-    "title": "TEST"
+    "title": "8. Test 라이브러리"
   },
-  "jest": "jest"
+  "jest": "Jest",
+  "cypress": "Cypress",
+  "react-test-lib": "React Test Lib(RTL)",
+  "-- 9. 3D & 시각화 --": {
+    "type": "separator",
+    "title": "9. 3D"
+  },
+  "d3js": "D3.js",
+  "canvas": "Canvas",
+  "threejs": "Three.js",
+  "-- 10. 모바일 웹앱 --": {
+    "type": "separator",
+    "title": "10. 모바일 웹앱"
+  },
+  "react-native": "React Native",
+  "flutter": "Flutter",
+  "-- 11. 데스크탑 앱 --": {
+    "type": "separator",
+    "title": "11. 데스크탑 앱"
+  },
+  "electron": "Electron"
 }
