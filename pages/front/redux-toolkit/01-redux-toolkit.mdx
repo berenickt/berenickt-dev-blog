@@ -1,5 +1,5 @@
 ---
-title: '20-State Management 라이브러리 - Redux/Toolkit'
+title: 'Redux/Toolkit'
 date: 2022/12/30
 ---
 
@@ -191,7 +191,7 @@ cf. 그렇다고 수정과 삭제가 꼭 나쁜 것만은 아닙니다.
 
 ```javascript
 {
-  type: 'TOGGLE_VALUE';
+  type: 'TOGGLE_VALUE'
 }
 ```
 
@@ -223,14 +223,14 @@ function addTodo(data) {
   return {
     type: 'ADD_TODO',
     data,
-  };
+  }
 }
 
 // 화살표 함수로도 만들 수 있습니다.
-const changeInput = (text) => ({
+const changeInput = text => ({
   type: 'CHANGE_INPUT',
   text,
-});
+})
 ```
 
 ---
@@ -244,7 +244,7 @@ const changeInput = (text) => ({
 ```javascript
 function reducer(state, action) {
   // 상태 업데이트 로직
-  return alteredState;
+  return alteredState
 }
 ```
 
@@ -309,14 +309,14 @@ function reducer(state, action) {
 
 ```javascript
 // index.js
-import { createStore } from 'redux';
+import { createStore } from 'redux'
 
-const lightDiv = document.getElementsByClassName('light')[0];
-const switchButton = document.getElementById('switch-btn');
+const lightDiv = document.getElementsByClassName('light')[0]
+const switchButton = document.getElementById('switch-btn')
 
-const counterHeadings = document.getElementsByTagName('h1')[0];
-const plusButton = document.getElementById('plus-btn');
-const minusButton = document.getElementById('minus-btn');
+const counterHeadings = document.getElementsByTagName('h1')[0]
+const plusButton = document.getElementById('plus-btn')
+const minusButton = document.getElementById('minus-btn')
 ```
 
 - 따로 UI 라이브러리를 사용하지 않기 때문에 DOM 을 직접 건들임
@@ -331,9 +331,9 @@ const minusButton = document.getElementById('minus-btn');
 // 생략
 
 // **** 액션 타입 정의
-const TOGGLE_SWITCH = 'TOGGLE_SWITCH';
-const INCREMENT = 'INCREMENT';
-const DECREMENT = 'DECREMENT';
+const TOGGLE_SWITCH = 'TOGGLE_SWITCH'
+const INCREMENT = 'INCREMENT'
+const DECREMENT = 'DECREMENT'
 ```
 
 - 프로젝트에서 상태에 변화를 일으키는것을 하나의 액션으로 보고, 그 액션에 대한 이름을 정해주는 과정
@@ -351,9 +351,9 @@ const DECREMENT = 'DECREMENT';
 // 액션 생성 함수 : 액션 객체를 만드는 함수
 // 액션 객체는 type 값을 필수
 // 나머지 액션에서 참고하고 싶은 값들은 마음대로
-const toggleSwitch = () => ({ type: TOGGLE_SWITCH });
-const increment = (diff) => ({ type: INCREMENT, diff });
-const decrement = () => ({ type: DECREMENT });
+const toggleSwitch = () => ({ type: TOGGLE_SWITCH })
+const increment = diff => ({ type: INCREMENT, diff })
+const decrement = () => ({ type: DECREMENT })
 ```
 
 - 액션 객체를 만드는 함수를, 액션 생성 함수라고 부름
@@ -371,7 +371,7 @@ const decrement = () => ({ type: DECREMENT });
 const initialState = {
   light: false,
   counter: 0,
-};
+}
 ```
 
 ---
@@ -390,20 +390,20 @@ function reducer(state = initialState, action) {
       return {
         ...state, // 기존의 값은 그대로 두면서 새로운 값을 덮어쓰는 방식(스프레드 연산자)
         light: !state.light, // light 값 반전시키기
-      };
+      }
     case INCREMENT:
       return {
         ...state,
         counter: state.counter + action.diff,
-      };
+      }
     case DECREMENT:
       return {
         ...state,
         counter: state.counter - 1,
-      };
+      }
     default:
       // 지원하지 않는 액션의 경우 상태 유지
-      return state;
+      return state
   }
 }
 ```
@@ -423,7 +423,7 @@ function reducer(state = initialState, action) {
 
 // **** 스토어 만들기
 // createStore 함수를 사용, 파라미터는 리듀서 함수를 전달
-const store = createStore(reducer);
+const store = createStore(reducer)
 ```
 
 - 스토어를 만들땐 createStore 함수를 사용
@@ -439,19 +439,19 @@ const store = createStore(reducer);
 
 // **** render 함수 만들기
 const render = () => {
-  const state = store.getState(); // 현재 상태를 가져옵니다.
-  const { light, counter } = state; // 편의상 비구조화 할당
+  const state = store.getState() // 현재 상태를 가져옵니다.
+  const { light, counter } = state // 편의상 비구조화 할당
   if (light) {
-    lightDiv.style.background = 'green';
-    switchButton.innerText = '끄기';
+    lightDiv.style.background = 'green'
+    switchButton.innerText = '끄기'
   } else {
-    lightDiv.style.background = 'gray';
-    switchButton.innerText = '켜기';
+    lightDiv.style.background = 'gray'
+    switchButton.innerText = '켜기'
   }
-  counterHeadings.innerText = counter;
-};
+  counterHeadings.innerText = counter
+}
 
-render();
+render()
 ```
 
 - 스토어의 현재 상태를 가져올 땐 스토어의 내장함수 `getState`를 사용
@@ -462,8 +462,8 @@ render();
 
 ```javascript
 // **** 예시임
-const listener = () => console.log('업데이트 됐어요!');
-const unsubscribe = store.subscribe(listener);
+const listener = () => console.log('업데이트 됐어요!')
+const unsubscribe = store.subscribe(listener)
 // 나중에 unsubscribe();
 ```
 
@@ -476,7 +476,7 @@ const unsubscribe = store.subscribe(listener);
 // 생략
 
 // **** 구독하기
-store.subscribe(render);
+store.subscribe(render)
 ```
 
 - subscribe 함수의 파라미터로는, 함수형태의 값을 전달
@@ -496,16 +496,16 @@ store.subscribe(render);
 // 액션을 발생시키는것을 디스패치(dispatch) 라고 함
 // 디스패치를 할 땐, 스토어의 내장함수 dispatch 를 사용
 switchButton.onclick = () => {
-  store.dispatch(toggleSwitch());
-};
+  store.dispatch(toggleSwitch())
+}
 
 plusButton.onclick = () => {
-  store.dispatch(increment(5));
-};
+  store.dispatch(increment(5))
+}
 
 minusButton.onclick = () => {
-  store.dispatch(decrement());
-};
+  store.dispatch(decrement())
+}
 ```
 
 - 액션을 발생시키는것을 `디스패치 (dispatch)`라고 부름
@@ -586,11 +586,11 @@ store = state들을 보관하는 파일
 
 ```jsx
 // app/store.js
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit'
 
 export default configureStore({
   reducer: {},
-});
+})
 ```
 
 ---
@@ -599,28 +599,28 @@ export default configureStore({
 
 ```jsx
 // src/index.js
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import { Provider } from 'react-redux'; // 추가
-import store from './app/store';
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import './index.css'
+import App from './App'
+import { Provider } from 'react-redux' // 추가
+import store from './app/store'
 
 // Start the mocking conditionally.
 if (process.env.NODE_ENV === 'development') {
-  const { worker } = require('./mocks/browser');
-  worker.start();
+  const { worker } = require('./mocks/browser')
+  worker.start()
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
   <React.StrictMode>
     {/* 추가 */}
     <Provider store={store}>
       <App />
     </Provider>
-  </React.StrictMode>
-);
+  </React.StrictMode>,
+)
 ```
 
 - Provider라는 컴포넌트와 아까 작성한 파일을 import
@@ -638,7 +638,7 @@ Redux store에 state 보관하는 법
 
 ```jsx
 // features/counter/counterSlice.js
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit'
 
 // 1. createSlice()로 state 만들기
 export const counterSlice = createSlice({
@@ -649,35 +649,35 @@ export const counterSlice = createSlice({
   reducers: {
     // Redux Toolkit은 immer를 사용하여 "불변성"을 보장합니다.
     // 불변성을 보장하면 더 쉽게 예측 가능한 상태를 유지할 수 있습니다.
-    increment: (state) => {
-      state.value += 1;
+    increment: state => {
+      state.value += 1
     },
-    decrement: (state) => {
-      state.value -= 1;
+    decrement: state => {
+      state.value -= 1
     },
     incrementByAmount: (state, action) => {
-      state.value += action.payload;
+      state.value += action.payload
     },
   },
-});
+})
 
 // Action creators는 reducer 함수 별로 생성됩니다.
-export const { increment, decrement, incrementByAmount } = counterSlice.actions;
+export const { increment, decrement, incrementByAmount } = counterSlice.actions
 
-export default counterSlice.reducer;
+export default counterSlice.reducer
 ```
 
 ```jsx
 // app/store.js
-import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
+import { configureStore } from '@reduxjs/toolkit'
+import counterReducer from '../features/counter/counterSlice'
 
 // 2. configureStore() 안에 등록
 export default configureStore({
   reducer: {
     counter: counterReducer,
   },
-});
+})
 ```
 
 ---
@@ -685,12 +685,12 @@ export default configureStore({
 ## 5.4 컴포넌트에서 State, Actions 사용
 
 ```jsx
-import { useDispatch, useSelector } from 'react-redux';
-import { decrement, increment, incrementByAmount } from './counterSlice';
+import { useDispatch, useSelector } from 'react-redux'
+import { decrement, increment, incrementByAmount } from './counterSlice'
 
 export default function Counter() {
-  const count = useSelector((state) => state.counter.value);
-  const dispatch = useDispatch();
+  const count = useSelector(state => state.counter.value)
+  const dispatch = useDispatch()
 
   return (
     <div>
@@ -701,7 +701,7 @@ export default function Counter() {
         <button onClick={() => dispatch(incrementByAmount(5))}>+5</button>
       </div>
     </div>
-  );
+  )
 }
 ```
 
@@ -710,12 +710,12 @@ export default function Counter() {
 ## 5.5 비교용 Counter2
 
 ```jsx
-import { useDispatch, useSelector } from 'react-redux';
-import { decrement, increment, incrementByAmount } from '../features/counter/counterSlice';
+import { useDispatch, useSelector } from 'react-redux'
+import { decrement, increment, incrementByAmount } from '../features/counter/counterSlice'
 
 export default function Counter2() {
-  const count = useSelector((state) => state.counter.value);
-  const dispatch = useDispatch();
+  const count = useSelector(state => state.counter.value)
+  const dispatch = useDispatch()
 
   return (
     <div>
@@ -726,19 +726,19 @@ export default function Counter2() {
         <button onClick={() => dispatch(incrementByAmount(5))}>+5</button>
       </div>
     </div>
-  );
+  )
 }
 ```
 
 ```jsx
-import './App.css';
-import TestMocking from './components/TestMocking';
-import Counter from './features/counter/Counter';
-import Counter2 from './components/Counter2';
+import './App.css'
+import TestMocking from './components/TestMocking'
+import Counter from './features/counter/Counter'
+import Counter2 from './components/Counter2'
 
 export default function App() {
   return (
-    <div className='App'>
+    <div className="App">
       <TestMocking />
       <Counter />
       <br />
@@ -746,7 +746,7 @@ export default function App() {
       <br />
       <Counter2 />
     </div>
-  );
+  )
 }
 ```
 

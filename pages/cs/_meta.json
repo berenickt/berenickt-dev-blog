@@ -1,7 +1,7 @@
 {
   "intro": "컴퓨터과학 로드맵",
   "terms-principles": {
-    "title" : "용어 & 원리"
+    "title": "용어 & 원리"
   },
   "-- 1. 자료구조 & 알고리즘 --": {
     "type": "separator",
@@ -15,18 +15,18 @@
     "type": "separator",
     "title": "2. 디자인패턴"
   },
-  "design-pattern" : "디자인 패턴",
+  "design-pattern": "디자인 패턴",
   "-- 3. 이산수학 & 선형대수 --": {
     "type": "separator",
     "title": "3. 이산수학 & 선형대수"
   },
-  "discrete-mathematics" : "이산수학",
-  "linear-algebra" : "선형대수",
+  "discrete-mathematics": "이산수학",
+  "linear-algebra": "선형대수",
   "-- 4. 컴퓨터구조 & 운영체제 --": {
     "type": "separator",
     "title": "4. 컴퓨터구조 & 운영체제"
   },
-  "computer-architecture" : "컴퓨터구조",
+  "computer-architecture": "컴퓨터구조",
   "operating-system": "운영체제",
   "-- 5. 유닉스 시스템 --": {
     "type": "separator",
@@ -53,5 +53,10 @@
     "type": "separator",
     "title": "9. 보안"
   },
-  "security": "보안"
+  "security": "보안",
+  "-- 10. 기타 책들 --": {
+    "type": "separator",
+    "title": "10. 기타 책들"
+  },
+  "book-clean-code": "클린코드"
 }
