@@ -1,0 +1,205 @@
+---
+title: 'React BootStrap'
+date: 2023/12/12
+---
+
+## 1. React BootStrap
+
+- BootStrap
+
+  - 유명한 front-end 오픈소스 toolkit
+  - jQuery와 강하게 결합 / 반응형 웹에 특화
+
+- React BootStrap
+  - BootStrap 개발팀들이 jQuery제거하고 React에 맞게 생성한 라이브러리
+  - 반응형 웹 : xs | md | lg
+  - Sass : @import해서 쓸 수 있음
+  - 익숙한 UI : Bootstrap을 그대로 가져옴
+  - https://react-bootstrap.github.io/
+
+```sh
+npm install react-bootstrap bootstrap
+```
+
+---
+
+## 2. 예제1 : 기본 사용법
+
+- https://react-bootstrap.github.io/getting-started/why-react-bootstrap/
+
+### 2.1 App.js
+
+```jsx
+// Webpack CSS import
+// import 'onsenui/css/onsenui.css';
+// import 'onsenui/css/onsen-css-components.css';
+// import OnesenUIExample from './components/OnsenUI/OnesenUIExample';
+// import AntDesignExample from './components/AntDesign/AntDesignExample';
+// import 'semantic-ui-css/semantic.min.css';
+// import ReactSemanticUIExample from './components/ReactSemanticUI/ReactSemanticUIExample';
+
+import 'bootstrap/dist/css/bootstrap.min.css'
+import ReactBootstrapExample from './components/ReactBootstrap/ReactBootstrapExample'
+
+export default function App() {
+  return (
+    <>
+      <ReactBootstrapExample />
+      {/* <ReactSemanticUIExample /> */}
+      {/* <AntDesignExample /> */}
+      {/* <OnesenUIExample /> */}
+    </>
+  )
+}
+```
+
+---
+
+### 2.2 AlertDismissible
+
+```jsx
+import React, { useState } from 'react'
+import { Alert, Button } from 'react-bootstrap'
+
+export default function AlertDismissible() {
+  const [show, setShow] = useState(false)
+
+  return (
+    <>
+      <Alert show={show} variant="success">
+        <Alert.Heading>How's it going?!</Alert.Heading>
+        <p>
+          Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis
+          consectetur purus sit amet fermentum.
+        </p>
+        <hr />
+        <div className="d-flex justify-content-end">
+          <Button onClick={() => setShow(false)} variant="outline-success">
+            Close me y'all!
+          </Button>
+        </div>
+      </Alert>
+
+      {!show && <Button onClick={() => setShow(true)}>Show Alert</Button>}
+    </>
+  )
+}
+```
+
+---
+
+### 2.3 ReactBootstrapExample
+
+```jsx
+import React from 'react'
+import AlertDismissible from './AlertDismissible'
+
+export default function ReactBootstrapExample() {
+  return (
+    <div>
+      <AlertDismissible />
+    </div>
+  )
+}
+```
+
+---
+
+## 3. 예제2 : 반응형
+
+```css
+/* grid.css */
+.col-color {
+  border: 1px solid red;
+  background-color: pink;
+}
+```
+
+```tsx
+import { Container, Row, Col } from 'react-bootstrap'
+import './grid.css'
+
+export default function GridExample() {
+  return (
+    <Container>
+      {/* Stack the columns on mobile by making one full-width and the other half-width */}
+      <Row>
+        <Col xs={12} md={8} className="col-color">
+          xs=12 md=8
+        </Col>
+        <Col className="col-color" xs={6} md={4}>
+          xs=6 md=4
+        </Col>
+      </Row>
+
+      {/* Columns start at 50% wide on mobile and bump up to 33.3% wide on desktop */}
+      <Row>
+        <Col className="col-color" xs={6} md={4}>
+          xs=6 md=4
+        </Col>
+        <Col className="col-color" xs={6} md={4}>
+          xs=6 md=4
+        </Col>
+        <Col className="col-color" xs={6} md={4}>
+          xs=6 md=4
+        </Col>
+      </Row>
+
+      {/* Columns are always 50% wide, on mobile and desktop */}
+      <Row>
+        <Col className="col-color" xs={6}>
+          xs=6
+        </Col>
+        <Col className="col-color" xs={6}>
+          xs=6
+        </Col>
+      </Row>
+    </Container>
+  )
+}
+import AlertDismissible from './AlertDismissible'
+import GridExample from './GridExample'
+
+export default function ReactBootstrapExample() {
+  return (
+    <div>
+      <GridExample />
+      <AlertDismissible />
+    </div>
+  )
+}
+```
+
+---
+
+## 4. 예제3 : 버튼
+
+```jsx
+import { Button, ButtonGroup } from 'react-bootstrap'
+
+export default function ButtonExample() {
+  return (
+    <>
+      <ButtonGroup size="lg" className="mb-2">
+        <Button>Left</Button>
+        <Button>Middle</Button>
+        <Button>Right</Button>
+      </ButtonGroup>
+      <br />
+      <ButtonGroup className="mb-2">
+        <Button>Left</Button>
+        <Button>Middle</Button>
+        <Button>Right</Button>
+      </ButtonGroup>
+      <br />
+      <ButtonGroup size="sm">
+        <Button>Left</Button>
+        <Button>Middle</Button>
+        <Button>Right</Button>
+      </ButtonGroup>
+    </>
+  )
+}
+```
+
+ReactBootstrapExample.jsx에 추가

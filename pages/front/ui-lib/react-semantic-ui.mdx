@@ -1,0 +1,89 @@
+---
+title: 'React Semantic UI'
+date: 2023/12/12
+---
+
+## 1. React Semantic UI
+
+- https://react.semantic-ui.com/usage
+- Semantic = 의론적인 웹 (기계가 이해할 수 있는 웹페이지, 웹 접근성)
+
+```sh
+$ npm install semantic-ui-react semantic-ui-css
+import 'semantic-ui-css/semantic.min.css'
+```
+
+---
+
+## 2. 예제1 : 기본 사용법
+
+### 2.1 App.js
+
+```jsx
+// Webpack CSS import
+// import 'onsenui/css/onsenui.css';
+// import 'onsenui/css/onsen-css-components.css';
+// import OnesenUIExample from './components/OnsenUI/OnesenUIExample';
+// import AntDesignExample from './components/AntDesign/AntDesignExample';
+
+import 'semantic-ui-css/semantic.min.css'
+import ReactSemanticUIExample from './components/ReactSemanticUI/ReactSemanticUIExample'
+
+export default function App() {
+  return (
+    <>
+      <ReactSemanticUIExample />
+      {/* <AntDesignExample /> */}
+      {/* <OnesenUIExample /> */}
+    </>
+  )
+}
+```
+
+---
+
+### 2.2 ButtonExampleLabeledBasic
+
+```jsx
+import { Button, Icon, Label } from 'semantic-ui-react';
+
+export default const ButtonExampleLabeledBasic = () => (
+  <div>
+    <Button as="div" labelPosition="right">
+      <Button color="red">
+        <Icon name="heart" />
+        Like
+      </Button>
+      <Label as="a" basic color="red" pointing="left">
+        2,048
+      </Label>
+    </Button>
+    <Button as="div" labelPosition="right">
+      <Button basic color="blue">
+        <Icon name="fork" />
+        Fork
+      </Button>
+      <Label as="a" basic color="blue" pointing="left">
+        2,048
+      </Label>
+    </Button>
+  </div>
+);
+```
+
+---
+
+### 2.3 ReactSemanticUIExample
+
+```jsx
+// src/components/ReactSemanticUI/ReactSemanticUIExample.jsx
+import ButtonExampleLabeledBasic from './ButtonExampleLabeledBasic'
+
+export default function ReactSemanticUIExample() {
+  return (
+    <>
+      <ButtonExampleLabeledBasic />
+    </>
+  )
+}
+```

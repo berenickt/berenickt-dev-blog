@@ -43,7 +43,8 @@
     "type": "separator",
     "title": "7. UI 라이브러리"
   },
-  "ui-lib": "ui-library",
+  "ui-lib-kind": "UI 라이브러리 종류",
+  "ui-lib": "UI 라이브러리",
   "-- 8. Test 라이브러리 --": {
     "type": "separator",
     "title": "8. Test 라이브러리"

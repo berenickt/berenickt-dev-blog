@@ -1,0 +1,150 @@
+---
+title: 'Material UI'
+date: 2023/12/12
+---
+
+## 1. Material UI
+
+- https://m3.material.io/
+  - 구글이 2014년 안드로이드 스마트폰에 적용하면서 알려짐
+  - 구글이 선도하는 디자인 시스템이라 업데이트가 자주 이루어지고 체계적임
+- https://mui.com/core/
+- [각종 테마들](https://mui.com/store/?utm_source=docs&utm_medium=referral&utm_campaign=home-store)
+
+---
+
+## 2. 예제 1 : 기본 사용법
+
+- https://mui.com/material-ui/getting-started/installation/
+
+```sh
+npm install @mui/material @emotion/react @emotion/styled # 기본 설치
+npm install @mui/icons-material # Icons
+```
+
+---
+
+### 2.1 index.html
+
+index.html에 다음 link 태그 추가
+
+```html
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+```
+
+- 각각 Roboto font, Icons
+  - https://mui.com/material-ui/getting-started/installation/#roboto-font
+  - https://mui.com/material-ui/getting-started/installation/#icons
+
+---
+
+### 2.2 App.js
+
+- https://mui.com/material-ui/getting-started/usage/#quickstart
+
+```jsx
+// Webpack CSS import
+// import 'onsenui/css/onsenui.css';
+// import 'onsenui/css/onsen-css-components.css';
+// import OnesenUIExample from './components/OnsenUI/OnesenUIExample';
+// import AntDesignExample from './components/AntDesign/AntDesignExample';
+// import 'semantic-ui-css/semantic.min.css';
+// import ReactSemanticUIExample from './components/ReactSemanticUI/ReactSemanticUIExample';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+// import ReactBootstrapExample from './components/ReactBootstrap/ReactBootstrapExample';
+import MaterialUIExample from './components/MaterialUI/MaterialUIExample'
+
+export default function App() {
+  return (
+    <>
+      <MaterialUIExample />
+      {/* <ReactBootstrapExample /> */}
+      {/* <ReactSemanticUIExample /> */}
+      {/* <AntDesignExample /> */}
+      {/* <OnesenUIExample /> */}
+    </>
+  )
+}
+```
+
+---
+
+### 2.3 ButtonExample
+
+```jsx
+import Button from '@mui/material/Button'
+
+export default function ButtonExample() {
+  return <Button variant="contained">Hello World</Button>
+}
+```
+
+---
+
+### 2.4 MaterialUIExample
+
+```jsx
+import ButtonExample from './ButtonExample'
+
+export default function MaterialUIExample() {
+  return (
+    <div>
+      <ButtonExample />
+    </div>
+  )
+}
+```
+
+---
+
+## 3. 공식 사이트 CRA 예제
+
+- https://github.com/mui/material-ui/tree/master/examples/create-react-app
+- 위 Github를 clone(복제)하거나 Zip으로 다운받아 만들어놓은 예제를 볼 수 있다.
+- 아니면 공식 사이트에 예제별로 Code SandBox가 잘 되어 있다.
+
+---
+
+## 4. 예제3 : Grid
+
+- https://mui.com/material-ui/react-grid/#basic-grid
+
+```jsx
+import * as React from 'react'
+import { styled } from '@mui/material/styles'
+import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
+import Grid from '@mui/material/Grid'
+
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}))
+
+export default function BasicGrid() {
+  return (
+    <Box sx={{ flexGrow: 1 }}>
+      <Grid container spacing={2}>
+        <Grid item xs={8}>
+          <Item>xs=8</Item>
+        </Grid>
+        <Grid item xs={4}>
+          <Item>xs=4</Item>
+        </Grid>
+        <Grid item xs={4}>
+          <Item>xs=4</Item>
+        </Grid>
+        <Grid item xs={8}>
+          <Item>xs=8</Item>
+        </Grid>
+      </Grid>
+    </Box>
+  )
+}
+```
+
+MaterialUIExample에 추가

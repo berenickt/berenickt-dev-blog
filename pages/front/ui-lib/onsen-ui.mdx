@@ -1,0 +1,254 @@
+---
+title: 'Onsen UI'
+date: 2023/12/12
+---
+
+## 1. Onsen UI
+
+- [Onsen UI Get Start](https://onsen.io/v2/guide/#getting-started)
+
+  - 모바일 케이스 대응
+  - 아이콘 (Font Awesome, Ionicons)
+  - 문서 최신화는 잘 안됨(React에 불친절)
+
+- https://onsen.io/v2/guide/react/#react
+
+---
+
+### 1.1 예제 : 공식문서 따라해보기
+
+```sh
+$ npx create-react-app ui
+$ cd ui
+$ npm install onsenui react-onsenui --save # Onsen UI 설치
+$ npm start
+```
+
+---
+
+## 2. 예제1 : 기본 사용법
+
+### 2.1 App.js
+
+```jsx
+import './App.css'
+// Webpack CSS import, 밑에 2줄 import해야 쓸 수 있음
+import 'onsenui/css/onsenui.css'
+import 'onsenui/css/onsen-css-components.css'
+import OnesenUIExample from './components/OnsenUI/OnesenUIExample'
+
+export default function App() {
+  return (
+    <div className="App">
+      <OnesenUIExample />
+    </div>
+  )
+}
+```
+
+---
+
+### 2.2 OnsenUIExample
+
+- https://onsen.io/v2/api/react/Button.html
+
+```jsx
+// src/components/OnsenUI/OnsenUIExample.jsx
+import ButtonExample from './ButtonExample'
+import { Page } from 'react-onsenui'
+
+export default function OnesenUIExample() {
+  return (
+    <Page>
+      <ButtonExample />
+    </Page>
+  )
+}
+```
+
+---
+
+### 2.3 ButtonExample
+
+```jsx
+// src/components/OnsenUI/ButtonExample.jsx
+import { Button } from 'react-onsenui'
+
+export default function ButtonExample() {
+  const hnadleClick = () => {
+    alert('눌렀음!')
+  }
+  return (
+    <>
+      <Button onClick={hnadleClick} modifier="large--cta">
+        Tap Me
+      </Button>
+      <br />
+      <br />
+      <Button onClick={hnadleClick} disabled={true}>
+        disabled
+      </Button>
+      <br />
+      <br />
+      <Button onClick={hnadleClick} modifier="outline">
+        outline
+      </Button>
+      <br />
+      <br />
+      <Button onClick={hnadleClick} modifier="light">
+        light
+      </Button>
+      <br />
+      <br />
+      <Button onClick={hnadleClick} modifier="quiet">
+        quiet
+      </Button>
+      <br />
+      <br />
+      <Button onClick={hnadleClick} modifier="cta">
+        cta
+      </Button>
+      <br />
+      <br />
+      <Button onClick={hnadleClick} modifier="large-quiet">
+        large-quiet
+      </Button>
+      <br />
+      <br />
+      <Button onClick={hnadleClick} modifier="material">
+        material
+      </Button>
+      <br />
+      <br />
+      <Button onClick={hnadleClick} modifier="material-flat">
+        material-flat
+      </Button>
+    </>
+  )
+}
+```
+
+---
+
+## 3. 예제2: Action Sheet
+
+- https://onsen.io/v2/api/react/ActionSheet.html
+
+```jsx
+// src/components/OnsenUI/ActionSheetExample.jsx
+import { useState } from 'react'
+import { ActionSheetButton, ActionSheet, Button } from 'react-onsenui'
+
+export default function ActionSheetExample() {
+  const [open, setOpen] = useState(false)
+  const handleClick = () => {
+    setOpen(true)
+  }
+  return (
+    <div>
+      <Button onClick={handleClick}>Action Sheet 열기</Button>
+      <ActionSheet isOpen={open} title="action sheet">
+        <ActionSheetButton>Label 1</ActionSheetButton>
+        <ActionSheetButton>Label 2</ActionSheetButton>
+        <ActionSheetButton>Label 4</ActionSheetButton>
+        <ActionSheetButton modifier="destructive">Cancel</ActionSheetButton>
+        <ActionSheetButton>Save</ActionSheetButton>
+      </ActionSheet>
+    </div>
+  )
+}
+```
+
+```jsx
+// src/components/OnsenUI/OnsenUIExample.jsx
+import ButtonExample from './ButtonExample'
+import { Page } from 'react-onsenui'
+import ActionSheetExample from './ActionSheetExample'
+
+export default function OnesenUIExample() {
+  return (
+    <Page>
+      <ActionSheetExample />
+      <ButtonExample />
+    </Page>
+  )
+}
+```
+
+---
+
+## 4. 예제3 : List
+
+```jsx
+import React from 'react'
+import { Checkbox, List, ListItem } from 'react-onsenui'
+
+export default function CheckBoxExample() {
+  return (
+    <List>
+      <ListItem tappable>
+        <label class="left">
+          <Checkbox input-id="check-1"></Checkbox>
+        </label>
+        <label for="check-1" class="center">
+          Apple
+        </label>
+      </ListItem>
+      <ListItem tappable>
+        <label class="left">
+          <Checkbox input-id="check-2" checked></Checkbox>
+        </label>
+        <label for="check-2" class="center">
+          Banana
+        </label>
+      </ListItem>
+    </List>
+  )
+}
+```
+
+```jsx
+// src/components/OnsenUI/OnsenUIExample.jsx
+import ButtonExample from './ButtonExample'
+import { Page } from 'react-onsenui'
+import ActionSheetExample from './ActionSheetExample'
+import CheckBoxExample from './CheckBoxExample'
+
+export default function OnesenUIExample() {
+  return (
+    <Page>
+      <CheckBoxExample />
+      <ActionSheetExample />
+      <ButtonExample />
+    </Page>
+  )
+}
+```
+
+---
+
+## 5. 예제4 : Fab + Icon
+
+- https://onsen.io/v2/api/js/ons-fab.html
+- https://onsen.io/v2/api/js/ons-icon.html
+  - 아이콘 지원
+    - https://fontawesome.com/
+    - [Ionicons](http://ionicons.com/)
+    - [Material Design Iconic Font](http://zavoloklom.github.io/material-design-iconic-font/)
+
+```jsx
+import React from 'react'
+import { Fab, Icon } from 'react-onsenui'
+
+export default function FabExample() {
+  return (
+    <div>
+      <Fab position="bottom right">
+        <Icon icon="fa-space-shuttle"></Icon>
+      </Fab>
+    </div>
+  )
+}
+```
+
+OnsenUIExample.jsx에 추가

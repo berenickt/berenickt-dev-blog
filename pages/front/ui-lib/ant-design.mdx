@@ -1,0 +1,137 @@
+---
+title: 'Ant Design'
+date: 2023/12/12
+---
+
+## 1. Ant Design
+
+- https://ant.design/docs/react/introduce
+- https://ant.design/docs/react/use-with-create-react-app
+- https://ant.design/components/overview/
+- React 기반
+- Day.js 권장, Moment.js 제거 추천
+- Design 철학 : 단순한 컴포넌트 제공 + @
+- typography : 다양한 사이즈의 Text 제공
+
+```sh
+$ npm install antd
+```
+
+---
+
+## 2. 예제1 : 기본 사용법
+
+### 2.1 App.js
+
+```jsx
+// Webpack CSS import
+// import 'onsenui/css/onsenui.css';
+// import 'onsenui/css/onsen-css-components.css';
+// import OnesenUIExample from './components/OnsenUI/OnesenUIExample';
+import '~antd/dist/antd.css' // 추가-----------------
+import AntDesignExample from './components/AntDesign/AntDesignExample'
+
+export default function App() {
+  return (
+    <>
+      <AntDesignExample />
+      {/* <OnesenUIExample /> */}
+    </>
+  )
+}
+```
+
+---
+
+### 2.2 AntDesignExample
+
+```jsx
+//  src\components\AntDesign\AntDesignExample.jsx
+import React from 'react'
+import GetStart from './GetStart'
+
+export default function AntDesignExample() {
+  return (
+    <div>
+      <GetStart />
+    </div>
+  )
+}
+```
+
+---
+
+### 2.3 GetStart
+
+```jsx
+import { useState } from 'react'
+import { DatePicker, message, Alert } from 'antd'
+
+export default function GetStart() {
+  const [date, setDate] = useState(null)
+  const handleChange = value => {
+    message.info(`Selected Date: ${value ? value.format('YYYY-MM-DD') : 'None'}`)
+    setDate(value)
+  }
+  return (
+    <div style={{ width: 400, margin: '100px auto' }}>
+      <DatePicker onChange={handleChange} />
+      <div style={{ marginTop: 16 }}>
+        <Alert message="Selected Date" description={date ? date.format('YYYY-MM-DD') : 'None'} />
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+## 3. 예제2 : Icon
+
+- https://ant.design/components/icon
+
+```sh
+$ npm install --save @ant-design/icons
+```
+
+### 3.1 IconExample
+
+```jsx
+import { SearchOutlined } from '@ant-design/icons'
+import { Button, Tooltip, Space } from 'antd'
+
+export default function IconExample() {
+  return (
+    <Space direction="vertical">
+      <Space wrap>
+        <Tooltip title="search">
+          <Button type="primary" shape="circle" icon={<SearchOutlined />} />
+        </Tooltip>
+        <Button type="primary" shape="circle">
+          A
+        </Button>
+        <Button type="primary" icon={<SearchOutlined />}>
+          Search
+        </Button>
+        <Tooltip title="search">
+          <Button shape="circle" icon={<SearchOutlined />} />
+        </Tooltip>
+        <Button icon={<SearchOutlined />}>Search</Button>
+      </Space>
+      <Space wrap>
+        <Tooltip title="search">
+          <Button shape="circle" icon={<SearchOutlined />} />
+        </Tooltip>
+        <Button icon={<SearchOutlined />}>Search</Button>
+        <Tooltip title="search">
+          <Button type="dashed" shape="circle" icon={<SearchOutlined />} />
+        </Tooltip>
+        <Button type="dashed" icon={<SearchOutlined />}>
+          Search
+        </Button>
+        <Button icon={<SearchOutlined />} href="https://www.google.com" />
+      </Space>
+    </Space>
+  )
+}
+```
