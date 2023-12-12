@@ -15,7 +15,8 @@
     "type": "separator",
     "title": "3. Data Fetching"
   },
-  "rest": "REST",
+  "rest": "REST-API란?",
+  "react-query": "REST-React-Query",
   "graphql": "GraphQL",
   "-- 4. Router 라이브러리 --": {
     "type": "separator",

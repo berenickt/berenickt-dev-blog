@@ -1,0 +1,227 @@
+---
+title: '02-빠른 시작 및 개발도구'
+date: 2023/12/11
+---
+
+## 1. 빠른 시작
+
+React Query는 3가지 핵심 개념을 가진다.
+- `Queries`   (데이터 질문과 관련된 것, (데이터 있는지 질문(=조회)))
+- `Mutations` (데이터 변화와 관련된 것, (생성, 수정, 삭제))
+- `Query Invalidation` (query가 유효한지 검증)
+
+[CodesandBox Example](https://codesandbox.io/p/devbox/tanstack-query-example-react-simple-lskn7u?embed=1&file=%2Fsrc%2Findex.jsx%3A12%2C38)
+
+```tsx
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
+import { getTodos, postTodo } from '../my-api'
+
+// Create a client
+const queryClient = new QueryClient()
+
+function App() {
+  return (
+    // Provide the client to your App
+    <QueryClientProvider client={queryClient}>
+      <Todos />
+    </QueryClientProvider>
+  )
+}
+
+function Todos() {
+  // Access the client
+  const queryClient = useQueryClient()
+
+  // Queries
+  const query = useQuery({ queryKey: ['todos'], queryFn: getTodos })
+
+  // Mutations
+  const mutation = useMutation({
+    mutationFn: postTodo,
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ['todos'] })
+    },
+  })
+
+  return (
+    <div>
+      <ul>
+        {query.data?.map((todo) => (
+          <li key={todo.id}>{todo.title}</li>
+        ))}
+      </ul>
+
+      <button
+        onClick={() => {
+          mutation.mutate({
+            id: Date.now(),
+            title: 'Do Laundry',
+          })
+        }}
+      >
+        Add Todo
+      </button>
+    </div>
+  )
+}
+
+render(<App />, document.getElementById('root'))
+```
+
+---
+
+## 2. 개발도구(Devtools)
+
+React Query는 전용 devtools와 함께 제공한다.
+
+> 2024.12.12 기준
+> 
+> 현재 devtools는 React Native를 지원하지 않습니다. <br />
+> 또한 DevTools를 사용하여 Queries를 관찰할 수 있지만, Mutations은 관찰 불가능 <br />
+> https://tanstack.com/query/latest/docs/react/devtools#install-and-import-the-devtools
+
+
+---
+
+### 2.1 설치
+
+devtools는 설치해야 하는 별도의 패키지이다.
+
+```bash
+$ npm i @tanstack/react-query-devtools
+# or
+$ pnpm add @tanstack/react-query-devtools
+# or
+$ yarn add @tanstack/react-query-devtools
+```
+
+Next 13+ App Dir의 경우, 작동하려면 dev 종속성으로 설치해야 한다.
+
+다음과 같이 devtools를 가져올 수 있다.
+
+```tsx
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+```
+
+---
+
+### 2.2 플로팅(Floating) Mode
+
+- 플로팅 모드는 화면 모서리에 토글을 제공해서, devtools를 표시하거나 숨기는 기능
+- 이 토글 상태는 다시 로드할 떄, localStorage에 저장되고 기억됨
+- React 앱에서 가능한 최상단에 배치할 수록 잘 작동함 (e.g. 페이지 root 파일)
+
+```tsx
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      {/* The rest of your application */}
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  )
+}
+```
+
+---
+
+### 2.3 Devtools 옵션
+
+ReactQueryDevtools의 옵션은 공식문서 참고
+
+- https://tanstack.com/query/latest/docs/react/devtools#options
+
+---
+
+### 2.4 production(실제 운영환경) 구간에서 Devtools
+
+Devtools는 프로덕션 빌드 단계에서 제외된다. <br />
+그러나 프로덕션 단계에서 devtools를 지연 로드하는 것이 바람직할 수 있음.
+
+```tsx
+import * as React from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { Example } from './Example'
+
+const queryClient = new QueryClient()
+
+const ReactQueryDevtoolsProduction = React.lazy(() =>
+  import('@tanstack/react-query-devtools/build/modern/production.js').then(
+    (d) => ({
+      default: d.ReactQueryDevtools,
+    }),
+  ),
+)
+
+function App() {
+  const [showDevtools, setShowDevtools] = React.useState(false)
+
+  React.useEffect(() => {
+    // @ts-ignore
+    window.toggleDevtools = () => setShowDevtools((old) => !old)
+  }, [])
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Example />
+      <ReactQueryDevtools initialIsOpen />
+      {showDevtools && (
+        <React.Suspense fallback={null}>
+          <ReactQueryDevtoolsProduction />
+        </React.Suspense>
+      )}
+    </QueryClientProvider>
+  )
+}
+
+export default App
+```
+
+이를 통해 window.toggleDevtools()를 호출하면, devtools 번들을 다운로드하여 표시함
+
+---
+
+### 2.5 최신 번들러
+
+번들러가 패키지 내보내기를 지원하는 경우 다음 가져오기 경로를 사용할 수 있습니다.
+
+```tsx
+const ReactQueryDevtoolsProduction = React.lazy(() =>
+  import('@tanstack/react-query-devtools/production').then((d) => ({
+    default: d.ReactQueryDevtools,
+  })),
+)
+```
+
+TypeScript의 경우 TypeScript v4.7 이상이 필요한 tsconfig에서 `moduleResolution: 'nodenext'` 설정해야 한다.
+
+---
+
+## 3. 타 라이브러리와 비교
+
+- react-query팀에서 편향되지 않도록 노력해서 타 라이브러리와 비교했다고 함
+- https://tanstack.com/query/latest/docs/react/comparison
+- 하단에 `github에서 이 페이지 편집 버튼`을 눌러 정보가 편향되지 않도록 수정 가능함
+
+아이콘 별 의미
+- ✅ : 지원됨
+- 🟡 : 지원O, 비공식
+- 🔶 : 지원O, 문서화O, but 구현 시 추가 사용자 코드 필요
+- 🛑 : 지원O, 문서화X
+
+- React Query
+- SWR
+- Apollo Client
+- RTK-Query
+- React Router
+
+각자 react-query 공식문서 보고, 뭐가 좋은지 자기 상항에 맞게 판단하면 된다.

@@ -135,3 +135,21 @@ code.text-\[\.9em\] {
 strong {
   color: palevioletred;
 }
+
+/* 내가 작성한 cumstom 부분 */
+.nx-border-neutral-200\/70 {
+  border-color: rgba(71, 71, 71, 0.7) !important;
+}
+
+.nx-border-gray-300 {
+  --tw-border-opacity: 1;
+  border-color: #396aaa !important;
+}
+
+:is([dir=ltr] .ltr\:nx-border-l-2) {
+  border-left-width: 4px !important;
+}
+
+.nx-italic {
+  font-style: none !important;
+}
