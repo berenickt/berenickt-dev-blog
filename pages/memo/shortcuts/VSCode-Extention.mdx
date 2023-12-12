@@ -3,7 +3,7 @@ title: 'vscode - extention 쓰는 것 정리'
 date: 2023/01/20
 ---
 
-# 1. 기본
+## 1. 기본
 
 - [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)⭐
 - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)⭐
@@ -24,7 +24,7 @@ date: 2023/01/20
 
 ---
 
-# 2. 번역
+## 2. 번역
 
 - [korToEng](https://marketplace.visualstudio.com/items?itemName=jaehyeon48.kortoeng) : 변수 지을 떄, ⭐
 
@@ -38,9 +38,9 @@ date: 2023/01/20
 
 ---
 
-# 3. 설정(User.setting.json)
+## 3. 설정(User.setting.json)
 
-## 주석 색 변경, 이탤릭체 해제
+### 3.1 주석 색 변경, 이탤릭체 해제
 
 ```json
 /* 주석 색상, litalic font 해제 설정 */
@@ -152,35 +152,34 @@ date: 2023/01/20
     "settings": { "fontStyle": " " } // 주석과 키워드, 파라미터에 적용된 이탤릭 폰트스타일 해제
   }
 ],
-"comments": "#5b9463" // 주석 색상변경
+"comments": "##5b9463" // 주석 색상변경
 ```
 
 ---
 
-## 괄호 색상
+### 3.2 괄호 색상
 
 옵션에 bracket pair 다 키기
-
 괄호 색상 커스터마이징
 
 ```json
 {
   "editor.bracketPairColorization.enabled": true,
   "workbench.colorCustomizations": {
-    "editorBracketHighlight.foreground1": "#5caeef",
-    "editorBracketHighlight.foreground2": "#dfb976",
-    "editorBracketHighlight.foreground3": "#c172d9",
-    "editorBracketHighlight.foreground4": "#4fb1bc",
-    "editorBracketHighlight.foreground5": "#97c26c",
-    "editorBracketHighlight.foreground6": "#abb2c0",
-    "editorBracketHighlight.unexpectedBracket.foreground": "#db6165"
+    "editorBracketHighlight.foreground1": "##5caeef",
+    "editorBracketHighlight.foreground2": "##dfb976",
+    "editorBracketHighlight.foreground3": "##c172d9",
+    "editorBracketHighlight.foreground4": "##4fb1bc",
+    "editorBracketHighlight.foreground5": "##97c26c",
+    "editorBracketHighlight.foreground6": "##abb2c0",
+    "editorBracketHighlight.unexpectedBracket.foreground": "##db6165"
   }
 }
 ```
 
 ---
 
-## 전체 세팅
+### 3.3 전체 세팅
 
 ```json
 {
@@ -319,7 +318,7 @@ date: 2023/01/20
         "settings": { "fontStyle": " " } // 주석과 키워드, 파라미터에 적용된 이탤릭 폰트스타일 해제
       }
     ],
-    "comments": "#5b9463" // 주석 색상변경
+    "comments": "##5b9463" // 주석 색상변경
   },
   "prettier.semi": false,
   "markdown-preview-github-styles.lightTheme": "dark",
@@ -330,7 +329,7 @@ date: 2023/01/20
 
 ---
 
-# 4. 코드편집
+## 4. 코드편집
 
 - 문(if, try)으로 감쌀려는 코드를 드래그한 후 `Ctrl + Shipft + P` 누르고, surround 검색
   - if, try 문 등을 감쌀 떄(wrap) 사용
@@ -339,7 +338,7 @@ date: 2023/01/20
 
 ---
 
-# 5. 마크다운
+## 5. 마크다운
 
 - [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one)
 - [Markdown+Math](https://marketplace.visualstudio.com/items?itemName=goessner.mdmath)
@@ -348,7 +347,7 @@ date: 2023/01/20
 
 ---
 
-# 6. 테마 및 아이콘
+## 6. 테마 및 아이콘
 
 - 테마
   - [Atom Material Theme](https://marketplace.visualstudio.com/items?itemName=tobiasalthoff.atom-material-theme)⭐
@@ -364,7 +363,7 @@ date: 2023/01/20
 
 ---
 
-# 7. HTML, CSS
+## 7. HTML, CSS
 
 - [Auto Rename Tag](https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-rename-tag) : 자동으로 태그 열고 닫고 해주는 확장툴
 - [Auto Close Tag](https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-close-tag) : HTML 같은 앞의 태그의 이름을 지정하면 뒤에 태그도 자동으로 바꿔주는 확장툴
@@ -380,7 +379,7 @@ date: 2023/01/20
 
 ---
 
-# 8. JS
+## 8. JS
 
 - [Code Runner](https://marketplace.visualstudio.com/items?itemName=formulahendry.code-runner)
 - [Console Ninja](https://marketplace.visualstudio.com/items?itemName=WallabyJs.console-ninja)
@@ -390,14 +389,14 @@ date: 2023/01/20
 
 ---
 
-# 9. Git
+## 9. Git
 
 - [Git Graph](https://marketplace.visualstudio.com/items?itemName=mhutchie.git-graph)
 - [Gitmoji](https://marketplace.visualstudio.com/items?itemName=seatonjiang.gitmoji-vscode)
 
 ---
 
-# 10. React / Native
+## 10. React / Native
 
 - [Auto Import ES6, TS, JSX, TSX](https://marketplace.visualstudio.com/items?itemName=NuclleaR.vscode-extension-auto-import)
 - [ES7+ React/Redux/React-Native snippets](https://marketplace.visualstudio.com/items?itemName=dsznajder.es7-react-js-snippets)
@@ -409,26 +408,26 @@ date: 2023/01/20
 
 ---
 
-# 11. TailwindCSS
+## 11. TailwindCSS
 
 - [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
 - [Tailwind CSS Highlight](https://marketplace.visualstudio.com/items?itemName=ellreka.tailwindcss-highlight)
 
 ---
 
-# 12. Styled-components
+## 12. Styled-components
 
 - [vscode-styled-components](https://marketplace.visualstudio.com/items?itemName=styled-components.vscode-styled-components)
 
 ---
 
-# 13. C/C++
+## 13. C/C++
 
 - [Clang-Format](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format)
 
 ---
 
-# 13. 정신건강/재미
+## 13. 정신건강/재미
 
 - [vscode-pets](https://marketplace.visualstudio.com/items?itemName=tonybaloney.vscode-pets)
   - VScode 탐색기 밑에 VS Code Pets로 동물들보며 멘탈잡게 도와줌

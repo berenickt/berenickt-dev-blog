@@ -1,61 +1,21 @@
 {
-  "-- error --": {
+  "-- 개발관련 --": {
     "type": "separator",
-    "title": "error"
+    "title": "개발관련"
   },
-  "Error-MutationTuple": "Error-MutationTuple",
-  "Error-React-props-DOM": "Error-React-props-DOM",
-  "-- Link --": {
+  "error": "error",
+  "blog": "blog",
+  "cheatsheet": "cheatsheet",
+  "shortcuts": "shortcuts",
+  "-- 영어 --": {
     "type": "separator",
-    "title": "Link"
-  },
-  "Link-Collection": "Web 디자인 관련 Link 모음",
-  "Program-Tool-Collection": "다이어그램 툴 모음",
-  "-- VSCode --": {
-    "type": "separator",
-    "title": "VSCode"
-  },
-  "VSCode-Extention": "VSCode-Extention",
-  "VSCode-Shortcuts": "VSCode-Shortcuts",
-  "-- english --": {
-    "type": "separator",
-    "title": "english"
+    "title": "영어"
   },
   "english": "english",
-  "-- memo --": {
+  "-- 기타 잡다한것 --": {
     "type": "separator",
-    "title": "memo"
+    "title": "기타 잡다한것"
   },
-  "wisesaying": "좋아하는 글귀들",
-  "7-habits-top-developers": "상위 1% 엔지니어의 7가지 간단한 습관",
-  "-- blog --": {
-    "type": "separator",
-    "title": "blog"
-  },
-  "start_blog_with_nextra": "nextra 블로그 만들기",
-  "nextra-built-ins": "nextra Built-ins",
-  "Hexo-404": "Hexo-404-error",
-  "DevBlog-Type": "개발 블로그 종류",
-  "-- CheatSheet --": {
-    "type": "separator",
-    "title": "CheatSheet"
-  },
-  "CheatSheet-Git": "CheatSheet-Git",
-  "CheatSheet-GitHub": "CheatSheet-GitHub",
-  "CheatSheet-JS-DataAlgo-Ref": "CheatSheet-JS-DataAlgo-Ref",
-  "CheatSheet-Linux": "CheatSheet-Linux",
-  "-- 회고 --": {
-    "type": "separator",
-    "title": "회고"
-  },
-  "TIL-2023-03": "TIL-2023-03",
-  "TIL-2023-04": "TIL-2023-04",
-  "Philosophy-01": "나를 정의하는 질문",
-  "Experience-IGP": "Experience-IGP",
-  "-- 독서 --": {
-    "type": "separator",
-    "title": "독서"
-  },
-  "Reading-Other-01": "타분야 책 추천",
-  "Info-Reading-Book-Tip": "기술서적 공부법"
+  "experience": "experience",
+  "others": "others"
 }
