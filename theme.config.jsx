@@ -33,7 +33,7 @@ export default {
       <meta name="msapplication-TileColor" content="#ffffff" />
       <meta name="theme-color" content="#ffffff" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta httpEquiv="Content-Language" content="en" />
+      <meta httpEquiv="Content-Language" content="ko" />
       <meta name="description" content="Welcome to berenickt's blog!" />
       <meta name="og:description" content="Welcome to berenickt's blog!" />
       <meta name="twitter:card" content="summary_large_image" />
@@ -72,6 +72,18 @@ export default {
     navigation: {
       prev: true,
       next: true
+    },
+    // @see https://nextra.site/docs/docs-theme/theme-configuration#sidebar
+    sidebar: {
+      titleComponent({ title, type }) {
+        if (type === 'separator') {
+          return <span className="cursor-default">{title}</span>
+        }
+        return <>{title}</>
+      },
+      // @see https://nextra.site/docs/docs-theme/theme-configuration#menu-collapse-level
+      defaultMenuCollapseLevel: 1,
+      toggleButton: true
     },
     // @see https://nextra.site/docs/docs-theme/theme-configuration#footer
     footer: {
