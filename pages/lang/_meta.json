@@ -11,12 +11,12 @@
     "title": "JavaScript & TypeScript"
   },
   "js": "JavaScript",
-  "js-dom": "js-dom",
+  "js-dom": "JS-DOM",
   "ts": "TypeScript",
   "-- others --": {
     "type": "separator",
     "title": "others"
   },
-  "python": "python",
-  "java": "java"
+  "python": "Python",
+  "java": "Java"
 }

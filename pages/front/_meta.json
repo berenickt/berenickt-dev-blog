@@ -52,14 +52,17 @@
   "jest": "Jest",
   "cypress": "Cypress",
   "react-test-lib": "React Test Lib(RTL)",
-  "-- 9. 3D & 시각화 --": {
+  "storybook": "Storybook",
+  "-- 9. 3D & 인터랙티브 --": {
     "type": "separator",
-    "title": "9. 3D"
+    "title": "9. 데이터 시각화 & 인터랙티브 웹"
   },
-  "d3js": "D3.js",
   "canvas": "Canvas",
+  "d3js": "D3.js",
+  "chartjs": "Chart.js",
+  "web-gl": "WebGL",
   "threejs": "Three.js",
-  "-- 10. 모바일 웹앱 --": {
+  "-- 10. 크로스 모바일 앱 --": {
     "type": "separator",
     "title": "10. 모바일 웹앱"
   },
@@ -69,5 +72,17 @@
     "type": "separator",
     "title": "11. 데스크탑 앱"
   },
-  "electron": "Electron"
+  "electron": "Electron",
+  "-- 12. 네이티브 앱 --": {
+    "type": "separator",
+    "title": "12. 네이티브 앱"
+  },
+  "android": "Android",
+  "ios": "IOS",
+  "-- 13. 기타 --": {
+    "type": "separator",
+    "title": "13. 기타"
+  },
+  "web-rtc": "WebRtc-영상",
+  "tensorflow": "TensorFlow-인공지능"
 }
