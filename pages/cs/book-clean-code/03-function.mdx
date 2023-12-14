@@ -97,8 +97,6 @@ public void pay(@RequestBody CardPaymentDto.PaymentRequest req) {
 
 둘 다 추상화된 인터페이스에 의존하도록 한다.
 
-![Clean_Code_3_7](img/Clean_Code_3_7.png)
-
 ```java
 class PaymentController {
 	@RequestMapping(value = "/payment", method = RequestMethod.POST)
