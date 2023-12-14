@@ -1,0 +1,143 @@
+---
+title: '07-Queries'
+date: 2023/12/14
+---
+
+# Queries
+
+## 1. Query Basics
+
+query는 (unique key와 결합된,) (비동기 데이터 소스에) 선언적 종속성이다. <br />
+프로미스 기반의 method(GET, POST)로 서버로부터 data를 fetch할 수 있다. <br />
+만약 서버의 데이터를 수정해야 한다면, Mutations를 대신 사용하는 것을 권장한다.
+
+너의 컴포넌트나 커스텀 훅에서 query를 구독하기 위해서는, 최소한 다음과 같이 useQuery를 호출해라.
+
+- query를 위한 unique key
+- 다음과 같은 promise를 반환하는 함수
+    - resolves the data, or
+    - throws an error
+
+```tsx
+import { useQuery } from '@tanstack/react-query'
+
+function App() {
+  const info = useQuery({ queryKey: ['todos'], queryFn: fetchTodoList })
+}
+```
+
+너가 제공하는 unique key는 너의 query들이 앱 전체에서 refetching, caching, sharing하기 위해 내부적으로 사용된다.
+
+useQuery에서 반환된 쿼리 결과에는 () 포함되어 있다. <br />
+(템플릿에 필요한 query 및 기타 데이터 사용에 대한 모든 정보가,):
+
+```tsx
+const result = useQuery({ queryKey: ['todos'], queryFn: fetchTodoList })
+```
+
+`result` 객체에는 몇가지 생산성을 위한 아주 중요한 상태가 포함되어 있다. <br />
+query는 주어진 순간(given moment)에 다음 중 하나의 상태만 가질 수 있다.
+
+- `isLoading` or `status === 'loading'` - 쿼리에 아직 데이터가 없는
+- `isError` or `status === 'error'` - 쿼리에 오류가 발생
+- `isSuccess` or `status === 'success'` - 쿼리가 성공했으며, 데이터 사용 가능
+
+위와 같은 주요한 상태 말고도, 쿼리 상태에 따라 더 많은 정보를 사용할 수 있다.
+
+- `error` - query가 `isError` 상태면, `error` 속성을 통해 오류를 사용 가능
+- `data` - query가 isSuccess 상태면, `data` 속성을 통해 데이터를 사용 가능
+- `isFetching` - 어떤 상태이든, query가 언제든지 fetch 중이면(background refetching 포함해서), `isFetching`이 true가 됨
+
+대부분의 query의 경우, 일반적으로 `isPending` 상태를 확인하기 충분하다. <br />
+그런 다음, `isError` 상태를 확인하고, <br />
+그 다음 마지막으로, 데이터를 사용할 수 있다고 가정하고, 성공 상태를 렌더링합니다:
+
+
+```tsx
+function Todos() {
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ['todos'],
+    queryFn: fetchTodoList,
+  })
+
+  if (isPending) {
+    return <span>Loading...</span>
+  }
+
+  if (isError) {
+    return <span>Error: {error.message}</span>
+  }
+
+  // We can assume by this point that `isSuccess === true`
+  return (
+    <ul>
+      {data.map((todo) => (
+        <li key={todo.id}>{todo.title}</li>
+      ))}
+    </ul>
+  )
+}
+```
+
+만약 booleans이 네 것이 아니라면, 너는 항상 `status 상태`를 사용할 수도 있다:
+
+```tsx
+function Todos() {
+  const { status, data, error } = useQuery({
+    queryKey: ['todos'],
+    queryFn: fetchTodoList,
+  })
+
+  if (status === 'pending') {
+    return <span>Loading...</span>
+  }
+
+  if (status === 'error') {
+    return <span>Error: {error.message}</span>
+  }
+
+  // also status === 'success', but "else" logic works, too
+  return (
+    <ul>
+      {data.map((todo) => (
+        <li key={todo.id}>{todo.title}</li>
+      ))}
+    </ul>
+  )
+}
+```
+
+또한 TypeScript는 데이터 타입을 올바르게 좁힌다. 만약 데이터에 접근하기 전에, `pending` 및 `error`를 확인했다면, 
+
+
+---
+
+## 2. FetchStatus(fetch 상태들)
+
+`status` 필드 외에도, 추가적으로 다음의 옵션들을 지닌 `fetchStatus` 속성도 있다.
+
+- `fetchStatus === 'fetching'` - query가 현재 데이터 가져오기 중
+- `fetchStatus === 'paused'` - query가 데이터를 가져오려 했지만, 일시중지됨. 자세한 내용은 [네트워크 모드 페이지](https://tanstack.com/query/latest/docs/react/guides/network-mode) 참고
+- `fetchStatus === 'idle'` - query가 현재 아무 작업도 수행하지 않음
+
+---
+
+## 3. 왜 다른 상태가 2개냐?
+
+백그라운드 refetches와 오래된 검증 로직은 모든 status와 fetchStatus을 위한 조합을 만들 수 있다.
+예를 들면:
+- `success 상태`의 query는 일반적으론 `idle` fetchStatus이지만, 백그라운드 refetch가 발생했을때, `fetching`에도 있을 수 있다.
+- 마운트되고 데이터가 없는 query는 일반적으로 `pending`과 `fetching` fetchStatus지만, 네트워크 연결이 없는 경우 `paused`될 수도 있습니다.
+
+따라서 실제로 데이터를 가져오지 않고도, query가 `pending` 상태에 있을 수 있음을 명심하자!
+
+- `status`는 `data`에 대한 정보를 제공한다. 데이터가 있는지 없는지?
+- `fetchStatus`는 `queryFn`의 정보를 제공한다. 지금 실행되고 있는지 아닌지?
+
+---
+
+## 4. 더 알아보기
+
+상태 확인을 수행하는 다른 방법은 커뮤니티 리소스를 참조하십시오
+- [react-query아에서 상태 체크, 4-status-checks-in-react-query](https://tanstack.com/query/latest/docs/react/community/tkdodos-blog#4-status-checks-in-react-query)
+
