@@ -1,0 +1,36 @@
+---
+title: '10-Query Options'
+date: 2023/12/14
+---
+
+# Query Options
+
+`queryKey`와 `queryFn`을 여러 곳 사이에 공유하면서도 <br />
+서로 같은 위치에 둘 수 있는 가장 좋은 방법 중 하나는 `queryOptions` 도우미(helper)를 사용하는 것이다. <br />
+런타임에, 이 도우미는 전달하는 모든 것을 반환할 뿐이지만, TypeScript와 함께 사용하면 많은 이점을 얻을 수 있다. 
+Query에 대해 가능한 모든 옵션을 한 곳에서 정의할 수 있으며, <br />
+모든 타입에 대한 타입 추론 및 타입 안전성도 얻을 수 있다.
+
+```tsx
+import { queryOptions } from '@tanstack/react-query'
+
+function groupOptions(id: number) {
+  return queryOptions({
+    queryKey: ['groups', id],
+    queryFn: () => fetchGroups(id),
+    staleTime: 5 * 1000,
+  })
+}
+
+// usage:
+
+useQuery(groupOptions(1))
+useSuspenseQuery(groupOptions(5))
+useQueries({
+  queries: [groupOptions(1), groupOptions(2)],
+})
+queryClient.prefetchQuery(groupOptions(23))
+queryClient.setQueryData(groupOptions(42).queryKey, newGroups)
+```
+
+`Infinite Queries`의 경우 `infiniteQueryOptions`이라는 별도의 도우미를 사용할 수 있다.

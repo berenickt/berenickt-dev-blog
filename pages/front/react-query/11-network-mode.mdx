@@ -1,0 +1,82 @@
+---
+title: '11-Network Mode'
+date: 2023/12/14
+---
+
+# Network Mode
+
+TanStack Query는 네트워크 연결이 없는 경우 query와 mutation이 어떻게 동작해야 하는지 구분하기 위해 3가지 다른 네트워크 모드를 제공한다. <br />
+네트워크 모드는 query/Mutation마다 개별적으로 설정할 수도 있고, <br />
+query/mutation 기본값을 통해 전역적으로 설정할 수도 있다.
+
+TanStack Query는 데이터 가져오기(fetching) 라이브러리와 결합된 데이터 가져오기(fetching )에 가장 자주 사용되므로, <br />
+기본 네트워크 모드는 온라인입니다.
+
+---
+
+## 1. Network Mode: online
+
+이 모드에서는 네트워크에 연결되어 있지 않으면 query/mutation가 발생하지 않는다. <br />
+online 모드가 기본 모드이다. <br />
+만약 query에 대해 fetch가 시작되면, (네트워크 연결이 없기 때문에) fetch를 수행할 수 없는 경우, <br />
+항상 상태(pending, error, success)로 머무른다. <br />
+그러나 fetchStatus가 추가적으로 노출되면, 다음 중 하나가 될 수 있습니다:
+
+- `fetching` : queryFn이 실제로 실행 중이다. - 요청이 대기 중(in-flight)
+- `paused` : query가 실행되고 있지 않다. - 다시 연결될 때까지 일시 중지
+- `idle` : query를 가져오지 않고, 일시 중지되지도 않음
+
+`isFetching`과 `isPaused` 플래그들은 이 상태에서 파생되어, 편의상 노출됩니다.
+
+> 로딩 스피너를 보여주기 위해 `pending` 상태를 확인하는 것으로는 충분하지 않을 수 있다는 점을 명심해라. <br />
+> query는 `state: 'pending'` 상태일 수 있지만, `fetchStatus: 'paused'`일 수 있다. <br />
+> 만약 처음 마운트하는 경우라면, 네트워크 연결이 없다.
+
+사용자가 온라인 상태이기 때문에 query가 실행되지만, <br />
+fetch가 진행 중인 동안에 오프라인 상태가 되면, TanStack Query도 재시도 메커니즘을 일시 중지한다. <br />
+일시 중지된 query는 네트워크 다시 연결되면 그 이후부터 이어서 실행됩니다. <br /> 
+이는 `refetchOnReconnect`(이 모드에서는 기본적으로 `true`이기도 함)와는 무관하며, <br /> 
+이는 `refetch`가 아니라 `continue`이기 때문입니다. <br />
+그 사이에 query가 취소되었다면, 계속하지 fetch하지 않습니다.
+
+---
+
+## 2. Network Mode: always
+
+이 모드에서 TanStack Query는 항상 fetchgkau, 온라인/오프라인 상태를 무시한다. <br />
+이 모드는 () 선택하려는 모드일 가능성이 높습니다. <br />
+(TanStack Query를 사용한다면,) <br />
+(query가 작동하기 위해 네트워크 연결이 필요하지 않은 환경에서,) <br />
+e.g., `AsyncStorage`를 읽거나, `queryFn`에서 `Promise.resolve(5)`를 반환하려는 경우
+
+- Queries는 `paused`되지 않는다 (네트워크에 연결되어 있지 않기 때문에)
+- 재시도도 일시 중지되지 않습니다 - query가 실패하면, `error` 상태가 된다.
+- 이 모드에서 `refetchOnReconnect`는 기본적으로 `false`로 설정된다. 
+  - 왜냐하면 네트워크 재연결은 더 이상 오래된(stale) query를 refetch하는 건 좋은 지표가 아니기 때문이다. 
+  - 그러나 원한다면 이를 켜둘 수 있다.
+
+---
+
+## 3. Network Mode: offlineFirst
+
+이 모드는 첫 번째 두 옵션 사이의 절충안으로,  <br />
+TanStack Query는 queryFn을 한 번 실행한 후에 재시도를 일시 중지합니다.  <br />
+이 모드는 [오프라인 우선 PWA](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Tutorials/js13kGames/Offline_Service_workers)에서와 같이 캐싱을 위해 요청을 가로채는 serviceWorker가 있는 경우나  <br />
+[Cache-Control 헤더](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Tutorials/js13kGames/Offline_Service_workers)를 통해 HTTP 캐싱을 사용하는 경우에 매우 유용합니다.
+
+---
+
+## 4. Devtools
+
+TanStack Query Devtools는 쿼리가 데이터를 가져와야 하지만 네트워크 연결이 없는 경우 
+쿼리를 일시 중지된 상태로 표시합니다. 또한 오프라인 동작을 모의하는 토글 버튼이 있습니다. 
+이 버튼은 실제로 네트워크 연결을 방해하지는 않지만(이는 브라우저 개발도구에서 할 수 있습니다),
+OnlineManager를 오프라인 상태로 설정합니다.
+
+---
+
+## 4. Signature(특징, 대표)
+
+`networkMode: 'online' | 'always' | 'offlineFirst'`
+- optional(옵션)
+- defaults to 'online'

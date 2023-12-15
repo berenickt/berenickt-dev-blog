@@ -62,26 +62,33 @@
   "chartjs": "Chart.js",
   "web-gl": "WebGL",
   "threejs": "Three.js",
-  "-- 10. 크로스 모바일 앱 --": {
+  "-- 10. 번들러 --": {
     "type": "separator",
-    "title": "10. 모바일 웹앱"
+    "title": "10. 번들러"
+  },
+  "webpack": "webpack",
+  "vite": "vite",
+  "turbopack": "turbopack",
+  "-- 11. 크로스 플랫폼 앱 --": {
+    "type": "separator",
+    "title": "11. 크로스 플랫폼 앱"
   },
   "react-native": "React Native",
   "flutter": "Flutter",
-  "-- 11. 데스크탑 앱 --": {
+  "-- 12. 데스크탑 앱 --": {
     "type": "separator",
-    "title": "11. 데스크탑 앱"
+    "title": "12. 데스크탑 앱"
   },
   "electron": "Electron",
-  "-- 12. 네이티브 앱 --": {
+  "-- 13. 네이티브 앱 --": {
     "type": "separator",
-    "title": "12. 네이티브 앱"
+    "title": "13. 네이티브 앱"
   },
   "android": "Android",
   "ios": "IOS",
-  "-- 13. 기타 --": {
+  "-- 14. 기타 --": {
     "type": "separator",
-    "title": "13. 기타"
+    "title": "14. 기타"
   },
   "web-rtc": "WebRtc-영상",
   "tensorflow": "TensorFlow-인공지능"
