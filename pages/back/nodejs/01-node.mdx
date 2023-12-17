@@ -1,0 +1,148 @@
+---
+title: '01-Node.js'
+date: 2023/12/17
+---
+
+## 1. Node.js란?
+
+### 1.1 자바스크립트를 실행하려면?
+
+컴퓨터에서 자바스크립트를 실행할 수 있나요? <br />
+자바스크립트를 브라우저에서는 실행할 수 있습니다. <br />
+하지만 브라우저가 없다면? 자바스크립트 실행할 수 없습니다. <br />
+
+cf. 브라우저에는 이미 자바스크립트 엔진이 있기에 자바스크립트를 실행할 수 있습니다.
+
+> A JavaScript engine is **a software component that executes JavaScript code**. The first JavaScript engines were mere interpreters, but all relevant modern engines use just-in-time compilation for improved performance. JavaScript engines are typically developed by web browser vendors, and every major browser has one.
+>
+> JavaScript 엔진은 JavaScript 코드를 실행하는 소프트웨어 구성 요소입니다. 최초의 JavaScript 엔진은 단순한 interpreter 였지만, 모든 관련 최신 엔진은 성능 향상을 위해 Just-In-Time 컴파일을 사용합니다. JavaScript 엔진은 일반적으로 웹 브라우저 공급업체에서 개발하며 모든 주요 브라우저에 하나가 있습니다.
+
+---
+
+### 1.2 컴퓨터가 소스 코드를 이해하려면?
+
+컴퓨터 프로세서는 오직 0과 1만 이해할 수 있기 때문에 우리가 작성한 소스 코드를 머신 코드로 변환해 줘야 합니다. <br />
+이 변환 과정은 `컴파일`과 `인터프리터`를 통해 일어납니다.
+
+- `Interpreter` : 실행할 때마다 한줄 씩 번역
+- `Compiler` : 사람이 작성한 코드를 한번에 기계어로 변환
+
+---
+
+### 1.3 JIT Compiliation (Just In Time)
+
+초기에 자바스크립트 엔진은 그저 Interpreter 였다면 현재는 JIT Compiliation을 이용하고 있습니다. <br />
+왜냐하면 Interpreter 언어는 컴파일 되는 다른 언어보다 한줄 한줄 해석하고 실행하기 때문에 매우 느리기 때문입니다. <br />
+하지만 현재 웹에서는 지도 기능등 굉장히 Heavy한 기능들도 수행하고 있기에, 현재는 더 나은 퍼포먼스를 위해서 JIT 컴파일을 이용하고 있습니다.
+
+> In computing, just-in-time (JIT) compilation (also dynamic translation or run-time compilations)[1] is a way of executing computer code that involves compilation **during execution of a program** (at run time) **rather than before execution**.
+>
+> JIT compilation is **a combination** of the two traditional approaches to translation to machine code—**ahead-of-time compilation (AOT)**, and **interpretation**—and combines some advantages and drawbacks of both.
+>
+> -wikipedia
+
+---
+
+### 1.4 자바스크립트를 엔진의 종류
+
+Google의 V8은 가장 많이 사용되는 JavaScript 엔진입니다. <br />
+SpiderMonkey는 Firefox 및 해당 포크에서 사용하기 위해 Mozilla에서 개발했습니다. <br />
+JavaScriptCore는 Apple의 Safari 브라우저용 엔진입니다. 다른 WebKit 기반 브라우저에서도 사용합니다. <br />
+Chakra는 Internet Explorer 브라우저의 엔진입니다. 또한 원래 Edge 브라우저용으로 Microsoft에 의해 분기되었지만, <br />
+Edge는 나중에 Chromium 기반 브라우저로 재구축되어 현재 V8을 사용합니다.
+
+| Chrome            | V8             |
+| ----------------- | -------------- |
+| Firefox           | SpiderMonkey   |
+| Safari            | JavascriptCore |
+| Internet Explorer | Charkra        |
+
+---
+
+## 2. Node.js 역사
+
+- 1995년, Netscape 브라우저가 JavaScript를 소개
+- 2008년, Web 2.0, Google이 Chrome 브라우저 발표, Chrome 브라우저는 JS엔진으로 V8엔진을 사용
+  - V8엔진 덕분에 JS 속도가 빨라짐
+- 2009년, Ryan Dahi가 Node.js 창시
+  - 브라우저 외부에서 V8엔진을 사용해 JS를 실행시키기 위해서 만듬
+  - 자바스크립트를 브라우저 밖에서 이용하려면? Node.js를 사용한다.
+
+---
+
+## 3. Node.js Runtime
+
+### 3.1 Runtime이란?
+
+- `런타임` : 프로그래밍 언어가 실행되는 환경을 의미
+- Node.js나 크롬 등의 여러 브라우저들에서 JS가 구동되기에 Node.js나 브라우저들도 JS 런타임이다.
+- Node.js는 프로그래밍 언어도 프레임워크도 아닌 JS 런타임이다.
+
+```
+Runtime Enviroment----------------------------------------
+
+v8  ---> Node.js API ---> Node.js bindings ---> libuv
+
+^ V8    : js코드 실행
+^ libuv : db접근, 파일 읽디 등 v8이 다루는 것 이외에는 libuv가 처리
+^ Node.js API : 파일 시스템이나, crypto 암호화 처리 등의 API
+              : API는 JS로 작성된 것도 있지만, C++나 C로 되어있음
+----------------------------------------------------------
+```
+
+v8이 코드를 해석하고 Node.js APIs들 중 하나의 함수를 호출하고, <br />
+Node.js 바인딩을 통해서 libuv에 의해서 원하는 작업을 처리하게 합니다.
+
+---
+
+## 4. Node.js 설치
+
+- https://nodejs.org/en
+
+```bash
+node --version # node 버전 확인
+node  # node 환경 진입
+.exit # node 환경 빠져나오기 (혹은 Ctrl + C를 2번 해주면 된다.)
+```
+
+---
+
+### 4.1 REPL
+
+```
+READ(읽기), EVAL(평가), PRINT(출력)를 반복
+```
+
+- `REPL(Read-Eval(evaluation)-Print Loop)`
+  - 사용자가 특정 코드를 입력하면, 그 코드를 평가하고 코드의 실행결과를 출력해주는 것을 반복해주는 환경
+- REPL 환경은 간단한 JS 코드 등을 즉석에서 실행해 결과를 확인해볼 떄 사용
+
+---
+
+## 5. Browser API & Node.js API
+
+- 둘 다 모두 사용하는 대표적인 API가 `console API`가 있다.
+- cf. Node.js는 V8엔진을 사용해 최신 ECMAScript 기준으로 계속 업데이트하기에 최신 JS 문법을 사용할 수 있다.
+- 브라우저 API인 `window 객체` 사용
+  - 브라우저에서 제공하는 객체로 Node.js repi 환경에서 사용 불가능
+- Node.js API인 `Process 객체` 사용
+  - node.js에서 제공해주는 객체일뿐, 브라우저에서 사용 불가능
+
+아예 다른 API
+
+| 브라우저 API                                     | Node.js API |
+| ------------------------------------------------ | ----------- |
+| window                                           | global      |
+| document                                         | process     |
+| history(브라우저 히스토리)                       | module      |
+| location(브라우저 현재위치, url 등)              | filename    |
+| navigator(현재 사용중인 브라우저에 대한 정보 등) | require()   |
+
+비슷한 API들(Node.js가 브라우저의 Convention을 따르는 것)
+
+| 브라우저 API | Node.js API |
+| ------------ | ----------- |
+| url          | url         |
+| settimeout   | settimeout  |
+
+브라우저 API와 Node.js API 간의 간격을 줄이려고 노력함

@@ -1,0 +1,90 @@
+---
+title: '02-Node.js 내부'
+date: 2023/12/17
+---
+
+# Node.js 런타임 내부 동작
+
+```
+Runtime Enviroment----------------------------------------
+
+v8  ---> Node.js API ---> Node.js bindings ---> libuv
+
+^ V8    : js코드 실행
+^ libuv : db접근, 파일 읽디 등 v8이 다루는 것 이외에는 libuv가 처리
+^ Node.js API : 파일 시스템이나, crypto 암호화 처리 등의 API
+              : API는 JS로 작성된 것도 있지만, C++나 C로 되어있음
+----------------------------------------------------------
+```
+
+## 1. 인터넷에 어떤 파일을 다운받으면?
+
+```
+Node.js  ---> JS로 다운 요청 보냄 ---> Node.js Http module API 사용 --->
+Node.js Binding을 통해 libuv로 할일 전달 --->
+libuv를 통해서 파일을 다운로드 (이 시간 동안에 자바스크립트는 다른 일을 할 수 있음) --->
+window, mac, Linux 파일 시스템 같은걸 처리하는 방법이 다 다른데 libuv가 이런 다른 부분도 핸들링해줌 --->
+작업이 끝났다면 node.js가 가져옴
+```
+
+---
+
+## 2. Node.js 오픈소스 보기
+
+- https://github.com/nodejs/node
+- https://github.com/nodejs/node/tree/main/lib
+  - Node.js API의 JavaScript 부분(console, http, os, path, process)
+  - 각각의 파일들은 Node.js 공식문서에 있는 Node.js API를 정의함
+- https://github.com/nodejs/node/tree/main/src
+  - Node.js의 Binding처리를 해주는 C++ 부분
+  - JavaScript와 C++을 연결해줌
+  - 만약 어떤 파일을 열고자 한다면? `fs.open()` API를 사용
+
+---
+
+## 3. libuv
+
+- https://libuv.org/
+- https://github.com/libuv/libuv
+- 비동기 input과 output에 포커스를 둔 멀티 플랫폼(Window, Mac, Linux) 지원 라이브러리
+- 이벤트 루프를 기반으로 하는 비동기 I/O에 대한 지원을 제공하는 다중 플랫폼 C 라이브러리
+- 주로 Node.js에서 사용하도록 개발되었지만, Julia, Luvit, pyuv 등과 같은 다른 도구에서도 사용됨
+  - 각 OS별로 가장 빠른 비동기 IO 인터페이스로 통일된 코드로 돌릴 수 있는 장점이 존재
+  - https://github.com/libuv/libuv/tree/v1.x/src
+  - unix -> mac, linux 처리
+  - win -> window 처리
+- 해당 라이브러리는 파일 시스템, DNS, 네트워크, 파이프, 신호처리, 폴링 및 스트리밍을 처리하는 메커니즘을 제공
+- cf. `IO`는 input과 output의 약어로 입력과 출력을 간단히 줄여서, 입출력이라 함
+  - 입출력은 컴퓨터 내부 또는 외부의 장치와 프로그램 간의 데이터를 주고받는 것을 말함
+
+원래 UNIX와 Window간의 파일 컨트롤 방법이 다르지만, 이런 식으로 libuv에서 서로 compatible하게 해주므로, <br />
+노드를 사용하는 개발자는 따로 신경쓰지 않고, 사용 OS에서 같은 방법으로 사용할 수 있다.
+
+---
+
+## 4. 비동기와 동기
+
+- `동기(synchronous, 시간을 맞춤)`
+  - 대학생 되는 법
+    - 고등학교 1학년
+    - 고등학교 2학년
+    - 고등학교 3학년
+    - 대학교 가기
+- `비동기(asynchronous, 시간을 맞추지 않음)`
+  - 취직하는 법
+    - 토익 공부
+    - 자격증 취득
+    - 영어 공부
+    - 취업
+
+![동기-비동기](https://velog.velcdn.com/images/dorazi/post/dadf63e9-5994-4967-bc3f-ca0bc173897c/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202020-03-31%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%202.29.45.png)
+
+`동기`는 먼저 이전의 것이 끝나야 다음 것을 할 수 있지만, <br />`
+비동기`는 1번을 하면서 2번을 할 수 있고, 3, 4번도 할 수 있다.
+
+JS의 문법 중에 `async, await` 문법을 사용하는 이유는 **비동기 요청인데 동기처럼 사용하기 위해서** 이다.
+첫번쨰 요청이 끝나야지, 다음 2번쨰 요청을 하기 위해서이다.
+
+---
+
+### 4.1
