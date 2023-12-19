@@ -2,3 +2,458 @@
 title: '04-Node.js 패키지 관리'
 date: 2023/12/17
 ---
+
+## 1. npm이란?
+
+```
+⎯⎯⎯⎯⎯⎯⎯⎯ NPM ⎯⎯⎯⎯⎯⎯⎯⎯⎯
+⎸    레지스트리 모듈들이 저장되어있는 곳   ⎸
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+        ▲
+        ⎸ npm install  ⎸
+        ⎸              ⎸
+        ⎸              ⎸
+        ⎸              ⎸ 2. 모듈 내려 받기
+                      ▼
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+⎸             앱                  ⎸
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+```
+
+- `npm(node package manager)` : 오픈 소스 Node.js 프로젝트 게시를 위한 온라인 리포지토리(저장소)
+- 패키지 설치, 버전 관리 및 종속성 관리를 지원하는 해당 저장소와 상호 작용하기 위한 명령줄 유틸리티
+
+---
+
+## 2. 앱에 npm package 설치
+
+```bash
+$ npm init -y # package.json 파일 생성
+$ npm install axios # axios package 설치
+```
+
+```js
+const axios = require('axios')
+
+axios
+  .get('https://naver.com')
+  .then(response => {
+    console.log(response)
+  })
+  .catch(error => {
+    console.log(error)
+  })
+```
+
+---
+
+## 3. node_modules 폴더란?
+
+node_modules 디렉터리에는 **package.json에 있는 모듈**뿐만 아니라, <br />
+package.json에 있는 **모듈이 의존하고 있는 모듈 전부**를 포함하고 있다.
+
+axios를 설치된 패키지 폴더를 살펴보면, 그 안에 또 `pacakge.json`이 설치된 걸 볼 수 있다. <br />
+마찬가지로, form-data안에도 또 `package.json`이 있다.
+
+```json
+// axios 모듈의 pacakge.json
+"dependencies": {
+  "follow-redirects": "^1.15.0",
+  "form-data": "^4.0.0",
+  "proxy-from-env": "^1.1.0"
+}
+```
+
+---
+
+## 4. Semantic Versioning
+
+```json
+// axios 모듈의 pacakge.json
+"dependencies": {
+  "follow-redirects": "^1.15.0",
+  "form-data": "^4.0.0",
+  "proxy-from-env": "^1.1.0"
+}
+```
+
+보는 것과 같이 노드 패키지들의 버전은 세 자리로 되어있다. <br />
+이는 세 자리가 모두 의미가 있다는 뜻의 `Semantic Versioning`이라고 하며, 줄여서 `SemVer`이라고도 한다.
+
+> cf. `Semantic(시멘틱)` : 프로그래밍에서 시멘틱은 코드조각을 의미한다
+
+버전 번호 `MAJOR.MINOR.PATCH`가 주어지면 다음을 증가시킨다.
+
+1. **호환되지 않는 API 변경 시** `MAJOR 버전`
+2. 이전 버전과 호환되는 방식으로 **기능을 추가하는 경우**의 `마이너 버전`
+3. 이전 버전과 호환되는 **버그 수정 시** `PATCH 버전`
+
+시험판 및 빌드 메타데이터에 대한 추가 레이블은 `MAJOR.MINOR.PATCH` 형식의 확장으로 사용할 수 있다.
+
+---
+
+### 4.1 틸드(`~`)
+
+**patch 버전까지만 설치 또는 업데이트**한다. <br />
+틸드는 **현재 지정한 버전의 마지막 자리 내의 범위에서만** 자동으로 업데이트합니다.
+
+- **~0.0.1** >= `0.0.1 < 0.1.0`
+- **~0.1.1** >= `0.1.1 < 0.2.0`
+- **~0.1** >= `0.1.0 < 0.2.0`
+- **~0** >= `0.0 < 1.0`
+
+버전을 명시했을 때 위와 같은 범위 내에서 자동으로 업데이트합니다.
+
+---
+
+### 4.2 캐럿
+
+**minor 버전까지만 설치 또는 업데이트**한다.
+
+캐럿은 Node.js 모듈이 Sematic Versioning의 규약을 따른다는 것을 신뢰한다는 가정하에서 동작하며, <br />
+그러기에 **MINOR나 PATCH버전은 하위 호환성이 보장되므로 그 내에서는** 자동으로 업데이트합니다.
+
+- **^1.0.5** >= `1.0.5 < 2.0`
+- **^1.0** >= `1.0.0 < 2.0`
+- **^1** >= `1.0.0 < 2.0`
+
+**버전이 1.0.0 미만인** 경우에는 예외사항.
+
+- ^0.1.4 >= `0.1.4 < 0.2.0`
+- ^0.1 >= `0.1.0 < 0.2.0`
+- ^0.0.1 == `0.0.1`
+
+소프트웨어 1.0 버전 전에는 API 변경이 계속 일어납니다. <br />
+그래서 0.3을 쓰다가 0.4를 사용하면 API가 호환이 안될수 있습니다. <br />
+그래서 **0.x.x에서는 지정한 버전 자릿수 내에서만** 업데이트합니다.
+
+---
+
+## 5. package-lock.json
+
+- `package-lock.json`은 **생성되는 시점의 의존성 트리(node_modules)에 대한 정보**를 가지고 있는 파일을 의미
+- cf. https://docs.npmjs.com/cli/v6/configuring-npm/package-lock-json
+
+```json
+// package.json
+  "dependencies": {
+    "axios": "^1.6.2"
+  }
+```
+
+```json
+// package-lock.json
+"node_modules/axios": {
+  "version": "1.6.2",
+  "resolved": "https://registry.npmjs.org/axios/-/axios-1.6.2.tgz",
+  "integrity": "sha512-7i24Ri4pmDRfJTR7LDBhsOTtcm+9kjX5WiY1X3wIisx6G9So3pfMkEiU7emUBe46oceVImccTEM3k6C5dbVW8A==",
+  "dependencies": {
+    "follow-redirects": "^1.15.0",
+    "form-data": "^4.0.0",
+    "proxy-from-env": "^1.1.0"
+  }
+},
+```
+
+---
+
+### 5.1 package-lock.json 파일을 사용하는 이유
+
+- 이 파일은 소스 리포지토리에 커밋하기 위한 것이며 다양한 용도로 사용된다.
+- 팀원, 배포 및 지속적 통합이 정확히 동일한 종속성을 설치하도록 보장하는 종속성 트리의 단일 표현을 설명한다.
+- 사용자가 디렉토리 자체를 커밋하지 않고도, `node_modules`의 이전 상태로 "시간 여행"할 수 있는 기능을 제공한다.
+- 읽을 수 있는 소스 제어 `diff`를 통해 트리 변경 사항을 더 쉽게 볼 수 있다.
+- 그리고 npm이 이전에 설치된 패키지에 대해 반복되는 메타데이터 확인을 건너뛸 수 있도록 하여 설치 프로세스를 최적화한다.
+
+```json
+// package.json
+"dependencies": {
+  "axios": "^1.6.2",
+  "lodash": "^1.1.3" // 버전의 범위
+}
+```
+
+```json
+// package-lock.json
+"node_modules/lodash": {
+  "version": "1.3.1", // 버전의 범위 안에서 설치된 결과
+  "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz",
+  "integrity": "sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg=="
+},
+```
+
+- 이렇게 버전의 범위 안에서 설치가 되면 현재는 1.3.1 버전이 설치되지만,
+  - lodash의 버전이 업데이트된 상태로 publish가 된 후에,
+  - 동일한 `package.json` 파일로 `npm install`을 실행했을 경우,
+  - 원래 버전이 아닌, 새로 업데이트된 버전으로 lodash로 설치가 됩니다.
+- 이렇게 A는 1.3.1을 사용하고 이 `package.json` 파일을 이용해서
+  - 설치한 다른 사람은 다른 버전으로 사용하기에,
+  - 만약 서로 버전에서 소스코드가 호환이 안된다면 에러가 나게 되고 다른 모듈과 버전 충돌이 일어날 수도 있다.
+  - 이러한 문제를 해결하기 위해서 `package-lock.json`을 사용한다.
+
+---
+
+### 5.2 resolved
+
+```json
+// package-lock.json
+"node_modules/lodash": {
+  "version": "1.3.1",
+  "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz",
+  "integrity": "sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg=="
+},
+```
+
+- 번들 종속성의 경우 소스에 관계없이 포함되지 않습니다.
+- 레지스트리 소스의 경우 **레지스트리 URL과 관련된 tarball의 경로**입니다.
+- tarball URL이 레지스트리 URL과 동일한 서버에 있지 않으면, 완전한 URL입니다.
+
+---
+
+### 5.3 integrity
+
+이것은 이 자원에 대한 [표준 하위 자원 무결성](https://w3c.github.io/webappsec-subresource-integrity/)입니다.
+
+- 번들 종속성의 경우 소스에 관계없이 포함되지 않다.
+- 레지스트리 소스의 경우 이것은 레지스트리가 제공한 무결성이거나 shasum에서 SHA1을 제공하지 않은 경우다.
+- git 소스의 경우 이것은 우리가 복제한 특정 커밋 해시이다.
+- 원격 tarball 소스의 경우 이는 파일의 SHA512를 기반으로 하는 무결성이다.
+- 로컬 tarball 소스의 경우: 이것은 파일의 SHA512를 기반으로 하는 무결성 필드이다.
+
+---
+
+## 6. npm audit
+
+- `audit 명령`은 프로젝트에 구성된 `종속성(dependencies)`에 대한 설명을 기본 레지스트리에 제출하고,
+  - **알려진 취약성에 대한 보고서를 요청**한다.
+- `취약점(vulnerabilities)`이 발견되면, **영향과 적절한 교정이 계산**됩니다.
+  - fix 인수가 제공되면 수정 사항이 패키지 트리에 적용됩니다.
+
+```json
+"dependencies": {
+  "axios": "^0.20.0",
+  "lodash": "^1.1.0"
+}
+```
+
+일부러 버전 정보를 낮추고, `npm adult`작성해보세요.
+
+```bash
+$ npm audit # 가지고 있는 Dependencies들의 취약성을 발견해주는 명령어
+# npm audit report
+
+axios  <=1.5.1
+Severity: high
+Axios vulnerable to Server-Side Request Forgery - https://github.com/advisories/GHSA-4w2v-q235-vp99
+Axios Cross-Site Request Forgery Vulnerability - https://github.com/advisories/GHSA-wf5p-g6vw-rhxx
+axios Inefficient Regular Expression Complexity vulnerability - https://github.com/advisories/GHSA-cph5-m8f7-6c5x
+fix available via `npm audit fix --force`
+Will install axios@1.6.2, which is a breaking change
+node_modules/axios
+
+lodash  <=4.17.20
+Severity: critical
+Regular Expression Denial of Service (ReDoS) in lodash - https://github.com/advisories/GHSA-x5rq-j2xg-h7qm
+Prototype Pollution in lodash - https://github.com/advisories/GHSA-fvqr-27wr-82fm
+Prototype Pollution in lodash - https://github.com/advisories/GHSA-jf85-cpcp-j695
+Command Injection in lodash - https://github.com/advisories/GHSA-35jh-r3h4-6jhm
+Prototype Pollution in lodash - https://github.com/advisories/GHSA-4xc9-xhrj-v574
+Regular Expression Denial of Service (ReDoS) in lodash - https://github.com/advisories/GHSA-29mw-wpgm-hmr9
+fix available via `npm audit fix --force`
+Will install lodash@4.17.21, which is a breaking change
+node_modules/lodash
+
+2 vulnerabilities (1 high, 1 critical)
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+$ npm audit fix --force
+```
+
+`npm audit fix --force`를 입력해 모듈 버전 정보를 교정한다.
+
+```bash
+$ npm audit fix --force # 잘못된 모듈 버전 정보를 교정
+npm WARN using --force Recommended protections disabled.
+npm WARN audit Updating axios to 1.6.2, which is a SemVer major change.
+npm WARN audit Updating lodash to 4.17.21, which is a SemVer major change.
+
+added 7 packages, changed 2 packages, and audited 11 packages in 1s
+
+1 package is looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+```
+
+---
+
+## 7. npm install -g
+
+```bash
+$ npm install -g
+```
+
+패키지를 전역(Global)으로 설치하려면, `-g` flag 를 사용하면 됩니다. <br />
+전역으로 설치된 패키지는 디렉터리에 관계없이 작동합니다.
+
+---
+
+### 7.1 nodemon
+
+nodemon은 디렉토리의 **파일 변경이 감지되면 노드 응용 프로그램을 자동으로 다시 시작**하여, <br />
+Node.js 기반 응용 프로그램을 개발하는 데 도움이 되는 도구입니다.
+
+nodemon은 코드나 개발 방법을 추가로 변경할 필요가 없습니다. nodemon은 노드의 대체 래퍼입니다. <br />
+nodemon을 사용하려면 **스크립트를 실행할 때 명령줄에서 node라는 단어를 바꾸면** 됩니다. <br />
+e.g.) `node index.js` => `nodemon index.js`
+
+### 7.2 로컬로 설치
+
+```bash
+npm install nodemon --save-dev
+```
+
+다음 스크립트를 `package.json`에 추가
+
+```json
+"scripts": {
+  "start": "node request.js",
+  "dev": "nodemon request.js",
+  "test": "echo \"Error: no test specified\" && exit 1"
+},
+```
+
+nodemon으로 실행 후 소스 코드 변경
+
+```bash
+npm run dev
+```
+
+---
+
+### 7.3 전역으로 설치
+
+```bash
+npm install -g nodemon # nodemon 전역으로 설치
+nodemon request.js # nodemon으로 실행
+```
+
+---
+
+## 8. Yarn
+
+> Yarn is a package manager for your code. It allows you to use and share code with other developers from around the world. Yarn does this quickly, securely, and reliably so you don't ever have to worry.
+>
+> \- Yarn 은 페이스북에서 만든 자바스크립트 패키지 매니저입니다.
+
+- Npm 을 이용해서 할수도 있지만 Yarn을 이용해서도 Package들을 관리할수있습니다.
+- (패키지 관리를 위해서 Npm 혹은 Yarn을 선택해서 사용하면 됩니다.)
+
+npm 은 노드 js를 설치할 때 같이 설치해서 따로 설치하지 않아도 되지만 yarn 은 따로 설치를 해줘야 합니다. <br />
+npm 을 이용해서 yarn을 설치해줄 수 있습니다.
+
+```bash
+npm install -g yarn
+```
+
+---
+
+### 8.1 Yarn VS Npm
+
+원래는 npm 만을 사용하면서 패키지 관리를 했지만, Facebook에서 프로젝트가 커질수록 npm 의 단점들(보안 및 성능 문제)에 대응하기 위해서 새로운 패키지 매니저인 Yarn 을 개발하게 되었습니다. 그러니 Yarn은 같은 패키지 매니저이지만 npm 보다 속도와 보안에서 더 향상된 성능을 가지고 있습니다.
+
+#### 8.1.1 yarn은 패키지 병렬 설치함
+
+- Npm 은 패키지들을 설치할 때 설치하는 패키지를 다 설치하고 다 된 후에 다른 패키지를 순차적으로 실행하게 됩니다.
+- 하지만 Yarn 은 병렬로 패키지를 설치하기 때문에 더 빠르게 설치할 수 있습니다.
+
+---
+
+### 8.2 yarn.lock 파일
+
+- `npm`으로 패키지들을 설치하면, `package-lock.json` 파일을 생성하는 것처럼
+- `yarn`으로 패키지를 설치하면, `yarn.lock` 잠금 파일을 생성하게 됩니다.
+- `package-lock.json` 파일에 패키지를 최초 설치할 당시 패키지 버전들이 들어있는 것처럼
+  - `yarn.lock`에도 최초 패키지 추가 시에 버전이 들어있게 됩니다.
+- 그래서 `yarn.lock` 파일이 있다면 registry에 패키지의 더 최신 버전이 있어도
+  - `yarn install`로 패키지를 설치할 때, `yarn.lock`에 있는 버전을 사용하게 됩니다.
+  - 그래서 패키지 버전 문제를 최소화할 수 있게 됩니다.
+
+---
+
+### 8.3 향상된 보안
+
+Yarn은 패키지를 다운로드하는 동안 백그라운드 프로세스로 보안 검사를 수행한다.
+패키지 라이센스 정보를 사용하여 악성 스크립트를 다운로드하거나 종속성 충돌을 일으키지 않도록 한다.
+
+yarn, npm 모두 암호화 프로토콜을 사용하여 안전한 데이터 전송을 보장한다. <br />
+Yarn은 체크섬으로 패키지를 확인하는 반면, <br />
+NPM은 package-lock.json 파일에 저장된 SHA-512(Secure Hash Algorithm)를 사용한다.
+
+checksum은 전송 또는 저장 중에 발생할 수 있는 오류에 대해 데이터를 확인하는 데 사용되는 문자 및 숫자이다. <br />
+데이터를 전송할 때 보낸 사람은 알고리즘을 사용하여, <br />
+데이터의 checksum을 계산한 다음 수신된 데이터의 체크섬과 비교합니다.
+
+> 비록 이렇게 Yarn 이 더 향상된 보안과 성능을 가지고 있지만, <br />
+> npm도 yarn이 나온 이후로는 많은 버전 업데이트로 예전보다는 빠른 성능과 더 나은 보안을 가지게 되었습니다.
+>
+> e.g. npm의 보안이 큰 문제였지만 버전 6부터 NPM은 패키지를 설치할 때마다 보안 감사를 수행합니다. <br />
+> 이렇게 하면 취약성을 방지하고 충돌하는 종속성이 없는지 확인할 수 있습니다.
+>
+> 또한 `npm audit` 명령을 사용하여 수동 감사를 실행할 수도 있습니다. <br />
+> NPM에서 취약점이 발견되면 `npm audit fix`을 사용하여 문제를 해결하면 됩니다.
+
+---
+
+### 8.4 yarn 명령어
+
+```bash
+# (1) yarn init 명령어를 이용해서 package.json 파일을 생성
+$ yarn init
+
+# (2) yarn 혹은 yarn install로 package.json 파일에 명시된 모든 dependencies를 설치
+$ yarn install
+
+# (3) --force 플래그를 이용해서 강제로 모든 패키지를 추가
+$ yarn install --force
+
+# (4) add 명령으로 패키지를 설치
+$ yarn add
+# - yarn add [package]
+# - yarn add [package]@[version]
+# - yarn add [package]@[tag]
+
+# (5) --dev 플래그를 사용해서 devDependencies에 패키지를 추가
+$ yarn add --dev
+
+# (6) 전역으로 패키지를 설치해서 다른 프로젝트에서도 해당 패키지를 이용하려면 global을 이용
+yarn global add (yarn global remove)
+# - yarn global add nodemon
+
+# (7) 모든 의존 패키지(dependencies)를 package.json에 정의한 버전의 범위에서 업데이트
+$ yarn upgrade
+# 그렇지만 모든 패키지를 일괄적으로 업그레이드시키면 호환성이 문제로 conflict가 발생할 수 있다.
+# 그래서 아래처럼 하나씩 해주실 수 있다.
+$ yarn upgrade axios@^1.1.2
+
+# (8) yarn remove를 이용해서 특정 패키지를 제거
+# 이렇게 해서 package.json 과 yarn.lock 에서 동시에 제거
+$ yarn remove
+
+# (9) script에 지정해준 명령어를 이용해서 실행
+$ yarn run [script]
+# "scripts": {
+#   "start": "react-scripts start",
+#   "build": "react-scripts build",
+#   "test": "react-scripts test",
+#   "eject": "react-scripts eject"
+# },
+```
+
+---
+
+### 8.5 주의 사항
+
+패키지 관리를 위해서 yarn 과 npm 이 두개를 하나의 프로젝트에서 혼합해서 사용하면, <br />
+패키지 충돌 오류가 날 수 있기 때문에 하나의 프로젝트에는 하나의 패키지 매니저를 정해서 사용하는 게 좋습니다!
