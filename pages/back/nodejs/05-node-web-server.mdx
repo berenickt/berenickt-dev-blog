@@ -11,31 +11,42 @@ date: 2023/12/17
 
 ![웹서버-브라우저](https://raw.githubusercontent.com/berenickt/image-server/main/img/web-server.png)
 
-웹 서버는 **HTTP(Hypertext Transfer Protocol)를 사용하여 웹 브라우저와 통신**합니다. 대부분의 웹 페이지 콘텐츠는 HTML(Hypertext Markup Language)로 인코딩됩니다. 콘텐츠는 정적(예: 텍스트 및 이미지) 또는 동적(예: 계산된 가격 또는 고객이 구매하도록 표시한 항목 목록)일 수 있습니다. 동적 콘텐츠를 제공하기 위해 대부분의 웹 서버는 비즈니스 논리를 통신으로 인코딩하는 서버 측 스크립팅 언어를 지원합니다. 일반적으로 지원되는 언어에는 ASP(Active Server Pages), Javascript, PHP, Python 및 Ruby가 있습니다.
+웹 서버는 `HTTP(Hypertext Transfer Protocol)`를 사용하여 웹 브라우저와 통신한다.
 
-웹 서버는 일반적으로 요청되는 콘텐츠의 전달 속도를 높이기 위해 콘텐츠를 캐시할 수도 있습니다. 이 프로세스를 웹 가속이라고도 합니다.
+- 대부분의 웹 페이지 콘텐츠는 HTML(Hypertext Markup Language)로 인코딩된다.
+- 콘텐츠는 정적(e.g. 텍스트 및 이미지) 또는 동적일 수 있다.
+- 동적 콘텐츠를 제공하기 위해
+  - 대부분의 웹 서버는 비즈니스 논리를 통신으로 인코딩하는 서버 측 스크립팅 언어를 지원함
+  - e.g.) ASP(Active Server Pages), Javascript, PHP, Python 및 Ruby
+- 웹 서버는 일반적으로 요청되는 콘텐츠의 전달 속도를 높이기 위해 콘텐츠를 캐시할 수도 있다.
+  - 이 프로세스를 웹 가속이라고도 함
 
-브라우저가 웹 서버에서 호스팅되는 파일을 필요로 할 때마다 브라우저는 HTTP를 통해 파일을 요청합니다. 요청이 올바른 (하드웨어) 웹 서버에 도달하면 (소프트웨어) HTTP 서버는 요청을 수락하고 요청된 문서를 찾아 HTTP를 통해 브라우저로 다시 보냅니다. (서버가 요청한 문서를 찾지 못하면 대신 404 응답을 반환합니다.)
+![웹서버-동작과정](https://raw.githubusercontent.com/berenickt/image-server/main/img/web-operation.png)
+
+1. 호스팅되는 파일을 필요로 할 때마다 브라우저는 HTTP를 통해 파일을 요청한다.
+2. 요청이 웹 서버에 도달하면 HTTP 서버는 요청을 수락하고 요청된 문서를 찾아 HTTP를 통해 브라우저로 다시 보낸다.
+   - (서버가 요청한 문서를 찾지 못하면 대신 404 응답을 반환합니다.)
 
 ---
 
 ## 2. HTTP Requests
 
-### 2.1 HTTP란? (Hypertext Transfer Protocol)
+### 2.1 HTTP
 
-HTTP는 HTML 문서와 같은 **리소스들을 가져올 수 있도록 해주는 프로토콜(약속)**입니다. HTTP는 웹에서 이루어지는 **모든 데이터 교환의 기초**이며, 클라이언트-서버 프로토콜이기도 합니다. 클라이언트-서버 프로토콜이란 (보통 웹브라우저인) 수신자 측에 의해 요청이 초기화되는 프로토콜을 의미합니다.
-
-=> 웹 상에서 통신을 할 때 어떤 형식(HTTP)으로 통신을 하자고 정해놓은 약속
+- Hypertext Transfer Protocol의 약어
+- HTML 문서와 같은 **리소스들을 가져올 수 있도록 해주는 프로토콜(약속)**
+- 웹에서 이루어지는 **모든 데이터 교환의 기초**이며, 클라이언트-서버 프로토콜
+- 클라이언트-서버 프로토콜이란 수신자 측(e.g. 웹브라우저)에 의해 요청이 초기화되는 프로토콜을 의미
+- => 웹 상에서 통신을 할 때 어떤 형식(HTTP)으로 통신을 하자고 정해놓은 약속
 
 ---
 
-### 2.2 HTTP Method란?
+### 2.2 HTTP Method
 
-> cf. https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
-
-HTTP 메서드는 수행할 작업의 종류를 나타내기 위해 서버에 보내는 메시지입니다.
-이러한 방법을 사용하면 브라우저와 서버 간의 더 풍부한 통신이 가능합니다.
-가장 일반적으로 사용되는 방법은 GET 및 POST입니다.
+- 수행할 작업의 종류를 나타내기 위해 서버에 보내는 메시지
+- 이러한 방법을 사용하면 브라우저와 서버 간의 더 풍부한 통신이 가능
+- 가장 일반적으로 사용되는 방법은 GET 및 POST
+- cf. https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
 
 | 메서드 | 설명                                                                                   |
 | :----: | -------------------------------------------------------------------------------------- |
@@ -48,24 +59,21 @@ HTTP 메서드는 수행할 작업의 종류를 나타내기 위해 서버에 �
 
 ### 2.3 GET Method
 
-GET 메소드는 URL 매개변수를 사용하여 서버에서 데이터를 요청합니다.
-웹에서 가장 일반적으로 사용되는 HTTP 방법입니다.
-GET 요청 매개변수는 이름-값 쌍으로 형식이 지정됩니다.
+- GET 메소드는 URL 매개변수를 사용하여 서버에서 데이터를 요청한다.
+- 웹에서 가장 일반적으로 사용되는 HTTP 방법
+- GET 요청 매개변수는 `이름-값` 쌍으로 형식이 지정됨
+- e.g. `www.google.com/search?q=nodejs`
+  - 쿼리 매개변수 q를 사용하여 nodejs에 대한 결과를 가져오도록 Google에 지시
+  - 이에 대한 응답으로 Google은 검색 결과가 포함된 페이지를 반환합니다.
 
-**www.google.com/search?q=nodejs
-**
-
-이 예에서는 쿼리 매개변수 q를 사용하여 노드js에 대한 결과를 가져오도록 Google에 지시합니다.
-이에 대한 응답으로 Google은 검색 결과가 포함된 페이지를 반환합니다.
-
-**GET 요청은 다음 사항들을 수행할 수 있습니다.**
+GET 요청은 다음 사항들을 수행할 수 있다.
 
 1. 서버에서 데이터 검색 - 일반적으로 웹 페이지
 2. 길이 제한이 있는 서버로 데이터 보내기
 3. 브라우저 기록에 남음
 4. 캐시가 됨
 
-**GET 요청은 다음 사항들을 수행할 수 없습니다.**
+GET 요청은 다음 사항들을 수행할 수 없다.
 
 1. 민감한 데이터(예: 비밀번호, 신용 카드 정보)를 처리
 2. 서버에서 데이터 수정
@@ -74,24 +82,18 @@ GET 요청 매개변수는 이름-값 쌍으로 형식이 지정됩니다.
 
 ### 2.4 POST Method
 
-POST 메서드는 리소스(종종 데이터베이스 레코드)를 변경하기 위해 서버에 데이터를 보냅니다.
+- POST 메서드는 리소스(종종 데이터베이스 레코드)를 변경하기 위해 서버에 데이터를 보낸다.
+- POST 데이터는 사용자가 볼 수 없는 요청 본문으로 전송된다.
+- POST 요청의 예시 : `POST /posts/1 HTTP/1.1`
 
-POST 데이터는 사용자가 볼 수 없는 요청 본문으로 전송됩니다.
-
-다음은 POST 요청의 예입니다.
-
-```
-POST /posts/1 HTTP/1.1
-```
-
-POST 요청은 다음을 수행할 수 있습니다.
+POST 요청은 다음을 수행할 수 있다.
 
 1. 리소스 데이터, 즉 서버의 데이터 수정
 
 2. 민감한 데이터를 처리하는 데 사용
 3. 길이 제한 없이 데이터 보내기
 
-POST 요청은 다음을 수행할 수 없습니다.
+POST 요청은 다음을 수행할 수 없다.
 
 1. 캐시에 저장
 2. 브라우저 기록에 남기기
@@ -144,6 +146,8 @@ PATCH /users/1
 
 ### 4.1 Request 구조
 
+![Request 구조](https://raw.githubusercontent.com/berenickt/image-server/main/img/http-request-st.png)
+
 1. `Starter line` : http method 종류, request target (url), http version 정보를 담고 있습니다.
 2. `Headers` : `Key:Value` 값으로 해당 request에 대한 추가 정보를 담고 있습니다.
 3. `Body` : 해당 request가 전송하는 데이터가 담겨있는 부분입니다. 전송하려는 데이터가 없다면 비어있게 됩니다.
@@ -163,6 +167,8 @@ PATCH /users/1
 
 ### 4.2 Response 구조
 
+![Response 구조](https://raw.githubusercontent.com/berenickt/image-server/main/img/http-response.png)
+
 1. `status line` : HTTP version, Status Code, Status Text 을 나타냅니다.
 2. `headers` : Request의 headers와 동일합니다.
    - 하지만 Response Headers에서만 쓰이는 값도 있습니다.
@@ -176,6 +182,12 @@ PATCH /users/1
 |  WWW-Authenticate  | 사용자 인증이 필요한 자원을 요구할 시, 서버가 제공하는 인증 방식     |
 | Proxy-Authenticate | 요청한 서버가 프락시 서버인 경우 유저 인증을 위한 값                 |
 |     Set-Cookie     | 서버 측에서 클라이언트에게 세션 쿠키 정보를 설정 (RFC 2965에서 규정) |
+
+![Response 구조](https://raw.githubusercontent.com/berenickt/image-server/main/img/http-naver-1.png)
+
+![Response 구조](https://raw.githubusercontent.com/berenickt/image-server/main/img/http-naver-2.png)
+
+![Response 구조](https://raw.githubusercontent.com/berenickt/image-server/main/img/http-naver-3.png)
 
 ---
 
