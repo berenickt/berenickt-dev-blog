@@ -3,4 +3,206 @@ title: '02-Controller'
 date: 2023/12/25
 ---
 
-## 1. NestJS 소개
+## 1. 새 프로젝트 생성
+
+```bash
+nest new .
+# yarn 선택
+```
+
+---
+
+## 2. 포스트 JSON 반환
+
+`app.controller.ts`를 수정
+
+```ts
+import { Controller, Get } from '@nestjs/common'
+import { AppService } from './app.service'
+
+interface Post {
+  author: string
+  title: string
+  content: string
+  likeCount: number
+  commentCount: number
+}
+
+@Controller()
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+
+  @Get()
+  getPost(): Post {
+    return {
+      author: 'newjeans_official',
+      title: '뉴진스 민지',
+      content: '메이크업 고치고 있는 민지',
+      likeCount: 100000,
+      commentCount: 999999,
+    }
+  }
+}
+```
+
+---
+
+## 3. 데코레이터에 Path 추가
+
+`Controller 데코레이터`에다가 path를 넣을 수 있다.
+
+```ts
+import { Controller, Get } from '@nestjs/common'
+import { AppService } from './app.service'
+
+interface Post {
+  author: string
+  title: string
+  content: string
+  likeCount: number
+  commentCount: number
+}
+
+@Controller('post') // 데코레이터에 path 추가
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+
+  @Get()
+  getPost(): Post {
+    return {
+      author: 'newjeans_official',
+      title: '뉴진스 민지',
+      content: '메이크업 고치고 있는 민지',
+      likeCount: 100000,
+      commentCount: 999999,
+    }
+  }
+}
+```
+
+또 다른 방법으로 `get 데코레이터`에다가 넣을 수도 있다.
+
+```ts
+import { Controller, Get } from '@nestjs/common'
+import { AppService } from './app.service'
+
+interface Post {
+  author: string
+  title: string
+  content: string
+  likeCount: number
+  commentCount: number
+}
+
+@Controller()
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+
+  @Get('post') // 데코레이터에 path 추가
+  getPost(): Post {
+    return {
+      author: 'newjeans_official',
+      title: '뉴진스 민지',
+      content: '메이크업 고치고 있는 민지',
+      likeCount: 100000,
+      commentCount: 999999,
+    }
+  }
+}
+```
+
+만약 데코레이터 둘 다 경로를 넣으면, `경로/경로`로 들어가야 된다.
+
+```ts
+import { Controller, Get } from '@nestjs/common'
+import { AppService } from './app.service'
+
+interface Post {
+  author: string
+  title: string
+  content: string
+  likeCount: number
+  commentCount: number
+}
+
+@Controller('post') // 데코레이터에 path 추가
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+
+  @Get('post') // 데코레이터에 path 추가
+  getPost(): Post {
+    return {
+      author: 'newjeans_official',
+      title: '뉴진스 민지',
+      content: '메이크업 고치고 있는 민지',
+      likeCount: 100000,
+      commentCount: 999999,
+    }
+  }
+}
+```
+
+위 코드의 경우에는 `post/post`로 들어가야 한다.
+
+- 왜나하면 `controller 데코레이터`를 붙여준 클래스 안의 모든 엔드포인트들이 path 접두어를 갖고,
+- 그 이후에 `get 데코레이터`를 붙인 함수에 엔드포인트들이 path 접두어를 갖기 때문이다.
+
+---
+
+## 4. posts 모듈 생성
+
+```bash
+# g는 generate의 약자
+nest g resource
+
+? What name would you like to use for this resource (plural, e.g., "users")?
+	posts
+? What transport layer do you use? REST API
+? Would you like to generate CRUD entry points? No
+```
+
+그러면 posts 폴더와 그 안의 폴더들이 자동으로 만들어집니다.
+
+그 후 `posts.controller.ts`의 코드를 다음과 같이 수정하고, <br />
+`app.controller.ts` 코드는 원상복귀시킵니다.
+
+```ts posts.controller.ts
+import { Controller, Get } from '@nestjs/common'
+import { PostsService } from './posts.service'
+
+interface Post {
+  author: string
+  title: string
+  content: string
+  likeCount: number
+  commentCount: number
+}
+
+@Controller('posts')
+export class PostsController {
+  constructor(private readonly postsService: PostsService) {}
+
+  @Get()
+  getPost(): Post {
+    return {
+      author: 'newjeans_official',
+      title: '뉴진스 민지',
+      content: '메이크업 고치고 있는 민지',
+      likeCount: 100000,
+      commentCount: 999999,
+    }
+  }
+}
+```
+
+```ts app.controller.ts
+import { Controller } from '@nestjs/common'
+import { AppService } from './app.service'
+
+@Controller()
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+}
+```
+
+Postman으로 요청보내고 확인하세요.

@@ -1,0 +1,240 @@
+---
+title: '03-Query-Parameters'
+date: 2023/12/25
+---
+
+## 1. REST API 세트
+
+- [GET] https://localhost:3000/posts
+  - 다수의 Post를 가져온다.
+  - Query 사용
+- [GET] https://localhost:3000/posts/11
+  - 11이라는 ID를 갖고있는 Post 하나를 가져온다.
+  - Query 사용
+- [POST] https://localhost:3000/posts
+  - 새로운 POST를 생성한다.
+  - Body 사용
+- [PATCH] https://localhost:3000/posts/8
+  - 8이라는 ID를 갖고있는 Post를 부분 변경한다.
+  - Body 사용
+- [PUT] https://localhost:3000/posts/8
+  - 8이라는 ID를 갖고있는 Post를 변경하거나 생성한다.
+  - Body 사용
+- [DELETE] https://localhost:3000/posts/3
+  - 3이라는 ID를 갖고있는 Post를 삭제한다.
+  - Body 사용
+
+보통 put보다 patch를 주로 쓰긴 한다.
+
+---
+
+## 2. Get Posts 구현
+
+```ts posts.controller.ts
+import { Controller, Get } from '@nestjs/common'
+import { PostsService } from './posts.service'
+
+interface PostModel {
+  id: number
+  author: string
+  title: string
+  content: string
+  likeCount: number
+  commentCount: number
+}
+
+let posts: PostModel[] = [
+  {
+    id: 1,
+    author: 'newjeans_official',
+    title: '뉴진스 민지',
+    content: '메이크업 고치고 있는 민지',
+    likeCount: 100000,
+    commentCount: 999999,
+  },
+  {
+    id: 2,
+    author: 'newjeans_official',
+    title: '뉴진스 혜린',
+    content: '노래 연습하고 있는 혜린',
+    likeCount: 100000,
+    commentCount: 999999,
+  },
+  {
+    id: 3,
+    author: 'blackpink_official',
+    title: '블랙핑크 로제',
+    content: '공연중인 로제',
+    likeCount: 100000,
+    commentCount: 999999,
+  },
+]
+
+@Controller('posts')
+export class PostsController {
+  constructor(private readonly postsService: PostsService) {}
+
+  /*** 1) GET /posts
+   * 모든 post를 다 가져온다
+   */
+  @Get()
+  getPosts() {
+    return posts
+  }
+
+  /*** 2) GET /posts/:id
+   * id에 해당하는 post를 가져온다
+   * e.g. 11이라는 ID를 갖고있는 Post 하나를 가져온다.
+   */
+
+  /*** 3) POST /posts
+   * post를 생성한다
+   */
+
+  /*** 4) PATCH /posts/:id
+   * id에 해당하는 post를 부분 변경한다
+   */
+  /*** 5) DELETE /posts/:id
+   * id에 해당하는 post를 삭제한다
+   */
+}
+```
+
+---
+
+## 3. ID Param을 이용한 Post 조회
+
+```ts posts.controller.ts
+// posts.controller.ts 생략
+/*** 2) GET /posts/:id
+ * id에 해당하는 post를 가져온다
+ * e.g. 11이라는 ID를 갖고있는 Post 하나를 가져온다.
+ */
+// @Param('id') 뜻 : 가져오는 파라미터의 이름은 id이다
+@Get(':id')
+getPost(@Param('id') id: string) {
+  return posts.find(post => post.id === +id)
+}
+```
+
+---
+
+## 4. Not Found Exception 던지기
+
+```ts posts.controller.ts
+// posts.controller.ts 생략
+/*** 2) GET /posts/:id
+ * id에 해당하는 post를 가져온다
+ * e.g. 11이라는 ID를 갖고있는 Post 하나를 가져온다.
+ */
+// @Param('id') 뜻 : 가져오는 파라미터의 이름은 id이다
+@Get(':id')
+getPost(@Param('id') id: string) {
+  const post = posts.find(post => post.id === +id)
+
+  if (!post) {
+    throw new NotFoundException()
+  }
+
+  return post
+}
+```
+
+---
+
+## 5. 기본 제공되는 Exception들
+
+- https://docs.nestjs.com/exception-filters#built-in-http-exceptions
+- NestJS에서 기본제공해주는 Exception들
+- 자주 쓰는 건 위에 맨 위 4개이다.
+  - `BadRequestException`
+  - `UnauthorizedException`
+  - `NotFoundException`
+  - `ForbiddenException`
+
+---
+
+## 6. Post 요청 만들기
+
+```ts posts.controller.ts
+// posts.controller.ts 생략
+/*** 3) POST /posts
+ * post를 생성한다
+ */
+@Post()
+postPosts(
+  @Body('author') author: string, //
+  @Body('title') title: string,
+  @Body('content') content: string,
+) {
+  const post = {
+    id: posts[posts.length - 1].id + 1,
+    author,
+    title,
+    content,
+    likeCount: 0,
+    commentCount: 0,
+  }
+
+  posts = [...posts, post]
+
+  return post
+}
+```
+
+---
+
+## 7. Patch Post 엔드포인트 생성
+
+```ts posts.controller.ts
+// posts.controller.ts 생략
+/*** 4) PATCH /posts/:id
+ * id에 해당하는 post를 부분 변경한다
+ */
+@Patch(':id')
+putPost(
+  @Param('id') id: string, //
+  @Body('author') author?: string, //
+  @Body('title') title?: string,
+  @Body('content') content?: string,
+) {
+  const post = posts.find(post => post.id === +id)
+
+  if (!post) {
+    throw new NotFoundException()
+  }
+  if (author) {
+    post.author = author
+  }
+  if (title) {
+    post.title = title
+  }
+  if (content) {
+    post.content = content
+  }
+  posts = posts.map(prevPost => (prevPost.id === +id ? post : prevPost))
+
+  return post
+}
+```
+
+---
+
+## 8. Delete 엔드포인트 생성
+
+```ts posts.controller.ts
+// posts.controller.ts 생략
+/*** 5) DELETE /posts/:id
+ * id에 해당하는 post를 삭제한다
+ */
+@Delete(':id')
+deletePost(@Param('id') id: string) {
+  const post = posts.find(post => post.id === +id)
+  if (!post) {
+    throw new NotFoundException()
+  }
+
+  posts = posts.filter(post => post.id !== +id)
+  return id
+}
+```
