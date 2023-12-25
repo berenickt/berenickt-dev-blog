@@ -13,10 +13,18 @@
   "js": "JavaScript",
   "js-dom": "JS-DOM",
   "ts": "TypeScript",
-  "-- others --": {
+  "-- 인터프리터 언어 --": {
     "type": "separator",
-    "title": "others"
+    "title": "인터프리터 언어"
   },
   "python": "Python",
-  "java": "Java"
+  "dart": "Dart",
+  "-- 컴파일 언어 --": {
+    "type": "separator",
+    "title": "컴파일 언어"
+  },
+  "java": "Java",
+  "c": "C언어",
+  "cpp": "C++",
+  "rust": "Rust"
 }

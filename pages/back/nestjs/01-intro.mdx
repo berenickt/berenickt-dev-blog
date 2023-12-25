@@ -1,0 +1,249 @@
+---
+title: '01-NestJS 소개'
+date: 2023/12/25
+---
+
+## 1. NestJS 소개
+
+Nest (NestJS) is a framework for building efficient, scalable [Node.js](https://nodejs.org/) server-side applications.
+
+NestJS는 효율적이고 스케일링이 쉬운 NodeJS 서버를 만드는 프레임워크이다.
+
+---
+
+It uses progressive JavaScript, is built with and fully supports [TypeScript](http://www.typescriptlang.org/)
+
+차세대 javascript를 사용하며, Typescript로 만들어졌으면 Typescript를 지원한다.
+
+(yet still enables developers to code in pure JavaScript) and combines elements of OOP (Object Oriented Programming), FP (Functional Programming), and FRP (Functional Reactive Programming).
+
+---
+
+Under the hood, Nest makes use of robust HTTP Server frameworks like [Express](https://expressjs.com/) (the default) and optionally can be configured to use [Fastify](https://github.com/fastify/fastify) as well!
+
+NextJS는 Express같은 견고한 HTTP 서버 프레임워크를 사용하고 있으며 원한다면 Fastify를 대신 사용할 수도 있다.
+
+---
+
+Nest provides an out-of-the-box application architecture which allows developers and teams to create highly testable, scalable, loosely coupled, and easily maintainable applications.
+
+NestJS는 자체적으로 서버 아키텍처를 제공해준다. 그래서 테스트하기 쉽고, 디커플링이 잘 돼있고, 유지보수가 편한 서버를 제작하게 해준다.
+
+-- cf. Nest.js 공식문서 (https://docs.nestjs.com/)
+
+---
+
+## 2. Mac 환경설정
+
+```bash
+node -v
+v18.17.1
+
+npm -v
+9.6.7
+
+sudo corepack enable
+Password:
+
+yarn --version
+1.22.21
+
+sudo npm i -g @nestjs/cli
+```
+
+---
+
+## 3. 기본 Node.js 서버
+
+```js
+// HTTP 모듈을 가져옵니다.
+const http = require('http')
+
+// 서버를 실행할 호스트를 지정 localhost -> 127.0.0.1 -> 서버를 실행한 컴퓨터
+const host = 'localhost'
+
+// 서버가 사용할 포트를 지정
+const port = 3000
+
+/** HTTP 서버를 생성
+ * req -> request  -> 요청
+ * res -> response -> 응답
+ */
+const server = http.createServer((req, res) => {
+  // 응답의 상태 코드와 콘텐츠 유형을 설정
+  res.writeHead(200, { 'Content-Type': 'text/html' })
+  // 응답으로 HTML을 보낸다.
+  res.end('<h1>Hello World</h1>')
+})
+
+// 서버를 실행합니다.
+server.listen(port, host, () => {
+  // 서버가 실행 중임을 콘솔에 기록합니다.
+  console.log('server running on http://localhost:3000')
+})
+```
+
+---
+
+### 3.1 path별로 다른 응답 반환
+
+```js 1_server.js
+const http = require('http')
+const url = require('url')
+
+const host = 'localhost'
+const port = 3000
+
+const server = http.createServer((req, res) => {
+  const path = url.parse(req.url).pathname
+
+  if (path === '/') {
+    res.writeHead(200, { 'Content-Type': 'text/html' })
+    res.end('<h1>Home Page</h1>')
+  } else if (path === '/post') {
+    res.writeHead(200, { 'Content-Type': 'text/html' })
+    res.end('<h1>Post Page</h1>')
+  } else if (path === '/user') {
+    res.writeHead(200, { 'Content-Type': 'text/html' })
+    res.end('<h1>User Page</h1>')
+  } else {
+    res.writeHead(200, { 'Content-Type': 'text/html' })
+    res.end('<h1>404 Page Not Found!</h1>')
+  }
+})
+
+server.listen(port, host, () => {
+  console.log('server running on http://localhost:3000')
+})
+```
+
+---
+
+### 3.2 Express로 REST API 구현
+
+```bash
+yarn init -y
+yarn add express
+```
+
+express를 추가한다.
+
+```js 2_server.js
+// Express 모듈을 가져옵니다.
+const express = require('express')
+
+// Express 객체를 생성합니다.
+const app = express()
+
+/** 종류
+ * app.get()
+ * app.post()
+ * app.delete()
+ * app.put()
+ */
+
+app.get('/', (req, res) => {
+  res.send('<h1>Home Page</h1>')
+})
+
+app.get('/post', (req, res) => {
+  res.send('<h1>Post Page</h1>')
+})
+
+app.get('/user', (req, res) => {
+  res.send('<h1>User Page</h1>')
+})
+
+app.use((req, res) => {
+  res.status(404).send('<h1>404 Page Not Found!</h1>')
+})
+
+// 서버를 시작합니다.
+app.listen(3000, () => {
+  console.log('server running on http://localhost:3000')
+})
+```
+
+node로 위 코드를 실행한다. 3.1절에서 express없이 쓴 코드와 비교해보면 훨씬 간단해진 것을 볼 수 있다.
+
+---
+
+### 3.3 NestJS로 Hello World
+
+nest라고 명령어를 치면 도움말이 나온다.
+
+```bash
+$ nest
+Usage: nest <command> [options]
+
+Options:
+  -v, --version                                   Output the current version.
+  -h, --help                                      Output usage information.
+
+Commands:
+  new|n [options] [name]                          Generate Nest application.
+  build [options] [app]                           Build Nest application.
+  start [options] [app]                           Run Nest application.
+  info|i                                          Display Nest project details.
+  add [options] <library>                         Adds support for an external library to your project.
+  generate|g [options] <schematic> [name] [path]  Generate a Nest element.
+    Schematics available on @nestjs/schematics collection:
+      ┌───────────────┬─────────────┬──────────────────────────────────────────────┐
+      │ name          │ alias       │ description                                  │
+      │ application   │ application │ Generate a new application workspace         │
+      │ class         │ cl          │ Generate a new class                         │
+      │ configuration │ config      │ Generate a CLI configuration file            │
+      │ controller    │ co          │ Generate a controller declaration            │
+      │ decorator     │ d           │ Generate a custom decorator                  │
+      │ filter        │ f           │ Generate a filter declaration                │
+      │ gateway       │ ga          │ Generate a gateway declaration               │
+      │ guard         │ gu          │ Generate a guard declaration                 │
+      │ interceptor   │ itc         │ Generate an interceptor declaration          │
+      │ interface     │ itf         │ Generate an interface                        │
+      │ library       │ lib         │ Generate a new library within a monorepo     │
+      │ middleware    │ mi          │ Generate a middleware declaration            │
+      │ module        │ mo          │ Generate a module declaration                │
+      │ pipe          │ pi          │ Generate a pipe declaration                  │
+      │ provider      │ pr          │ Generate a provider declaration              │
+      │ resolver      │ r           │ Generate a GraphQL resolver declaration      │
+      │ resource      │ res         │ Generate a new CRUD resource                 │
+      │ service       │ s           │ Generate a service declaration               │
+      │ sub-app       │ app         │ Generate a new application within a monorepo │
+      └───────────────┴─────────────┴──────────────────────────────────────────────┘
+```
+
+nest로 새 서버를 만들어보자
+
+```bash
+nest new nestjs_server
+
+# yarn 선택
+# 해당 폴더 위치로 이동
+```
+
+`app.controller.ts` 파일을 수정해줍니다.
+
+```ts app.controller.ts
+import { Controller, Get } from '@nestjs/common'
+import { AppService } from './app.service'
+
+@Controller()
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+
+  @Get()
+  getHome() {
+    return 'Home Page'
+  }
+
+  @Get('post')
+  getPost() {
+    return 'Post Page'
+  }
+
+  @Get('user')
+  getUser() {
+    return 'User Page'
+  }
+}
+```
