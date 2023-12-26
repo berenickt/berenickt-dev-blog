@@ -3,4 +3,92 @@ title: '06-SQL-Docker'
 date: 2023/12/25
 ---
 
-## 1. REST API 세트
+## 1. SQL 기본기
+
+```sql
+# select {column} from {table}
+select id, author, title, content
+from post;
+
+# update {table} set {column} where {condition}
+update post set likeCount = 0
+where id =3;
+
+# delete from {table} where {condition}
+delete from post
+where author = 'newjeans_official';
+
+# insert into {table} {column1, column2, ...}
+# values {value1, value2, ...}
+insert into posts (id, author, title)
+values (7, '나다', '제목');
+```
+
+---
+
+## 2. Docker 이론
+
+개발자들이 가진 컴퓨터, OS가 다 다르기 떄문에, 환경에 따라 코드가 실행이 될 수도 안될 수도 있었다.
+
+Windows, macOS, Linux 등의 환경들을 서로 호환되게 하기 위해서 과거부터 많은 시도들이 있었다. 또 설치 가이드 역시 표준화하여 OS가 달라도 같은 결과를 실행할 수 있게 한다.
+
+---
+
+## 4. Docker 설치
+
+- https://www.docker.com/products/docker-desktop/
+
+---
+
+## 5. Docker-Compose
+
+- https://hub.docker.com/_/postgres
+
+```dockerfile docker-compose.yaml
+# 서비스정의
+services:
+  postgres:
+    image: postgres:15
+    # 실행시마다 재시작
+    restart: always
+    # 도커컴포즈 파일에 존재하는 위치에 실제 데이터를 hostOS에 저장
+    volumes:
+      # 현재 도커컴포즈 파일이 존재하는 경로 : 이미지안에존재하는 경로 매핑
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      # hostport:이미지의포트
+      # 5432포트 요청 -> 이미지의 포트로 요쳥
+      - '5808:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+```
+
+postgres-data 폴더를 만든 다음, 아래 명령어로 docker를 켭니다.
+
+```bash
+docker-compose up
+```
+
+---
+
+## 6. VSC에서 Postersql 확장도구
+
+- https://marketplace.visualstudio.com/items?itemName=ckolkman.vscode-postgres
+
+vscode에서 실행창(cmd + p)로 `postgresql:add Connection` 검색
+
+1. 127.0.0.1
+2. postgres (환경설정에 입력한 유저명)
+3. postgres (환경설정에 입력한 비밀번호)
+4. 5432
+5. standard connection
+6. 포트번호를 잘 설정해서 그냥 enter
+7. nestjs_local_database (연결 이름명 설정)
+
+> 앞으로 실습하려면
+>
+> 1. docker 프로그램 켜고,
+> 2. docker-compose 이미지를 실행(`docker-compose up`)
+> 3. nestjs 프로그램 실행

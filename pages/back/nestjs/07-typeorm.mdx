@@ -3,4 +3,260 @@ title: '07-TypeORM'
 date: 2023/12/25
 ---
 
-## 1. REST API 세트
+## 1. NestJS에 Typeorm 설정
+
+```bash
+yarn add @nestjs/typeorm typeorm pg
+yarn start:dev
+```
+
+`docker-compose up`으로 먼저 켜주고, `yarn start:dev`로 실행시킨다.
+
+```ts app.module.ts
+import { Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
+
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+import { PostsModule } from './posts/posts.module'
+
+@Module({
+  imports: [
+    PostsModule,
+    TypeOrmModule.forRoot({
+      // 데이터베이스 타입
+      type: 'postgres',
+      host: '127.0.0.1',
+      port: 5808,
+      username: 'postgres',
+      password: 'postgres',
+      database: 'postgres',
+      // entities폴더에 작성한 PostsModel 가져오기
+      entities: [],
+      synchronize: true,
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+```
+
+---
+
+## 2. Entity로 테이블 생성
+
+`posts/entities/posts.entity.ts`로 파일을 생성한다.
+
+```ts posts.entity.ts
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+
+@Entity()
+export class PostsModel {
+  @PrimaryGeneratedColumn()
+  id: number
+
+  @Column()
+  author: string
+
+  @Column()
+  title: string
+
+  @Column()
+  content: string
+
+  @Column()
+  likeCount: number
+
+  @Column()
+  commentCount: number
+}
+```
+
+```ts app.module.ts
+// 생략
+import { PostsModel } from './posts/entities/posts.entity'
+
+@Module({
+  imports: [
+    PostsModule,
+    TypeOrmModule.forRoot({
+      // 데이터베이스 타입
+      type: 'postgres',
+      host: '127.0.0.1',
+      port: 5808,
+      username: 'postgres',
+      password: 'postgres',
+      database: 'postgres',
+      // entities폴더에 작성한 PostsModel 가져오기
+      entities: [PostsModel],
+      synchronize: true,
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+```
+
+---
+
+## 3. Repository 주입
+
+- 데이터를 가져오는 일종의 bridge 역할 === Repository
+
+```ts posts.module.ts
+import { Module } from '@nestjs/common'
+import { PostsService } from './posts.service'
+import { PostsController } from './posts.controller'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { PostsModel } from './entities/posts.entity'
+
+@Module({
+  imports: [
+    /*** 모델에 해당하는 repostory를 주입 ==> forFeature
+     * repository : 해당 모델을 다룰 수 있게 해주는 클래스
+     */
+    TypeOrmModule.forFeature([PostsModel]),
+  ],
+  /** 컨트롤러로 사용할 파일을 정의
+   * 컨트롤러로 사용할 파일을 정의,
+   * 특정 path로 요청이 오면 라우팅해주는 역할
+   *
+   * PostsController() ===> 인스턴스화
+   * PostsController ===> 클래스 그 자체
+   * 잘 보면, 인스턴스가 아닌 클래스 그 자체를 넣었다
+   * 왜냐하면 IoC 컨테이너가 인스턴스를 생성, 수정, 삭제하길 바라니까
+   */
+  controllers: [PostsController],
+  /** 컨트롤러에서 주입할 값들을 providers 안에 정의
+   * PostsService는 어떤 역할을 하는지에 대한 정의다.
+   * 데이터를 다루는 로직을 작성하는 클래스 === Service
+   *
+   * 서비스가 아니더라도 주입해야할 클래스들은
+   * 전부 providers 안에 넣어주면 된다.
+   *
+   * porviders 안에 등록된 모든 클래스들은 인스턴스화 없이
+   * IoC 컨테이너가 의존하면서 사용할 수 있게 된다.
+   */
+  providers: [PostsService],
+})
+export class PostsModule {}
+```
+
+```ts posts.service.ts
+// posts.service.ts
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
+import { PostsModel } from './entities/posts.entity'
+
+// 생략
+
+@Injectable()
+export class PostsService {
+  constructor(
+    @InjectRepository(PostsModel)
+    private readonly postsRepository: Repository<PostsModel>,
+  ) {}
+
+  // 생략
+}
+```
+
+---
+
+## 4. Find() 사용해 다수 데이터 가져오기
+
+```ts posts.service.ts
+// posts.service.ts 생략
+async getAllPosts() {
+  return this.postsRepository.find()
+}
+```
+
+---
+
+## 5. FindOne() 사용해 하나의 데이터만 찾기
+
+```ts posts.service.ts
+// posts.service.ts 생략
+async getPostById(id: number) {
+  const post = await this.postsRepository.findOne({
+    // PostsModel의 id가 입력받은 id와 같은지 필터링
+    where: {
+      id,
+    },
+  })
+  if (!post) {
+    throw new NotFoundException()
+  }
+  return post
+}
+```
+
+---
+
+## 6. Create() 사용해 새 데이터 생성하기
+
+```ts posts.service.ts
+/**
+ * 1) create : 저장할 객체를 생성
+ * 2) save   : 객체를 저장 (create aㅔ서드에서 생성한 객체로)
+ */
+async createPost(author: string, title: string, content: string) {
+  const post = this.postsRepository.create({
+    author,
+    title,
+    content,
+    likeCount: 0,
+    commentCount: 0,
+  })
+
+  const newPost = await this.postsRepository.save(post)
+
+  return newPost
+}
+```
+
+---
+
+## 7. Save()로 업데이트하기
+
+```ts posts.service.ts
+/** save의 2가지 기능
+ * 1) 만약에 데이터가 존재하지 않는다면(id 기준) 새로 생성한다.
+ * 2) 만약에 데이터가 존재한다면(같은 id의 값이 존재한다면) 존재하던 값을 업데이트한다.
+ */
+async updatePost(postId: number, author: string, title: string, content: string) {
+  const post = await this.postsRepository.findOne({
+    where: { id: postId },
+  })
+
+  if (!post) throw new NotFoundException()
+  if (author) post.author = author
+  if (title) post.title = title
+  if (content) post.content = content
+
+  const newPost = await this.postsRepository.save(post)
+  return newPost
+}
+```
+
+---
+
+## 8. Delete()로 데이터 삭제하기
+
+```ts
+async deletePost(postId: number) {
+  const post = await this.postsRepository.findOne({
+    where: { id: postId },
+  })
+
+  if (!post) throw new NotFoundException()
+
+  await this.postsRepository.delete(postId)
+
+  return postId
+}
+```
