@@ -15,10 +15,5 @@
   "mysql": "MySQL",
   "oracle": "Oracle",
   "redis": "Redis",
-  "mongodb": "MongoDB",
-  "-- 3. ORM--": {
-    "type": "separator",
-    "title": "ORM"
-  },
-  "typeorm": "TypeOrm"
+  "mongodb": "MongoDB"
 }
