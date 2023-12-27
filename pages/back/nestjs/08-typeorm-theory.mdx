@@ -166,7 +166,7 @@ import { UserModel } from './entity/user.entity'
 export class AppModule {}
 ```
 
-```ts app.controller.ts
+```ts app.controller.ts
 import { Controller, Get, Param, Patch, Post } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { UserModel } from './entity/user.entity'
@@ -764,18 +764,378 @@ export class AppController {
 
 ## 10. M : M 관계 구현
 
+`src/entity/tag.entity.ts` 파일을 만든다.
+
+```ts tag.entity.ts
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { PostModel } from './post.entity'
+
+@Entity()
+export class TagModel {
+  @PrimaryGeneratedColumn()
+  id: number
+
+  // M:M 연결이기 때문에 둘 다 복수로 선언
+  @ManyToMany(() => PostModel, post => post.tags)
+  posts: PostModel[]
+
+  @Column()
+  name: string
+}
+```
+
+`post.entity.ts`에 tags를 다대다 관계로 연결합니다.
+
+```ts post.entity.ts
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { UserModel } from './user.entity'
+import { TagModel } from './tag.entity'
+
+@Entity()
+export class PostModel {
+  @PrimaryGeneratedColumn()
+  id: number
+
+  // 1:M 관계이니 posts로 복수형으로 선언
+  @ManyToOne(() => UserModel, user => user.posts)
+  author: UserModel
+
+  // M:M 연결이기 때문에 둘 다 복수로 선언
+  @ManyToMany(() => TagModel, tag => tag.posts)
+  // M:M 연결에서 JoinTable은 둘 중 하나 아무군데 선언해주면 된다
+  @JoinTable()
+  tags: TagModel[]
+
+  @Column()
+  title: string
+}
+```
+
+`app.module.ts`에 생성한 모듈(`TagModel`)을 추가한다.
+
+```ts app.module.ts
+// 생략
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([
+      UserModel,
+      ProfileModel, //
+      PostModel,
+      TagModel,
+    ]),
+    TypeOrmModule.forRoot({
+      // 생략
+      // entities폴더에 작성한 Model 가져오기
+      entities: [
+        // 생략
+        TagModel,
+      ],
+      synchronize: true,
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+```
+
+app 컨트롤러에 tag 요청을 추가한다.
+
+```ts app.controller.ts
+// 생략
+@Controller()
+export class AppController {
+  constructor(
+    @InjectRepository(UserModel)
+    private readonly userRepository: Repository<UserModel>,
+    @InjectRepository(ProfileModel)
+    private readonly profileRepository: Repository<ProfileModel>,
+    @InjectRepository(PostModel)
+    private readonly postRepository: Repository<PostModel>,
+    @InjectRepository(TagModel)
+    private readonly tagRepository: Repository<TagModel>,
+  ) {}
+
+  // 생략
+
+  @Post('posts/tags')
+  async createPostsTags() {
+    const post1 = await this.postRepository.save({
+      title: 'NestJS 수업',
+    })
+
+    const post2 = await this.postRepository.save({
+      title: '프로그래밍 수업',
+    })
+
+    const tag1 = await this.tagRepository.save({
+      name: 'Javascript',
+      posts: [post1, post2],
+    })
+
+    const tag2 = await this.tagRepository.save({
+      name: 'Typescript',
+      posts: [post1],
+    })
+
+    const post3 = await this.postRepository.save({
+      title: 'NextJS 수업',
+      tags: [tag1, tag2],
+    })
+
+    return true
+  }
+
+  @Get('posts')
+  getPosts() {
+    return this.postRepository.find({
+      relations: {
+        tags: true,
+      },
+    })
+  }
+
+  @Get('tags')
+  getTags() {
+    return this.tagRepository.find({
+      relations: {
+        posts: true,
+      },
+    })
+  }
+}
+```
+
+포스트맨으로 요청해 확인해보세요.
+
 ---
 
 ## 11. Relation Options
+
+postgres-data 파일을 지워 데이터를 초기화하고 다시 시작합니다. <br />
+`user.entity.ts`에서 관계로 넣을 수 있는 옵션에 대해 알아봅시다.
+
+```ts user.entity.ts
+// ProfileModel에 profile의 user 컬럼과 1:1 연결
+@OneToOne(() => ProfileModel, profile => profile.user, {
+  // find() 실행할 때마다 항상 같이 가져올 relation 설정(기본값 false)
+  eager: true,
+  // 저장할 떄, relation을 한 번에 같이 저장(기본값 false)
+  cascade: true,
+  // null이 가능한지 여부(기본값 true)
+  nullable: true,
+  // 관계를 삭제했을 떄, 어떻게 삭제할 것인지
+  // - NO ACTION : 아무것도 안함
+  // - CASCADE : 참조하는 row도 같이 삭제
+  // - SET NULL : 참조하는 row에서 참조 id를 null로 변경
+  // - set default : 기본 세팅으로 설정(테이블의 기본 세팅)
+  // - RESTRICT : 참조하고 있는 row가 있는 경우 참조당하는 row 삭제 불가
+  onDelete: 'NO ACTION',
+})
+profile: ProfileModel
+```
+
+관계 삭제 옵션 테스트용을 `app.controller.ts`에 넣어서 확인해본다
+
+```ts app.controller.ts
+@Delete('user/profile/:id')
+async deleteProfile(@Param('id') id: string) {
+  await this.profileRepository.delete(+id)
+}
+```
 
 ---
 
 ## 12. FindManyOptions 파라미터
 
+`app.controller.ts`에서 find()에 가져올 수 있는 옵션에 대해 알아봅시다.
+
+```ts app.controller.ts
+@Get('users')
+getUsers() {
+  return this.userRepository.find({
+    // 어떤 속성을 선택할지 (기본은 모든 속성을 가져옴)
+    // select를 정의하면, 정의한 속성만 가져온다
+    select: {
+      id: true,
+      email: true,
+      version: true,
+      profile: {
+        id: true,
+      },
+    },
+    // 필터링할 조건을 입력한다 ({}안에서는 전부 and 조건으로 필터링)
+    where: [
+      // id가 3이거나 or version이 1
+      {
+        id: 3,
+      },
+      {
+        version: 1,
+      },
+    ],
+    // ------ 다른 관계를 필터링하는 법
+    // where: {
+    //   profile: {
+    //     id: 3,
+    //   },
+    // },
+    // 관계를 가져오는 법
+    relations: {
+      profile: true,
+    },
+    // 오름차(ASC)-기본, 내림차(DESC)
+    order: {
+      id: 'DESC',
+    },
+    // 처음 몇 개를 제외할 지 (기본은 0) 1이면 1개 스킵
+    skip: 0,
+    // 몇 개를 가져올지 (기본값은 0, 전체) 1이면 1개만 가져옴
+    take: 0,
+  })
+}
+```
+
 ---
 
 ## 13. Typeorm 유틸리티 도구
 
+`app.controller.ts`에서 find()에 가져올 수 있는 유틸리티 옵션에 대해 알아봅시다.
+
+```ts app.controller.ts
+@Post('users')
+async postUser() {
+  for (let i = 0; i < 100; i++) {
+    await this.userRepository.save({
+      email: `user-${i}@google.com`,
+    })
+  }
+}
+
+@Get('users')
+getUsers() {
+  return this.userRepository.find({
+    where: {
+      // 📌 (1) 1이 아닌 경우 가져오기
+      // id: Not(1),
+      // 📌 (2) 30 미만의 적은 경우 가져오기
+      // id: LessThan(30),
+      // 📌 (3) 30 이하의 적은 경우 가져오기
+      // id: LessThanOrEqual(30),
+      // 📌 (4) 30 초과의 많은 경우 가져오기
+      // id: MoreThan(30)
+      // 📌 (5) 30 이상의 많은 경우 가져오기
+      // id: MoreThanOrEqual(30)
+      // 📌 (6) 같은 경우
+      // id : Equal(30)
+      // 📌 (7) 유사값, %로 유사한 문자 찾기 (대소문자 구분함)
+      // email: Like('%0@google%'),
+      // 📌 (8) 유사값, %로 유사한 문자 찾기 (대소문자 구분안함)
+      // email: ILike('%GOOGLE%'),
+      // 📌 (9) 사이값, 10~15번 사이까지의 값
+      // id: Between(10, 15),
+      // 📌 (10) 해당되는 여러 개의 값, 1, 3, 5, 7, 99의 id 찾기
+      // id: In([1, 3, 5, 7, 99]),
+      // 📌 (11) ID가 null인 경우 찾기
+      id: IsNull(),
+    },
+    // 주석 생략
+  })
+}
+```
+
+데이터를 초기화하고, 1~100개의 임의의 유저를 만든 후, 각각의 유틸리티를 확인한다.
+
 ---
 
 ## 14. 흔히 사용되는 메서드
+
+`user.entity.ts`에 count 컬럼을 추가한다.
+
+```ts
+@Column({ default: 0 })
+count: number
+```
+
+app 컨트롤러에 sample 요청을 만들고 실습한다.
+
+```ts app.controller.ts
+ @Post('sample')
+async sample() {
+  // 📌 (1) 모델에 해당되는 객체 생성 - 저장은 안함
+  // const user1 = await this.userRepository.create({
+  //   email: 'test@gmail.ai',
+  // })
+
+  // 📌 (2) 모델에 해당되는 객체 생성 - DB에 저장함
+  // const user2 = await this.userRepository.save({
+  //   email: 'test@gmail.ai',
+  // })
+
+  /*** 📌 (3) preload
+   * 입력된 값을 기반으로 DB에 데이터를 불러오고,
+   * 추가입력된 값으로 DB에 가져온 값들을 대체함
+   * 저장하지는 않음
+   */
+  // const user3 = await this.userRepository.preload({
+  //   id: 101,
+  //   email: 'test변경-저장x@gmail.ai',
+  // })
+
+  // 📌 (4) 삭제하기
+  // await this.userRepository.delete(101)
+
+  // 📌 (5) 숫자형 컬럼 증가 (id가 1인 count 컬럼을 2만큼 증가)
+  // await this.userRepository.increment(
+  //   { id: 1 }, //
+  //   'count',
+  //   2,
+  // )
+
+  // 📌 (6) 숫자형 컬럼 감소 (id가 1인 count 컬럼을 1만큼 감소)
+  // await this.userRepository.decrement(
+  //   { id: 1 }, //
+  //   'count',
+  //   1,
+  // )
+
+  // 📌 (7) 개수 카운팅하기
+  // const count = await this.userRepository.count({
+  //   where: {
+  //     email: ILike('%0%'),
+  //   },
+  // })
+
+  // 📌 (8) sum : 속성들의 값 전부 합치기
+  // const sum = await this.userRepository.sum('count', {
+  //   email: ILike('%0%'),
+  // })
+
+  // 📌 (9) average : 속성의 평균값 구하기
+  // const average = await this.userRepository.average('count', {
+  //   id: LessThan(4),
+  // })
+
+  // 📌 (10) min : 속성의 최소값 구하기
+  // const min = await this.userRepository.minimum('count', {
+  //   id: LessThan(4),
+  // })
+
+  // 📌 (10) max : 속성의 최대값 구하기
+  // const max = await this.userRepository.maximum('count', {
+  //   id: LessThan(4),
+  // })
+
+  // 📌 (11) find와 findOne도 있음(많이 다뤘으니 생략)
+  // const userOne = await this.userRepository.findOne({
+  //   where: { id: 3 },
+  // })
+
+  // 📌 (12) 3개의 값을 가져오는데, 전체 행 개수도 반환해줌
+  const usersAndCount = await this.userRepository.findAndCount({
+    take: 3,
+  })
+
+  return usersAndCount
+}
+```
