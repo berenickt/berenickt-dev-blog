@@ -3,4 +3,779 @@ title: '08-TypeORM-Theory'
 date: 2023/12/25
 ---
 
-## 1. REST API 세트
+## 1. Typeorm공부용 프로젝트
+
+Typeorm공부용 새 프로젝트를 만듭시다.
+
+```bash
+nest new typeorm
+yarn add @nestjs/typeorm typeorm pg
+```
+
+```dockerfile docker-compose.yaml
+# 서비스정의
+services:
+  postgres:
+    image: postgres:15
+    # 실행시마다 재시작
+    restart: always
+    # 도커컴포즈 파일에 존재하는 위치에 실제 데이터를 hostOS에 저장
+    volumes:
+      # 현재 도커컴포즈 파일이 존재하는 경로 : 이미지안에존재하는 경로 매핑
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      # hostport:이미지의포트
+      # 5432포트 요청 -> 이미지의 포트로 요쳥
+      - '5808:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: typeormstudy
+```
+
+```ts app.module.ts
+import { Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
+
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+
+@Module({
+  imports: [
+    TypeOrmModule.forRoot({
+      // 데이터베이스 타입
+      type: 'postgres',
+      host: '127.0.0.1',
+      port: 5808,
+      username: 'postgres',
+      password: 'postgres',
+      database: 'typeormstudy',
+      // entities폴더에 작성한 PostsModel 가져오기
+      entities: [],
+      synchronize: true,
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+```
+
+---
+
+## 2. Column Annotation들
+
+`src/entity/user.entity.ts` 파일을 만듭니다.
+
+```ts user.entity.ts
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Generated,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  VersionColumn,
+} from 'typeorm'
+
+@Entity()
+export class UserModel {
+  /*** ID
+   * 자동으로 ID를 생성한다.
+   *
+   * 📌 @PrimaryGeneratedColumn()
+   * Primary Column은 모든 테이블에서 기본적으로 존재해야 한다
+   * 테이블 안에서 각각의 Row를 구분할 수 있는 컬럼이다.
+   * @PrimaryColumn()
+   *
+   * 📌 @PrimaryGeneratedColumn('uuid')
+   * PrimaryGeneratedColumn => 순서대로 위로 올라간다.
+   * 1, 2, 3, 4, 5 -> 999999
+   *
+   * UUID : 절대로 겹치지 않는 고유한 값을 만들어줌
+   * ea36ed96-8d1c-44d9-9fbe-4ec6960e95a8
+   */
+  @PrimaryGeneratedColumn()
+  id: number
+
+  @Column()
+  title: string
+
+  /** 데이터 생성 일자
+   * 데이터가 생성되는 날짜와 시간이 자동으로 찍힌다.
+   */
+  @CreateDateColumn()
+  createdAt: Date
+
+  /** 데이터 수정 일자
+   * 데이터가 업데이트되는 날짜와 시간이 자동으로 찍힌다.
+   */
+  @UpdateDateColumn()
+  updateAt: Date
+
+  /** 데이터가 업데이트 될 떄마다 1씩 올라간다
+   * 처음 생성되면 값은 1이다.
+   * save() 함수가 몇 번 불렸는지 기억한다.
+   */
+  @VersionColumn()
+  version: number
+
+  /**
+   * 📌 @Generated('increment')
+   * additionalId: number
+   * PrimaryColumn은 아닌데, 데이터 생성할 떄마다, 1씩 올라가는 컬럼
+   *
+   * 📌 Generated('uuid')
+   * additionalId: string
+   * 는 마찬가지로,
+   * PrimaryColumn은 아닌데, 데이터 생성할 떄마다, 고유값을 가지는 컬럼
+   */
+  @Column()
+  @Generated('uuid')
+  additionalId: string
+}
+```
+
+```ts app.module.ts
+import { Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
+
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+import { UserModel } from './entity/user.entity'
+
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([UserModel]),
+    TypeOrmModule.forRoot({
+      // 데이터베이스 타입
+      type: 'postgres',
+      host: '127.0.0.1',
+      port: 5808,
+      username: 'postgres',
+      password: 'postgres',
+      database: 'typeormstudy',
+      // entities폴더에 작성한 Model 가져오기
+      entities: [UserModel],
+      synchronize: true,
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+```
+
+```ts app.controller.ts
+import { Controller, Get, Param, Patch, Post } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { UserModel } from './entity/user.entity'
+import { Repository } from 'typeorm'
+
+@Controller()
+export class AppController {
+  constructor(
+    @InjectRepository(UserModel)
+    private readonly userRepository: Repository<UserModel>,
+  ) {}
+
+  @Post('users')
+  postUser() {
+    return this.userRepository.save({
+      title: 'test title',
+    })
+  }
+
+  @Get('users')
+  getUsers() {
+    return this.userRepository.find()
+  }
+
+  @Patch('users/:id')
+  async patchUser(@Param('id') id: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: parseInt(id) },
+    })
+
+    return this.userRepository.save({
+      ...user,
+      title: user.title + '0',
+    })
+  }
+}
+```
+
+---
+
+## 3. Column Property 정리
+
+```ts user.entity.ts
+// user.entity.ts 생략
+@Column({
+  // 데이터베이스에서 인지하는 컬럼 타입 (자동으로 유추됨)
+  type: 'varchar',
+  // 데이터베이스 칼럼 이름 (프로퍼티 이름으로 자동 유추됨)
+  name: 'title',
+  // 값의 길이(입력할 수 있는 글자의 길이가 300)
+  length: 300,
+  // null이 가능한지
+  nullable: true,
+  // true면 처음 저장할 때만 값 지정 가능(이후에는 값 변경 불가능)
+  update: true,
+  // find()를 실행할 떄, 기본으로 값을 불러올지 (기본값은 true)
+  select: false,
+  // 아무것도 입력안했을 떄, 기본으로 입력되게 되는 값
+  default: 'default value',
+  // 컬럼 중에서 유일한 값이 돼야하는지(기본값은 false), 보통 회원이메일 컬럼에 사용
+  unique: false,
+})
+title: string
+```
+
+```ts app.controller.ts
+// app.controller.ts 생략
+@Post('users')
+postUser() {
+  return this.userRepository.save({
+    // title: 'test title',
+  })
+}
+
+@Get('users')
+getUsers() {
+  return this.userRepository.find({
+    select: { id: true, title: true },
+  })
+}
+```
+
+---
+
+## 4. Enum Column
+
+```ts user.entity.ts
+export enum Role {
+  USER = 'user',
+  ADMIN = 'admin',
+}
+
+@Entity()
+export class UserModel {
+  // 생략
+  title: string
+
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.USER,
+  })
+  role: Role
+
+  // 생략
+}
+```
+
+```ts app.controller.ts
+@Post('users')
+postUser() {
+  return this.userRepository.save({
+    // title: 'test title',
+    role: Role.ADMIN, // 관리자 역할을 넣고싶을 떄
+  })
+}
+
+// app.controller.ts의 select옵션 지우기
+@Get('users')
+getUsers() {
+  return this.userRepository.find({})
+}
+```
+
+---
+
+## 5. Entity Embedding
+
+`src/entity/person.entity.ts` 파일을 만든다.
+
+```ts person.entity.ts
+import { Column, Entity, PrimaryColumn } from 'typeorm'
+
+export class Name {
+  @Column()
+  first: string
+
+  @Column()
+  last: string
+}
+
+@Entity()
+export class StudentModel {
+  @PrimaryColumn()
+  id: number
+
+  @Column(() => Name)
+  name: Name
+
+  @Column()
+  class: string
+}
+
+@Entity()
+export class TeacherModel {
+  @PrimaryColumn()
+  id: number
+
+  @Column(() => Name)
+  name: Name
+
+  @Column()
+  salary: number
+}
+```
+
+`app.module.ts`에 생성한 모듈을 추가한다.
+
+```ts app.module.ts
+// 생략
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([UserModel]),
+    TypeOrmModule.forRoot({
+      // 데이터베이스 타입
+      type: 'postgres',
+      host: '127.0.0.1',
+      port: 5808,
+      username: 'postgres',
+      password: 'postgres',
+      database: 'typeormstudy',
+      // entities폴더에 작성한 Model 가져오기
+      entities: [UserModel, StudentModel, TeacherModel],
+      synchronize: true,
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+```
+
+DB에 들어간 컬럼명을 확인해보면, `nameFirst`, `nameLast`로 들어간 것을 확인할 수 있다.
+
+---
+
+## 6. Table Inheritance
+
+`src/entity/inheritance.entity.ts` 파일을 만든다.
+
+```ts inheritance.entity.ts
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+
+export class BaseModel {
+  @PrimaryGeneratedColumn()
+  id: number
+
+  @CreateDateColumn()
+  createAt: Date
+
+  @UpdateDateColumn()
+  updateat: Date
+}
+
+@Entity()
+export class BookModel extends BaseModel {
+  @Column()
+  name: string
+}
+
+@Entity()
+export class CarModel extends BaseModel {
+  @Column()
+  brand: string
+}
+```
+
+`app.module.ts`에 생성한 모듈을 추가한다.
+
+```ts app.module.ts
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([UserModel]),
+    TypeOrmModule.forRoot({
+      // 데이터베이스 타입
+      type: 'postgres',
+      host: '127.0.0.1',
+      port: 5808,
+      username: 'postgres',
+      password: 'postgres',
+      database: 'typeormstudy',
+      // entities폴더에 작성한 Model 가져오기
+      entities: [
+        UserModel,
+        StudentModel, //
+        TeacherModel,
+        BookModel,
+        CarModel,
+      ],
+      synchronize: true,
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+```
+
+DB에 들어간 컬럼명을 확인해보면, 상속받은 속성이 들어간 것을 확인할 수 있다.
+
+평소에는 위와 같은 일반적인 상속을 쓰는 것이 좋다. 다만, 굳이 하나의 테이블로 관리해야 하는 경우에는 다음과 같이 사용할 수 있다.
+
+```ts inheritance.entity.ts
+import {
+  ChildEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  TableInheritance,
+  UpdateDateColumn,
+} from 'typeorm'
+
+export class BaseModel {
+  @PrimaryGeneratedColumn()
+  id: number
+
+  @CreateDateColumn()
+  createAt: Date
+
+  @UpdateDateColumn()
+  updateat: Date
+}
+
+@Entity()
+export class BookModel extends BaseModel {
+  @Column()
+  name: string
+}
+
+@Entity()
+export class CarModel extends BaseModel {
+  @Column()
+  brand: string
+}
+
+@Entity()
+@TableInheritance({
+  column: {
+    name: 'type',
+    type: 'varchar',
+  },
+})
+export class SingleBaseModel {
+  @PrimaryGeneratedColumn()
+  id: number
+
+  @CreateDateColumn()
+  createAt: Date
+
+  @UpdateDateColumn()
+  updateat: Date
+}
+
+@ChildEntity()
+export class ComputerModel extends SingleBaseModel {
+  @Column()
+  brand: string
+}
+
+@ChildEntity()
+export class AirplaneModel extends SingleBaseModel {
+  @Column()
+  country: string
+}
+```
+
+마찬가지로 `app.module.ts`에 생성한 모듈을 추가한다.
+
+```ts app.module.ts
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([UserModel]),
+    TypeOrmModule.forRoot({
+      // 데이터베이스 타입
+      type: 'postgres',
+      host: '127.0.0.1',
+      port: 5808,
+      username: 'postgres',
+      password: 'postgres',
+      database: 'typeormstudy',
+      // entities폴더에 작성한 Model 가져오기
+      entities: [
+        UserModel,
+        StudentModel, //
+        TeacherModel,
+        BookModel,
+        CarModel,
+        SingleBaseModel,
+        ComputerModel,
+        AirplaneModel,
+      ],
+      synchronize: true,
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+```
+
+DB에 들어간 컬럼명을 확인해보면, <br />
+자식 컬럼이 들어간 single_base_model 하나만 생성된 것을 확인할 수 있다.
+
+---
+
+## 7. Relationship 이론
+
+- [관계형 데이터베이스 설계 (관계 종류 1:1 / 1:M / N:M )](https://hanamon.kr/%EA%B4%80%EA%B3%84%ED%98%95-%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4-%EC%84%A4%EA%B3%84-%EA%B4%80%EA%B3%84-%EC%A2%85%EB%A5%98/)
+
+---
+
+## 8. 1:1 관계 작업
+
+`src/entity/profile.entity.ts` 파일을 만든다.
+
+```ts profile.entity.ts
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { UserModel } from './user.entity'
+
+@Entity()
+export class ProfileModel {
+  @PrimaryGeneratedColumn()
+  id: number
+
+  // UserModel에 user의 profile 컬럼과 1:1 연결
+  @OneToOne(() => UserModel, user => user.profile)
+  // 상대방 테이블의 id를 가지고 있기(만약 상대방이 갖고있으면 상대방이 이 테이블 id를 가짐)
+  @JoinColumn()
+  user: UserModel
+
+  @Column()
+  profileImg: string
+}
+```
+
+연결할 모델(`user.entity.ts`)에 1:1로 연결할 모델을 추가한다.
+
+```ts user.entity.ts
+// 생략
+// ProfileModel에 profile의 user 컬럼과 1:1 연결
+@OneToOne(() => ProfileModel, profile => profile.user)
+profile: ProfileModel
+```
+
+`app.module.ts`에 생성한 모듈(`ProfileModel`)을 추가한다.
+
+```ts app.module.ts
+@Module({
+  imports: [
+    // ProfileModel 추가
+    TypeOrmModule.forFeature([UserModel, ProfileModel]),
+    TypeOrmModule.forRoot({
+      // 생략
+      // entities폴더에 작성한 Model 가져오기
+      entities: [
+        // 생략
+        ProfileModel,
+      ],
+      synchronize: true,
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+```
+
+user 엔티티의 title을 지우고 대신, email 컬럼을 추가한다. <br />
+기존 데이터가 저장되어있는 곳(postgres-data)을 지웠다가 다시 생성한다.(`docker-compose up`)
+
+```ts user.entity.ts
+// user.entity.ts
+// title: string은 주석처리
+@Column()
+email: string
+```
+
+app 컨트롤러는 다음과 같이 수정한다.
+
+```ts app.controller.ts
+// 생략
+@Controller()
+export class AppController {
+  constructor(
+    @InjectRepository(UserModel)
+    private readonly userRepository: Repository<UserModel>,
+    @InjectRepository(ProfileModel)
+    private readonly profileRepository: Repository<ProfileModel>,
+  ) {}
+
+  @Post('users')
+  postUser() {
+    return this.userRepository.save({})
+  }
+
+  @Get('users')
+  getUsers() {
+    return this.userRepository.find({
+      // 연동된 데이터 컬럼(profile)도 가져오기
+      relations: {
+        profile: true,
+      },
+    })
+  }
+
+  @Patch('users/:id')
+  async patchUser(@Param('id') id: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: parseInt(id) },
+    })
+
+    return this.userRepository.save({
+      ...user,
+    })
+  }
+
+  @Post('user/profile')
+  async createUserAndProfile() {
+    const user = await this.userRepository.save({
+      email: 'asd@gmail.ai',
+    })
+    const profile = await this.profileRepository.save({
+      profileImg: 'asdf.png',
+      user,
+    })
+    return user
+  }
+}
+```
+
+---
+
+## 9. M:1 & 1:M 관계 구현
+
+`src/entity/post.entity.ts` 파일을 만든다.
+
+```ts post.entity.ts
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { UserModel } from './user.entity'
+
+@Entity()
+export class PostModel {
+  @PrimaryGeneratedColumn()
+  id: number
+
+  // 1:M 관계이니 posts로 복수형으로 선언
+  @ManyToOne(() => UserModel, user => user.posts)
+  author: UserModel
+
+  @Column()
+  title: string
+}
+```
+
+테이블이 어느 지점을 바라보냐에 따라 M:1이나 1:M이 된다.
+
+```ts user.entity.ts
+// user.entity.ts 생략
+@OneToMany(() => PostModel, post => post.author)
+posts: PostModel[]
+```
+
+`app.module.ts`에 생성한 모듈(`PostModel`)을 추가한다.
+
+```ts app.module.ts
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([
+      UserModel,
+      ProfileModel,
+      PostModel, // 추가
+    ]),
+    TypeOrmModule.forRoot({
+      // 생략
+      // entities폴더에 작성한 Model 가져오기
+      entities: [
+        // 생략
+        PostModel,
+      ],
+      synchronize: true,
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+```
+
+확인용 api를 `app.controller.ts`에 만들고 포스트맨에서 확인해보세요.
+
+```ts app.controller.ts
+// 생략
+
+@Controller()
+export class AppController {
+  constructor(
+    @InjectRepository(UserModel)
+    private readonly userRepository: Repository<UserModel>,
+    @InjectRepository(ProfileModel)
+    private readonly profileRepository: Repository<ProfileModel>,
+    @InjectRepository(PostModel)
+    private readonly postRepository: Repository<PostModel>,
+  ) {}
+
+  // 생략
+  @Get('users')
+  getUsers() {
+    return this.userRepository.find({
+      relations: {
+        profile: true,
+        posts: true, // 추가
+      },
+    })
+  }
+
+  @Post('user/post')
+  async createUserAndPost() {
+    const user = await this.userRepository.save({
+      email: 'postuser@gmail.ai',
+    })
+    await this.postRepository.save({
+      author: user,
+      title: 'post 1',
+    })
+    await this.postRepository.save({
+      author: user,
+      title: 'post 2',
+    })
+
+    return user
+  }
+}
+```
+
+---
+
+## 10. M : M 관계 구현
+
+---
+
+## 11. Relation Options
+
+---
+
+## 12. FindManyOptions 파라미터
+
+---
+
+## 13. Typeorm 유틸리티 도구
+
+---
+
+## 14. 흔히 사용되는 메서드
