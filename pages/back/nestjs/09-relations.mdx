@@ -3,4 +3,347 @@ title: '09-Relations'
 date: 2023/12/25
 ---
 
-## 1. REST API 세트
+## 1. SQL 관계
+
+- foreign key를 알고 있으면, 해당 키에 데이터를 굳이 가질 필요가 없다.
+
+---
+
+## 2. UserModel 생성
+
+이제 다시 typeorm용 폴더가 아닌 기존 rest-server로 실습을 진행한다. <br />
+그 다음 user 모델을 nest cli 명령어로 생성한다.
+
+```bash
+nest g resource
+? What name would you like to use for this resource? users
+? What transport layer do you use? REST API
+? Would you like to generate CRUD entry points? No
+```
+
+그리고 cli로 만들면, 자동으로 app 모듈에 방금 생성한 모듈을 추가해준다.
+
+`src/users/entities/users.entity.ts` 파일은 만든다.
+
+```ts users.entity.ts
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+
+@Entity()
+export class UsersModel {
+  @PrimaryGeneratedColumn()
+  id: number
+
+  @Column()
+  nickname: string
+
+  @Column()
+  email: string
+
+  @Column()
+  password: string
+}
+```
+
+app 모듈에 UsersModel을 추가한다.
+
+```ts app.module.ts
+@Module({
+imports: [
+  PostsModule,
+  TypeOrmModule.forRoot({
+    // 생략
+    // entities폴더에 작성한 모듈 가져오기
+    entities: [PostsModel, UsersModel],
+    synchronize: true,
+  }),
+  UsersModule,
+],
+controllers: [AppController],
+providers: [AppService],
+})
+```
+
+---
+
+## 3. Column 옵션 종류
+
+`@Column`을 `Cmd + 마우스 왼쪽` 로 클릭하면, 명세서가 나온다.
+
+```ts users.entity.ts
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+
+@Entity()
+export class UsersModel {
+  @PrimaryGeneratedColumn()
+  id: number
+
+  /*** 닉네임 특성
+   * 1) 길이가 20을 넘지 않을 것
+   * 2) 유일무이한 값이 될 것
+   */
+  @Column({
+    length: 20,
+    unique: true,
+  })
+  nickname: string
+
+  /*** 이메일 특성
+   * 1) 유일무이한 값이 될 것
+   */
+  @Column({
+    unique: true,
+  })
+  email: string
+
+  @Column()
+  password: string
+}
+```
+
+---
+
+## 4. Enum Column 생성
+
+`users/const/roles.const.ts` 파일을 만듭니다.
+
+```ts roles.const.ts
+export enum RolesEnum {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+}
+```
+
+> cf, enum 타입은 TS에서 제공하는 명명된 상수의 집합을 나타내는 데이터 타입
+
+```ts users.entity.ts
+@Entity()
+export class UsersModel {
+  // 생략
+
+  @Column({
+    // role 특성의 타입을 RolesEnum의 모든 값들로 지정
+    enum: Object.values(RolesEnum),
+    default: RolesEnum.USER,
+  })
+  role: RolesEnum
+}
+```
+
+---
+
+## 5. User 관련 서비스 및 컨트롤러 작성
+
+```ts users.module.ts
+// 생략
+
+@Module({
+  // 이 모듈 안에서 UsersModel을 어디서든 사용 가능
+  imports: [TypeOrmModule.forFeature([UsersModel])],
+  controllers: [UsersController],
+  providers: [UsersService],
+})
+export class UsersModule {}
+```
+
+유저 서비스를 만든다.
+
+```ts users.service.ts
+import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { UsersModel } from './entities/users.entity'
+import { Repository } from 'typeorm'
+
+@Injectable()
+export class UsersService {
+  constructor(
+    @InjectRepository(UsersModel)
+    private readonly userRepository: Repository<UsersModel>,
+  ) {}
+
+  async createUser(nickname: string, email: string, password: string) {
+    const user = this.userRepository.create({
+      nickname,
+      email,
+      password,
+    })
+    const newUser = await this.userRepository.save(user)
+    return newUser
+  }
+
+  async getAllUsers() {
+    return this.userRepository.find()
+  }
+}
+```
+
+위에서 만든 서비스 기능을 사용할 컨트롤러를 만든다.
+
+```ts users.controller.ts
+import { Body, Controller, Get, Post } from '@nestjs/common'
+import { UsersService } from './users.service'
+
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  getUsers() {
+    return this.usersService.getAllUsers()
+  }
+
+  @Post()
+  postUser(
+    @Body('nickname') nickname: string, //
+    @Body('email') email: string,
+    @Body('password') password: string,
+  ) {
+    return this.usersService.createUser(nickname, email, password)
+  }
+}
+```
+
+---
+
+## 6. Author 관계 생성
+
+포스트 엔티티에 다대일 관계를 넣어준다.
+
+```ts posts.entity.ts
+@Entity()
+export class PostsModel {
+  @PrimaryGeneratedColumn()
+  id: number
+
+  /*** 작성자 1명이 여러 개의 포스트를 작성
+   * 1) UserModel과 연동한다 (Foreign Key를 사용해서)
+   * 2) null이 될 수 없다
+   */
+  // one에 해당하는 클래스 타입을 넣어주면 된다
+  // 이 클래스 타입을 두 번쨰 함수의 파라미터로 받을 수 있다.
+  // 어떤 파라미터와 연동시킬지 선택
+  @ManyToOne(() => UsersModel, user => user.posts, {
+    nullable: false,
+  })
+  author: UsersModel
+
+  // 생략
+}
+```
+
+유저 엔티티에 일대다 관계를 넣어준다.
+
+```ts users.entity.ts
+@Entity()
+export class UsersModel {
+  // 생략
+
+  @OneToMany(() => PostsModel, post => post.author)
+  posts: PostsModel[]
+}
+```
+
+---
+
+## 7. 에러 해결 및 DB 초기화
+
+posts 서비스에 보면 author 부분에 에러가 날 겁니다. <br />author가 string이였다가, UsersModel로 변경되어서 생긴겁니다.
+
+```ts posts.service.ts
+// posts.service.ts
+/**
+ * 1) create : 저장할 객체를 생성
+ * 2) save   : 객체를 저장 (create aㅔ서드에서 생성한 객체로)
+ */
+async createPost(authorId: number, title: string, content: string) {
+  const post = this.postsRepository.create({
+    author: {
+      id: authorId,
+    },
+    title,
+    content,
+    likeCount: 0,
+    commentCount: 0,
+  })
+
+  const newPost = await this.postsRepository.save(post)
+
+  return newPost
+}
+
+/** save의 2가지 기능
+ * 1) 만약에 데이터가 존재하지 않는다면(id 기준) 새로 생성한다.
+ * 2) 만약에 데이터가 존재한다면(같은 id의 값이 존재한다면) 존재하던 값을 업데이트한다.
+ */
+async updatePost(postId: number, title: string, content: string) {
+  const post = await this.postsRepository.findOne({
+    where: { id: postId },
+  })
+
+  if (!post) throw new NotFoundException()
+  if (title) post.title = title
+  if (content) post.content = content
+
+  const newPost = await this.postsRepository.save(post)
+  return newPost
+}
+```
+
+```ts posts.controller.ts
+// posts.controller.ts 생략
+/*** 3) POST /posts
+ * post를 생성한다
+ */
+@Post()
+postPosts(
+  @Body('authorId') authorId: number, //
+  @Body('title') title: string,
+  @Body('content') content: string,
+) {
+  return this.postsService.createPost(authorId, title, content)
+}
+
+/*** 4) PATCH /posts/:id
+ * id에 해당하는 post를 부분 변경한다
+ */
+@Patch(':id')
+putPost(
+  @Param('id') id: string, //
+  @Body('title') title?: string,
+  @Body('content') content?: string,
+) {
+  return this.postsService.updatePost(+id, title, content)
+}
+```
+
+넣은 데이터들 때문에 author가 null인 경우가 있을 수 있기에, DB 초기화해줍니다.
+
+---
+
+## 8. 관계를 이용해 데이터 생성
+
+- posts와 users의 관계를 PostMan으로 데이터를 생성한다.
+
+---
+
+## 9. 관계 포함한 쿼리 작성
+
+```ts posts.service.ts
+// posts.service.ts 생략
+async getAllPosts() {
+  return this.postsRepository.find({ relations: ['author'] })
+}
+
+async getPostById(id: number) {
+  const post = await this.postsRepository.findOne({
+    // PostsModel의 id가 입력받은 id와 같은지 필터링
+    where: {
+      id,
+    },
+    relations: ['author'],
+  })
+  if (!post) {
+    throw new NotFoundException()
+  }
+  return post
+}
+```
