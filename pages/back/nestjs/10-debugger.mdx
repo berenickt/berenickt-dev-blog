@@ -3,4 +3,40 @@ title: '10-Debugger'
 date: 2023/12/25
 ---
 
-## 1. REST API 세트
+## 1. VSCode 디버거
+
+VSCode 옆에 실행 및 디버그를 눌러서 `create a launch.json file`를 클릭한다.
+
+(1) Node.js를 선택
+
+```json
+// .vscode/launch.json
+{
+  // IntelliSense를 사용하여 가능한 특성에 대해 알아보세요.
+  // 기존 특성에 대한 설명을 보려면 가리킵니다.
+  // 자세한 내용을 보려면 https://go.microsoft.com/fwlink/?linkid=830387을(를) 방문하세요.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug NestJS",
+      "runtimeExecutable": "yarn",
+      // 사용할 package.json 명령어
+      "runtimeArgs": ["start:debug"],
+      // vscode 상의 터미널 사용
+      "console": "integratedTerminal",
+      "restart": true,
+      // NestJS 기본 디버그 포트 9229
+      "port": 9229,
+      // 디버거를 자동으로 프로세스에 붙을지 말지
+      "autoAttachChildProcesses": true
+    }
+  ]
+}
+```
+
+(2) 모니터링할 곳에 브레이크 포인트를 설정하고, 실행 및 디버그 버튼 클릭한다.
+
+- VScode에 브레이크 포인트를 찍은 곳에서 멈춘다.
+- 스탭인투 버튼을 눌러 한 줄 씩 멈추면서 진행상황을 확인할 수 있다.
