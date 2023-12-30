@@ -1,0 +1,18 @@
+{
+  "00-csr-ssr-ssg": "00-CSR, SSR, SSG 역사",
+  "01-started": "01-설치",
+  "02-project-structure": "02-프로젝트 구조",
+  "-- 응용 프로그램 빌드 --": {
+    "type": "separator",
+    "title": "응용 프로그램 빌드"
+  },
+  "routing": "Routing",
+  "data-fetching": "Data Fetching",
+  "rendering": "Rendering",
+  "caching": "Caching",
+  "styling": "Styling",
+  "optimizing": "Optimizing",
+  "configuring": "Configuring",
+  "testing": "Testing",
+  "deploying": "Deploying"
+}

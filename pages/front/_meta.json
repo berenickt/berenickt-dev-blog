@@ -6,11 +6,11 @@
     "title": "1. CSR"
   },
   "react": "React",
-  "-- 2. SSR & SSG --": {
+  "-- 2. 렌더링 프레임워크 --": {
     "type": "separator",
-    "title": "2. SSR & SSG"
+    "title": "2. 렌더링 프레임워크"
   },
-  "next": "Next.js",
+  "nextjs": "Next.js",
   "-- 3. Data Fetching --": {
     "type": "separator",
     "title": "3. Data Fetching"
@@ -66,9 +66,9 @@
     "type": "separator",
     "title": "10. 번들러"
   },
-  "webpack": "webpack",
-  "vite": "vite",
-  "turbopack": "turbopack",
+  "webpack": "WebPack",
+  "turbopack": "TurboPack",
+  "vite": "Vite",
   "-- 11. 크로스 플랫폼 앱 --": {
     "type": "separator",
     "title": "11. 크로스 플랫폼 앱"
