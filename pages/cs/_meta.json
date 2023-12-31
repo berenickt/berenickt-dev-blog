@@ -16,12 +16,13 @@
     "title": "2. 디자인패턴"
   },
   "design-pattern": "디자인 패턴",
-  "-- 3. 이산수학 & 선형대수 --": {
+  "-- 3. 수학 --": {
     "type": "separator",
-    "title": "3. 이산수학 & 선형대수"
+    "title": "3. 수학"
   },
   "discrete-mathematics": "이산수학",
   "linear-algebra": "선형대수",
+  "probability-statistics": "확률과 통계",
   "-- 4. 컴퓨터구조 & 운영체제 --": {
     "type": "separator",
     "title": "4. 컴퓨터구조 & 운영체제"

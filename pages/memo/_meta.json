@@ -3,19 +3,32 @@
     "type": "separator",
     "title": "개발관련"
   },
-  "error": "error",
-  "blog": "blog",
-  "cheatsheet": "cheatsheet",
-  "shortcuts": "shortcuts",
+  "error": "Error",
+  "blog": "Blog",
+  "cheatsheet": "CheatSheet",
+  "shortcuts": "ShortCuts",
   "-- 영어 --": {
     "type": "separator",
     "title": "영어"
   },
-  "english": "english",
-  "-- 기타 잡다한것 --": {
+  "english": "English",
+  "-- 일기 및 회고 --": {
     "type": "separator",
-    "title": "기타 잡다한것"
+    "title": "일기 및 회고"
   },
-  "experience": "experience",
-  "others": "others"
+  "experience": "Experience",
+  "-- 취미 --": {
+    "type": "separator",
+    "title": "취미"
+  },
+  "music": "음악",
+  "photo": "사진",
+  "reading": "독서",
+  "health": "건강",
+  "-- 잡다한것 --": {
+    "type": "separator",
+    "title": "잡다한것"
+  },
+  "others": "Others",
+  "business": "Business"
 }

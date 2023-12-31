@@ -12,8 +12,8 @@
     "title": "Database & SQL"
   },
   "database-type": "데이터베이스 종류",
-  "mysql": "MySQL",
   "oracle": "Oracle",
+  "mysql": "MySQL",
   "redis": "Redis",
   "mongodb": "MongoDB"
 }
