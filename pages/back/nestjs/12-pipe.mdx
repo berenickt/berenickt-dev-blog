@@ -3,4 +3,204 @@ title: '12-Pipe'
 date: 2023/12/25
 ---
 
-## 1. REST API 세트
+## 1. Pipe 소개 & ParseIntPipe
+
+- https://docs.nestjs.com/pipes
+- Pipe란? `@injectable` 데코레이터된 클래스다.
+  - `PipeTransform` 인터페이스를 상속(implements)받는다.
+
+파이프는 2가지 사용 사례가 있다.
+
+- `transformation(변형)` : 입력 데이터를 원하는 형식으로 변환(e.g. 문자열에서 정수로)
+- `validation(검증)` : 입력 데이터를 평가하고 유효한 경우, 변경하지 않고 그대로 전달한다.
+  - 그렇지 않으면 예외를 throw한다.
+
+---
+
+### 1.1 Built-in pipes
+
+- `ValidationPipe`
+- `ParseIntPipe` : 가장 많이 사용, 다른 것도 사용법이 비슷함
+- `ParseFloatPipe`
+- `ParseBoolPipe`
+- `ParseArrayPipe`
+- `ParseUUIDPipe`
+- `ParseEnumPipe`
+- `DefaultValuePipe` : 기본값을 정할 수 있는 파이프
+- `ParseFilePipe`
+
+위 파이프들은 `@nestjs/common` 패키지에서 호출 가능하다.
+
+- cf. https://docs.nestjs.com/pipes#built-in-pipes
+
+어떤 데코레이터이든, 2번쨰 파라미터에다가 검증하고 싶은 형태를 넣으면 된다.
+
+```ts posts.controller.ts
+// posts.controller.ts 생략
+/*** 2) GET /posts/:id
+ * id에 해당하는 post를 가져온다
+ * e.g. 11이라는 ID를 갖고있는 Post 하나를 가져온다.
+ */
+// @Param('id') 뜻 : 가져오는 파라미터의 이름은 id이다
+@Get(':id')
+getPost(@Param('id', ParseIntPipe) id: number) {
+  return this.postsService.getPostById(id)
+}
+
+// 생략
+
+/*** 4) PATCH /posts/:id
+ * id에 해당하는 post를 부분 변경한다
+ */
+@Patch(':id')
+putPost(
+  @Param('id', ParseIntPipe) id: number, //
+  @Body('title') title?: string,
+  @Body('content') content?: string,
+) {
+  return this.postsService.updatePost(id, title, content)
+}
+
+/*** 5) DELETE /posts/:id
+ * id에 해당하는 post를 삭제한다
+ */
+@Delete(':id')
+deletePost(@Param('id', ParseIntPipe) id: number) {
+  return this.postsService.deletePost(id)
+}
+```
+
+기존에 id를 문자열로 받아, 숫자로 변환하기 위해 +를 붙인 걸 위와 같이 수정할 수 있다.<br />그리고 에러도 Pipe가 자동으로 던져준다.
+
+---
+
+## 2. custom Pipe 만들기
+
+비밀번호가 8자리 이하여야만 한다고 가정한다면?
+
+- 8자리 초과되면, 에러나게 만들기 위해, 커스텀 pipe 만들어보자
+- `src/auth/pipe/password.pipe.ts`파일을 만든다.
+- 커스텀 파이프를 만들기 위해 import 하는 건 그냥 외우면 된다.
+
+```ts password.pipe.ts
+import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common'
+
+@Injectable()
+export class PasswordPipe implements PipeTransform {
+  transform(value: any, metadata: ArgumentMetadata) {
+    if (value.toString().length > 8) {
+      throw new BadRequestException('비밀번호는 8자 이하로 입력해주세요!')
+    }
+    return value.toString()
+  }
+}
+```
+
+그리고 만든 커스텀 Pipe를 쓰려고 하는 곳(auth 컨트롤러)에 파이프 쓰는 것처럼 쓰면 된다.
+
+```ts auth.controller.ts
+// auth.controller.ts 생략
+@Post('register/email')
+postRegisterEmail(
+  @Body('nickname') nickname: string, //
+  @Body('email') email: string,
+  @Body('password', PasswordPipe) password: string,
+) {
+  return this.authService.registerWithEmail({
+    nickname,
+    email,
+    password,
+  })
+}
+```
+
+---
+
+## 3. DefaultValuePipe 사용
+
+```ts posts.controller.ts
+// posts.controller.ts 생략
+/*** 3) POST /posts
+ * post를 생성한다
+ */
+@Post()
+postPosts(
+  @Body('authorId') authorId: number, //
+  @Body('title') title: string,
+  @Body('content') content: string,
+  // 기본값을 true로 설정하는 파이프
+  @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean,
+) {
+  return this.postsService.createPost(authorId, title, content)
+}
+```
+
+new로 인스턴스화를 해주면, 해당 함수가 실행될 떄마다 DefaultValuePipe가 새로 생성된다. <br />다른 Pipe에서도 new 인스턴스화를 해줄 수도 있다.
+
+---
+
+## 4. 여러 개의 파이프 동시에 사용
+
+바로 위에서 DefaultValuePipe에서 테스트용으로 확인한 isPublic은 지워주거나 주석처리한다.
+
+`password.pipe.ts`에 최소, 최대길이 커스텀 파이프를 만든다.
+
+```ts password.pipe.ts
+import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common'
+
+@Injectable()
+export class PasswordPipe implements PipeTransform {
+  transform(value: any, metadata: ArgumentMetadata) {
+    if (value.toString().length > 8) {
+      throw new BadRequestException('비밀번호는 8자 이하로 입력해주세요!')
+    }
+    return value.toString()
+  }
+}
+
+@Injectable()
+export class MaxLengthPipe implements PipeTransform {
+  constructor(
+    private readonly length: number,
+    private readonly subject: string,
+  ) {}
+
+  transform(value: any, metadata: ArgumentMetadata) {
+    if (value.toString().length > this.length) {
+      throw new BadRequestException(`${this.subject}의 최대 길이는 ${this.length}입니다.`)
+    }
+    return value.toString()
+  }
+}
+
+@Injectable()
+export class MinLengthPipe implements PipeTransform {
+  constructor(private readonly length: number) {}
+
+  transform(value: any, metadata: ArgumentMetadata) {
+    if (value.toString().length < this.length) {
+      throw new BadRequestException(`최소 길이는 ${this.length}입니다.`)
+    }
+    return value.toString()
+  }
+}
+```
+
+인스턴스화를 해서 넣게 되면, constructor값을 넣어줄 수가 있는 장점이 있다.
+
+```ts auth.controller.ts
+@Post('register/email')
+postRegisterEmail(
+  @Body('nickname') nickname: string, //
+  @Body('email') email: string,
+  @Body('password', new MaxLengthPipe(8, '비밀번호'), new MinLengthPipe(3)) password: string,
+) {
+  return this.authService.registerWithEmail({
+    nickname,
+    email,
+    password,
+  })
+}
+```
+
+여러 개의 파이프를 넣고 싶으면, 2번쨰 파라미터부터 계속 넣으면, 계속 연달아서 파이프가 적용된다.
