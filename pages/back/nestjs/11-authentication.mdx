@@ -3,4 +3,825 @@ title: '11-Authentication(인가)'
 date: 2023/12/25
 ---
 
-## 1. REST API 세트
+## 1. Session vs JWT Token 이론
+
+### 1.1 Session
+
+- 정의 : **유저의 정보를 DB에 저장하고 상태를 유지하는 도구**
+- Session은 특수한 ID 값으로 구성되어있다.
+- Session은 서버에서 생성되며 클라이언트에서 쿠키를 통해 저장된다.
+- 클라이언트에서 요청을 보낼때 Session ID를 같이 보내면,
+  - 현재 요청을 보내는 사용자가 누구인지 서버에서 알 수 있다.
+  - (요청마다 매번 아이디와 비밀번호를 물어볼 필요 없음)
+- Session ID는 데이터베이스에 저장되기때문에,
+  - 요청이 있을때마다 매번 데이터베이스를 확인해야한다.
+- 서버에서 데이터가 저장되기때문에 클라이언트에 사용자 정보가 노출될 위험이 없다.
+- 데이터베이스에 Session을 저장해야하기때문에 Horizontal Scaling이 어렵다.
+
+---
+
+### 1.2 JWT Token
+
+- 정의 : **유저의 정보를 Base 64로 인코딩된 String 값에 저장하는 도구**
+- JWT Token Header, Payload, Signature로 구성되며, Base 64로 인코딩 되어있다.
+  - cf. [Velog - JSON Web Token 소개 및 구조](https://velog.io/@dnjscksdn98/JWT-JSON-Web-Token-%EC%86%8C%EA%B0%9C-%EB%B0%8F-%EA%B5%AC%EC%A1%B0)
+- JWT Token은 서버에서 생성되며 클라이언트에서 저장된다.
+- 클라이언트에서 요청을 보낼때 JWT Token ID를 같이 보내면,
+  - 현재 요청을 보내는 사용자가 누구인지 서버에서 알 수 있다.
+  - (요청마다 매번 아이디와 비밀번호를 물어볼 필요 없음)
+- JWT Token은 데이터베이스에 저장되지않고 Signature 값을 이용해서 검증할 수 있다.
+  - 그래서 검증할때마다 데이터베이스를 매번 들여다볼 필요가 없다.
+- 정보가 모두 토큰에 담겨있고 클라이언트에서 토큰을 저장하기 때문에 정보 유출의 위험이 있다.
+- 데이터베이스가 필요없기때문에 Horizontal Scaling이 쉽다.
+
+---
+
+### 1.3 Session 생성 및 사용 방식
+
+Session 생성 방식
+
+```
+(Clint) --(1)-->  (API 서버) --(3)--> (Database)
+        <-(4)--       (2)
+
+(1) ID/PW 전송
+(2) 검증
+(3) 세션 생성 및 저장
+(4) 쿠키 전송
+```
+
+Session 사용 방식
+
+```
+(Clint) --(1)-->  (API 서버) ---(3, 5)--> (Database)
+        <-(7)--       (2)   <--(4, 6)---
+
+(1) 쿠키전송
+(2) 검증
+(3) 해당 세션 검색
+(4) 유저 정보 응답
+(5) 데이터 요청
+(6) 데이터 응답
+(7) 데이터 전송
+```
+
+![session-session-sequence](https://raw.githubusercontent.com/berenickt/image-server/main/img/session-sequence.png)
+
+---
+
+### 1.4 JWT Token 생성 및 사용 방식
+
+JWT Token 생성 방식
+
+```
+(Clint) --(1)-->  (API 서버)
+        <-(3)--       (2)
+
+(1) ID/PW 전송
+(2) 검증
+(3) Token 전송
+```
+
+JWT Token 사용 방식
+
+```
+(Clint) --(1)-->  (API 서버) ---(3)--> (Database)
+        <-(5)--       (2)   <--(4)---
+
+(1) Token 전송
+(2) 검증
+(3) 데이터 요청
+(4) 결과 응답
+(5) 데이터 전송
+```
+
+![jwt-token-sequence](https://raw.githubusercontent.com/berenickt/image-server/main/img/jwt-token-sequence.png)
+
+---
+
+### 1.5 비교표
+
+| 비교 요소                                             |  Session  |                      JWT Token                      |
+| ----------------------------------------------------- | :-------: | :-------------------------------------------------: |
+| 유저의 정보를 어디에 저장하고 있는가?                 |   서버    |                     클라이언트                      |
+| 클라이언트에서 서버로 보내는 정보는?                  |   쿠키    |                        토큰                         |
+| 유저 정보를 가져올 때 데이터베이스를 확인해야 하는가? | 확인 필요 | 확인 불필요 (Payload에 들어있는 정보만 필요할 경우) |
+| 클라이언트에서 인증 정보를 읽을 수 있는가?            |  불가능   |                        가능                         |
+| Horizontal Scaling이 쉬운가?                          |  어려움   |                        쉬움                         |
+
+---
+
+## 2. JWT.IO 실습
+
+- https://jwt.io/
+
+### 2.1 헤더 (Header)
+
+Header 는 두가지의 정보를 지니고 있습니다.
+
+- `typ` : 토큰의 타입을 지정합니다. 바로 JWT를 말하는 것입니다.
+- `alg ` : Signature 해싱 알고리즘을 지정
+  - 해싱 알고리즘으로는 보통 HMAC-SHA256 혹은 RSA 가 사용되며,
+  - 이 알고리즘은 토큰을 검증 할 때 사용되는 signature 부분에서 사용
+
+---
+
+### 2.2 정보 (Payload)
+
+Payload 부분에는 토큰에 담을 정보가 들어있습니다.
+
+- 여기에 담는 정보의 한 ‘조각’ 을 클레임(Claim) 이라고 부르고,
+- 이는 Json(Key/Value) 형태의 한 쌍으로 이뤄져있습니다.
+- 토큰에는 여러개의 클레임들을 넣을 수 있습니다.
+- 클레임 의 종류는 다음과 같이 크게 세 분류로 나뉘어져있습니다:
+  - 등록된 (registered) 클레임
+  - 공개 (public) 클레임
+  - 비공개 (private) 클레임
+
+---
+
+### 2.3 서명 (Signature)
+
+- 서명(Signature)은 토큰을 인코딩하거나 유효성 검증을 할 때 사용하는 고유한 암호화 코드
+- 서명은 위에서 만든 헤더(Header)와 페이로드(Payload)의 값을 각각 BASE64로 인코딩하고,
+- 인코딩한 값을 비밀 키를 이용해 헤더(Header)에서 정의한 알고리즘으로 해싱을 하고,
+- 이 값을 다시 BASE64로 인코딩하여 생성한다
+
+---
+
+## 3. Access Token & Refresh Toekn 이론
+
+- 두 토큰 모두 JWT 기반이다.
+- Access Token은 API 요청을 할때 검증용 토큰으로 사용된다.
+  - 즉, 인증이 필요한 API를 사용할때는 꼭 Access Token을 Header에 넣어서 보내야한다.
+  - e.g.) 유저 정보 수정, 회사 채용공고 지원 인원 확인 등
+- Refresh Token은 Access Token을 추가로 발급할때 사용된다.
+  - Access Token을 새로고침(Refresh)하는 기능이 있기 때문에 Refresh Token이라고 부른다.
+- Access Token은 유효기간이 짧고 Refresh Token은 유효기간이 길다.
+- 자주 노출되는 Access Token은 유효기간을 짧게해서, Token이 탈취돼도 해커가 오래 사용하지 못 하도록 방지할 수 있다.
+- 상대적으로 노출이 적은 Refresh Token의 경우, Access Token을 새로 발급받을때만 사용되기 때 문에 탈취 가능성이 적다.
+
+---
+
+### 3.1 토큰 발급 과정
+
+![access-token-sequence](https://raw.githubusercontent.com/berenickt/image-server/main/img/access-token-sequence.png)
+
+---
+
+### 3.2 Refresh Token 사용 과정
+
+![refresh-toekn-sequence](https://raw.githubusercontent.com/berenickt/image-server/main/img/refresh-toekn-sequence.png)
+
+---
+
+### 3.3 Access Token 사용 과정
+
+![access-token-sequence-2](https://raw.githubusercontent.com/berenickt/image-server/main/img/access-token-sequence-2.png)
+
+---
+
+### 3.4 Refreshing Logic
+
+![refreshing-logic](https://raw.githubusercontent.com/berenickt/image-server/main/img/refreshing-logic.png)
+
+---
+
+## 4. Encryption(암호화)
+
+비밀번호를 암호화하는데 쓰는 주요 암호화 알고리즘
+
+- `bcrypt` : 주로 사용하는 알고리즘
+  - 완전히 다른 암호화(비대칭키 암호화)
+  - 같은 조건에서, 똑같은 입력값에 항상 똑같은 결과문자가 나옴
+  - 이 알고리즘은 일부러 느리게 만들어서, 해킹을 어렵게 함
+- `md5`
+  - 완전히 다른 암호화(비대칭키 암호화)
+- `sha1`
+  - 완전히 다른 암호화(비대칭키 암호화)
+
+---
+
+### 4.1 비밀번호 암호화(Hash)
+
+- 해커가 DB 해킹했는데, 비밀번호를 다 보이게 만들면, 사이트 전체가 다 털립니다.
+- 그래서 hash(뭉개다) 처리를 해줘야 합니다.
+- e.g. 122455678 --- (해시처리) ---> asdfkmkqcqw
+
+---
+
+### 4.2 Dictionary Attack
+
+해커들은 Hash처리된 비밀번호를 알아내기 공격합니다.
+
+- 단순히 많이 사용할 것 같은 비밀번호를 테이블에 모아둔 뒤에 Hash 처리해놓고,
+  - 무작정 비교, 대입해보는 방법
+- 이를 `사전 공격 (Dictionary attack)`이라 함
+
+---
+
+### 4.3 Salt
+
+- Dictionary Attack을 막기 위해 임의의 값(Salt)을 넣어서 Hash된 원래 값을 알아내기 힘들게 함
+- cf. 음식에 소금 치는 것처럼, `원래값+소금값`형태로 이를 암호화한 것
+
+---
+
+### 4.4 Salt값마저 해킹당하면?
+
+- Salt값마저 해킹해서, 불특정의 수 많은 문자열을 암호화할 때, 시간이 너무 오래 걸립니다.
+- 시간을 오래 걸리게 만들기 위해, bcrypt 알고리즘을 씁니다.
+  - 그래서 bcrypt 알고리즘이 설계 자체가 느리게 되어 있습니다.
+  - 이 속도는 사용자가 더 느리게 할 수도 있습니다.
+- bcrypt 알고리즘이 느릴 수록 보안은 좋지만,
+  - 회원들이 로그인, 회원가입하는 것 역시 오래 걸립니다.
+
+---
+
+## 5. 로그인 로직
+
+nest cli로 auth 기능 모듈을 추가한다.
+
+```bash
+$ nest g resource
+? auth
+? REST API
+? No
+```
+
+`auth.service.ts`에서 만들려는 로직을 주석을 달아 다음과 같이 만든다.
+
+```ts auth.service.ts
+import { Injectable } from '@nestjs/common'
+
+/** 만들려는 기능
+ * 1) registerWithEmail
+ * - email, nickname, password를 입력받고 사용자를 생성한다
+ * - 생성이 완료되면, accessToken과 refreshToken을 반환한다
+ * 회원가입 후 다시 로그인해주세요 <- 쓸데없는 과정을 방지하기 위해서
+ *
+ * 2) loginWithEmail
+ * - email, password를 입력하면, 사용자 검증을 진행한다.
+ * - 검증이 완료되면, accessToken과 refreshToken을 반환한다.
+ *
+ * 3) loginUser
+ * - (1)과 (2)에서 필요한 accessToken과 refreshToken을 반환하는 로직
+ *
+ * 4) signToken
+ * - (3)에서 필요한 accessToken과 refreshToken을 sign하는 로직
+ *
+ * 5) authenticateWithEmailAndPassword
+ * - (2)에서 로그인을 진행할 떄, 필요한 기본적인 검증 진행
+ * -- 1. 사용자가 존재하는 확인(email)
+ * -- 2. 비밀번호가 맞는지 확인
+ * -- 3. 모두 통과되면 사용자 정보 반환
+ * -- 4. loginWithEmail에서 반환된 데이터를 기반으로 토큰 생성
+ */
+@Injectable()
+export class AuthService {}
+```
+
+---
+
+## 6. 토큰 signing
+
+jwt 관련 서비스 모듈과 bcrypt 암호화 모듈 패키지를 설치한다.
+
+```bash
+yarn add @nestjs/jwt bcrypt
+```
+
+jwt 패키지를 auth 모듈에 등록해준다.
+
+```ts auth.module.ts
+import { Module } from '@nestjs/common'
+import { AuthService } from './auth.service'
+import { AuthController } from './auth.controller'
+import { JwtModule } from '@nestjs/jwt'
+
+@Module({
+  imports: [JwtModule.register({})],
+  controllers: [AuthController],
+  providers: [AuthService],
+})
+export class AuthModule {}
+```
+
+auth 서비스는 작은 기능부터 작성한다.
+
+```ts auth.service.ts
+@Injectable()
+export class AuthService {
+  constructor(private readonly jwtService: JwtService) {}
+
+  /** Payload에 들어갈 정보
+   * 1) email
+   * 2) sub -> 사용자 id
+   * 3) type -> 'access' | 'refresh'
+   */
+  signToken(user: Pick<UsersModel, 'email' | 'id'>, isRefreshToken: boolean) {
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      type: isRefreshToken ? 'refresh' : 'access',
+    }
+
+    return this.jwtService.sign(payload, {
+      secret: JWT_SECRET,
+      expiresIn: isRefreshToken ? 3600 : 300, // 3600초(1시간) 초단위로 설정
+    })
+  }
+}
+```
+
+`auth/const/auth.const.ts`는 다음과 같다.
+
+```ts auth/const/auth.const.ts
+export const JWT_SECRET = 'berenickt'
+```
+
+---
+
+## 7. Dependency 에러 해결
+
+Dependency 에러가 났을 떄, 해결햐는 법을 알아보자. <br />
+일부러 에러를 내기위해 jwt모듈을 주석처리한다.
+
+```ts auth.module.ts
+// auth.module.ts 생략
+@Module({
+  imports: [
+    // JwtModule.register({}), //
+  ],
+  controllers: [AuthController],
+  providers: [AuthService],
+})
+export class AuthModule {}
+```
+
+그러면 터미널 창에 다음과 같은 dependencies 에러 메시지를 볼 수 있다.
+
+```bash
+[Nest] 84803  -
+ERROR [ExceptionHandler]
+Nest can't resolve dependencies of the AuthService (?).
+Please make sure
+that the argument JwtService at index [0] is available
+in the AuthModule context.
+
+Potential solutions:
+- Is AuthModule a valid NestJS module?
+- If JwtService is a provider, is it part of the current AuthModule?
+- If JwtService is exported from a separate @Module, is that module imported within AuthModule?
+  @Module({
+    imports: [ /* the Module containing JwtService */ ]
+  })
+```
+
+- 에러를 읽어보면, AuthService에 0번 인덱스가 없다는 말이다.
+- AuthModule context에 jwtService가 사용할 수 있는 확인해달라.
+- 즉, Dependency를 제대로 넣지 않으면, 위 에러를 자주 볼 수 있다.
+- 이 패턴의 에러가 나오면,
+  - (?) 에러에 나온 클래스로 이동한다.
+  - 마지막 줄에 에러가 나온 모듈로 이동한다.
+  - JwtService 등과 같은 import를 추가한다.
+
+---
+
+## 8. loginUser() 작업
+
+`auth.service.ts`에 loginUser()를 추가한다.
+
+```ts auth.service.ts
+// auth.service.ts 생략
+loginUser(user: Pick<UsersModel, 'email' | 'id'>) {
+  return {
+    accessToken: this.signToken(user, false),
+    refreshToken: this.signToken(user, true),
+  }
+}
+```
+
+---
+
+## 9. authenticateWith EmailAndPassword() 작업
+
+users 서비스에서 이메일이 유효한지 찾는 기능을 추가한다.
+
+```ts users.service.ts
+// users.service.ts  생략
+async getUserByEmail(email: string) {
+  return this.userRepository.findOne({
+    where: { email },
+  })
+}
+```
+
+그리고 users 모듈을 다른 모듈에서도 쓸 수 있게 export 한다.
+
+```ts users.module.ts
+// users.module.ts 생략
+@Module({
+  // 이 모듈 안에서 UsersModel을 어디서든 사용 가능
+  imports: [TypeOrmModule.forFeature([UsersModel])],
+  exports: [UsersService], // 추가
+  controllers: [UsersController],
+  providers: [UsersService],
+})
+```
+
+그런 다음 auth 모듈에서 쓸 수 있게, users 모듈을 import 한다.
+
+```ts auth.module.ts
+@Module({
+  imports: [
+    JwtModule.register({}), //
+    UsersModule,
+  ],
+  controllers: [AuthController],
+  providers: [AuthService],
+})
+```
+
+그리고 auth 서비스에 실제 사용자가 있는지 확인하는 기능을 추가한다.
+
+```ts auth.service.ts
+/***
+ * 1. 사용자가 존재하는 확인(email)
+ * 2. 비밀번호가 맞는지 확인
+ * 3. 모두 통과되면 사용자 정보 반환
+ */
+async authenticateWithEmailAndPassword(user: Pick<UsersModel, 'email' | 'password'>) {
+  const existingUser = await this.usersService.getUserByEmail(user.email)
+
+  if (!existingUser) throw new UnauthorizedException('존재하지 않는 사용자입니다.')
+
+  /*** 파라미터, campare : 두 비밀번호를 비교해서 boolean값 반환
+   * 1) 입력된 비밀번호
+   * 2) 기존 해시(hash) -> 사용자 정보에 저장돼있는 hash
+   */
+  const passOk = bcrypt.compare(user.password, existingUser.password)
+
+  if (!passOk) throw new UnauthorizedException('비밀번호가 틀렸습니다.')
+
+  return existingUser
+}
+```
+
+---
+
+## 10. loginWithEmail() 작업
+
+auth 서비스에 loginWithEmail()을 추가한다.
+
+```ts auth.service.ts
+async loginWithEmail(user: Pick<UsersModel, 'email' | 'password'>) {
+  const existingUser = await this.authenticateWithEmailAndPassword(user)
+  return this.loginUser(existingUser)
+}
+```
+
+---
+
+## 11. registerWithEmail() 정의
+
+hash 돌릴 횟수를 `auth.const.ts`에 상수로 정의한다.
+
+```ts auth.const.ts
+export const JWT_SECRET = 'berenickt'
+export const HASH_ROUNDS = 10
+```
+
+users 서비스에 createUser()를 수정한다.
+
+```ts users.service.ts
+// 생략
+/***
+ * 1) nickname 중복이 없는지 확인
+ * - exist() : 만약 조건에 해당되는 값이 있으면 true 반환
+ */
+async createUser(user: Pick<UsersModel, 'nickname' | 'email' | 'password'>) {
+  const nicknameExists = await this.userRepository.exist({
+    where: { nickname: user.nickname },
+  })
+  if (nicknameExists) throw new BadRequestException('이미 존재하는 nickname입니다.')
+
+  const emailExists = await this.userRepository.exist({
+    where: { nickname: user.email },
+  })
+  if (emailExists) throw new BadRequestException('이미 가입한 이메일입니다.')
+
+  const userObject = this.userRepository.create({
+    nickname: user.nickname,
+    email: user.email,
+    password: user.password,
+  })
+  const newUser = await this.userRepository.save(userObject)
+  return newUser
+}
+```
+
+수정한 createUser에 맞게 users 컨트롤러도 파라미터를 객체로 넣게 수정한다.
+
+```ts users.controller.ts
+@Post()
+postUser(
+  @Body('nickname') nickname: string, //
+  @Body('email') email: string,
+  @Body('password') password: string,
+) {
+  return this.usersService.createUser({ nickname, email, password })
+}
+```
+
+auth 서비스에 registerWithEmail()을 추가한다.
+
+```ts auth.service.ts
+// auth.service.ts 생략
+/*** hash 파라미터 (salt값은 자동 생성됨)
+ * 1) hash로 만들고 싶은 비밀번호
+ * 2) round 돌릴 횟수, 너무 많으면 시간이 기하급수적으로 올라감
+ * @see https://www.npmjs.com/package/bcrypt#a-note-on-rounds
+ */
+async registerWithEmail(user: Pick<UsersModel, 'nickname' | 'email' | 'password'>) {
+  const hash = await bcrypt.hash(user.password, HASH_ROUNDS)
+  const newUser = await this.usersService.createUser({
+    ...user, //
+    password: hash,
+  })
+  return this.loginUser(newUser)
+}
+```
+
+---
+
+## 12. 회원가입,로그인 엔드포인트
+
+auth 컨트롤러에 엔드포인트를 추가한다.
+
+```ts auth.controller.ts
+import { Body, Controller, Post } from '@nestjs/common'
+import { AuthService } from './auth.service'
+
+@Controller('auth')
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Post('login/email')
+  loginEmail(@Body('email') email: string, @Body('password') password: string) {
+    return this.authService.loginWithEmail({
+      email,
+      password,
+    })
+  }
+
+  @Post('register/email')
+  registerEmail(@Body('nickname') nickname: string, @Body('email') email: string, @Body('password') password: string) {
+    return this.authService.registerWithEmail({
+      nickname,
+      email,
+      password,
+    })
+  }
+}
+```
+
+포스트맨에서 제대로 동작하는지 확인한다.
+
+그리고 users 컨트롤러에 필요없어진 테스트용 유저생성은 주석처리한다.
+
+```ts users.controller.ts
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  getUsers() {
+    return this.usersService.getAllUsers()
+  }
+
+  // @Post()
+  // postUser(
+  //   @Body('nickname') nickname: string, //
+  //   @Body('email') email: string,
+  //   @Body('password') password: string,
+  // ) {
+  //   return this.usersService.createUser({ nickname, email, password })
+  // }
+}
+```
+
+---
+
+## 13. Token Refresh 기능 정리
+
+```ts auth.service.ts
+// auth.service.ts 생략
+/*** 토큰을 사용하게 되는 방식
+ * 1) 사용자가 로그인 또는 회원가입을 진행하면
+ *    accessToken과 refreshToken을 발급받는다
+ * 2) 로그인 할때는 Basic 토큰과 함께 요청을 보낸다
+ *    Basic 토큰은 '이메일:비밀번호'를 Base64로 인코딩한 형태이다.
+ *    e.g.) {authorization: 'Basic {token}'}
+ * 3) 아무나 접근할 수 없는 정보 (private route)를 접근할 떄는
+ *    accessToken을 Header에 추가해서 요청과 함께 보낸다.
+ *    e.g.) {authorization: 'Bearer {token}'}
+ * 4) 토큰과 요청을 함께 받은 서버는 토큰 검증을 통해 현재 요청을 보낸
+ *    사용자가 누구인지 알 수 있다.
+ *    e.g.) 현재 로그인한 사용자가 작성한 포스트만 가져오려면
+ *    토큰의 sub 값에 입력돼있는 사용자의 포스트만 따로 필터링할 수 있다.
+ *    특정 사용자의 토큰이 없다면, 다른 사용자의 데이터를 접근 못한다.
+ * 5) 모든 토큰은 만료 기간이 있다. 만료기간이 지나면, 새로 토큰을 발급받아야 한다.
+ *    그렇지 않으면 jwtService.verify()에서 인증이 통과안된다.
+ *    그러니 access 토큰을 새로 발급받을 수 있는 /auth/token/access와
+ *    refresh 토큰을 새로 발급받을 수 있는 /auth/token/refresh가 필요하다.
+ * 6) 토큰이 만료되면, 각각의 토큰을 새로 발급받을 수 있는 엔드포인트에 요청을 해서
+ *    새로운 토큰을 발급받고, 새로운 토큰을 사용해서 private route에 접근한다.
+ */
+```
+
+---
+
+## 14. 헤더 값으로부터 토큰 추출
+
+auth 서비스에 헤더로부터 토큰 추출 기능을 추가한다.
+
+```ts auth.service.ts
+/** Header로부터 토큰을 받을 떄
+ * {authorization: 'Basic {token}'} - 로그인
+ * {authorization: 'Bearer {token}'} - 발급받은 토큰을 그대로 넣었을 떄
+ */
+extractTokenFromHeader(header: string, isBearer: boolean) {
+  const splitToken = header.split(' ')
+  const prefix = isBearer ? 'Bearer' : 'Basic'
+
+  if (splitToken.length !== 2 || splitToken[0] !== prefix) {
+    throw new UnauthorizedException('잘못된 토큰입니다!')
+  }
+
+  const token = splitToken[1]
+  return token
+}
+```
+
+---
+
+## 15. 토큰 시스템을 사용해 엔드포인트 변경
+
+auth 서비스에 변환된 코드를 원래대로 하는 기능을 추가한다.
+
+```ts auth.service.ts
+// auth.service.ts 생략
+/*** email:password 형태로 바꾸기
+ * 1) dafklmlfa:askdmklasmda -> email:password
+ * 2) email:password -> [email, password]
+ * 3) {email: email, password: password}
+ */
+decodeBasicToken(base64String: string) {
+  const decoded = Buffer.from(base64String, 'base64').toString('utf8')
+  const split = decoded.split(':')
+  if (split.length !== 2) {
+    throw new UnauthorizedException('잘못된 유형의 토큰입니다.')
+  }
+  const email = split[0]
+  const password = split[1]
+  return {
+    email,
+    password,
+  }
+}
+```
+
+auth 컨트롤러의 엔드포인트를 다음과 같이 수정한다.
+
+```ts auth.controller.ts
+import { Body, Controller, Headers, Post } from '@nestjs/common'
+import { AuthService } from './auth.service'
+
+@Controller('auth')
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Post('login/email')
+  loginEmail(@Headers('authorization') rawToken: string) {
+    const token = this.authService.extractTokenFromHeader(rawToken, false)
+    const credentials = this.authService.decodeBasicToken(token)
+    return this.authService.loginWithEmail(credentials)
+  }
+
+  @Post('register/email')
+  registerEmail(
+    @Body('nickname') nickname: string, //
+    @Body('email') email: string,
+    @Body('password') password: string,
+  ) {
+    return this.authService.registerWithEmail({
+      nickname,
+      email,
+      password,
+    })
+  }
+}
+```
+
+cf.
+
+- https://www.base64encode.org/
+- base 64 인코딩할 수 있는 사이트
+- `인코딩` : 문자를 인코딩 문자열로 변환
+- `디코딩` : 인코딩된 것 원래 문자로 변환
+
+포스트맨에서 확인하자.
+
+---
+
+## 16. 토큰 재발급 로직
+
+auth 서비스에 토큰 재발급 로직용 기능을 추가한다.
+
+```ts auth.service.ts
+// auth.service.ts 생략
+/*** 토큰 검증
+ *
+ */
+verifyToken(token: string) {
+  return this.jwtService.verify(token, {
+    secret: JWT_SECRET,
+  })
+}
+
+rotateToken(token: string, isRefreshToken: boolean) {
+  const decoded = this.jwtService.verify(token, {
+    secret: JWT_SECRET,
+  })
+
+  /***
+   * sub : id
+   * email : email
+   * type : 'access' | 'refresh'
+   */
+  if (decoded.type !== 'refresh') {
+    throw new UnauthorizedException('토큰 재발급은 Refresh 토큰으로만 가능합니다.')
+  }
+
+  return this.signToken({ ...decoded }, isRefreshToken)
+}
+```
+
+auth 컨트롤러에 재발급 엔드포인트를 추가한다. 추가적으로 함수명을 통일성있게 수정한다.
+
+```ts auth.controller.ts
+import { Body, Controller, Headers, Post } from '@nestjs/common'
+import { AuthService } from './auth.service'
+
+@Controller('auth')
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Post('token/access')
+  postTokenAccess(@Headers('authorization') rawToken: string) {
+    const token = this.authService.extractTokenFromHeader(rawToken, true)
+    const newToken = this.authService.rotateToken(token, false)
+
+    /***
+     * {accessToken : {token}}
+     */
+    return {
+      accessToken: newToken,
+    }
+  }
+
+  @Post('token/refresh')
+  postTokenRefresh(@Headers('authorization') rawToken: string) {
+    const token = this.authService.extractTokenFromHeader(rawToken, true)
+    const newToken = this.authService.rotateToken(token, true)
+
+    /***
+     * {refreshToken : {token}}
+     */
+    return {
+      refreshToken: newToken,
+    }
+  }
+
+  @Post('login/email')
+  postLoginEmail(@Headers('authorization') rawToken: string) {
+    const token = this.authService.extractTokenFromHeader(rawToken, false)
+    const credentials = this.authService.decodeBasicToken(token)
+    return this.authService.loginWithEmail(credentials)
+  }
+
+  @Post('register/email')
+  postRegisterEmail(
+    @Body('nickname') nickname: string, //
+    @Body('email') email: string,
+    @Body('password') password: string,
+  ) {
+    return this.authService.registerWithEmail({
+      nickname,
+      email,
+      password,
+    })
+  }
+}
+```
