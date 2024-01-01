@@ -3,4 +3,207 @@ title: '15-Guard'
 date: 2023/12/25
 ---
 
-## 1. REST API 세트
+## 1. Guard 이론 & 구현 스펙 정리
+
+- 공식문서 : https://docs.nestjs.com/guards
+- Guard란? `@injectable` 데코레이터된 클래스다.
+  - `CanActivate` 인터페이스를 상속(implements)받는다.
+- 잘못된 요청으로 인한 에러를 막기 위한 Guard를 만들 수 있다.
+- `auth/guard/basic-token.guard.ts` 파일을 만든다.
+
+```ts basic-token.guard.ts
+/*** 구현할 기능
+ * 1) 요청객체(request)를 불러오고,
+ *    authorization header로부터 토큰을 가져온다.
+ * 2) authService.extractTokenFormHeader를 이용해서
+ *    사용할 수 있는 형태의 토큰을 추출한다.
+ * 3) authService.decodedBasicToken을 실행해서
+ *    email과 password를 추출한다.
+ * 4) email과 password를 이용해서 사용자를 가져온다.
+ *    authService.authenticateWithEmailAndPassword
+ * 5) 찾아낸 사용자를 (1) 요청 객체에 붙여준다.
+ *    req.user = user;
+ */
+```
+
+---
+
+## 2. BasicTokenGuard 구현
+
+Guard를 구현하는 건 Pipe를 구현하는 것과 매우 유사하다. <br />NestJS에서 일부러 이렇게 만들었다.
+
+```ts basic-token.guard.ts
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common'
+import { AuthService } from '../auth.service'
+
+/*** 구현할 기능
+ * 1) 요청객체(request)를 불러오고,
+ *    authorization header로부터 토큰을 가져온다.
+ * 2) authService.extractTokenFormHeader를 이용해서
+ *    사용할 수 있는 형태의 토큰을 추출한다.
+ * 3) authService.decodedBasicToken을 실행해서
+ *    email과 password를 추출한다.
+ * 4) email과 password를 이용해서 사용자를 가져온다.
+ *    authService.authenticateWithEmailAndPassword
+ * 5) 찾아낸 사용자를 (1) 요청 객체에 붙여준다.
+ *    req.user = user;
+ */
+@Injectable()
+export class BasicTokenGuard implements CanActivate {
+  constructor(private readonly authService: AuthService) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const req = context.switchToHttp().getRequest()
+    const rawToken = req.headers['authorization'] // {authorization : 'Basic asdfafa'}
+
+    if (!rawToken) throw new UnauthorizedException('토큰이 없습니다!')
+
+    const token = this.authService.extractTokenFromHeader(rawToken, false)
+    const { email, password } = this.authService.decodeBasicToken(token)
+    const user = await this.authService.authenticateWithEmailAndPassword({
+      email,
+      password,
+    })
+    req.user = user
+
+    return true
+  }
+}
+```
+
+auth 컨트롤러에 생성한 가드를 추가한다.
+
+```ts auth.controller.ts
+// auth.controller.ts 생략
+@Post('login/email')
+@UseGuards(BasicTokenGuard) // 추가
+postLoginEmail(@Headers('authorization') rawToken: string) {
+  const token = this.authService.extractTokenFromHeader(rawToken, false)
+  const credentials = this.authService.decodeBasicToken(token)
+  return this.authService.loginWithEmail(credentials)
+}
+```
+
+포스트맨에 authorization 토큰을 넣지 않는 경우를 확인한다.
+
+guard에 작성한 req가 컨트롤러에 그대로 남는다.
+
+```ts auth.controller.ts
+// auth.controller.ts 생략
+@Post('login/email')
+@UseGuards(BasicTokenGuard)
+postLoginEmail(
+  @Headers('authorization') rawToken: string, //
+  @Request() req, // 가드에 생성한 req를 가져와서 쓰기(지우거나 주석처리)
+) {
+  const token = this.authService.extractTokenFromHeader(rawToken, false)
+  const credentials = this.authService.decodeBasicToken(token)
+  return this.authService.loginWithEmail(credentials)
+}
+```
+
+req가 남아있는 걸 봤다면, 지우거나, 주석처리한다.
+
+---
+
+## 3. BearerTokenGuard 구현
+
+`auth/guard/bearer-token.guard.ts` 파일을 만든다.
+
+```ts auth/guard/bearer-token.guard.ts
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common'
+import { AuthService } from '../auth.service'
+import { UsersService } from 'src/users/users.service'
+
+@Injectable()
+export class BearerTokenGuard implements CanActivate {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const req = context.switchToHttp().getRequest()
+    const rawToken = req.headers['authorization'] // {authorization : 'Basic asdfafa'}
+
+    if (!rawToken) throw new UnauthorizedException('토큰이 없습니다!')
+
+    const token = this.authService.extractTokenFromHeader(rawToken, true)
+    const result = await this.authService.verifyToken(token)
+
+    /** request에 넣을 정보
+     * 1) 사용자 정보 - user
+     * 2) token - token
+     * 3) tokenType - access | refresh
+     */
+    const user = await this.usersService.getUserByEmail(result.email)
+    req.user = user
+    req.token = token
+    req.tokenType = result.type
+
+    return true
+  }
+}
+
+@Injectable()
+export class AccessTokenGuard extends BearerTokenGuard {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    await super.canActivate(context)
+    const req = context.switchToHttp().getRequest()
+
+    if (req.tokenType !== 'access') {
+      throw new UnauthorizedException('Access Token이 아닙니다.')
+    }
+
+    return true
+  }
+}
+
+@Injectable()
+export class RefreshTokenGuard extends BearerTokenGuard {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    await super.canActivate(context)
+    const req = context.switchToHttp().getRequest()
+
+    if (req.tokenType !== 'refresh') {
+      throw new UnauthorizedException('Refresg Token이 아닙니다.')
+    }
+
+    return true
+  }
+}
+```
+
+생성한 가드들을 auth 컨트롤러에 추가한다.
+
+```ts auth.controller.ts
+// 생략
+@Controller('auth')
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Post('token/access')
+  @UseGuards(RefreshTokenGuard) // 추가
+  postTokenAccess(@Headers('authorization') rawToken: string) {
+    // 생략
+  }
+
+  @Post('token/refresh')
+  @UseGuards(RefreshTokenGuard) // 추가
+  postTokenRefresh(@Headers('authorization') rawToken: string) {
+    // 생략
+    }
+  }
+
+  @Post('login/email')
+  @UseGuards(BasicTokenGuard) // 추가
+  postLoginEmail(
+    @Headers('authorization') rawToken: string, //
+    // @Request() req, // 가드에 생성한 req를 가져와서 쓰기
+  ) {
+    // 생략
+  }
+}
+```
+
+이제 포스트맨에서 확인해본다.
