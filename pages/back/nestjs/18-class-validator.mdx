@@ -5,30 +5,465 @@ date: 2023/12/25
 
 ## 1. Class Validator와 DTO 사용
 
+```bash
+yarn add class-validator class-transformer
+```
+
+class-validator로 Body의 프로퍼티 값들을 하나의 클래스로 묶어서 관리할 수 있다.
+
+- 그리고 이렇게 묶은 형태의 클래스를 DTO라고 부른다.
+- DTO는 Data Transfer Object의 약자. 데이터를 전송하는 객체
+  - 클라이언트로부터 서버에 데이터를 전송받으면,
+  - 그 데이터를 서버에서 효율적으로 사용할 수 있게 관리해주는 객체라는 뜻
+
+`posts/dto/create-post.dto.ts` 파일을 만든다.
+
+```ts create-post.dto.ts
+import { IsString } from 'class-validator'
+
+export class CreatePostDto {
+  @IsString()
+  title: string
+
+  @IsString()
+  content: string
+}
+```
+
+- cf. DTO는 API랑 1:1 맵핑이 아닌 경우도 있다.
+- 그래서 CreatePostDTO를 다른 API에서도 쓰는 경우가 있기에 조금 더 일반화된 이름으로 짓는다.
+
+posts 컨트롤러에 DTO를 적용시킨다.
+
+```ts posts.controller.ts
+// posts.controller.ts 생략
+@Post()
+@UseGuards(AccessTokenGuard)
+postPosts(
+  @User('id') userId: number,
+  @Body() body: CreatePostDto,
+  // @Body('title') title: string,
+  // @Body('content') content: string,
+  // 기본값을 true로 설정하는 파이프
+  // @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean,
+) {
+  return this.postsService.createPost(userId, body)
+}
+```
+
+posts 서비스에도 DTO를 적용시켜준다.
+
+```ts posts.service.ts
+// posts.service.ts 생략
+/**
+ * 1) create : 저장할 객체를 생성
+ * 2) save   : 객체를 저장 (create 메서드에서 생성한 객체로)
+ */
+async createPost(authorId: number, postDto: CreatePostDto) {
+  const post = this.postsRepository.create({
+    author: {
+      id: authorId,
+    },
+    ...postDto,
+    likeCount: 0,
+    commentCount: 0,
+  })
+  const newPost = await this.postsRepository.save(post)
+  return newPost
+}
+```
+
+`main.ts`에서 앱 전체에 파이프를 전역적으로 설정한다.
+
+```ts main.ts
+import { NestFactory } from '@nestjs/core'
+import { AppModule } from './app.module'
+import { ValidationPipe } from '@nestjs/common'
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule)
+  app.useGlobalPipes(new ValidationPipe()) // 추가
+  await app.listen(3000)
+}
+bootstrap()
+```
+
+- 해당 앱에 전반적으로 적용한 파이프를 넣어주는 것인데,
+- ValidationPipe를 넣어주면 모든 class-validator들의 애노테이션들이
+- 따로 컨트롤러에다가 validation 적용하거나, 모듈에다 validation 모듈을 추가하지 않아도
+- 앱 전반적으로 validation을 사용할 수 있게 된다.
+
 ---
 
 ## 2. 다양한 Class Validator 정보 찾기
+
+- https://github.com/typestack/class-validator?tab=readme-ov-file#validation-decorators
+- Common validation decorators, Type validation decorators
+  - 2개를 자주 사용하는데,
+  - 다른 Validator도 찾아보고 사용하면 된다.
 
 ---
 
 ## 3. Class Validator 에러메시지 변경
 
+```ts create-post.dto.ts
+import { IsString } from 'class-validator'
+
+export class CreatePostDto {
+  @IsString({
+    message: 'title은 string 타입을 입력해줘야 합니다.',
+  })
+  title: string
+
+  @IsString({
+    message: 'content은 string 타입을 입력해줘야 합니다.',
+  })
+  content: string
+}
+```
+
 ---
 
 ## 4. PickType 활용
+
+posts 엔티티를 활용해 중복된 코드를 더 줄일 수 있다.
+
+```ts posts.entity.ts
+// 생략
+
+@Entity()
+export class PostsModel extends BaseModel {
+  // 생략
+  @Column()
+  @IsString({
+    message: 'title은 string 타입을 입력해줘야 합니다.',
+  })
+  title: string
+
+  @Column()
+  @IsString({
+    message: 'content은 string 타입을 입력해줘야 합니다.',
+  })
+  content: string
+  // 생략
+}
+```
+
+create-post DTO는 Pick 타입을 활용하는데, <br />
+TS의 타입이 아닌 값을 반환하는데 똑같은 기능을 하는 클래스를 NestJS에서 제공해준다.
+
+```ts create-post.dto.ts
+import { PickType } from '@nestjs/mapped-types'
+import { PostsModel } from '../entities/posts.entity'
+
+/***
+ * Pick, Omit, Partial -> Type을 반환
+ * PickType, OmitType, PartialType -> 값을 반환
+ */
+export class CreatePostDto extends PickType(PostsModel, ['title', 'content']) {}
+```
 
 ---
 
 ## 5. IsOptional Annotation 사용
 
+posts 업데이트는 수정받는 값을 옵션으로 받고 있다. 여기에도 DTO를 적용시키자.
+
+```ts update-post.dto.ts
+import { IsOptional, IsString } from 'class-validator'
+import { CreatePostDto } from './create-post.dto'
+import { PartialType } from '@nestjs/mapped-types'
+
+/***
+ * Pick, Omit, Partial -> Type을 반환
+ * PickType, OmitType, PartialType -> 값을 반환
+ */
+export class UpdatePostDto extends PartialType(CreatePostDto) {
+  @IsString()
+  @IsOptional()
+  title?: string
+
+  @IsString()
+  @IsOptional()
+  content?: string
+}
+```
+
+생성한 updateDTO를 psots 컨트롤러에 적용한다.
+
+```ts posts.controller.ts
+@Patch(':id')
+putPost(
+  @Param('id', ParseIntPipe) id: number, //
+  @Body() body: UpdatePostDto,
+  // @Body('title') title?: string,
+  // @Body('content') content?: string,
+) {
+  return this.postsService.updatePost(id, body)
+}
+```
+
+마찬가지로 posts 서비스에도 DTO를 적용시킨다.
+
+```ts posts.service.ts
+// posts.service.ts 생략
+async updatePost(postId: number, postDto: UpdatePostDto) {
+  const { title, content } = postDto // 추가
+  const post = await this.postsRepository.findOne({
+    where: { id: postId },
+  })
+
+  if (!post) throw new NotFoundException()
+  if (title) post.title = title
+  if (content) post.content = content
+
+  const newPost = await this.postsRepository.save(post)
+  return newPost
+}
+```
+
 ---
 
 ## 6. Put 요청 Patch로 변경
+
+```ts posts.controller.ts
+// posts.controller.ts
+/*** 4) PATCH /posts/:id
+ * id에 해당하는 post를 부분 변경한다
+ */
+@Patch(':id')
+patchPost(
+  @Param('id', ParseIntPipe) id: number, //
+  @Body() body: UpdatePostDto,
+) {
+  return this.postsService.updatePost(id, body)
+}
+```
+
+- `Put` : 업데이트할 값들을 전부 입력해줘야 함
+  - 그 객체가 존재하면 업데이트하고,
+  - 만약 존재하지 않다면, 새로 생성한다.
+- `Patch` : 부분적으로만 입력받고 입력된 부분만 업데이트한다.
+  - 포스트맨에서도 put을 patch로 고친다.
 
 ---
 
 ## 7. Length Annotation과 Email Annotation 사용
 
+`auth/dto/register-user.dto.ts` 파일을 만든다.
+
+```ts register-user.dto.ts
+import { PickType } from '@nestjs/mapped-types'
+import { UsersModel } from 'src/users/entities/users.entity'
+
+export class RegisterUserDto extends PickType(UsersModel, ['nickname', 'email', 'password']) {}
+```
+
+user 엔티티를 dto가 사용할 수 있게 class-validator, 기타 어노테이션 등을 추가해 수정한다.
+
+```ts users.entity.ts
+// 생략
+
+@Entity()
+export class UsersModel extends BaseModel {
+  /*** 닉네임 특성
+   * 1) 길이가 20을 넘지 않을 것
+   * 2) 유일무이한 값이 될 것
+   */
+  @Column({
+    length: 20,
+    unique: true,
+  })
+  @IsString()
+  @Length(1, 20, {
+    message: '닉네임은 1~20자 사이로 입력해주세요.',
+  })
+  nickname: string
+
+  /*** 이메일 특성
+   * 1) 유일무이한 값이 될 것
+   */
+  @Column({
+    unique: true,
+  })
+  @IsString()
+  @IsEmail()
+  email: string
+
+  @Column()
+  @IsString()
+  @Length(3, 8)
+  password: string
+
+  @Column({
+    // role 특성의 타입을 RolesEnum의 모든 값들로 지정
+    enum: Object.values(RolesEnum),
+    default: RolesEnum.USER,
+  })
+  role: RolesEnum
+
+  @OneToMany(() => PostsModel, post => post.author)
+  posts: PostsModel[]
+}
+```
+
+그리고 생성한 DTO를 auth 컨트롤러에 적용한다.
+
+```ts auth.controller.ts
+// auth.controller.ts 생략
+@Post('register/email')
+postRegisterEmail(@Body() body: RegisterUserDto) {
+  return this.authService.registerWithEmail(body)
+}
+```
+
+마찬가지로 생성한 DTO를 auth 서비스에 적용한다.
+
+```ts auth.service.ts
+// auth.service.ts 생략
+async registerWithEmail(user: RegisterUserDto) {
+  const hash = await bcrypt.hash(user.password, HASH_ROUNDS)
+  const newUser = await this.usersService.createUser({
+    ...user, //
+    password: hash,
+  })
+  return this.loginUser(newUser)
+}
+```
+
+포스트맨에서 확인한다.
+
 ---
 
 ## 8. Validation Message 일반화
+
+공통 메시지를 작성할 `common/validation-message/length-validation.message.ts` 파일을 만든다.
+
+```ts common/validation-message/length-validation.message.ts
+import { ValidationArguments } from 'class-validator'
+
+/** ValidationArguments의 프로퍼티들
+ * 1) value -> 검증되고 있는 값(입력된 값)
+ * 2) constraints -> 파라미터에 입력된 제한사항들
+ *    args.constraints[0] -> 1
+ *    args.constraints[1] -> 20
+ * 3) targetNmae -> 검증하고 있는 클래스의 이름
+ * 4) object -> 검증하고 있는 객체
+ * 5) property -> 검증되고 있는 객체의 프로퍼티 이름
+ * @see https://github.com/typestack/class-validator?tab=readme-ov-file#validation-messages
+ */
+export const lengthValidationMessage = (args: ValidationArguments) => {
+  if (args.constraints.length === 2) {
+    return `${args.property}은 ${args.constraints[0]}~${args.constraints[1]} 글자를 입력해주세요!`
+  } else {
+    return `${args.property}은 최소 ${args.constraints[0]} 글자를 입력해주세요!`
+  }
+}
+```
+
+`common/validation-message/string-validation.message.ts` 파일을 만든다.
+
+```ts common/validation-message/string-validation.message.ts
+import { ValidationArguments } from 'class-validator'
+
+export const stringValidationMessage = (args: ValidationArguments) => {
+  return `${args.property}에 string을 입력해주세요!`
+}
+```
+
+`common/validation-message/email-validation.message.ts` 파일을 만든다.
+
+```ts email-validation.message.ts
+import { ValidationArguments } from 'class-validator'
+
+export const emailValidationMessage = (args: ValidationArguments) => {
+  return `${args.property}에 정확한 이메일을 입력해주세요!`
+}
+```
+
+user 엔티티에 작성한 Validation 공통 메시지를 추가한다.
+
+```ts users.entity.ts
+// 생략
+
+@Entity()
+export class UsersModel extends BaseModel {
+  /*** 닉네임 특성
+   * 1) 길이가 20을 넘지 않을 것
+   * 2) 유일무이한 값이 될 것
+   */
+  @Column({
+    length: 20,
+    unique: true,
+  })
+  @IsString({
+    message: stringValidationMessage,
+  })
+  @Length(1, 20, {
+    message: lengthValidationMessage,
+  })
+  nickname: string
+
+  /*** 이메일 특성
+   * 1) 유일무이한 값이 될 것
+   */
+  @Column({
+    unique: true,
+  })
+  @IsString({
+    message: stringValidationMessage,
+  })
+  @IsEmail(
+    {},
+    {
+      message: emailValidationMessage,
+    },
+  )
+  email: string
+
+  @Column()
+  @IsString({
+    message: stringValidationMessage,
+  })
+  @Length(3, 8, {
+    message: lengthValidationMessage,
+  })
+  password: string
+
+  // 생략
+}
+```
+
+posts 엔티티, update-post.dto에도 각각 작성한 Validation 공통 메시지를 추가한다.
+
+```ts posts.entity.ts
+// posts.entity.ts 생략
+@Column()
+@IsString({
+  message: stringValidationMessage,
+})
+title: string
+
+@Column()
+@IsString({
+  message: stringValidationMessage,
+})
+content: string
+```
+
+```ts update-post.dto.ts
+// update-post.dto.ts 생략
+export class UpdatePostDto extends PartialType(CreatePostDto) {
+  @IsString({
+    message: stringValidationMessage,
+  })
+  @IsOptional()
+  title?: string
+
+  @IsString({
+    message: stringValidationMessage,
+  })
+  @IsOptional()
+  content?: string
+}
+```

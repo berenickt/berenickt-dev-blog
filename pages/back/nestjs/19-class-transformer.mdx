@@ -5,18 +5,144 @@ date: 2023/12/25
 
 ## 1. Exclude Annotation
 
+민감한 개인정보와 같이 노출하고 싶지 않은 컬럼을 제외(exclude)할 수 있다.
+
+```ts users.entity.ts
+@Column()
+@IsString({
+  message: stringValidationMessage,
+})
+@Length(3, 8, {
+  message: lengthValidationMessage,
+})
+@Exclude() // 추가
+password: string
+```
+
+e.g. 비밀번호를 노출하고 싶지 않은 곳에서 interceptor를 등록해주면, API 요청 시 해당 컬럼정보가 제외된다.
+
+```ts users.controller.ts
+// 생략
+
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  /*** ClassSerializerInterceptor 뜻
+   * Serialization(직렬화)
+   * - 현재 시스템에서 사용되는 (NestJS) 데이터 구조를 다른 시스템에서도 사용할 수 있는 포맷으로 변환
+   * - class의 object에서 JSON 포맷으로 변환
+   *
+   * Deserialization(역직렬화) : 직렬화의 반대
+   */
+  @UseInterceptors(ClassSerializerInterceptor)
+  getUsers() {
+    return this.usersService.getAllUsers()
+  }
+
+  // 생략
+}
+```
+
 ---
 
 ## 2. Exclude Annotation 옵션 탐구
+
+```ts users.entity.ts
+@Column()
+@IsString({
+  message: stringValidationMessage,
+})
+@Length(3, 8, {
+  message: lengthValidationMessage,
+})
+/*** 📌 toClassOnly와 toPlainOnly
+ * Request
+ * frontend -> backend
+ * plain object (JSON) -> class instance (dto)
+ *
+ * Response
+ * backend -> frontend
+ * class instance (dto) -> plain obejct (JSON)
+ *
+ * toClassOnly -> class Instance 변환될 떄만 (요청일 떄)
+ * toPlainOnly -> plain object로 변환될 떄만 (응답일 때)
+ * 응답이 나갈 떄만 password를 제외시키고 싶을 떄
+ */
+@Exclude({ toPlainOnly: true })
+password: string
+```
 
 ---
 
 ## 3. ClassSerializer AppModule에 적용
 
+그런데 이렇게 일일이 제외 어노테이션을 다는 것을 사람이기에 실수하면 빠질 수 있다.
+
+- 그래서 자동으로 모든 API에 기본적으로 class-transformer 애노테이션이 달려있으면, 모두 기본 적용된다.
+- 이를 위해 ClassSerializer을 App 모듈에 적용하면 된다.
+- user 컨트롤러에서 ClassSerializerInterceptor를 지운다.
+
+```ts app.module.ts
+// 생략
+
+@Module({
+  // 생략
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    },
+  ],
+})
+export class AppModule {}
+```
+
+이렇게 하면 모든 API에서 Exclude 어노테이션을 적용시킬 수 있다.
+
 ---
 
 ## 4. Expose Annotation 사용
 
+예시를 위해 닉네임과 이메일을 섞은 프로퍼티가 포함되어야 한다고 가정해보자.
+
+```ts users.entity.ts
+// users.entity.ts 생략
+@Expose()
+get nicknameAndEmail() {
+  return this.nickname + '/' + this.email
+}
+```
+
+- 이런 식으로 실제 존재하지 않는 프로퍼티를 expoese(노출)시킬 수 있다.
+- 기능만 확인해보고, 지워서 원상복귀시킨다.
+
 ---
 
 ## 5. Expose Annotation 클래스에 적용
+
+너무 보안성이 강한 객체라서, 기본으로 다 보이지 않게하고, 보이게할 프로퍼티만 적용시킬 수 있다.
+
+```ts users.entity.ts
+// 생략
+
+@Entity()
+@Exclude() // 추가
+export class UsersModel extends BaseModel {
+  // 생략
+  @Expose()
+  nickname: string
+
+  // 생략
+  @Expose()
+  email: string
+
+  // 생략
+}
+```
+
+- 이런 식으로 클래스 자체에다가 Exlcude 어노테이션을 적용하면 된다.
+- 그리고 노출시킬 프로퍼티에만 Expose 어노테이션을 붙여주면 된다.
+- 기능만 확인해보고, 지워서 원상복귀시킨다.
