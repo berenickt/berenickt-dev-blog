@@ -5,18 +5,107 @@ date: 2023/12/25
 
 ## 1. 환경변수 사용
 
+- 현재는 Access, Refresh 토큰을 매번 갱신해야 하는 불편함이 있다.
+- 환경변수를 이용하면 이를 해결할 수 있다.
+
+![postman-env](https://raw.githubusercontent.com/berenickt/image-server/main/img/postman-env.png)
+
+포스트맨의 맨 왼쪽의 메뉴를 보면, 이떄까지는 Collections 탭만 이용했다.
+
+- Environments 탭을 클릭한다.
+- Globals에 new Environments 버튼을 클릭한다.
+- 그 안에 변수를 지정할 수 있다.
+- 환경변수는 다음 표와 같이 설정한다. 값을 쓰고 반드시 저장을 해줘야 적용된다.
+
+| Variable | Type    | Initial value  | Current value  |
+| -------- | ------- | -------------- | -------------- |
+| host     | default | localhost:3000 | localhost:3000 |
+
+- cf. Initial value는 포스트맨에서 팀끼리 공유하는 기능 사용시 공유할 떄 사용되는 값
+- cf. Current value는 Initial value를 로컬에서만 오버라이드할 수 있는 값
+
+그리고 오른쪽 위에 토글에서 작성한 Environments를 적용시켜준다.
+
+![postman-env2](https://raw.githubusercontent.com/berenickt/image-server/main/img/postman-env2.png)
+
+그런 다음, 모든 API에 `{{환경변수명}}`을 입력해서 적용시켜 준다.
+
 ---
 
 ## 2. Test로 환경변수 저장
+
+적용한 환경변수를 다음과 같이 수정한다.
+
+| Variable     | Type    | Initial value  | Current value  |
+| ------------ | ------- | -------------- | -------------- |
+| accessToken  | default |                |                |
+| refreshToken | default |                |                |
+| host         | default | localhost:3000 | localhost:3000 |
+
+로그인하면, 자동으로 accessToken 값을 채워주게 할 것이다.
+
+`/auth/login/email` API에서 Tests 탭을 클릭한다.
+
+- 원래 Tests 탭은 요청을 했을 떄, 응답값이 제대로 들어오는지 검증하기 위한 코드를 짜는 곳이다.
+- 그래서 요청을 보낼 떄마다, Tests가 같이 돌면서 응답이 제대로 됐는지 확인할 수 있다.
+- 그거 외에도 원한다면, 환경변수를 변형하는 코드를 포스트맨에서 제공한다.
+- cf. pm은 postman이라는 뜻
+
+```js
+pm.test('Store access token', function () {
+  pm.environment.set('accessToken', pm.response.json().accessToken)
+})
+
+pm.test('Store refresh token', function () {
+  pm.environment.set('refreshToken', pm.response.json().refreshToken)
+})
+```
+
+- `/auth/login/email` API를 요청을 보내고, 환경변수 탭으로 돌아가 확인해보면, current value에 값이 들어간다.
+- `/auth/login/email` API에 밑에 Test Results 클릭해보면 요청이 잘 보내진 것(PASS)을 확인할 수 있다.
 
 ---
 
 ## 3. Authorization 탭 이용해 Basic 토큰 보내기
 
+`/auth/login/email` API의 Headers 탭에서 authorization을 삭제한다.
+
+- 그리고 `/auth/login/email` API의 Authorization 탭에서 Type을 Basic Auth를 선택한다.
+- 사용할 ID, PW를 입력한다. 저장하고 요청을 보낸다.
+- 그러면 자동으로 Base64로 인코딩해준다.
+
+포스트맨에 맨 아래 console 탭을 클릭해보면, 지금까지 보낸 요청들을 확인할 수 있다.
+
+- 가장 최근이 맨 밑에 있다.
+- 확인해보면, Request Headers.Authorization를 확인해보면 다음과 같이 잘 들어간 것을 확인할 수 있다.
+
+```http
+Request Headers
+  Authorization: Basic c3dAZ21haWwuYWk6MTIzMTIz
+  User-Agent: PostmanRuntime/7.32.3
+  Accept: */*
+  Postman-Token: a889e7c9-220b-4123-bd1a-6c1ac6b283df
+  Host: localhost:3000
+  Accept-Encoding: gzip, deflate, br
+  Connection: keep-alive
+  Content-Length: 0
+```
+
 ---
 
 ## 4. 회원가입 라우트에 Test 적용
 
+`/auth/login/email` API의 Tests 탭의 코드를 `/auth/register/email`에 Tests에 복붙한다.
+
+- 회원가입은 Body에서 하니, 그대로 두면 된다.
+
 ---
 
 ## 5. 헤더에 Bearer 토큰 적용
+
+1. `/posts` API의 Headers 탭에서 Authorization를 지운다.
+2. `/posts` API의 Authorization 탭에서 type을 `Bearer Token`을 클릭한다.
+3. Token에 환경변수 `{{accessToken}}`를 입력해두면, 알아서 환경변수의 값을 가져와서 적용한다.
+4. 이제부터 그냥 바로 최신토큰을 기반으로 API 요청만 해주면 된다.
+
+다른 프로젝트에서도 환경변수를 잘 적용하면 편해진다.
