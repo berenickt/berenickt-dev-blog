@@ -5,38 +5,502 @@ date: 2023/12/25
 
 ## 1. Pagination 이론
 
+- `Pagination`이란? : 많은 데이터를 부분적으로 나눠서 불러오는 기술
+- 쿼리에 해당되는 모든 데이터를 한번에 다 불러오지 않고 부분적으로 쪼개서 불러온다. e.g.) 한번에 20개씩
+  - 쿠팡같은 앱의경우 수억개의 상품이 데이터베이스에 저장되어 있는데,
+  - 사용자가 상품 검색 화면을 들어갈때마다 모든 상품정보를 서버에서 클라이언트로 전송할 필요가 없다.
+- 현대 클라우드 시스템은 데이터 전송에 돈이 든다!
+  - 돈이 안들더라도 수억개의 데이터를 한번에 보내면 분명 메모리가 터질것이다!
+  - 돈이 터지지 않더라도 데이터 전송에 상당히 오랜 시간이 걸릴것이다!
+
+Pagination은 대표적으로 2가지가 존재한다.
+
+1. Page Based Pagination
+2. Cursor Based Pagination
+
+---
+
+### 1.1 Page Based Pagination
+
+- 페이지 기준으로 데이터를 잘라서 요청하는 Pagination
+- 요청을 보낼때 원하는 데이터 갯수와 몇번째 페이지를 가져올지 명시
+- 페이지 숫자를 누르면 다음 페이지로 넘어가는 형태의 UI에서 많이 사용
+- 문제점 : Pagination 도중에 데이터베이스에서 데이터가 추가되거나 삭제될경우,
+  - **저장되는 데이터가 누락되거나 중복될 수 있음**
+- Pagination 알고리즘이 매우 간단함
+
+---
+
+### 1.2 Cursor Based Pagination
+
+- 가장 최근에 가져온 데이터를 기준으로 다음 데이터를 가져오는 Pagination
+- 요청을 보낼때 마지막 데이터의 기준값(ID등 Unique 값)과 몇개의 데이터를 가져올지 명시
+- 스크롤 형태의 리스트에서 자주 사용 e.g.) 앱의 ListView
+- 장점 : 최근 데이터의 기준값을 기반으로 쿼리가 작성되기때문에 **데이터가 누락되거나 중복될 확률이 적음**
+
+---
+
+### 1.3 요청 형태
+
+```
+http://localhost:3000/posts?order__createdAt=ASC&where__id_more_than=3&take=20
+
+// 오름차순으로, id가 3보다 큰 데이터를, 20개의 포스트를 가져온다.
+```
+
+`{property}__{filter}`형식으로 구현
+
+- `order__createAt` : 내림/오름차 정렬
+- `where__id_more_than` : 어떤 ID 이후로부터 데이터를 요청할 건지
+- `take` : 몇 개의 데이터를 요청할건지
+
+---
+
+### 1.4 응답 형태
+
+```json
+{
+  // 데이터를 리스트로 받는 부분
+  "data": [
+    {
+      "id": 4,
+      "updatedAt": "2023-06-06T15:41:33.928Z",
+      "createdAt": "2023-06-06T15:41:33.928Z",
+      "title": "test",
+      "content": "test123",
+      "likeCount": 0,
+      "commentCount": 0,
+      "author": {
+        "id": 1,
+        "nickname": "codefactory5",
+        "email": "test5@codefactory.ai",
+        "role": "USER"
+      }
+    }
+  ],
+  // paging 관련 정보를 입력하는 곳
+  "paging": {
+    // 다음 커서에대한 정보
+    "cursor": {},
+    "after": 4,
+    // 총 몇개의 데이터가 응답왔는지
+    "count": 20,
+    // 다음 요청 URL
+    "next": "http://localhost:3000/post?order__createdAt=ASC&take=20&where__id__more_than=4"
+  }
+}
+```
+
 ---
 
 ## 2. PaginationPostDto 생성
+
+`posts/dto/paginate-post.dto.ts` 파일을 만든다.
+
+```ts paginate-post.dto.ts
+import { IsIn, IsNumber, IsOptional } from 'class-validator'
+
+export class PaginatePostDto {
+  /*** 이전 마지막 데이터의 ID
+   * 이 프로퍼티에 입력된 ID보다 높은 ID부터 값을 가져오기
+   */
+  @IsNumber()
+  @IsOptional()
+  where__id_more_than?: number
+
+  /*** 정렬
+   * createAt : 생성된 시간의 내림차/오름차 순으로 정렬
+   */
+  @IsIn(['ASC']) // 리스트에 있는 값들만 허용
+  @IsOptional()
+  // eslint-disable-next-line @typescript-eslint/prefer-as-const
+  order__createAt: 'ASC' = 'ASC'
+
+  /*** 갖고올 데이터 개수
+   * 몇 개의 데이터를 응답으로 받을지
+   */
+  @IsNumber()
+  @IsOptional()
+  take: number = 20
+}
+```
+
+posts 컨트롤러에 getPosts를 수정한다.
+
+```ts posts.controller.ts
+// posts.controller.ts 생략
+@Get()
+getPosts(
+  @Query() query: PaginatePostDto, //
+) {
+  return this.postsService.getAllPosts()
+}
+```
 
 ---
 
 ## 3. MoreThan과 Order로 필터링
 
+posts 서비스에 paginatePosts을 작성한다.
+
+```ts posts.service.ts
+// posts.service.ts 생략
+/***
+ * 1) 오름차순으로 정렬하는 pagination만 구현한다
+ */
+async paginatePosts(dto: PaginatePostDto) {
+  const posts = await this.postsRepository.find({
+    where: {
+      // 더 크다 / 더 많다
+      id: MoreThan(dto.where__id_more_than ?? 0),
+    },
+    order: {
+      createAt: dto.order__createAt,
+    },
+    take: dto.take,
+  })
+
+  /*** Response
+   * data : Data[],
+   * cursor : {
+   *  after: 마지막 Data의 ID
+   * }
+   * count: 응답한 데이터의 개수
+   * next: 다음 요청을 할 떄 사용할 URL
+   */
+  return {
+    data: posts,
+  }
+}
+```
+
+posts 컨트롤러에서 작성한 paginatePosts를 적용한다.
+
+```ts posts.controller.ts
+// posts.controller.ts
+/*** 1) GET /posts
+ * 모든 post를 다 가져온다
+ */
+@Get()
+getPosts(
+  @Query() query: PaginatePostDto, //
+) {
+  return this.postsService.paginatePosts(query)
+}
+```
+
+정렬 옵션이 제대로 동작하려면 `main.ts`에 tranform 옵션을 true로 바꿔줘야 한다.
+
+```ts main.ts
+// 생략
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule)
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  )
+  await app.listen(3000)
+}
+bootstrap()
+```
+
+- 이렇게 해주는 이유는 posts 컨트롤러에서 만약 query에 값을 실제로 넣은 적이 없다면,
+  - 넣지 않았으니까, 넣지 않은 값을 그대로 반환해준다.
+  - 이게 classValidator와 classTransformer가 기본적으로 작동하는 방식이다.
+- 그런데 값을 넣지 않더라도 선언한 기본 값들을 넣은 채로, 클래스를 변형해 DTO를 형성해 줬으면 하기 때문에
+  - main.ts에서 `transform : true`를 넣어줌으로써
+  - 값을 넣지 않았다면 디폴트 값들이 DTO에다가 넣은 채로 인스턴스를 생성해도 된다고 허가를 해주는 것.
+  - 즉, 변환하는 작업을 해도 괜찮다라는 옵션을 넣어준 것이다.
+
 ---
 
 ## 4. 랜덤 데이터 생성하는 로직 만들기
+
+페이지네이션을 테스트할 수 있도록, 임의로 충분한 데이터를 생성하는 함수를 posts 서비스에 만든다.
+
+```ts posts.service.ts
+// posts.service.ts
+/*** 페이지네이션용 테스트 포스트 생성
+ *
+ */
+async generatePosts(userId: number) {
+  for (let i = 0; i < 100; i++) {
+    await this.createPost(userId, {
+      title: `임의로 생성된 포스트 제목 ${i}`,
+      content: `임의로 생성된 포스트 내용 ${i}`,
+    })
+  }
+}
+```
+
+그리고 페이지네이션 테스트용 엔드포인트를 posts 컨트롤러에 추가한다.
+
+```ts posts.controller.ts
+// posts.controller.ts 생략
+/*** POST /posts/random
+ *
+ */
+@Post('random')
+@UseGuards(AccessTokenGuard)
+async postPostsRandom(@User() user: UsersModel) {
+  await this.postsService.generatePosts(user.id)
+  return true
+}
+```
+
+- cf. 프로덕션(실제 배포) 단계에서는 이런 테스트 API들을 반드시 지워줘야 한다.
+- 포스트맨에서 테스트 데이터를 생성한다.
 
 ---
 
 ## 5. Type Annotation 사용 & Implicit Conversion 적용
 
+- URL에 보내는 모든 데이터는 String으로 받는다.
+- 그래서 URL에 string으로 들어온 값을 number로 변환해줘야 한다.
+
+`paginate-post.dto.ts`에 Type 변환 어노테이션 코드를 추가한다.
+
+```ts paginate-post.dto.ts
+import { Type } from 'class-transformer'
+import { IsIn, IsNumber, IsOptional } from 'class-validator'
+
+export class PaginatePostDto {
+  /*** 이전 마지막 데이터의 ID
+   * 이 프로퍼티에 입력된 ID보다 높은 ID부터 값을 가져오기
+   */
+  @Type(() => Number) // URL에 string으로 들어온 값을 number로 변환해줌
+  @IsNumber()
+  @IsOptional()
+  where__id_more_than?: number
+
+  // 생략
+}
+```
+
+근데 이렇게 Type 어노테이션말고, main.ts에서 옵션을 이용해줄 수도 있다.
+
+- 위에서 추가한 `@Type(() => Number)`를 지운다.
+- `main.ts`를 다음과 같이 수정한다.
+
+```ts main.ts
+// main.ts 생략
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule)
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      transformOptions: {
+        // 임의로 변환을 허가
+        enableImplicitConversion: true,
+      },
+    }),
+  )
+  await app.listen(3000)
+}
+bootstrap()
+```
+
+- 이렇게 true로 옵션을 설정해주면,
+- `paginate-post.dto`와 같은 파일의 IsNumber 어노테이션이 있으면,
+- 숫자로 변환되는 것이 정상인지 알아서 판단하고, 자동으로 숫자로 변환한다.
+- 즉, 입력된 type을 기준으로 자동으로 class-transformer가 작용하도록 할 수 있다.
+
 ---
 
 ## 6. CursorPagination 메타데이터 생성
+
+`common/const/env.const.ts` 파일을 만든다.
+
+```ts common/const/env.const.ts
+export const PROTOCOL = 'http'
+export const HOST = 'localhost:3000'
+```
+
+posts 서비스에 paginatePosts를 수정한다.
+
+```ts posts.service.ts
+// posts.service.ts 생략
+/***
+ * 1) 오름차순으로 정렬하는 pagination만 구현한다
+ */
+async paginatePosts(dto: PaginatePostDto) {
+  const posts = await this.postsRepository.find({
+    where: {
+      // 더 크다 / 더 많다
+      id: MoreThan(dto.where__id_more_than ?? 0),
+    },
+    order: {
+      createAt: dto.order__createAt,
+    },
+    take: dto.take,
+  })
+
+  /****
+   * 해당되는 포스트가 0개 이상이면, 마지막 포스트를 가져오고
+   * 아니면 null을 반환한다.
+   */
+  const lastItem = posts.length > 0 ? posts[posts.length - 1] : null
+  const nexttUrl = lastItem && new URL(`${PROTOCOL}://${HOST}/posts`)
+
+  /**** dto의 키값들을 루핑하면서
+   * 키값에 해당되는 벨류가 존재하면, parame에 그대로 붙여넣는다.
+   * 단, where__id_more_than 값만  lastItem의 마지막 값으로 넣어준다.
+   */
+  if (nexttUrl) {
+    for (const key of Object.keys(dto)) {
+      if (dto[key]) {
+        if (key !== 'where__id_more_than') {
+          nexttUrl.searchParams.append(key, dto[key])
+        }
+      }
+    }
+    nexttUrl.searchParams.append('where__id_more_than', lastItem.id.toString())
+  }
+
+  /*** Response
+   * data : Data[],
+   * cursor : {
+   *  after: 마지막 Data의 ID
+   * }
+   * count: 응답한 데이터의 개수
+   * next: 다음 요청을 할 떄 사용할 URL
+   */
+  return {
+    data: posts,
+    cursor: {
+      after: lastItem?.id,
+    },
+    count: posts.length,
+    nest: nexttUrl?.toString(),
+  }
+}
+```
 
 ---
 
 ## 7. 마지막 페이지 로직 조건 추가
 
+```ts posts.service.ts
+// posts.service.ts의 paginatePosts 생략
+/****
+ * 해당되는 포스트가 0개 이상이면, 마지막 포스트를 가져오고
+ * 아니면 null을 반환한다.
+ */
+const lastItem = posts.length > 0 && posts.length === dto.take ? posts[posts.length - 1] : null
+const nexttUrl = lastItem && new URL(`${PROTOCOL}://${HOST}/posts`)
+```
+
 ---
 
 ## 8. 다음 커서가 존재하지 않을 떄 undefined대신 null
+
+```ts posts.service.ts
+// posts.service.ts의 paginatePosts 생략
+/*** Response
+ * data : Data[],
+ * cursor : {
+ *  after: 마지막 Data의 ID
+ * }
+ * count: 응답한 데이터의 개수
+ * next: 다음 요청을 할 떄 사용할 URL
+ */
+return {
+  data: posts,
+  cursor: {
+    after: lastItem?.id ?? null,
+  },
+  count: posts.length,
+  nest: nexttUrl?.toString() ?? null,
+}
+```
 
 ---
 
 ## 9. 내림차순 Next 토큰 로직 작성
 
+`paginate-post.dto.ts`에 내림차순을 위한 코드를 추가한다.
+
+```ts paginate-post.dto.ts
+import { IsIn, IsNumber, IsOptional } from 'class-validator'
+
+export class PaginatePostDto {
+  @IsNumber()
+  @IsOptional()
+  where__id_less_than?: number
+
+  /*** 이전 마지막 데이터의 ID
+   * 이 프로퍼티에 입력된 ID보다 높은 ID부터 값을 가져오기
+   */
+  @IsNumber()
+  @IsOptional()
+  where__id_more_than?: number
+
+  /*** 정렬
+   * createAt : 생성된 시간의 내림차/오름차 순으로 정렬
+   */
+  @IsIn(['ASC', 'DESC']) // 리스트에 있는 값들만 허용
+  @IsOptional()
+  order__createAt: 'ASC' | 'DESC' = 'ASC'
+
+  /*** 갖고올 데이터 개수
+   * 몇 개의 데이터를 응답으로 받을지
+   */
+  @IsNumber()
+  @IsOptional()
+  take: number = 20
+}
+```
+
+posts 서비스에 내림차순 코드를 추가한다.
+
+```ts posts.service.ts
+// posts.service.ts의 paginatePosts 생략
+/**** dto의 키값들을 루핑하면서
+ * 키값에 해당되는 벨류가 존재하면, parame에 그대로 붙여넣는다.
+ * 단, where__id_more_than 값만  lastItem의 마지막 값으로 넣어준다.
+ */
+if (nexttUrl) {
+  for (const key of Object.keys(dto)) {
+    if (dto[key]) {
+      if (key !== 'where__id_more_than' && key !== 'where__id_less_than') {
+        nexttUrl.searchParams.append(key, dto[key])
+      }
+    }
+  }
+  let key = null
+  if (dto.order__createAt === 'ASC') {
+    key = 'where__id_more_than'
+  } else {
+    key = 'where__id_less_than'
+  }
+  nexttUrl.searchParams.append(key, lastItem.id.toString())
+}
+```
+
 ---
 
 ## 10. 내림차순 정렬 Where 쿼리 작성
+
+```ts posts.service.ts
+// posts.service.ts의 paginatePosts 생략
+async paginatePosts(dto: PaginatePostDto) {
+  const where: FindOptionsWhere<PostsModel> = {}
+
+  if (dto.where__id_less_than) {
+    where.id = LessThan(dto.where__id_less_than)
+  } else if (dto.where__id_more_than) {
+    where.id = MoreThan(dto.where__id_more_than)
+  }
+
+  const posts = await this.postsRepository.find({
+    where,
+    order: {
+      createAt: dto.order__createAt,
+    },
+    take: dto.take,
+  })
+
+  // 생략
+}
+```
