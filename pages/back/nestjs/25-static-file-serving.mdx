@@ -5,6 +5,39 @@ date: 2023/12/25
 
 ## 1. Static File Serving 옵션 추가
 
+```bash
+yarn add @nestjs/serve-static
+```
+
+```ts app.module.ts
+// 생략
+@Module({
+  imports: [
+    PostsModule,
+    /***
+     * http://localhost:3000/public/posts/4022.jpg
+     * http://localhost:3000/posts/4022.jpg
+     */
+    ServeStaticModule.forRoot({
+      rootPath: PUBLIC_FOLDER_PATH,
+      serveRoot: '/public',
+    }),
+    // 생략
+  ],
+  // 생략
+})
+export class AppModule {}
+```
+
 ---
 
-## 2. Class Transformer 이용해 URLdㅔ prefix 추가
+## 2. Class Transformer 이용해 URL에 prefix 추가
+
+```ts posts.entity.ts
+// posts.entity.ts 생략
+@Column({
+  nullable: true,
+})
+@Transform(({ value }) => value && `/${join(POST_PUBLIC_IMAGE_PATH, value)}`)
+image?: string
+```
