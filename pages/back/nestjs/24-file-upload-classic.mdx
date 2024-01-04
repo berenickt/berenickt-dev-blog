@@ -5,6 +5,152 @@ date: 2023/12/25
 
 ## 1. Multer 세팅
 
+Multer를 사용해 파일 업로드를 구현할 것이다.
+
+```bash
+yarn add multer @types/multer uuid @types/uuid
+```
+
+posts 엔티티에 이미지 프로퍼티를 추가한다.
+
+```ts posts.entity.ts
+// 생략
+
+@Entity()
+export class PostsModel extends BaseModel {
+  // 생략
+
+  @Column({
+    nullable: true,
+  })
+  image?: string
+
+  // 생략
+}
+```
+
+`common/const/path.const.ts` 파일을 만든다.
+
+```ts common/const/path.const.ts
+import { join } from 'path'
+import * as process from 'process'
+
+// 서버 프로젝트의 루트 폴더
+export const PROJECT_ROOT_PATH = process.cwd()
+// 외부에서 접근 가능한 파일들을 모아둔 폴더 이름
+export const PUBLIC_FOLDER_NAME = 'public'
+// 포스트 이미지들을 저장할 폴더 이름
+export const POSTS_FOLDER_NAME = 'posts'
+
+// 실제 공개폴더의 절대 경로
+// /{프로젝트의 위치}/public
+export const PUBLIC_FOLDER_PATH = join(PROJECT_ROOT_PATH, PUBLIC_FOLDER_NAME)
+
+// 포스트 이미지를 저장할 폴더
+// /{프로젝트의 위치}/public/posts
+export const POST_IMAGE_PATH = join(PUBLIC_FOLDER_PATH, POSTS_FOLDER_NAME)
+
+// 절대경로 x
+// public/posts/xxx.jpg
+export const POST_PUBLIC_IMAGE_PATH = join(PUBLIC_FOLDER_NAME, POSTS_FOLDER_NAME)
+```
+
+- 추가적으로 프로젝트의 루트 경로에 `public/posts` 폴더를 만든다.
+
+posts 모듈에서 Multer 모듈을 전부 import한다.
+
+```ts posts.module.ts
+import * as multer from 'multer'
+import { v4 as uuid } from 'uuid'
+// 생략
+
+@Module({
+  imports: [
+    /*** 모델에 해당하는 repostory를 주입 ==> forFeature
+     * repository : 해당 모델을 다룰 수 있게 해주는 클래스
+     */
+    TypeOrmModule.forFeature([
+      PostsModel, //
+    ]),
+    AuthModule,
+    UsersModule,
+    CommonModule,
+    MulterModule.register({
+      limits: {
+        // byte 단위로 입력 (10000000byte -> 10MB가 넘는 파일은 에러)
+        fieldSize: 10000000,
+      },
+      /*** cb(에러, boolean)
+       * 첫번쨰 파라미터에는 에러가 있을 경우 에러 정보를 넣어준다.
+       * 두번쨰 파라미터는 파일을 받을지 말지 boolean을 넣어준다.
+       */
+      fileFilter: (req, file, cb) => {
+        // xxx.jpg -> .jpg같이 확장자만 가져와줌
+        const ext = extname(file.originalname)
+
+        if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') {
+          return cb(
+            new BadRequestException('jpg/jpeg/png 파일만 업로드 가능합니다!'), //
+            false,
+          )
+        }
+        return cb(null, true)
+      },
+      storage: multer.diskStorage({
+        // 파일을 어디에 보낼지
+        destination: function (req, res, cb) {
+          cb(null, POST_IMAGE_PATH)
+        },
+        filename: function (req, file, cb) {
+          cb(null, `${uuid()}${extname(file.originalname)}`)
+        },
+      }),
+    }),
+  ],
+  // 생략
+})
+export class PostsModule {}
+```
+
 ---
 
 ## 2. FileInterceptor 적용
+
+posts 컨트롤러에 이미지를 받을 파라미터를 받아서 넘겨준다.
+
+```ts posts.controller.ts
+// posts.controller.ts 생략
+@Post()
+@UseGuards(AccessTokenGuard)
+@UseInterceptors(FileInterceptor('image'))
+postPosts(
+  @User('id') userId: number,
+  @Body() body: CreatePostDto,
+  @UploadedFile() file?: Express.Multer.File,
+  // @Body('title') title: string,
+  // @Body('content') content: string,
+  // 기본값을 true로 설정하는 파이프
+  // @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean,
+) {
+  return this.postsService.createPost(userId, body, file?.filename)
+}
+```
+
+posts 서비스에서 받은 이미지를 저장한다.
+
+```ts posts.service.ts
+// posts.service.ts 생략
+async createPost(authorId: number, postDto: CreatePostDto, image?: string) {
+  const post = this.postsRepository.create({
+    author: {
+      id: authorId,
+    },
+    ...postDto,
+    image,
+    likeCount: 0,
+    commentCount: 0,
+  })
+  const newPost = await this.postsRepository.save(post)
+  return newPost
+}
+```
