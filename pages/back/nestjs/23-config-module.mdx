@@ -1,18 +1,245 @@
 ---
-title: '23-Config 모듈 사용'
+title: '23-Config 모듈-환경변수'
 date: 2023/12/25
 ---
 
 ## 1. ENV 파일 작성
 
+NestJS에서는 환경변수를 쉽게 다루도록 config 모듈을 제공한다.
+
+```bash
+yarn add @nestjs/config
+```
+
+루트파일에 `.env`을 만든다.
+
+```.env
+JWT_SECRET=berenickt
+HASH_ROUNDS=10
+PROTOCOL=http
+HOST=localhost:3000
+
+DB_HOST=127.0.0.1
+DB_PORT=5808
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_DATABASE=postgres
+```
+
+- gitignore에 `.env`를 등록하면, github에 제외된다.
+- `auth/const/auth.const.ts`
+- `common/const/env.const.ts`
+- `app.module.ts`
+  - 의 모든 값들을 env에 정의한다.
+
 ---
 
 ## 2. 환경변수 적용 - 1
+
+`app.module.ts`에서 config 모듈을 불러온다.
+
+```ts app.module.ts
+import { ClassSerializerInterceptor, Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
+
+import { APP_INTERCEPTOR } from '@nestjs/core'
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+import { PostsModule } from './posts/posts.module'
+import { PostsModel } from './posts/entities/posts.entity'
+import { UsersModule } from './users/users.module'
+import { UsersModel } from './users/entities/users.entity'
+import { AuthModule } from './auth/auth.module'
+import { CommonModule } from './common/common.module'
+import { ConfigModule } from '@nestjs/config'
+
+@Module({
+  imports: [
+    PostsModule,
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRoot({
+      // 데이터베이스 타입
+      type: 'postgres',
+      host: '127.0.0.1',
+      port: 5808,
+      username: 'postgres',
+      password: 'postgres',
+      database: 'postgres',
+      // entities폴더에 작성한 PostsModel 가져오기
+      entities: [PostsModel, UsersModel],
+      synchronize: true,
+    }),
+    UsersModule,
+    AuthModule,
+    CommonModule,
+  ],
+  controllers: [AppController],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    },
+  ],
+})
+export class AppModule {}
+```
+
+`common/const/env-keys.const.ts` 파일을 만든다.
+
+```ts common/const/env-keys.const.ts
+// 서버 프로토콜 -> http / https
+export const ENV_PROTOCOL_KEY = 'PROTOCOL'
+// 서버 호스트 -> localhost:3000
+export const ENV_HOST_KEY = 'HOST'
+// JWT 토큰 시크릿 -> berenickt
+export const ENV_JWT_SECRET_KEY = 'JWT_SECRET'
+// JWT 토큰 해시 라운드 수 -> 10
+export const ENV_HASH_ROUNDS_KEY = 'HASH_ROUNDS'
+// 데이터베이스 호스트 -> localhost
+export const ENV_DB_HOST_KEY = 'DB_HOST'
+// 데이터베이스 포트 -> 5808
+export const ENV_DB_PORT_KEY = 'DB_PORT'
+// 데이터베이스 사용자 이름 -> postgres
+export const ENV_DB_USERNAME_KEY = 'DB_USERNAME'
+// 데이터베이스 사용자 비밀번호 -> postgres
+export const ENV_DB_PASSWORD_KEY = 'DB_PASSWORD'
+// 데이터베이스 이름 -> postgres
+export const ENV_DB_DATABASE_KEY = 'DB_DATABASE'
+```
+
+`auth.const.ts`에서 각각의 변수에 오른쪽 마우스 클릭해서
+
+- `go to reference(정의로 이동)`을 누르면,
+- 현재 해당 변수를 참조하는 모든 파일을 볼 수 있다.
+- 아니면 `auth.const.ts`를 지우고, 찾아서 import를 다시 하면 된다.
+- auth 서비스에 env-keys들로 값을 수정한다.
+
+```ts auth.service.ts
+// 생략
+@Injectable()
+export class AuthService {
+  // 생략
+  verifyToken(token: string) {
+    try {
+      return this.jwtService.verify(token, {
+        secret: this.configService.get<string>(ENV_JWT_SECRET_KEY),
+      })
+    } catch (err) {
+      throw new UnauthorizedException('토큰이 만료됏거나 잘못된 토큰입니다.')
+    }
+  }
+
+  rotateToken(token: string, isRefreshToken: boolean) {
+    const decoded = this.jwtService.verify(token, {
+      secret: this.configService.get<string>(ENV_JWT_SECRET_KEY),
+    })
+    // 생략
+  }
+
+  async registerWithEmail(user: RegisterUserDto) {
+    const hash = await bcrypt.hash(
+      user.password, //
+      parseInt(this.configService.get<string>(ENV_HASH_ROUNDS_KEY)),
+    )
+    // 생략
+  }
+}
+```
 
 ---
 
 ## 3. 환경변수 적용 - 2
 
+이제 `common/const/env.const.ts` 파일은 삭제한다. 마찬가지로 에러난 곳에 가서 import를 수정한다.
+
+```ts common.service.ts
+// 생략
+@Injectable()
+export class CommonService {
+  constructor(private readonly configService: ConfigService) {}
+  // 생략
+  private async cursorPaginate< // 생략
+    T extends BaseModel,
+  >() {
+    // 생략
+    const lastItem = data.length > 0 && data.length === dto.take ? data[data.length - 1] : null
+    const PROTOCOL = this.configService.get<string>(ENV_PROTOCOL_KEY)
+    const HOST = this.configService.get<string>(ENV_HOST_KEY)
+    const nextUrl = lastItem && new URL(`${PROTOCOL}://${HOST}/${path}`)
+    // 생략
+  }
+}
+```
+
+posts 서비스에도 마찬가지로 configService만들고, env 적용한다.
+
+```ts posts.service.ts
+// 생략
+
+@Injectable()
+export class PostsService {
+  constructor(
+    @InjectRepository(PostsModel)
+    private readonly postsRepository: Repository<PostsModel>,
+    private readonly commonService: CommonService,
+    private readonly configService: ConfigService,
+  ) {}
+  // 생략
+
+  async cursorPaginatePosts(dto: PaginatePostDto) {
+    // 생략
+    const lastItem = posts.length > 0 && posts.length === dto.take ? posts[posts.length - 1] : null
+    const PROTOCOL = this.configService.get<string>(ENV_PROTOCOL_KEY)
+    const HOST = this.configService.get<string>(ENV_HOST_KEY)
+    const nextUrl = lastItem && new URL(`${PROTOCOL}://${HOST}/posts`)
+    // 생략
+  }
+}
+```
+
 ---
 
 ## 4. process 객체를 이용해 환경변수 불러오기
+
+app 모듈에서 config 모듈을 쓰니, process 객체로 환경변수를 쓴다.
+
+```ts app.module.ts
+// app.module.ts 생략
+@Module({
+  imports: [
+    PostsModule,
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRoot({
+      // 데이터베이스 타입
+      type: 'postgres',
+      host: process.env[ENV_DB_HOST_KEY],
+      port: parseInt(process.env[ENV_DB_PORT_KEY]),
+      username: process.env[ENV_DB_USERNAME_KEY],
+      password: process.env[ENV_DB_PASSWORD_KEY],
+      database: process.env[ENV_DB_DATABASE_KEY],
+      // entities폴더에 작성한 PostsModel 가져오기
+      entities: [PostsModel, UsersModel],
+      synchronize: true,
+    }),
+    UsersModule,
+    AuthModule,
+    CommonModule,
+  ],
+  controllers: [AppController],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    },
+  ],
+})
+export class AppModule {}
+```
