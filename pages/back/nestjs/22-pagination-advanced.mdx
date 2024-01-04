@@ -5,42 +5,652 @@ date: 2023/12/25
 
 ## 1. BasePaginationDto 생성
 
+pagination을 어떤 모듈에서 사용할 수 있게, common 서비스에 정의할 것이다.
+
+- 그러기 전에 페이지네이션을 할 수 있는 기본 베이스가 되는 DTO를 생성한다.
+- `posts/dto/PaginatePostDto` 내용만 잘라서
+- `common.dto/base-pagination.dto.ts`파일을 생성해 복붙한다.
+
+```ts base-pagination.dto.ts
+import { IsIn, IsNumber, IsOptional } from 'class-validator'
+
+export class BasePaginationDto {
+  @IsNumber()
+  @IsOptional()
+  page?: number
+
+  @IsNumber()
+  @IsOptional()
+  where__id_less_than?: number
+
+  /*** 이전 마지막 데이터의 ID
+   * 이 프로퍼티에 입력된 ID보다 높은 ID부터 값을 가져오기
+   */
+  @IsNumber()
+  @IsOptional()
+  where__id_more_than?: number
+
+  /*** 정렬
+   * createAt : 생성된 시간의 내림차/오름차 순으로 정렬
+   */
+  @IsIn(['ASC', 'DESC']) // 리스트에 있는 값들만 허용
+  @IsOptional()
+  order__createAt: 'ASC' | 'DESC' = 'ASC'
+
+  /*** 갖고올 데이터 개수
+   * 몇 개의 데이터를 응답으로 받을지
+   */
+  @IsNumber()
+  @IsOptional()
+  take: number = 20
+}
+```
+
+그리고 기존 PaginatePostDto은 BasePaginationDto을 상속받는다.
+
+```ts paginate-post.dto.ts
+import { BasePaginationDto } from 'src/common/dto/base-pagination.dto'
+
+export class PaginatePostDto extends BasePaginationDto {}
+```
+
+- 이렇게만 상속으로 기본 DTO를 정의하고, 특정 모듈에서만 필요한 프로퍼티가 있으면,
+- 그 프로퍼티만 추가해주면 된다.
+
 ---
 
 ## 2. BasePaginationDto 리팩토링 & pagination() 선언
+
+`where__id__less_than`와 같이 `_`를 2개로 바꾼다.
+
+```ts base-pagination.dto.ts
+import { IsIn, IsNumber, IsOptional } from 'class-validator'
+
+export class BasePaginationDto {
+  @IsNumber()
+  @IsOptional()
+  page?: number
+
+  @IsNumber()
+  @IsOptional()
+  where__id__less_than?: number
+
+  /*** 이전 마지막 데이터의 ID
+   * 이 프로퍼티에 입력된 ID보다 높은 ID부터 값을 가져오기
+   */
+  @IsNumber()
+  @IsOptional()
+  where__id__more_than?: number
+
+  // 생략
+}
+```
+
+posts 서비스에 `_`역시 2개로 바꿔준다.
+
+- `where__id__less_than`
+- `where__id__more_than`
+- cf. VSCode에 Ctrl + F로 한 번에 바꿔주면 편하다.
+
+common 서비스에 일반화할 `pagination()`를 생성한다.
+
+```ts common.service.ts
+import { Injectable } from '@nestjs/common'
+import { FindManyOptions, Repository } from 'typeorm'
+import { BasePaginationDto } from './dto/base-pagination.dto'
+import { BaseModel } from './entities/base.entity'
+
+@Injectable()
+export class CommonService {
+  paginate<T extends BaseModel>(
+    dto: BasePaginationDto,
+    repository: Repository<T>,
+    overrideFindOptions: FindManyOptions<T> = {},
+    path: string,
+  ) {}
+}
+```
 
 ---
 
 ## 3. 작업할 Pagination 로직 정리
 
+```ts common.service.ts
+import { Injectable } from '@nestjs/common'
+import { FindManyOptions, Repository } from 'typeorm'
+import { BasePaginationDto } from './dto/base-pagination.dto'
+import { BaseModel } from './entities/base.entity'
+
+@Injectable()
+export class CommonService {
+  paginate<T extends BaseModel>(
+    dto: BasePaginationDto,
+    repository: Repository<T>,
+    overrideFindOptions: FindManyOptions<T> = {},
+    path: string,
+  ) {
+    if (dto.page) {
+      return this.pagePaginate(dto, repository, overrideFindOptions)
+    } else {
+      return this.cursorPaginate(dto, repository, overrideFindOptions, path)
+    }
+  }
+
+  private async pagePaginate<T extends BaseModel>(
+    dto: BasePaginationDto,
+    repository: Repository<T>,
+    overrideFindOptions: FindManyOptions<T> = {},
+  ) {}
+
+  /***
+   * where__likeCount__more_than
+   * where__title__ilike
+   */
+  private async cursorPaginate<T extends BaseModel>(
+    dto: BasePaginationDto,
+    repository: Repository<T>,
+    overrideFindOptions: FindManyOptions<T> = {},
+    path: string,
+  ) {}
+
+  /** 반환하는 옵션
+   * where,
+   * order,
+   * take,
+   * skip -> page 기반일떄만
+   *
+   * DTO의 현재 싱긴 구조는 아래와 같다.
+   * {
+   * 	where__id__more_than:1,
+   * 	order__createAt: 'ASC'
+   * }
+   *
+   * 현재는 where__id__more_than 등에 해당하는 where 필터만 사용 중이지만,
+   * 나중에 where__likeCount__more_than 등 추가 필터를 넣고 싶어졌을 떄,
+   * 모든 where 필터링을 자동으로 파싱할 수 있을만한 기능을 제작해야 한다.
+   *
+   * 1) where로 시자한다면 필터 로직을 적용한다.
+   * 2) order로 시작한다면 정렬 로직을 적용한다.
+   * 3) 필터 로직을 적용한다 '__' 기준으로 split 했을떄 3개의 값으로 나뉘는지
+   *    2개의 값으로 나뉘는지 확인한다.
+   *    3-1) 3개의 값으로 나뉜다면 FILTER_MAPPER에서 해당되는 operator 함수를 찾아서 적용한다.
+   *   			 ['where', 'id', 'more_than']
+   * 		3-2) 2개의 값으로 나뉜다면 정확한 값을 필터하는 것이기 때문에 operator 없이 적용한다.
+   * 			   where__id -> ['where', 'id']
+   * 4) order의 경우 3-2와 같이 적용한다.
+   */
+  private composeFindOptions<T extends BaseModel>(
+    dto: BasePaginationDto, //
+  ): FindManyOptions<T> {}
+}
+```
+
 ---
 
 ## 4. DTO를 이용해 FindOptions 생성
+
+```ts common.service.ts
+// 생략
+
+@Injectable()
+export class CommonService {
+  // 생략
+  private composeFindOptions<T extends BaseModel>(
+    dto: BasePaginationDto, //
+  ): FindManyOptions<T> {
+    let where: FindOptionsWhere<T> = {}
+    let order: FindOptionsOrder<T> = {}
+
+    /***
+     * key -> where__id__less_than
+     * value -> 1
+     */
+    for (const [key, value] of Object.entries(dto)) {
+      if (key.startsWith('where__')) {
+        where = { ...where, ...this.parseWhereFilter(key, value) }
+      } else if (key.startsWith('order__')) {
+        order = { ...order, ...this.parseOrderFilter(key, value) }
+      }
+    }
+    return {
+      where,
+      order,
+      take: dto.take,
+      skip: dto.page ? dto.take * (dto.page - 1) : null,
+    }
+  }
+
+  private parseWhereFilter<T extends BaseModel>(
+    key: string, //
+    value: any,
+  ): FindOptionsWhere<T> {}
+
+  private parseOrderFilter<T extends BaseModel>(
+    key: string, //
+    value: any,
+  ): FindOptionsOrder<T> {}
+}
+```
 
 ---
 
 ## 5. ParseWhereFilter 작업
 
+`common/const/filter-mapper.const.ts` 파일을 만든다.
+
+```ts common/const/filter-mapper.const.ts
+import {
+  Any,
+  ArrayContainedBy,
+  ArrayContains,
+  ArrayOverlap,
+  Between,
+  Equal,
+  ILike,
+  In,
+  IsNull,
+  LessThan,
+  LessThanOrEqual,
+  Like,
+  MoreThan,
+  MoreThanOrEqual,
+  Not,
+} from 'typeorm'
+
+/*** 예시
+ * where__id__not
+ *
+ * {
+ * 	where:{
+ * 		id: Not(value)
+ * 	}
+ * }
+ */
+export const FILTER_MAPPER = {
+  any: Any,
+  array_contained_by: ArrayContainedBy,
+  array_contains: ArrayContains,
+  array_overlap: ArrayOverlap,
+  between: Between,
+  equal: Equal,
+  ilike: ILike,
+  in: In,
+  is_null: IsNull,
+  less_than: LessThan,
+  less_than_or_equal: LessThanOrEqual,
+  like: Like,
+  more_than: MoreThan,
+  more_than_or_equal: MoreThanOrEqual,
+  not: Not,
+}
+```
+
+다시 common 서비스에서 parseWhereFilter 내용을 추가한다.
+
+```ts common.service.ts
+// common.service.ts 생략
+/*** 길이가 3일 경우
+ * e.g. where__id__more_than을 __를 기준으로 나누면,
+ * ['where', 'id', 'more_than']으로 나눌 수 있다.
+ */
+private parseWhereFilter<T extends BaseModel>(
+  key: string, //
+  value: any,
+): FindOptionsWhere<T> {
+  const options: FindOptionsWhere<T> = {}
+  const split = key.split('__')
+
+  if (split.length !== 2 && split.length !== 3) {
+    throw new BadRequestException(
+      `where 필터는 '__'로 split 햇을 떄, 길이가 2 또는 3이어야 합니다 - 문제되는 키값: ${key}`,
+    )
+  }
+
+  /*** 길이가 2일 경우 where__id = 3을
+   * FindOptionsWhere로 풀어보면 아래와 같다
+   * {
+   * 	where: {
+   * 		id : 3,
+   * 	}
+   * }
+   */
+  if (split.length === 2) {
+    // ['where', 'id']
+    const [_, field] = split
+    // field -> 'id, value -> 3
+    options[field] = value
+  } else {
+    /*** 길이가 3일 경우 Typeorm 유틸리티 적용이 필요한 경우다
+     * where__id__more_than의 경우
+     * where는 버려도 되고, 두번쨰 값은 필터할 키값이 되고,
+     * 세번쨰 값은 typeorm 유틸리티가 된다.
+     *
+     * FILTER_MAPPER에 미리 정의해둔 값들로
+     * field 값에 FILTER_MAPPER에 해당되는 utility를 가져온 후
+     * 값에 적용해준다.
+     */
+    // ['where', 'id', 'more_than']
+    const [_, field, operator] = split
+
+    /*** where__id__between = 3, 4
+     * 만약 split 대상 문자가 존재하지 않으면, 길이가 무조건 1이다.
+     */
+    // const values = value.toString().split(',')
+
+    /***
+     * field -> id
+     * operator -> more_than
+     * FILTER_MAPPER[operator] -> MoreThan
+     */
+    // if (operator === ' between') {
+    //   options[field] = FILTER_MAPPER[operator](values[0], values[1])
+    // } else {
+    //   options[field] = FILTER_MAPPER[operator](value)
+    // }
+    options[field] = FILTER_MAPPER[operator](value)
+  }
+
+  return options
+}
+```
+
 ---
 
 ## 6. composeFindOptions() 완성
+
+parseOrderFilter()를 지우고, parseWhereFilter()에 타입을 추가해 1개함수로 합친다.
+
+```ts common.service.ts
+// common.service 생략
+private async cursorPaginate<T extends BaseModel>(
+  dto: BasePaginationDto,
+  repository: Repository<T>,
+  overrideFindOptions: FindManyOptions<T> = {},
+  path: string,
+) {
+  const findOptions = this.composeFindOptions<T>(dto)
+}
+
+private composeFindOptions<T extends BaseModel>(
+  dto: BasePaginationDto, //
+): FindManyOptions<T> {
+  // 생략
+
+  for (const [key, value] of Object.entries(dto)) {
+    if (key.startsWith('where__')) {
+      where = { ...where, ...this.parseWhereFilter(key, value) }
+    } else if (key.startsWith('order__')) {
+      order = { ...order, ...this.parseWhereFilter(key, value) }
+    }
+  }
+  // 생략
+}
+
+private parseWhereFilter<T extends BaseModel>(
+  key: string, //
+  value: any,
+): FindOptionsWhere<T> | FindOptionsOrder<T> {
+  // 생략
+}
+```
 
 ---
 
 ## 7. Cursor Pagination 적용
 
+coomon 서비스에서 cursorPaginate를 수정한다.
+
+```ts common.service.ts
+// common.service.ts 생략
+private async cursorPaginate<T extends BaseModel>(
+  dto: BasePaginationDto,
+  repository: Repository<T>,
+  overrideFindOptions: FindManyOptions<T> = {},
+  path: string,
+) {
+  const findOptions = this.composeFindOptions<T>(dto)
+
+  const results = await repository.find({
+    ...findOptions,
+    ...overrideFindOptions,
+  })
+
+  /****
+   * 해당되는 포스트가 0개 이상이면, 마지막 포스트를 가져오고
+   * 아니면 null을 반환한다.
+   */
+  const lastItem = results.length > 0 && results.length === dto.take ? results[results.length - 1] : null
+  const nextUrl = lastItem && new URL(`${PROTOCOL}://${HOST}/posts`)
+
+  /**** dto의 키값들을 루핑하면서
+   * 키값에 해당되는 벨류가 존재하면, parame에 그대로 붙여넣는다.
+   * 단, where__id__more_than 값만  lastItem의 마지막 값으로 넣어준다.
+   */
+  if (nextUrl) {
+    for (const key of Object.keys(dto)) {
+      if (dto[key]) {
+        if (key !== 'where__id__more_than' && key !== 'where__id__less_than') {
+          nextUrl.searchParams.append(key, dto[key])
+        }
+      }
+    }
+    let key = null
+    if (dto.order__createdAt === 'ASC') {
+      key = 'where__id__more_than'
+    } else {
+      key = 'where__id__less_than'
+    }
+    nextUrl.searchParams.append(key, lastItem.id.toString())
+  }
+
+  return {
+    data: results,
+    cursor: {
+      after: lastItem?.id ?? null,
+    },
+    count: results.length,
+    next: nextUrl?.toString() ?? null,
+  }
+}
+```
+
+이렇게 만든 common 모듈을 다른 모듈에서 쓸 수 있게 export한다.
+
+```ts common.module.ts
+import { Module } from '@nestjs/common'
+import { CommonService } from './common.service'
+import { CommonController } from './common.controller'
+
+@Module({
+  controllers: [CommonController],
+  providers: [CommonService],
+  exports: [CommonService],
+})
+export class CommonModule {}
+```
+
+그리고 common 모듈을 사용할 posts 모듈에서 import 한다.
+
+```ts posts.module.ts
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([
+      PostsModel, //
+    ]),
+    AuthModule,
+    UsersModule,
+    CommonModule,
+  ],
+  controllers: [PostsController],
+  providers: [PostsService],
+})
+export class PostsModule {}
+```
+
+posts 서비스에서 CommonService모듈을 불러온 뒤, paginatePosts()를 수정한다.
+
+```ts posts.service.ts
+// 생략
+
+@Injectable()
+export class PostsService {
+  constructor(
+    @InjectRepository(PostsModel)
+    private readonly postsRepository: Repository<PostsModel>,
+    private readonly commonService: CommonService,
+  ) {}
+
+  // 생략
+
+  /***
+   * 1) 오름차순으로 정렬하는 pagination만 구현한다
+   */
+  async paginatePosts(dto: PaginatePostDto) {
+    return this.commonService.paginate(
+      dto, //
+      this.postsRepository,
+      {},
+      'posts',
+    )
+    // if (dto.page) {
+    //   return this.pagePaginatePosts(dto)
+    // } else {
+    //   return this.cursorPaginatePosts(dto)
+    // }
+  }
+
+  // 생략
+}
+```
+
 ---
 
 ## 8. Page Pagination 적용
+
+common 서비스에 pagePaginate() 기능을 구현한다.
+
+```ts common.service.ts
+// common.service.ts 생략
+private async pagePaginate<T extends BaseModel>(
+  dto: BasePaginationDto,
+  repository: Repository<T>,
+  overrideFindOptions: FindManyOptions<T> = {},
+) {
+  const findOptions = this.composeFindOptions<T>(dto)
+  const [data, total] = await repository.findAndCount({
+    ...findOptions,
+    ...overrideFindOptions,
+  })
+
+  return {
+    total,
+    data,
+  }
+}
+```
 
 ---
 
 ## 9. 추가 쿼리 프로퍼티 테스팅
 
+`paginate-post.dto`에 추가할 쿼리 프로퍼티를 작성한다.
+
+```ts paginate-post.dto.ts
+import { IsNumber, IsOptional, IsString } from 'class-validator'
+import { BasePaginationDto } from 'src/common/dto/base-pagination.dto'
+
+export class PaginatePostDto extends BasePaginationDto {
+  @IsNumber()
+  @IsOptional()
+  where__likeCount__more_than?: number
+
+  @IsString()
+  @IsOptional()
+  where__title__i_like?: string
+}
+```
+
+parseWhereFilter()에 `i_like` 프로퍼티를 찾는 필터를 추가한다.
+
+```ts common.service.ts
+private parseWhereFilter<T extends BaseModel>(
+  key: string, //
+  value: any,
+): FindOptionsWhere<T> | FindOptionsOrder<T> {
+  // 생략
+  if (split.length === 2) {
+      // 생략
+    } else {
+      // 생략
+      if (operator === 'i_like') {
+        options[field] = FILTER_MAPPER[operator](`%${value}%`)
+      } else {
+        options[field] = FILTER_MAPPER[operator](value)
+      }
+    }
+
+  return options
+}
+```
+
 ---
 
 ## 10. DTO 프로퍼티 whitelisting 하기
 
+```ts paginate-post.dto.ts
+import { IsNumber, IsOptional, IsString } from 'class-validator'
+import { BasePaginationDto } from 'src/common/dto/base-pagination.dto'
+
+export class PaginatePostDto extends BasePaginationDto {
+  @IsNumber()
+  @IsOptional()
+  where__likeCount__more_than?: number
+
+  // @IsString()
+  // @IsOptional()
+  // where__title__i_like?: string;
+}
+```
+
+`main.ts`에 whitelist 옵션을 추가한다.
+
+```ts main.ts
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule)
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      transformOptions: {
+        // 임의로 변환을 허가
+        enableImplicitConversion: true,
+      },
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
+
+  await app.listen(3000)
+}
+bootstrap()
+```
+
+- whitelist 옵션은 입력한 프로퍼티 값만 입력을 받게 하는 옵션이다.
+- forbidNonWhitelisted 옵션은 존재하지 않는 프로퍼티에 대해 에러를 던지는 옵션이다.
+
 ---
 
 ## 11. Override Options 사용
+
+posts 서비스에서 Override 옵션을 추가한다.
+
+```ts posts.service.ts
+async paginatePosts(dto: PaginatePostDto) {
+  return this.commonService.paginate(
+    dto, //
+    this.postsRepository,
+    { relations: ['author'] }, // Override Options 추가
+    'posts',
+  )
+}
+```

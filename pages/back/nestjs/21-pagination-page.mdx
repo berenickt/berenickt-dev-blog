@@ -44,7 +44,7 @@ async cursorPaginatePosts(dto: PaginatePostDto) {
   const posts = await this.postsRepository.find({
     where,
     order: {
-      createAt: dto.order__createAt,
+      createdAt: dto.order__createAt,
     },
     take: dto.take,
   })
@@ -124,7 +124,7 @@ async pagePaginatePosts(dto: PaginatePostDto) {
     skip: dto.take * (dto.page - 1), // 1페이지부터 시작하도록
     take: dto.take,
     order: {
-      createAt: dto.order__createAt,
+      createdAt: dto.order__createAt,
     },
   })
 
@@ -149,7 +149,7 @@ async pagePaginatePosts(dto: PaginatePostDto) {
     skip: dto.take * (dto.page - 1), // 1페이지부터 시작하도록
     take: dto.take,
     order: {
-      createAt: dto.order__createAt,
+      createdAt: dto.order__createAt,
     },
   })
 
