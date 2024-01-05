@@ -3,16 +3,309 @@ title: '26-file-upload-선 업로드 방식'
 date: 2023/12/25
 ---
 
-## 1. 이론
+## 1. 파일업로드 이론
+
+### 1.1 현재 구현된 이미지 업로드 방식
+
+이제까지 한 파일업로드는 전통적인 방식이었다.
+
+- 제목, 내용, 이미지를 모두 선택한 다음 모든 정보를 한번에 서버로 업로드한다.
+- 단순 텍스트는 크기가 작기 때문에 업로드 속도가 빠르지만 파일은 업로드가 오래 걸릴 수 있다.
+- 업로드 버튼을 누른 뒤에 제목, 내용, 이미지를 서버로 업로드하면 사용자는 프로그램이 느리다는 인상을 받을 수 있다.
+- 특히나 한번에 여러개의 이미지를 업로드 하는 기획이라면 업로드 버튼을 누른 후 업로드 가 끝날때까지 사용자가 오랜 시간을 기다려야 할 수 있다.
+
+---
+
+### 1.2 앞으로 변경할 방식
+
+- 업로드 버튼을 누르는 순간 한번에 포스트를 업로드 하는게 아니라,
+  - 이미지를 선택할때마다 이미지는 먼저 업로드를 진행한다.
+- 업로드 된 이미지들은 '임시' 폴더에 잠시 저장해둔다. (`/public/temp`)
+- 이미지 업로드를 한 후 응답받은 이미지의 경로만 저장해둔 후,
+  - 포스트를 업로드 할 때 이 미지의 경로만 추가 해준다.
+- POST/posts 엔드포인트에 이미지 경로를 함께 보낼 경우
+  - 해당 이미지를 임시 폴더 (`/public/temp`)에서부터
+  - 포스트 폴더 (`/public/posts`)로 이동시킨다.
+- PostEntity의 image 필드에 경로를 추가해준다.
+- S3 presigned url을 사용하면 많이 사용 되는 방식이다.
+
+---
+
+### 1.3 장단점
+
+기존 방식
+
+- `체감속도` : 이미지가 업로드 되는 시간을 사용자가 처음부터 끝까지 기다리기 때문에 체감 시간이 길다.
+  - (사용자는 서비스가 느리다고 느낌)
+- `서버과부화` : 사용자가 실제 포스팅 (업로드) 버튼을 눌렀을때만 요청이 보내지기 때문에,
+  - 포스트 하나당 한번의 요청만 보내진다.
+- `엔드포인트 관리` : 파일을 업로드 해야하는 엔드포인트가 생길 때마다
+  - 파일 업로드 관련 multer 세팅을 계속 해줘야한다.
+- `파일 관리` : 실제 포스팅 버튼을 눌렀을때만 파일이 업로드 되기 때문에,
+  - 잉여 파일이 생길 가능성이 적다.
+
+신규 방식
+
+- `체감속도` : 이미지를 선택하자마자 먼저 업로드를 진행하기 때문에 속도감이 좋다.
+  - 특히나 인스타처럼 이미지를 먼저 선택하는 UI를 만든다면,
+  - 글을 작성하는 동안 이미지 업로드를 진행할 수 있다.
+- `서버과부화` : 이미지를 선택할때마다 업로드를 진행하기 때문에 더욱 많은 요청을 받게된다.
+  - 특히나 이미지를 선택한 후 삭제해서 실제 포스트에 포함하지 않을 경우 서버 리소스만 낭비한다.
+- `엔드포인트 관리` : 공통된 이미지 업로드 엔드포인트를 하나 만들어서,
+  - 모든 이미지 업로드를 한번에 관리 할 수 있다.
+- `파일 관리` : 이미지를 선택하면 바로 업로드를 진행하기 때문에,
+  - 선택한 이미지를 삭제하거나 변경하면 잉여 파일이 생긴다.
+  - 잉여 파일들은 주기적으로 삭제 해줘야한다.
 
 ---
 
 ## 2. 이미지 업로드 엔드포인트 생성
 
+posts 모듈에서 만든 MulterModule를 잘라내서 common 모듈에 붙여넣는다.
+
+```ts common.module.ts
+import { BadRequestException, Module } from '@nestjs/common'
+import * as multer from 'multer'
+import { v4 as uuid } from 'uuid'
+
+import e from 'express'
+import { CommonService } from './common.service'
+import { CommonController } from './common.controller'
+import { MulterModule } from '@nestjs/platform-express'
+import { TEMP_FOLDER_PATH } from './const/path.const'
+import { extname } from 'path'
+import { AuthModule } from 'src/auth/auth.module'
+import { UsersModule } from 'src/users/users.module'
+
+@Module({
+  imports: [
+    AuthModule,
+    UsersModule,
+    MulterModule.register({
+      limits: {
+        // byte 단위로 입력 (10000000byte -> 10MB가 넘는 파일은 에러)
+        fieldSize: 10 * 1024 * 1024,
+      },
+      /*** cb(에러, boolean)
+       * 첫번쨰 파라미터에는 에러가 있을 경우 에러 정보를 넣어준다.
+       * 두번쨰 파라미터는 파일을 받을지 말지 boolean을 넣어준다.
+       */
+      fileFilter: (req, file, cb) => {
+        // xxx.jpg -> .jpg같이 확장자만 가져와줌
+        const ext = extname(file.originalname)
+        if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') {
+          return cb(
+            new BadRequestException('jpg/jpeg/png 파일만 업로드 가능합니다!'), //
+            false,
+          )
+        }
+        return cb(null, true)
+      },
+      storage: multer.diskStorage({
+        // 파일을 어디에 보낼지 정의
+        destination: (req, res, cb) => {
+          cb(null, TEMP_FOLDER_PATH)
+        },
+        filename: (
+          req: e.Request,
+          file: Express.Multer.File,
+          callback: (error: Error | null, filename: string) => void,
+        ) => {
+          callback(null, `${uuid()}${extname(file.originalname)}`)
+        },
+      }),
+    }),
+  ],
+  controllers: [CommonController],
+  providers: [CommonService],
+  exports: [CommonService],
+})
+export class CommonModule {}
+```
+
+`path.const.ts`에 임시폴더를 추가한다.
+
+```ts path.const.ts
+import { join } from 'path'
+import * as process from 'process'
+
+// 서버 프로젝트의 루트 폴더
+export const PROJECT_ROOT_PATH = process.cwd()
+// 외부에서 접근 가능한 파일들을 모아둔 폴더 이름
+export const PUBLIC_FOLDER_NAME = 'public'
+// 포스트 이미지들을 저장할 폴더 이름
+export const POSTS_FOLDER_NAME = 'posts'
+// 임시 폴더 이름
+export const TEMP_FOLDER_NAME = 'temp'
+
+// 실제 공개폴더의 절대 경로
+// /{프로젝트의 위치}/public
+export const PUBLIC_FOLDER_PATH = join(PROJECT_ROOT_PATH, PUBLIC_FOLDER_NAME)
+
+// 포스트 이미지를 저장할 폴더
+// /{프로젝트의 위치}/public/posts
+export const POST_IMAGE_PATH = join(PUBLIC_FOLDER_PATH, POSTS_FOLDER_NAME)
+
+// 절대경로 x
+// public/posts/xxx.jpg
+export const POST_PUBLIC_IMAGE_PATH = join(PUBLIC_FOLDER_NAME, POSTS_FOLDER_NAME)
+
+// 임시 파일들을 저장할 폴더
+// {프로젝트 경로}/temp
+export const TEMP_FOLDER_PATH = join(PUBLIC_FOLDER_PATH, TEMP_FOLDER_NAME)
+```
+
+- 그런다음 public/temp 폴더를 만든다.
+
+common 컨트롤러에 엔드포인트를 생성한다.
+
+```ts common.controller.ts
+import { Controller, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common'
+import { CommonService } from './common.service'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard'
+
+@Controller('common')
+export class CommonController {
+  constructor(private readonly commonService: CommonService) {}
+
+  @Post('image')
+  @UseInterceptors(FileInterceptor('image'))
+  @UseGuards(AccessTokenGuard)
+  postImage(@UploadedFile() file: Express.Multer.File) {
+    return {
+      fileName: file.filename,
+    }
+  }
+}
+```
+
+- common 컨트롤러에 다른 모듈의 기능을 쓸려면, common모듈에서 해당 모듈을 import해와야 한다.
+  - 위에서 AuthModule, UserModule을 import해왔다.
+- 아니면 dependency 에러가 발생한다.
+
 ---
 
 ## 3. POST posts 엔드포인트 변경
 
+posts 컨트롤러에서 image 파라미터를 받는 부분을 지운다.
+
+```ts posts.controller.ts
+// posts.controller.ts 생략
+/*** 3) POST /posts
+ * post를 생성한다
+ */
+@Post()
+@UseGuards(AccessTokenGuard)
+postPosts(
+  @User('id') userId: number,
+  @Body() body: CreatePostDto,
+  // @Body('title') title: string,
+  // @Body('content') content: string,
+  // 기본값을 true로 설정하는 파이프
+  // @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean,
+) {
+  return this.postsService.createPost(userId, body)
+}
+```
+
+마찬가지로 posts 서비스에서 image 파라미터를 받는 부분을 지운다.
+
+```ts posts.service.ts
+// posts.service.ts 생략
+/**
+ * 1) create : 저장할 객체를 생성
+ * 2) save   : 객체를 저장 (create 메서드에서 생성한 객체로)
+ */
+async createPost(authorId: number, postDto: CreatePostDto) {
+  const post = this.postsRepository.create({
+    author: {
+      id: authorId,
+    },
+    ...postDto,
+    likeCount: 0,
+    commentCount: 0,
+  })
+  const newPost = await this.postsRepository.save(post)
+  return newPost
+}
+```
+
+`create-post.dto`를 image 프로퍼티를 추가한다.
+
+```ts create-post.dto.ts
+import { IsOptional, IsString } from 'class-validator'
+
+import { PickType } from '@nestjs/mapped-types'
+import { PostsModel } from '../entities/posts.entity'
+
+/***
+ * Pick, Omit, Partial -> Type을 반환
+ * PickType, OmitType, PartialType -> 값을 반환
+ */
+export class CreatePostDto extends PickType(PostsModel, ['title', 'content']) {
+  @IsString()
+  @IsOptional()
+  image?: string
+}
+```
+
+포스트맨에서 이미지가 업로드되는지 확인한다.
+
 ---
 
 ## 4. 엔티티가 생성될 떄, 임시폴더로부터 이미지 파일 이동시키기
+
+posts 서비스에 createPostImage()를 추가한다.
+
+```ts posts.service.ts
+// posts.service.ts 생략
+async createPostImage(dto: CreatePostDto) {
+  // dto의 이미지 이름을 기바으로 파일 경로를 생성한다
+  const tempFilePath = join(TEMP_FOLDER_PATH, dto.image)
+
+  try {
+    /*** promises의 fs 모듈을 import
+     * 파일이 존재하는지 확인
+     * 만약에 존재하지 않는다면 에러를 던짐
+     */
+    await promises.access(tempFilePath)
+  } catch (e) {
+    throw new BadRequestException('존재하지 않는 임시 파일입니다!')
+  }
+
+  /*** 파일의 이름만 가져오기
+   * /USers/aaa/bbb/ccc/asdf.jpg -> asdf.jpg
+   */
+  const fileName = basename(tempFilePath)
+
+  /*** 새로 이동할 포스트 폴더의 경로 + 이미지의 이름
+   * {프로젝트경로}/public/posts/asdf.jpg
+   */
+  const publicFilePath = join(POST_IMAGE_PATH, fileName)
+
+  // 파일 옮기기
+  await promises.rename(tempFilePath, publicFilePath)
+
+  return true
+}
+```
+
+posts 컨트롤러에 postPosts()을 수정한다.
+
+```ts posts.controller.ts
+// posts.controller.ts 생략
+@Post()
+@UseGuards(AccessTokenGuard)
+async postPosts(
+  @User('id') userId: number,
+  @Body() body: CreatePostDto,
+  // @Body('title') title: string,
+  // @Body('content') content: string,
+  // 기본값을 true로 설정하는 파이프
+  // @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean,
+) {
+  await this.postsService.createPostImage(body)
+  return this.postsService.createPost(userId, body)
+}
+```
