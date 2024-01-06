@@ -5,18 +5,505 @@ date: 2023/12/25
 
 ## 1. Transaction 소개
 
+```ts posts.controller.ts
+/*** 3) POST /posts
+ * post를 생성한다
+ *
+ * A Model, B Model
+ * Post API -> A모델을 저장하고, B모델을 저장한다.
+ * await repository.save(a)
+ * await repository.save(b)
+ *
+ * 만약에 a를 저장하다가 실패하면 b를 저장하면 안될 경우
+ * 이 경우를 막기 위해 등장한 것이 Transaction
+ * all or nothing
+ *
+ * Transaction
+ * start -> 시작
+ * commit -> 저장
+ * rollback -> 원상복구
+ */
+@Post()
+@UseGuards(AccessTokenGuard)
+async postPosts(
+  // 생략
+) {
+  await this.postsService.createPostImage(body)
+  return this.postsService.createPost(userId, body)
+}
+```
+
 ---
 
 ## 2. ImageModel 만들기
 
+지금은 1개의 포스트에 1개의 이미지이지만, 여러 개의 이미지를 올릴 수 있게 변경할 것이다.
+
+- 이떄 포스트 생성, 이미지 업로드, 옮기기까지 Transaction으로 묶어두면,
+- 이미지와 포스트 둘 다 잘 생성되야지만 로직이 완성된다.
+
+`posts.entity.ts`에서 이미지 필드를 그냥 삭제한다.
+
+- 하나의 포스트는 여러 개의 이미지를 가질 수 있으니,
+- PostsModel을 ImageModel과 1:M 관계로 묶어주면 된다.
+
+`common/entities/image.entity.ts`파일을 만든다.
+
+```ts common/entities/image.entity.ts
+import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator'
+import { Transform } from 'class-transformer'
+
+import { Column, Entity, ManyToOne } from 'typeorm'
+import { join } from 'path'
+import { BaseModel } from './base.entity'
+import { PostsModel } from '../../posts/entities/posts.entity'
+import { POST_PUBLIC_IMAGE_PATH } from '../const/path.const'
+
+export enum ImageModelType {
+  POST_IMAGE,
+}
+
+@Entity()
+export class ImageModel extends BaseModel {
+  @Column({
+    default: 0,
+  })
+  @IsInt()
+  @IsOptional()
+  order: number
+
+  /***
+   * UserModel -> 사용자 프로필 이미지
+   * PostsModel -> 포스트 이미지
+   */
+  @Column({
+    enum: ImageModelType,
+  })
+  @IsEnum(ImageModelType)
+  @IsString()
+  type: ImageModelType
+
+  @Column()
+  @IsString()
+  @Transform(({ value, obj }) => {
+    // obj는 이미지 모델이 생성됐을 떄의, 현재 객체를 의미
+    if (obj.type === ImageModelType.POST_IMAGE) {
+      return `/${join(POST_PUBLIC_IMAGE_PATH, value)}`
+    } else {
+      return value
+    }
+  })
+  path: string
+
+  @ManyToOne(type => PostsModel, post => post.images)
+  post?: PostsModel
+}
+```
+
+posts 엔티티에서 images 프로퍼티를 추가한다.
+
+```ts posts.entity.ts
+// posts.entity.ts 생략
+
+@Entity()
+export class PostsModel extends BaseModel {
+  // 생략
+
+  @OneToMany(() => ImageModel, image => image.post)
+  images: ImageModel[]
+}
+```
+
+app 모듈에서 ImageModel을 등록한다.
+
+```ts app.module.ts
+// app.module.ts 생략
+@Module({
+  imports: [
+    // 생략
+    TypeOrmModule.forRoot({
+      // 생략
+      // entities폴더에 작성한 PostsModel 가져오기
+      entities: [PostsModel, UsersModel, ImageModel],
+      synchronize: true,
+    }),
+    UsersModule,
+    AuthModule,
+    CommonModule,
+  ],
+  // 생략
+})
+```
+
+- 간혹 이렇게 했음에도 안되는 경우가 있는데,
+- 그떄는 서버를 꺼주고, dist(build되는 실제 배포폴더)를 삭제했다가 다시 시작하면 된다.
+
 ---
 
-## 3. ImageModel 생성 로직 작성
+## 3. ImageModel 생성 로직
+
+`posts/const/default-post-find-options.const.ts` 파일을 만든다.
+
+```ts posts/const/default-post-find-options.const.ts
+import { FindManyOptions } from 'typeorm'
+import { PostsModel } from '../entities/posts.entity'
+
+export const DEFAULT_POST_FIND_OPTIONS: FindManyOptions<PostsModel> = {
+  relations: {
+    author: true,
+    images: true,
+  },
+}
+```
+
+`image/dto/create-image.dto.ts` 파일을 만든다.
+
+```ts image/dto/create-image.dto.ts
+import { PickType } from '@nestjs/mapped-types'
+import { ImageModel } from 'src/common/entities/image.entity'
+
+export class CreatePostImageDto extends PickType(ImageModel, [
+  'path', //
+  'post',
+  'order',
+  'type',
+]) {}
+```
+
+posts 컨트롤러에 postPosts()를 다음과 같이 수정한다.
+
+```ts posts.controller.ts
+// posts.controller.ts 생략
+@Post()
+@UseGuards(AccessTokenGuard)
+async postPosts(
+  @User('id') userId: number,
+  @Body() body: CreatePostDto,
+  // @Body('title') title: string,
+  // @Body('content') content: string,
+  // 기본값을 true로 설정하는 파이프
+  // @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean,
+) {
+  const post = await this.postsService.createPost(userId, body)
+  for (let i = 0; i < body.images.length; i++) {
+    await this.postsService.createPostImage({
+      post,
+      order: i,
+      path: body.images[i],
+      type: ImageModelType.POST_IMAGE,
+    })
+  }
+  return this.postsService.getPostById(post.id)
+}
+```
+
+posts 서비스를 다음과 같이 수정한다.
+
+```ts posts.service.ts
+// 생략
+@Injectable()
+export class PostsService {
+  constructor(
+    @InjectRepository(PostsModel)
+    private readonly postsRepository: Repository<PostsModel>,
+    @InjectRepository(ImageModel)
+    private readonly imageRepository: Repository<ImageModel>,
+    private readonly commonService: CommonService,
+    private readonly configService: ConfigService,
+  ) {}
+
+  async getAllPosts() {
+    return this.postsRepository.find({ ...DEFAULT_POST_FIND_OPTIONS })
+  }
+
+  async generatePosts(userId: number) {
+    for (let i = 0; i < 100; i++) {
+      await this.createPost(userId, {
+        title: `임의로 생성된 포스트 제목 ${i}`,
+        content: `임의로 생성된 포스트 내용 ${i}`,
+        images: [],
+      })
+    }
+  }
+
+  async paginatePosts(dto: PaginatePostDto) {
+    return this.commonService.paginate(
+      dto, //
+      this.postsRepository,
+      { ...DEFAULT_POST_FIND_OPTIONS },
+      'posts',
+    )
+  }
+
+  async getPostById(id: number) {
+    const post = await this.postsRepository.findOne({
+      ...DEFAULT_POST_FIND_OPTIONS,
+      // PostsModel의 id가 입력받은 id와 같은지 필터링
+      where: {
+        id,
+      },
+    })
+    // 생략
+  }
+
+  async createPost(authorId: number, postDto: CreatePostDto) {
+    const post = this.postsRepository.create({
+      author: {
+        id: authorId,
+      },
+      ...postDto,
+      images: [],
+      likeCount: 0,
+      commentCount: 0,
+    })
+    const newPost = await this.postsRepository.save(post)
+    return newPost
+  }
+
+  async createPostImage(dto: CreatePostImageDto) {
+    // 생략
+
+    // save
+    const result = await this.imageRepository.save({
+      ...dto,
+    })
+
+    // 파일 옮기기
+    await promises.rename(tempFilePath, publicFilePath)
+
+    return result
+  }
+  // 생략
+}
+```
+
+posts 모듈에 추가한 ImageModel을 적용시킬 수 있도록 import한다.
+
+```ts posts.module.ts
+// posts.module.ts 생략
+@Module({
+  imports: [
+    /*** 모델에 해당하는 repostory를 주입 ==> forFeature
+     * repository : 해당 모델을 다룰 수 있게 해주는 클래스
+     */
+    TypeOrmModule.forFeature([
+      PostsModel, //
+      ImageModel,
+    ]),
+    AuthModule,
+    UsersModule,
+    CommonModule,
+  ],
+  // 생략
+})
+export class PostsModule {}
+```
 
 ---
 
 ## 4. Transaction 시작
 
+이미지 업로드가 제대로 안됬거나, 에러가 발생하면, 포스트가 생성되면 안된다.
+
+- 이미지 업로드 에러 등의 에러 상황이 발생하면 포스트 생성도 안되게 만들어야 한다.
+- 이 로직을 Transaction으로 묶어줘서 1개 에러가 발생하면, 모두 안되게 해야 한다.
+
+posts 컨트롤러의 postPosts()를 수정한다.
+
+```ts posts.controller.ts
+// posts.controller.ts 생략
+@Post()
+@UseGuards(AccessTokenGuard)
+async postPosts(
+  @User('id') userId: number,
+  @Body() body: CreatePostDto,
+  // @Body('title') title: string,
+  // @Body('content') content: string,
+  // 기본값을 true로 설정하는 파이프
+  // @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean,
+) {
+  // (1) 트랜잭션과 관련된 모든 쿼리를 담당할 쿼리 러너(qr)를 생성한다.
+  const qr = this.dataSource.createQueryRunner()
+
+  // (2) 쿼리 러너에 연결한다.
+  await qr.connect()
+  /*** 쿼리 러너에서 트랜잭션을 시작한다.
+   * 이 시점부터 같은 쿼리 러너를 사용하면
+   * 트랜잭션 안에서 데이터베이스 액션을 실행한다.
+   */
+  await qr.startTransaction()
+
+  // 로직실행
+  try {
+    const post = await this.postsService.createPost(userId, body)
+    for (let i = 0; i < body.images.length; i++) {
+      await this.postsService.createPostImage({
+        post,
+        order: i,
+        path: body.images[i],
+        type: ImageModelType.POST_IMAGE,
+      })
+    }
+    await qr.commitTransaction()
+    await qr.release()
+    return this.postsService.getPostById(post.id)
+  } catch (e) {
+    // 어떤 에러든 에러가 던져지면, 트랜잭션을 종료하고 원래 상태로 되돌린다.
+    await qr.rollbackTransaction()
+    await qr.release()
+  }
+}
+```
+
+posts 서비스를 수정한다.
+
+```ts posts.service.ts
+// posts.service.ts 생략
+getRepository(qr?: QueryRunner) {
+  return qr
+    ? qr.manager.getRepository<PostsModel>(PostsModel) //
+    : this.postsRepository
+}
+
+async createPost(authorId: number, postDto: CreatePostDto, qr?: QueryRunner) {
+  const repository = this.getRepository(qr)
+
+  const post = repository.create({
+    author: {
+      id: authorId,
+    },
+    ...postDto,
+    images: [],
+    likeCount: 0,
+    commentCount: 0,
+  })
+  const newPost = await repository.save(post)
+  return newPost
+}
+```
+
 ---
 
 ## 5. Transaction 적용 및 테스트
+
+`posts/image/images.service.ts` 파일을 만든다.
+
+- posts 서비스의 createPostImage()를 잘라내서 images 서비스에 복붙한다.
+
+```ts posts/image/images.service.ts
+import { BadRequestException, Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { QueryRunner, Repository } from 'typeorm'
+import { basename, join } from 'path'
+
+import { promises } from 'fs'
+import { CreatePostImageDto } from './dto/create-image.dto'
+import { ImageModel } from 'src/common/entities/image.entity'
+import { POST_IMAGE_PATH, TEMP_FOLDER_PATH } from 'src/common/const/path.const'
+
+@Injectable()
+export class PostsImagesService {
+  constructor(
+    @InjectRepository(ImageModel)
+    private readonly imageRepository: Repository<ImageModel>,
+  ) {}
+
+  getRepository(qr?: QueryRunner) {
+    return qr
+      ? qr.manager.getRepository<ImageModel>(ImageModel) //
+      : this.imageRepository
+  }
+
+  async createPostImage(dto: CreatePostImageDto, qr?: QueryRunner) {
+    const repository = qr.manager.getRepository<ImageModel>(ImageModel)
+
+    // dto의 이미지 이름을 기반으로 파일 경로를 생성한다
+    const tempFilePath = join(TEMP_FOLDER_PATH, dto.path)
+
+    try {
+      /*** promises의 fs 모듈을 import
+       * 파일이 존재하는지 확인
+       * 만약에 존재하지 않는다면 에러를 던짐
+       */
+      await promises.access(tempFilePath)
+    } catch (e) {
+      throw new BadRequestException('존재하지 않는 임시 파일입니다!')
+    }
+
+    /*** 파일의 이름만 가져오기
+     * /USers/aaa/bbb/ccc/asdf.jpg -> asdf.jpg
+     */
+    const fileName = basename(tempFilePath)
+
+    /*** 새로 이동할 포스트 폴더의 경로 + 이미지의 이름
+     * {프로젝트경로}/public/posts/asdf.jpg
+     */
+    const publicFilePath = join(POST_IMAGE_PATH, fileName)
+
+    // save
+    const result = await repository.save({
+      ...dto,
+    })
+
+    // 파일 옮기기
+    await promises.rename(tempFilePath, publicFilePath)
+
+    return result
+  }
+}
+```
+
+이제는 posts 컨트롤러는 images 서비스에서 기능을 가져온다.
+
+```ts posts.controller.ts
+// 생략
+
+@Controller('posts')
+export class PostsController {
+  constructor(
+    private readonly postsService: PostsService,
+    private readonly postsImagesService: PostsImagesService, // 추가
+    private readonly dataSource: DataSource,
+  ) {}
+  // 생략
+  @Post()
+  @UseGuards(AccessTokenGuard)
+  async postPosts(
+    // 생략
+    try {
+      const post = await this.postsService.createPost(userId, body, qr)
+      // throw new InternalServerErrorException('일부러 에러 발생 테스트')
+      for (let i = 0; i < body.images.length; i++) {
+        await this.postsImagesService.createPostImage(
+          {
+            post,
+            order: i,
+            path: body.images[i],
+            type: ImageModelType.POST_IMAGE,
+          },
+          qr,
+        )
+      }
+      await qr.commitTransaction()
+      await qr.release()
+      return this.postsService.getPostById(post.id)
+    } catch (e) {
+      // 어떤 에러든 에러가 던져지면, 트랜잭션을 종료하고 원래 상태로 되돌린다.
+      await qr.rollbackTransaction()
+      await qr.release()
+      throw new InternalServerErrorException('에러가 발생했습니다.')
+    }
+  }
+}
+```
+
+posts 모듈에 컨트롤러, 서비스에서 사용할 수 있도록 PostsImagesService을 추가한다.
+
+```ts posts.module.ts
+// 생략
+@Module({
+  // 생략
+  providers: [PostsService, PostsImagesService],
+})
+export class PostsModule {}
+```
