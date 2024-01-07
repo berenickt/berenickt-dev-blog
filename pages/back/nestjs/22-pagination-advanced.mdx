@@ -523,6 +523,17 @@ export class PostsService {
 }
 ```
 
+다른 모듈에서 posts 모듈을 쓸 수 있도록 export 해준다.
+
+```ts posts.module.ts
+@Module({
+  // 생략
+  providers: [PostsService, PostsImagesService],
+  exports: [PostsService],
+})
+export class PostsModule {}
+```
+
 ---
 
 ## 8. Page Pagination 적용

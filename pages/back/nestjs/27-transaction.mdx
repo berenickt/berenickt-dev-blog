@@ -170,6 +170,23 @@ export class CreatePostImageDto extends PickType(ImageModel, [
 ]) {}
 ```
 
+`posts/dto/create-post.dto.ts` 파일을 수정한다.
+
+```ts
+import { IsOptional, IsString } from 'class-validator'
+
+import { PickType } from '@nestjs/mapped-types'
+import { PostsModel } from '../entities/posts.entity'
+
+export class CreatePostDto extends PickType(PostsModel, ['title', 'content']) {
+  @IsString({
+    each: true, // 리스트 개별 요소마다 string으로 할지
+  })
+  @IsOptional()
+  images: string[] = []
+}
+```
+
 posts 컨트롤러에 postPosts()를 다음과 같이 수정한다.
 
 ```ts posts.controller.ts
