@@ -5,6 +5,100 @@ date: 2023/12/25
 
 ## 1. Middleware 이론
 
+![nestjs-request-life-cycle](https://raw.githubusercontent.com/berenickt/image-server/main/img/nestjs-request-life-cycle.png)
+
+미들웨어는 가장 쉽고 가장 단순하고 가장 어떻게 보면 원초적인 기능이다.
+
+![Middlewares_1](https://docs.nestjs.com/assets/Middlewares_1.png)
+
+- 공식문서 : https://docs.nestjs.com/middleware
+- 위 그림을 보면, 클라이언트 사이드에서 요청을 넣고, 라우트 핸들러까지 가기 전에 미들웨어를 거친다.
+- 전체 그림을 봤을 때도, 미들웨어가 가장 먼저 요청을 받는 역할을 한다.
+
+Nest 미들웨어는 기본적으로 [Express](https://expressjs.com/en/guide/using-middleware.html) 미들웨어와 동일하다. 공식 문서의 다음 설명은 미들웨어의 기능을 설명한다.
+
+> 미들웨어 함수는 다음 작업을 수행할 수 있습니다.
+>
+> - execute any code (어떤 코드든 실행할 수 있다.)
+> - make changes to the request and the response objects.
+>   - 요청 및 응답 객체의 변화를 만들어 줄 수 있다.
+>   - 무언가를 추가하거나 삭제, 업데이트 할 수 있다는 의미
+> - end the request-response cycle.
+>   - 요청이 끝나게 중간에 중지할 수 있다.
+>   - 일종의 guard 역할도 할 수 있다는 의미
+> - call the next middleware function in the stack.
+>   - 스택에서 다음 미들웨어 함수를 호출힌다.
+>   - 여러 개의 미들웨어를 순서대로 적용할 수 있는데, 적용된 순서대로 실행된다.
+>   - 즉, 미들웨어를 여러 개를 엮을 수 있다는 의미
+> - f the current middleware function does not end the request-response cycle,
+> - it must call `next()` to pass control to the next middleware function.
+> - Otherwise, the request will be left hanging.
+>   - 현재 미들웨어 함수가 요청-응답 주기를 종료하지 않는 경우, (=> 에러를 던지지 않는다면,)
+>   - 다음 미들웨어 함수에 제어를 전달하기 위해 `next()` 호출해야 한다.
+>   - 그렇지 않으면 요청이 중단된 상태로 남게 됩니다.
+
 ---
 
 ## 2. Middleware 생성 및 사용
+
+`common/middleware/log.middleware.ts` 파일을 만든다.
+
+```ts common/middleware/log.middleware.ts
+import { Injectable, NestMiddleware } from '@nestjs/common'
+import { NextFunction } from 'express'
+
+@Injectable()
+export class LogMiddleware implements NestMiddleware {
+  use(req: Request, res: Response, next: NextFunction) {
+    console.log(`[REQ] ${req.method} ${req.url} ${new Date().toLocaleString('kr')}`)
+    next()
+  }
+}
+```
+
+정확한 로그를 확인하기 위해 posts 컨트롤러에 적용한 Interceptors와 Filter를 주석처리한다.
+
+```ts posts.controller.ts
+/*** 1) GET /posts
+ * 모든 post를 다 가져온다
+ */
+@Get()
+// @UseInterceptors(LogInterceptor)
+// @UseFilters(HttpExceptionFilter)
+getPosts(@Query() query: PaginatePostDto) {
+  // throw new BadRequestException('에러 테스트')
+  return this.postsService.paginatePosts(query)
+}
+```
+
+미들웨어는 모듈에다가 적용해야 한다. posts 모듈에 위에 작성한 미들웨어를 적용한다.
+
+```ts posts.module.ts
+// posts.module.ts 생략
+export class PostsModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LogMiddleware).forRoutes({
+      path: 'posts*', // posts 뒤에 어떤 글자이든 적용(와일드카드)
+      // method: RequestMethod.ALL, // 모든 요청에 적용
+      method: RequestMethod.GET, // GET 요청만 적용
+    })
+  }
+}
+```
+
+그런데 이렇게 특정 모듈에만 아니라 모든 모듈에 적용할 수 있다.
+
+- 위에서 작성한 코드를 다시 원래대로 `export class PostsModule{}`만 남긴다.
+- 이렇게 하면 앱 전체 모든 라우트에 미들웨어를 적용해, 요청에 로그를 찍을 수 있다.
+
+```ts app.module.ts
+// app.module.ts 생략
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LogMiddleware).forRoutes({
+      path: '*', // 뒤에 어떤 글자이든 적용(와일드카드)
+      method: RequestMethod.ALL, // 모든 요청에 적용
+    })
+  }
+}
+```
