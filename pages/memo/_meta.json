@@ -12,7 +12,9 @@
     "type": "separator",
     "title": "영어"
   },
-  "english": "English",
+  "english-grammar": "영문법",
+  "english-voca": "영단어",
+  "english-info": "영어 정보",
   "-- 일기 및 회고 --": {
     "type": "separator",
     "title": "일기 및 회고"
