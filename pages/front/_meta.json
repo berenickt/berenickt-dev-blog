@@ -49,6 +49,7 @@
     "type": "separator",
     "title": "8. Test 라이브러리"
   },
+  "tdd": "테스트 주도 개발(TDD)",
   "jest": "Jest",
   "cypress": "Cypress",
   "react-test-lib": "React Test Lib(RTL)",
