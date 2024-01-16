@@ -5,26 +5,316 @@ date: 2023/12/25
 
 ## 1. Validation Pipe
 
+```ts chats.gateway.ts
+// chats.gateway.ts 생략
+@UsePipes(
+  new ValidationPipe({
+    transform: true,
+    transformOptions: {
+      // 임의로 변환을 허가
+      enableImplicitConversion: true,
+    },
+    whitelist: true,
+    forbidNonWhitelisted: true,
+  }),
+)
+@SubscribeMessage('create_chat')
+async createChat(@MessageBody() data: CreateChatDto) {
+  const chat = await this.chatsService.createChat(data)
+}
+```
+
+- main.ts에 글로벌 파이프를 적용했는데, ValidationPipe가 동작하지 않는다.
+- 글로벌 파이프를 적용하면,
+  - DTO에 class validator를 적용하는데는 REST-API 컨트롤러에만 적용된다.
+  - 그래서 gateway를 쓸 때는 따로 validation을 또 추가해야 한다.
+
 ---
 
 ## 2. Exception Filter 적용
+
+`common/exception-filter/socket-exception.filter.ts` 파일을 만든다.
+
+```ts common/exception-filter/socket-exception.filter.ts
+import { ArgumentsHost, Catch, HttpException } from '@nestjs/common'
+import { BaseWsExceptionFilter } from '@nestjs/websockets'
+
+// 모든 HTTP Exception을 잡기
+@Catch(HttpException)
+export class SocketCatchHttpExceptionFilter extends BaseWsExceptionFilter<HttpException> {
+  catch(exception: HttpException, host: ArgumentsHost) {
+    const socket = host.switchToWs().getClient()
+    socket.emit('exception', {
+      status: 'Exception',
+      message: exception.getResponse(), // 응답에서 받는 값을 받을 수 있음
+    })
+  }
+}
+```
+
+`chats/chats.gateway.ts` 파일에서 위에서 작성한 예외필터를 적용한다.
+
+```ts chats/chats.gateway.ts
+// chats/chats.gateway.ts 생략
+@UsePipes(
+	// 생략
+)
+@UseFilters(SocketCatchHttpExceptionFilter) // 추가 및 import
+@SubscribeMessage('create_chat')
+async createChat(@MessageBody() data: CreateChatDto) {
+  const chat = await this.chatsService.createChat(data)
+}
+```
 
 ---
 
 ## 3. Guard 적용
 
+`auth/guard/socket/socket-bearer-token.guard.ts` 파일을 만든다.
+
+```ts auth/guard/socket/socket-bearer-token.guard.ts
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
+import { WsException } from '@nestjs/websockets'
+import { AuthService } from 'src/auth/auth.service'
+import { UsersService } from 'src/users/users.service'
+
+@Injectable()
+export class SocketBearerTokenGuard implements CanActivate {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const socket = context.switchToWs().getClient()
+
+    // rawToken : Bearer xxxx 형태
+    const rawToken = socket.handshake.headers['authorization']
+
+    if (!rawToken) {
+      throw new WsException('토큰이 없습니다!')
+    }
+
+    try {
+      const token = this.authService.extractTokenFromHeader(rawToken, true)
+      const payload = this.authService.verifyToken(token)
+      const user = await this.usersService.getUserByEmail(payload.email)
+
+      socket.user = user
+      socket.token = token
+      socket.tokenType = payload.type
+
+      return true
+    } catch (e) {
+      throw new WsException('토큰이 유효하지 않습니다!')
+    }
+  }
+}
+```
+
+위 기능을 사용하기 위해, chats 모듈에 auth, users 모듈을 추가한다.
+
+```ts chats.module.ts
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([ChatsModel, MessagesModel]), //
+    CommonModule,
+    AuthModule,
+    UsersModule,
+  ],
+  // 생략
+})
+export class ChatsModule {}
+```
+
+`chats.gateway.ts`에서 Guard를 추가한다.
+
+```ts chats.gateway.ts
+// chats.gateway.ts 생략
+@UseGuards(SocketBearerTokenGuard)
+@SubscribeMessage('create_chat')
+async createChat(
+  @MessageBody() data: CreateChatDto, //
+  @ConnectedSocket() socket: Socket & { user: UsersModel },
+) {
+  const chat = await this.chatsService.createChat(data)
+}
+```
+
 ---
 
 ## 4. 데코레이터 기반으로 로직 변경
+
+`create-messages.dto.ts` 파일에서 authorId 컬럼을 삭제한다.
+
+```ts create-messages.dto.ts
+import { PickType } from '@nestjs/mapped-types'
+import { IsNumber } from 'class-validator'
+import { MessagesModel } from '../entitiy/messages.entity'
+
+export class CreateMessagesDto extends PickType(MessagesModel, ['message']) {
+  @IsNumber()
+  chatId: number
+}
+```
+
+`messages.service.ts` 파일에서 authorId를 파라미터로 받는다.
+
+```ts messages.service.ts
+// messages.service.ts 생략
+async createMessage(dto: CreateMessagesDto, authorId: number) {
+  const message = await this.messagesRepository.save({
+    chat: {
+      id: dto.chatId,
+    },
+    author: {
+      id: authorId,
+    },
+    message: dto.message,
+  })
+
+  // 생략
+}
+```
+
+`chats.gateway.ts` 파일을 다음과 같이 수정한다.
+
+```ts chats.gateway.ts
+// chats.gateway.ts 생략
+@SubscribeMessage('enter_chat')
+@UsePipes(
+  new ValidationPipe({
+    transform: true,
+    transformOptions: {
+      enableImplicitConversion: true,
+    },
+    whitelist: true,
+    forbidNonWhitelisted: true,
+  }),
+)
+@UseFilters(SocketCatchHttpExceptionFilter)
+@UseGuards(SocketBearerTokenGuard)
+
+@SubscribeMessage('send_message')
+@UsePipes(
+  new ValidationPipe({
+    transform: true,
+    transformOptions: {
+      enableImplicitConversion: true,
+    },
+    whitelist: true,
+    forbidNonWhitelisted: true,
+  }),
+)
+@UseFilters(SocketCatchHttpExceptionFilter)
+@UseGuards(SocketBearerTokenGuard)
+async sendMessage(
+  @MessageBody() dto: CreateMessagesDto, //
+  @ConnectedSocket() socket: Socket & { user: UsersModel },
+) {
+  // 생략
+
+  const message = await this.messageService.createMessage(dto, socket.user.id)
+  socket.to(message.chat.id.toString()).emit('receive_message', message.message)
+}
+```
 
 ---
 
 ## 5. AccessToken을 매번 검증할 떄의 문제
 
+생략
+
 ---
 
-## 6. Socketdㅔ 사용자 정보 저장
+## 6. Socket에 사용자 정보 저장
+
+```ts chats.gateway.ts
+// 생략
+
+@WebSocketGateway({
+  // ws://localhost:3000/chats
+  namespace: 'chats',
+})
+export class ChatsGateway implements OnGatewayConnection {
+  constructor(
+    // 생략
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
+
+  // 생략
+
+  async handleConnection(socket: Socket & { user: UsersModel }) {
+    console.log(`On connect called... ${socket.id}`)
+    const rawToken = socket.handshake.headers['authorization']
+    if (!rawToken) socket.disconnect()
+
+    try {
+      const token = this.authService.extractTokenFromHeader(rawToken, true)
+      const payload = this.authService.verifyToken(token)
+      socket.user = await this.usersService.getUserByEmail(payload.email)
+
+      return true
+    } catch (e) {
+      socket.disconnect()
+    }
+  }
+
+  // 생략 - guard 삭제
+  async createChat(
+    @MessageBody() data: CreateChatDto, //
+    @ConnectedSocket() socket: Socket & { user: UsersModel },
+  ) {
+    const chat = await this.chatsService.createChat(data)
+  }
+
+  // 생략 - guard 삭제
+  async enterChat(
+    @MessageBody() data: EnterChatDto, //
+    @ConnectedSocket() socket: Socket & { user: UsersModel },
+  ) {
+    // 생략
+  }
+
+  // 생략 - guard 삭제
+  async sendMessage(
+    @MessageBody() dto: CreateMessagesDto, //
+    @ConnectedSocket() socket: Socket & { user: UsersModel },
+  ) {
+    // 생략
+  }
+}
+```
 
 ---
 
 ## 7. Gateway Lifecycle Hooks
+
+- `OnGatewayInit` : Gateway가 시작됐을 때, 특정 함수를 실행하거나 로직을 실행하고 싶을 떄 사용
+- `OnGatewayDisconnect` : Gateway의 연결이 끊어졌을 때, 특정 함수를 실행하거나 로직을 실행하고 싶을 떄 사용
+
+```ts chats.gateway.ts
+// chats.gateway.ts 생략
+
+// ws://localhost:3000/chats
+@WebSocketGateway({ namespace: 'chats' })
+export class ChatsGateway implements OnGatewayConnection, OnGatewayInit, OnGatewayDisconnect {
+  // 생략
+
+  @WebSocketServer()
+  server: Server
+
+  // Gateway가 시작됐을 때, 특정 함수를 실행하거나 로직을 실행하고 싶을 떄 사용
+  afterInit(server: Server): any {
+    console.log(`After gateway init...`)
+  }
+
+  // Gateway의 연결이 끊어졌을 때, 특정 함수를 실행하거나 로직을 실행하고 싶을 떄 사용
+  handleDisconnect(socket: Socket): any {
+    console.log(`On disconnect called... ${socket.id}`)
+  }
+
+  // 생략
+}
+```
