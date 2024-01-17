@@ -5,14 +5,354 @@ date: 2023/12/25
 
 ## 1. Roles Decorator 작업
 
+users/decorator/roles.decorator.ts 파일을 만든다.
+
+```ts users/decorator/roles.decorator.ts
+import { SetMetadata } from '@nestjs/common'
+import { RolesEnum } from '../const/roles.const'
+
+export const ROLES_KEY = 'user_roles'
+
+// @Roles(RolesEnum.ADMIN)
+export const Roles = (role: RolesEnum) => SetMetadata(ROLES_KEY, role)
+```
+
+`posts/posts.controller.ts` 파일을 다음과 같이 수정한다.
+
+```ts posts/posts.controller.ts
+// **** (6) DELETE /posts/:id : id에 해당하는 post를 삭제
+@Delete(':id')
+@UseGuards(AccessTokenGuard)
+@Roles(RolesEnum.ADMIN)
+deletePost(@Param('id', ParseIntPipe) id: number) {
+  return this.postsService.deletePost(id)
+}
+```
+
 ---
 
 ## 2. RolesGuard 생성하고 적용
+
+`users/guard/roles.guard.ts` 파일을 만든다.
+
+```ts users/guard/roles.guard.ts
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common'
+
+import { Reflector } from '@nestjs/core'
+import { ROLES_KEY } from '../decorator/roles.decorator'
+
+@Injectable()
+export class RolesGuard implements CanActivate {
+  constructor(private readonly reflector: Reflector) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    /** Roles annotation에 대한 metadata를 가져와야한다.
+     * Reflector.getAllAndOverride() : 키에 대한 애노테이션 정보를 가져와서 override해줌
+     */
+    const requiredRole = this.reflector.getAllAndOverride(
+      ROLES_KEY, //
+      [context.getHandler(), context.getClass()],
+    )
+
+    // Roles Annotation 등록 안돼있음
+    if (!requiredRole) return true
+
+    const { user } = context.switchToHttp().getRequest()
+
+    if (!user) {
+      throw new UnauthorizedException(`토큰을 제공 해주세요!`)
+    }
+
+    if (user.role !== requiredRole) {
+      throw new ForbiddenException(`이 작업을 수행할 권한이 없습니다. ${requiredRole} 권한이 필요합니다.`)
+    }
+
+    return true
+  }
+}
+```
+
+`app.module.ts` 파일에 guard를 등록한다.
+
+```ts app.module.ts
+@Module({
+  // 생략
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    },
+    // 아래 코드 추가
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
+}
+```
 
 ---
 
 ## 3. 모든 Route 기본 Private로 만들고 IsPublic Annotation 작업
 
+`app.module.ts` 파일에 AccessTokenGuard를 등록한다.
+
+```ts app.module.ts
+@Module({
+  // 생략
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AccessTokenGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
+}
+```
+
+이제 AccessTokenGuard가 전체 적용되니, posts 컨트롤러에서 적용한 AccessTokenGuard들을 삭제한다.
+
+그리고 `common/decorator/is-public.decorator.ts` 파일을 만든다.
+
+```ts common/decorator/is-public.decorator.ts
+import { SetMetadata } from '@nestjs/common'
+
+export const IS_PUBLIC_KEY = 'is_public'
+
+export const IsPublic = () => SetMetadata(IS_PUBLIC_KEY, true)
+```
+
+`auth/guard/bearer-token.guard.ts` 파일을 다음과 같이 수정한다.
+
+```ts auth/guard/bearer-token.guard.ts
+@Injectable()
+export class BearerTokenGuard implements CanActivate {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+    private readonly reflector: Reflector,
+  ) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride(
+      IS_PUBLIC_KEY, //
+      [context.getHandler(), context.getClass()],
+    )
+
+    const req = context.switchToHttp().getRequest()
+
+    if (isPublic) {
+      req.isRoutePublic = true
+      return true
+    }
+
+    // 생략
+  }
+}
+
+@Injectable()
+export class AccessTokenGuard extends BearerTokenGuard {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    await super.canActivate(context)
+
+    const req = context.switchToHttp().getRequest()
+
+    if (req.isRoutePublic) {
+      return true
+    }
+
+    // 생략
+  }
+}
+
+@Injectable()
+export class RefreshTokenGuard extends BearerTokenGuard {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    await super.canActivate(context)
+    const req = context.switchToHttp().getRequest()
+
+    if (req.isRoutePublic) {
+      return true
+    }
+
+    // 생략
+  }
+}
+```
+
+이제 모든 API를 비공개로 바꿨다. 공개 API로 만들 API를 찾아서 IsPublic 어노테이션을 붙여주면 된다.
+
+posts 컨트롤러에 다음과 같이 IsPublic 어노테이션을 붙여준다.
+
+```ts posts.controller.ts
+// **** (1) GET /posts : 모든 post 조회
+@Get()
+@IsPublic()
+getPosts(@Query() query: PaginatePostDto) {
+  return this.postsService.paginatePosts(query)
+}
+
+// **** 2) GET /posts/:id : id에 해당하는 post 조회
+// @Param('id') 뜻 : 가져오는 파라미터의 이름은 id이다
+@Get(':id')
+@IsPublic()
+getPost(@Param('id', ParseIntPipe) id: number) {
+  return this.postsService.getPostById(id)
+}
+```
+
+auth 컨트롤러에 다음과 같이 IsPublic 어노테이션을 붙여준다.
+
+```ts auth.controller.ts
+@Post('token/access')
+@IsPublic()
+@UseGuards(RefreshTokenGuard)
+postTokenAccess(@Headers('authorization') rawToken: string) {
+	// 생략
+}
+
+@Post('token/refresh')
+@IsPublic()
+@UseGuards(RefreshTokenGuard)
+postTokenRefresh(@Headers('authorization') rawToken: string) {
+  // 생략
+}
+
+@Post('login/email')
+@IsPublic()
+@UseGuards(BasicTokenGuard)
+postLoginEmail(
+  @Headers('authorization') rawToken: string, //
+  // @Request() req, // 가드에 생성한 req를 가져와서 쓰기
+) {
+  // 생략
+}
+
+@Post('register/email')
+@IsPublic()
+postRegisterEmail(@Body() body: RegisterUserDto) {
+  return this.authService.registerWithEmail(body)
+}
+```
+
 ---
 
 ## 4. Public Route 정리
+
+모든 API를 비공개로 바꿨으니, 공개 API로 만들 API를 찾아서 IsPublic 어노테이션을 붙여준다.
+
+```ts common.controller.ts
+import { Controller, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common'
+import { CommonService } from './common.service'
+import { FileInterceptor } from '@nestjs/platform-express'
+
+@Controller('common')
+export class CommonController {
+  constructor(private readonly commonService: CommonService) {}
+
+  @Post('image')
+  @UseInterceptors(FileInterceptor('image'))
+  postImage(@UploadedFile() file: Express.Multer.File) {
+    return {
+      fileName: file.filename,
+    }
+  }
+}
+```
+
+댓글 페이지네이션, 댓글 1개 가져오기은 공개 API로, 나머지 API들은 accessGuard 어노테이션을 삭제한다.
+
+```ts comments.controller.ts
+@Controller('posts/:postId/comments')
+export class CommentsController {
+  // 생략
+  // **** (1) 댓글 페이지네이션
+  @Get()
+  @IsPublic()
+  getComments() {} // 생략
+
+  // **** (2) 특정 댓글 1개만 가져오기
+  @Get(':commentId')
+  @IsPublic()
+  getComment(@Param('commentId', ParseIntPipe) commentId: number) {
+    return this.commentsService.getCommentById(commentId)
+  }
+
+  // **** (3) 댓글 생성
+  @Post()
+  @UseInterceptors(TransactionInterceptor)
+  async postComment() {} // 생략
+
+  // **** (4) 댓글 수정
+  @Patch(':commentId')
+  @UseGuards(IsCommentMineOrAdminGuard)
+  async patchComment() {} // 생략
+
+  // **** (5) 댓글 삭제
+  @Delete(':commentId')
+  async deleteComment() {} // 생략
+}
+```
+
+posts 컨트롤러에 어노테이션을 다음과 같이 수정한다.
+
+```ts posts.controller.ts
+@Controller('posts')
+export class PostsController {
+  // 생략
+
+  // **** (1) GET /posts : 모든 post 조회
+  @Get()
+  @IsPublic()
+  getPosts(@Query() query: PaginatePostDto) {
+    return this.postsService.paginatePosts(query)
+  }
+
+  // **** 2) GET /posts/:id : id에 해당하는 post 조회
+  // @Param('id') 뜻 : 가져오는 파라미터의 이름은 id이다
+  @Get(':id')
+  @IsPublic()
+  getPost() {} // 생략
+
+  @Post()
+  @UseInterceptors(TransactionInterceptor)
+  async postPosts() {} // 생략
+
+  // (4) POST /posts/random : 무작위 포스트를 생성
+  @Post('random')
+  async postPostsRandom() {} // 생략
+
+  // **** (5) PATCH /posts/:id : id에 해당하는 post를 부분 변경
+  @Patch(':id')
+  patchPost() {} // 생략
+
+  // **** (6) DELETE /posts/:id : id에 해당하는 post를 삭제
+  @Delete(':id')
+  @Roles(RolesEnum.ADMIN)
+  deletePost() {} // 생략
+}
+```
+
+users 컨트롤러에 Roles 어노테이션을 추가한다.
+
+```ts users.controller.ts
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  @Roles(RolesEnum.ADMIN)
+  getUsers() {
+    return this.usersService.getAllUsers()
+  }
+}
+```
