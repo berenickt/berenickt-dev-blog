@@ -5,34 +5,484 @@ date: 2023/12/25
 
 ## 1. 섹션 소개 및 작업 인스트럭션
 
+```bash
+nest g resource
+? comments
+? REST API
+? No
+```
+
+comments 폴더가 생기면, 이 폴더 통쨰로 posts 폴더 안으로 이동시켜 하위 모듈로 만든다.
+
+comments 컨트롤러를 다음과 같이 수정한다.
+
+```ts comments.controller.ts
+/** 1) Entity 생성
+ * author -> 작성자
+ * post -> 귀속되는 포스트
+ * comment -> 실제 댓글 내용
+ * likeCount -> 좋아요 갯수
+ *
+ * id -> PrimaryGeneratedColumn
+ * createdAt -> 생성일자
+ * updatedAt -> 업데이트일자
+ *
+ * 2) GET() pagination
+ * 3) GET(':commentId') 특정 comment만 하나 가져오는 기능
+ * 4) POST() 코멘트 생성하는 기능
+ * 5) PATCH(':commentId') 특정 comment 업데이트 하는 기능
+ * 6) DELETE(':commentId') 특정 comment 삭제하는 기능
+ */
+@Controller('posts/:postId/comments')
+export class CommentsController {
+  constructor(
+    private readonly commentsService: CommentsService, //
+  ) {}
+}
+```
+
 ---
 
 ## 2. Comments Entity 생성
 
+`posts/comments/entity/comments.entity.ts` 파일을 만든다.
+
+```ts comments.entity.ts
+import { IsNumber, IsString } from 'class-validator'
+
+import { BaseModel } from 'src/common/entity/base.entity'
+import { PostsModel } from 'src/posts/entity/posts.entity'
+import { UsersModel } from 'src/users/entity/users.entity'
+import { Column, Entity, ManyToOne } from 'typeorm'
+
+@Entity()
+export class CommentsModel extends BaseModel {
+  @ManyToOne(() => UsersModel, user => user.postComments)
+  author: UsersModel
+
+  @ManyToOne(() => PostsModel, post => post.comments)
+  post: PostsModel
+
+  @Column()
+  @IsString()
+  comment: string
+
+  @Column({
+    default: 0,
+  })
+  @IsNumber()
+  likeCount: number
+}
+```
+
+users 모델에 postComments 컬럼을 추가한다.
+
+```ts users.entity.ts
+// users.entity.ts 생략
+@OneToMany(() => CommentsModel, comment => comment.author)
+postComments: CommentsModel[]
+```
+
+post 모델에 comments 컬럼을 추가한다.
+
+```ts posts.entity.ts
+// posts.entity.ts 생략
+@OneToMany(() => CommentsModel, comment => comment.post)
+comments: CommentsModel[]
+```
+
+app 모듈에서 CommentsModel를 추가한다.
+
+```ts app.module.ts
+@Module({
+  imports: [
+    // 생략
+    TypeOrmModule.forRoot({
+      // 생략
+      entities: [
+        PostsModel, //
+        UsersModel,
+        ImageModel,
+        ChatsModel,
+        MessagesModel,
+        CommentsModel, // 추가
+      ],
+      synchronize: true,
+    }),
+    // 생략
+  ],
+  // 생략
+})
+```
+
+그리고 comments 모듈에서도 사용할 수 있게 추가해준다.
+
+```ts comments.module.ts
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([CommentsModel]), //
+  ],
+  controllers: [CommentsController],
+  providers: [CommentsService],
+})
+```
+
 ---
 
-## 3. Paginate Comments API 만들기
+## 3. Paginate Comments API
+
+`posts/comments/dto/paginate-comments.dto.ts` 파일을 만든다.
+
+```ts posts/comments/dto/paginate-comments.dto.ts
+import { BasePaginationDto } from 'src/common/dto/base-pagination.dto'
+
+export class PaginateCommentsDto extends BasePaginationDto {}
+```
+
+`comments.controller.ts`에 댓글 페이지네이션 엔드포인트를 추가한다.
+
+```ts comments.controller.ts
+// **** (1) 댓글 페이지네이션
+@Get()
+@IsPublic()
+getComments(
+  @Param('postId', ParseIntPipe) postId: number, //
+  @Query() query: PaginateCommentsDto,
+) {
+  return this.commentsService.paginteComments(query, postId)
+}
+```
+
+comments 모듈에서 CommonModule을 사용할 수 있게 추가해준다.
+
+```ts comments.module.ts
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([CommentsModel]), //
+    CommonModule,
+  ],
+  controllers: [CommentsController],
+  providers: [CommentsService],
+})
+```
+
+comments 서비스에 페이지네이션 기능을 추가한다.
+
+```ts comments.service.ts
+@Injectable()
+export class CommentsService {
+  constructor(
+    @InjectRepository(CommentsModel)
+    private readonly commentsRepository: Repository<CommentsModel>,
+    private readonly commonService: CommonService,
+  ) {}
+
+  paginteComments(dto: PaginateCommentsDto, postId: number) {
+    return this.commonService.paginate(
+      dto,
+      this.commentsRepository,
+      { where: { post: { id: postId } } },
+      `posts/${postId}/comments`,
+    )
+  }
+}
+```
 
 ---
 
 ## 4. ID 기반으로 하나의 Comments 가져오는 API 작성
 
+ID를 기반으로 특정 댓글 1개만 가져오기 위해 comments 컨트롤러에 엔드포인트를 추가한다.
+
+```ts comments.controller.ts
+// **** (2) 특정 댓글 1개만 가져오기
+@Get(':commentId')
+@IsPublic()
+getComment(@Param('commentId', ParseIntPipe) commentId: number) {
+  return this.commentsService.getCommentById(commentId)
+}
+```
+
+comments 서비스에 기능을 추가한다.
+
+```ts comments.service.ts
+// **** (2) 특정 댓글 1개만 가져오기
+async getCommentById(id: number) {
+  const comment = await this.commentsRepository.findOne({
+    ...DEFAULT_COMMENT_FIND_OPTIONS,
+    where: { id },
+  })
+
+  if (!comment) {
+    throw new BadRequestException(`id: ${id} Comment는 존재하지 않습니다.`)
+  }
+
+  return comment
+}
+```
+
 ---
 
-## 5. Comment 생성 API 작업
+## 5. Comment 생성 API
+
+댓글 생성 DTO를 위해 `comments/dto/create-comments.dto.ts` 파일을 만든다.
+
+```ts create-comments.dto.ts
+import { PickType } from '@nestjs/mapped-types'
+import { CommentsModel } from '../entity/comments.entity'
+
+export class CreateCommentsDto extends PickType(CommentsModel, ['comment']) {}
+```
+
+댓글 생성하기 위해 comments 컨트롤러에 엔드포인트를 추가한다.
+
+```ts comments.controller.ts
+// **** (3) 댓글 생성
+@Post()
+@UseInterceptors(TransactionInterceptor)
+async postComment(
+  @Param('postId', ParseIntPipe) postId: number,
+  @Body() body: CreateCommentsDto,
+  @User() user: UsersModel,
+  @QueryRunner() qr: QR,
+) {
+  const resp = await this.commentsService.createComment(body, postId, user, qr)
+
+  await this.postsService.incrementCommentCount(postId, qr)
+
+  return resp
+}
+```
+
+comments 모듈에서 AuthModule, UsersModule을 사용할 수 있게 추가해준다.
+
+```ts comments.module.ts
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([CommentsModel]), //
+    CommonModule,
+    AuthModule,
+    UsersModule,
+  ],
+  controllers: [CommentsController],
+  providers: [CommentsService],
+})
+```
+
+comments 서비스에 기능을 추가한다.
+
+```ts comments.service.ts
+// **** (3) 댓글 생성
+async createComment(
+  dto: CreateCommentsDto, //
+  postId: number,
+  author: UsersModel,
+  qr?: QueryRunner,
+) {
+  const repository = this.getRepository(qr)
+
+  return repository.save({
+    ...dto,
+    post: { id: postId },
+    author,
+  })
+}
+```
+
+`comments/const/default-comment-find-options.const.ts` 파일을 만든다.
+
+```ts comments/const/default-comment-find-options.const.ts
+import { FindManyOptions } from 'typeorm'
+import { CommentsModel } from '../entity/comments.entity'
+
+export const DEFAULT_COMMENT_FIND_OPTIONS: FindManyOptions<CommentsModel> = {
+  relations: {
+    author: true,
+  },
+  select: {
+    author: {
+      id: true,
+      nickname: true,
+    },
+  },
+}
+```
 
 ---
 
-## 6. Patch Comment API 작업
+## 6. Patch Comment API
+
+댓글 생성 DTO를 위해 `comments/dto/update-comments.dto.ts` 파일을 만든다.
+
+```ts update-comments.dto.ts
+import { PartialType } from '@nestjs/mapped-types'
+import { CreateCommentsDto } from './create-comments.dto'
+
+export class UpdateCommentsDto extends PartialType(CreateCommentsDto) {}
+```
+
+댓글 수정하기 위해 comments 컨트롤러에 엔드포인트를 추가한다.
+
+```ts comments.controller.ts
+// **** (4) 댓글 수정
+@Patch(':commentId')
+@UseGuards(IsCommentMineOrAdminGuard)
+async patchComment(
+  @Param('commentId', ParseIntPipe) commentId: number, //
+  @Body() body: UpdateCommentsDto,
+) {
+  return this.commentsService.updateComment(body, commentId)
+}
+```
+
+comments 서비스에 기능을 추가한다.
+
+```ts comments.service.ts
+ // **** (4) 댓글 수정
+async updateComment(dto: UpdateCommentsDto, commentId: number) {
+  const comment = await this.commentsRepository.findOne({
+    where: {
+      id: commentId,
+    },
+  })
+
+  if (!comment) {
+    throw new BadRequestException('존재하지 않는 댓글입니다.')
+  }
+
+  const prevComment = await this.commentsRepository.preload({
+    id: commentId,
+    ...dto,
+  })
+
+  const newComment = await this.commentsRepository.save(prevComment)
+
+  return newComment
+}
+```
 
 ---
 
-## 7. Delete Comment API 작업
+## 7. Delete Comment API
+
+댓글 삭제를 위해 comments 컨트롤러에 엔드포인트를 추가한다.
+
+```ts comments.controller.ts
+// **** (5) 댓글 삭제
+@Delete(':commentId')
+@UseGuards(IsCommentMineOrAdminGuard)
+@UseInterceptors(TransactionInterceptor)
+async deleteComment(
+  @Param('commentId', ParseIntPipe) commentId: number, //
+  @Param('postId', ParseIntPipe) postId: number,
+  @QueryRunner() qr: QR,
+) {
+  const resp = await this.commentsService.deleteComment(commentId, qr)
+
+  await this.postsService.decrementCommentCount(postId, qr)
+
+  return resp
+}
+```
+
+comments 서비스에 기능을 추가한다.
+
+```ts comments.service.ts
+// **** (5) 댓글 삭제
+async deleteComment(id: number, qr?: QueryRunner) {
+  const repository = this.getRepository(qr)
+
+  const comment = await repository.findOne({
+    where: { id },
+  })
+
+  if (!comment) {
+    throw new BadRequestException('존재하지 않는 댓글입니다.')
+  }
+
+  await repository.delete(id)
+
+  return id
+}
+```
 
 ---
 
 ## 8. Path Parameter 검증하는 Middleware 생성
 
+comment 컨트롤러 안에 있는 `:postId`패스 파라미터가 유효한지 확인하는 미들웨어를 만든다.
+
+`posts.service`에 id를 갖고있는 post가 존재하는지 확인하는 기능을 추가한다.
+
+```ts posts.service.ts
+// **** 이 id를 가진 post가 존재하는지 확인
+async checkPostExistsById(id: number) {
+  return this.postsRepository.exist({
+    where: { id },
+  })
+}
+```
+
+`comments/middleware/post-exists.middleware.ts` 파일을 만든다.
+
+```ts comments/middleware/post-exists.middleware.ts
+import { BadRequestException, Injectable, NestMiddleware } from '@nestjs/common'
+import { NextFunction, Request, Response } from 'express'
+import { PostsService } from 'src/posts/posts.service'
+
+@Injectable()
+export class PostExistsMiddelware implements NestMiddleware {
+  constructor(private readonly postService: PostsService) {}
+
+  async use(req: Request, res: Response, next: NextFunction) {
+    const postId = req.params.postId
+
+    if (!postId) {
+      throw new BadRequestException('Post ID 파라미터는 필수입니다.')
+    }
+
+    const exists = await this.postService.checkPostExistsById(parseInt(postId))
+
+    if (!exists) {
+      throw new BadRequestException('Post가 존재하지 않습니다.')
+    }
+
+    next() // 다음 로직을 실행
+  }
+}
+```
+
 ---
 
 ## 9. PostExists Middleware CommentsController에 적용
+
+등록하려는 모듈(comments)에 PostExists Middleware를 적용시킬 것이다.
+
+```ts comments.module.ts
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([CommentsModel]), //
+    CommonModule,
+    AuthModule,
+    UsersModule,
+    PostsModule,
+  ],
+  controllers: [CommentsController],
+  providers: [CommentsService],
+})
+export class CommentsModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(PostExistsMiddelware).forRoutes(CommentsController)
+  }
+}
+```
+
+그리고 posts 모듈을 export한다.
+
+```ts posts.module.ts
+@Module({
+  // 생략
+  exports: [PostsService],
+})
+export class PostsModule {}
+```
