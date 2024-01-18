@@ -3,12 +3,263 @@ title: '37-follower-comment-count'
 date: 2023/12/25
 ---
 
-## 1. Follower Count 증가 & 감소 작업 - 1
+## 1. Follower Count 증가 & 감소 - 1
+
+user 엔티티에 팔로우, 팔로워 수 컬럼을 추가해준다.
+
+```ts users.entity.ts
+@Column({ default: 0 })
+followerCount: number
+
+@Column({ default: 0 })
+followeeCount: number
+```
+
+users 컨트롤러
+
+```ts users/users.controller.ts
+import { QueryRunner as QR } from 'typeorm'
+// 나머지 import 생략
+
+// **** 팔로우 요청 승인
+@Patch('follow/:id/confirm')
+@UseInterceptors(TransactionInterceptor)
+async patchFollowConfirm(
+  @User() user: UsersModel, //
+  @Param('id', ParseIntPipe) followerId: number,
+  @QueryRunner() qr: QR,
+) {
+  await this.usersService.confirmFollow(followerId, user.id, qr)
+  await this.usersService.incrementFollowerCount(user.id, qr)
+  return true
+}
+
+// **** 팔로우 요청 삭제
+@Delete('follow/:id')
+async deleteFollow(
+  @User() user: UsersModel, //
+  @Param('id', ParseIntPipe) followeeId: number,
+  @QueryRunner() qr: QR,
+) {
+  await this.usersService.deleteFollow(user.id, followeeId, qr)
+  await this.usersService.decrementFollowerCount(followeeId, qr)
+  return true
+}
+```
+
+users 서비스
+
+```ts users/users.service.ts
+@Injectable()
+export class UsersService {
+  // 생략
+
+  getUsersRepository(qr?: QueryRunner) {
+    return qr //
+      ? qr.manager.getRepository<UsersModel>(UsersModel)
+      : this.usersRepository
+  }
+
+  getUserFollowRepository(qr?: QueryRunner) {
+    return qr //
+      ? qr.manager.getRepository<UserFollowersModel>(UserFollowersModel)
+      : this.userFollowersRepository
+  }
+
+  // 생략
+
+  // **** 4) 팔로우 요청
+  async followUser(followerId: number, followeeId: number, qr?: QueryRunner) {
+    const userFollowersRepository = this.getUserFollowRepository(qr)
+
+    await userFollowersRepository.save({
+      follower: { id: followerId },
+      followee: { id: followeeId },
+    })
+
+    return true
+  }
+
+  // **** 5) 팔로워들 조회
+  // 생략
+
+  // **** 팔로우 요청 승인
+  async confirmFollow(followerId: number, followeeId: number, qr?: QueryRunner) {
+    const userFollowersRepository = this.getUserFollowRepository(qr)
+
+    const existing = await userFollowersRepository.findOne({
+      where: {
+        follower: { id: followerId },
+        followee: { id: followeeId },
+      },
+      relations: {
+        follower: true,
+        followee: true,
+      },
+    })
+
+    if (!existing) {
+      throw new BadRequestException('존재하지 않는 팔로우 요청입니다!')
+    }
+
+    await userFollowersRepository.save({
+      ...existing,
+      isConfirmed: true,
+    })
+
+    return true
+  }
+
+  // **** 팔로우 요청 삭제
+  async deleteFollow(followerId: number, followeeId: number, qr?: QueryRunner) {
+    const userFollowersRepository = this.getUserFollowRepository(qr)
+
+    await userFollowersRepository.delete({
+      follower: {
+        id: followerId,
+      },
+      followee: {
+        id: followeeId,
+      },
+    })
+
+    return true
+  }
+
+  async incrementFollowerCount(userId: number, qr?: QueryRunner) {
+    const userRepository = this.getUsersRepository(qr)
+
+    await userRepository.increment(
+      { id: userId }, //
+      'followerCount',
+      1,
+    )
+  }
+
+  async decrementFollowerCount(userId: number, qr?: QueryRunner) {
+    const userRepository = this.getUsersRepository(qr)
+
+    await userRepository.decrement(
+      { id: userId }, //
+      'followerCount',
+      1,
+    )
+  }
+}
+```
 
 ---
 
-## 2. Follower Count 증가 & 감소 작업 - 2
+## 2. Follower Count 증가 & 감소 - 2
+
+posts 서비스에 댓글 수를 표시하는 기능을 추가한다.
+
+```ts posts.service.ts
+// **** 포스트 댓글 수 증가
+async incrementCommentCount(postId: number, qr?: QueryRunner) {
+  const repository = this.getRepository(qr)
+
+  await repository.increment({ id: postId }, 'commentCount', 1)
+}
+
+// **** 포스트 댓글 수 감소
+async decrementCommentCount(postId: number, qr?: QueryRunner) {
+  const repository = this.getRepository(qr)
+  await repository.decrement({ id: postId }, 'commentCount', 1)
+}
+```
 
 ---
 
-## 3. Comment Count 작업
+## 3. Comment Count
+
+comments 서비스에 queryRunner를 추가한다.
+
+```ts comments.service.ts
+getRepository(qr?: QueryRunner) {
+  return qr //
+    ? qr.manager.getRepository<CommentsModel>(CommentsModel)
+    : this.commentsRepository
+}
+
+// **** (3) 댓글 생성
+async createComment(
+  dto: CreateCommentsDto, //
+  postId: number,
+  author: UsersModel,
+  qr?: QueryRunner,
+) {
+  const repository = this.getRepository(qr)
+
+  return repository.save({
+    ...dto,
+    post: { id: postId },
+    author,
+  })
+}
+
+// **** (5) 댓글 삭제
+async deleteComment(id: number, qr?: QueryRunner) {
+  const repository = this.getRepository(qr)
+
+  const comment = await repository.findOne({
+    where: { id },
+  })
+
+  if (!comment) {
+    throw new BadRequestException('존재하지 않는 댓글입니다.')
+  }
+
+  await repository.delete(id)
+
+  return id
+}
+```
+
+comments 컨트롤러도 다음과 같이 수정한다.
+
+```ts comments.controller.ts
+@Controller('posts/:postId/comments')
+export class CommentsController {
+  constructor(
+    private readonly commentsService: CommentsService,
+    private readonly postsService: PostsService,
+  ) {}
+
+  // 생략
+
+  // **** (3) 댓글 생성
+  @Post()
+  @UseInterceptors(TransactionInterceptor)
+  async postComment(
+    @Param('postId', ParseIntPipe) postId: number,
+    @Body() body: CreateCommentsDto,
+    @User() user: UsersModel,
+    @QueryRunner() qr: QR,
+  ) {
+    const resp = await this.commentsService.createComment(body, postId, user, qr)
+
+    await this.postsService.incrementCommentCount(postId, qr)
+
+    return resp
+  }
+
+  // 생략
+
+  // **** (5) 댓글 삭제
+  @Delete(':commentId')
+  @UseGuards(IsCommentMineOrAdminGuard)
+  @UseInterceptors(TransactionInterceptor)
+  async deleteComment(
+    @Param('commentId', ParseIntPipe) commentId: number, //
+    @Param('postId', ParseIntPipe) postId: number,
+    @QueryRunner() qr: QR,
+  ) {
+    const resp = await this.commentsService.deleteComment(commentId, qr)
+
+    await this.postsService.decrementCommentCount(postId, qr)
+
+    return resp
+  }
+}
+```
