@@ -5,10 +5,156 @@ date: 2023/12/25
 
 ## 1. IsPostMineOrAdmin 가드 생성
 
+`posts/guard/is-post-mine-or-admin.guard.ts` 파일을 만든다.
+
+```ts posts/guard/is-post-mine-or-admin.guard.ts
+import {
+  BadRequestException,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common'
+
+import { RolesEnum } from 'src/users/const/roles.const'
+import { PostsService } from '../posts.service'
+import { Request } from 'express'
+import { UsersModel } from 'src/users/entity/users.entity'
+
+@Injectable()
+export class IsPostMineOrAdminGuard implements CanActivate {
+  constructor(private readonly postService: PostsService) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const req = context.switchToHttp().getRequest() as Request & { user: UsersModel }
+
+    const { user } = req
+
+    if (!user) {
+      throw new UnauthorizedException('사용자 정보를 가져올 수 없습니다.')
+    }
+
+    // Admin일 경우 그냥 패스
+    if (user.role === RolesEnum.ADMIN) return true
+
+    const postId = req.params.postId
+
+    if (!postId) {
+      throw new BadRequestException('Post ID가 파라미터로 제공 돼야합니다.')
+    }
+
+    const isOk = await this.postService.isPostMine(user.id, parseInt(postId))
+
+    if (!isOk) throw new ForbiddenException('권한이 없습니다.')
+
+    return true
+  }
+}
+```
+
+posts 서비스에 관리자나 내가 작성한 글인지 확인하는 기능을 추가한다.
+
+```ts posts/posts.service.ts
+// posts.service.ts 생략
+// **** 내 포스트인지 아닌지 확인
+async isPostMine(userId: number, postId: number) {
+  return this.postsRepository.exist({
+    where: {
+      id: postId,
+      author: { id: userId },
+    },
+    relations: { author: true },
+  })
+}
+```
+
 ---
 
 ## 2. IsPostMineOrAdmin 적용하고 테스트
 
+posts 컨트롤러에 포스트 수정에서 guard를 추가한다.
+
+```ts posts.controller.ts
+// **** (5) PATCH /posts/:id : id에 해당하는 post를 부분 변경
+@Patch(':postId')
+@UseGuards(IsPostMineOrAdminGuard)
+patchPost(
+  @Param('postId', ParseIntPipe) id: number, //
+  @Body() body: UpdatePostDto,
+) {
+  return this.postsService.updatePost(id, body)
+}
+```
+
 ---
 
 ## 3. IsCommentMineOrAdminGuard 생성 및 적용
+
+`posts/comments/guard/is-comment-mine-or-admin.guard.ts` 파일을 만든다.
+
+```ts posts/comments/guard/is-comment-mine-or-admin.guard.ts
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common'
+import { Request } from 'express'
+import { UsersModel } from 'src/users/entity/users.entity'
+import { RolesEnum } from 'src/users/const/roles.const'
+import { CommentsService } from '../comments.service'
+
+@Injectable()
+export class IsCommentMineOrAdminGuard implements CanActivate {
+  constructor(private readonly commentService: CommentsService) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const req = context.switchToHttp().getRequest() as Request & { user: UsersModel }
+
+    const { user } = req
+
+    if (!user) {
+      throw new UnauthorizedException('사용자 정보를 가져올 수 없습니다.')
+    }
+
+    if (user.role === RolesEnum.ADMIN) {
+      return true
+    }
+
+    const commentId = req.params.commentId
+
+    const isOk = await this.commentService.isCommentMine(user.id, parseInt(commentId))
+
+    if (!isOk) {
+      throw new ForbiddenException('권한이 없습니다.')
+    }
+
+    return true
+  }
+}
+```
+
+comments 서비스에 내가 작성한 댓글인지 확인하는 코드를 추가한다.
+
+```ts comments.service.ts
+// **** 내가 작성한 댓글인지 확인
+async isCommentMine(userId: number, commentId: number) {
+  return this.commentsRepository.exist({
+    where: {
+      id: commentId,
+      author: { id: userId },
+    },
+    relations: { author: true },
+  })
+}
+```
+
+comments 컨트롤러에 댓글 삭제, 수정에서 guard를 추가한다.
+
+```ts comments.controller.ts
+// **** (4) 댓글 수정
+@Patch(':commentId')
+@UseGuards(IsCommentMineOrAdminGuard)
+async patchComment() {} // 생략
+
+// **** (5) 댓글 삭제
+@Delete(':commentId')
+@UseGuards(IsCommentMineOrAdminGuard)
+async deleteComment() {} // 생략
+```
