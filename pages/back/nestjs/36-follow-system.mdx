@@ -5,26 +5,360 @@ date: 2023/12/25
 
 ## 1. Follow System 이론
 
+- 인스타그램 팔로우 시스템 = 요청이 단뱡향인 팔로우 시스템
+- 사용자 A와 B가 있다고 가정하면,
+  - A는 B를 팔로우할 수 있고, B는 A를 팔로우안할 수도 있다.
+  - 반대의 경우도 마찬가지.
+  - 즉, 다수의 팔로워를 가질 수도 있고, 다수의 팔로우도 할 수 있다.
+  - 다시 말해, Many to Many 관계이다.
+- 그런데 User를 다대다 관계로 할려는데, 둘 다 유저 테이블을 사용하고 있다.
+- 이럴 때, 팔로우 ID와 팔로워 ID를 가진 User Follow 테이블이란 중간 테이블을 만들면 된다.
+
+다음 표 예시를 보면,
+
+| follower_id | followee_id |
+| :---------: | :---------: |
+|      1      |      2      |
+|      2      |      1      |
+|      3      |      4      |
+|      2      |      4      |
+
+- 1번 사용자가 2번을 팔로우하고 있다.
+- 2번 사용자가 1번을 팔로우하고 있다. (이 경우 1번과 2번은 서로 맞팔로우한 상태)
+- 3번 사용자가 4번을 팔로우하고 있다.
+- 4번 사용자는 아무도 팔로우하고 있지않다. (팔로워가 3번, 2번 해서 2명 있다)
+
 ---
 
 ## 2. Followers & Followees 프로퍼티 생성
+
+user 엔티티에 팔로워와 팔로위 속성을 추가한다.
+
+```ts users.entity.ts
+@Entity()
+export class UsersModel extends BaseModel {
+  // 생략
+
+  // 내가 팔로우 하고 있는 사람들
+  @ManyToMany(() => UsersModel, user => user.followees)
+  @JoinTable()
+  followers: UsersModel[]
+
+  // 나를 팔로우 하고 있는 사람들
+  @ManyToMany(() => UsersModel, user => user.followers)
+  followees: UsersModel[]
+}
+```
 
 ---
 
 ## 3. Follow 시스템 로직 작성 및 테스트
 
+user 서비스에 팔로우 요청, 팔로워 조회 기능을 추가한다.
+
+```ts users.service.ts
+// **** 4) 팔로우 요청
+async followUser(followerId: number, followeeId: number) {
+  const user = await this.userRepository.findOne({
+    where: {
+      id: followerId,
+    },
+    relations: {
+      followees: true,
+    },
+  })
+
+  if (!user) {
+    throw new BadRequestException('존재하지 않는 팔로워입니다.')
+  }
+
+  await this.userRepository.save({
+    ...user,
+    followees: [...user.followees, { id: followeeId }],
+  })
+
+  return true
+}
+
+// **** 5) 팔로워들 조회
+async getFollowers(userId: number): Promise<UsersModel[]> {
+  const user = await this.userRepository.findOne({
+    where: { id: userId },
+    relations: {
+      followers: true,
+    },
+  })
+
+  return user.followers
+}
+```
+
+user 컨트롤러에 팔로우 엔드포인트를 추가한다.
+
+```ts users.controller.ts
+@Get('follow/me')
+async getFollow(
+  @User() user: UsersModel, //
+) {
+  return this.usersService.getFollowers(user.id)
+}
+
+@Post('follow/:id')
+async postFollow(
+  @User() user: UsersModel, //
+  @Param('id', ParseIntPipe) followeeId: number,
+) {
+  await this.usersService.followUser(user.id, followeeId)
+  return true
+}
+```
+
 ---
 
 ## 4. Follow Table 직접 생성
 
+상대방이 ok했는지, 팔로우 요청했을 떄, 허가를 담거나 언제 팔로우 했는지의 데이터를 넣고 싶을 떄가 있다.
+
+`src/users/entities/user-follow.entity.ts` 파일을 만든다.
+
+```ts src/users/entities/user-follow.entity.ts
+import { BaseModel } from 'src/common/entity/base.entity'
+import { UsersModel } from './users.entity'
+import { Column, Entity, ManyToOne } from 'typeorm'
+
+@Entity()
+export class UserFollowersModel extends BaseModel {
+  @ManyToOne(() => UsersModel, user => user.followers)
+  follower: UsersModel
+
+  @ManyToOne(() => UsersModel, user => user.followees)
+  followee: UsersModel
+
+  @Column({ default: false })
+  isConfirmed: boolean
+}
+```
+
+`users/entity/users.entity.ts` 파일의 팔로우 관계를 다음과 같이 수정한다.
+
+```ts users/entities/users.entity.ts
+// 내가 팔로우 하고 있는 사람들
+@OneToMany(() => UserFollowersModel, ufm => ufm.follower)
+followers: UsersModel[]
+
+// 나를 팔로우 하고 있는 사람들
+@OneToMany(() => UserFollowersModel, ufm => ufm.followee)
+followees: UsersModel[]
+```
+
+app 모듈에 UserFollowModel을 추가한다.
+
+```ts app.module.ts
+// 생략
+TypeOrmModule.forRoot({
+  // 생략
+  // entities폴더에 작성한 PostsModel 가져오기
+  entities: [
+    PostsModel, //
+    UsersModel,
+    ImageModel,
+    ChatsModel,
+    MessagesModel,
+    CommentsModel,
+    UserFollowersModel,
+  ],
+  synchronize: true,
+}),
+```
+
 ---
 
-## 5. Custom Tabledㅔ 맞춰서 로직 변경
+## 5. Custom Table에 맞춰서 로직 변경
+
+`users/entity/users.entity.ts` 파일의 팔로우 관계를 다음과 같이 수정한다.
+
+```ts users/entities/users.entity.ts
+// 내가 팔로우 하고 있는 사람들
+@OneToMany(() => UserFollowersModel, ufm => ufm.follower)
+followers: UserFollowersModel[]
+
+// 나를 팔로우 하고 있는 사람들
+@OneToMany(() => UserFollowersModel, ufm => ufm.followee)
+followees: UserFollowersModel[]
+```
+
+users 서비스에 기능을 다음과 같이 수정한다.
+
+```ts users.service.ts
+@Injectable()
+export class UsersService {
+  constructor(
+    @InjectRepository(UsersModel)
+    private readonly userRepository: Repository<UsersModel>,
+    @InjectRepository(UserFollowersModel)
+    private readonly userFollowersRepository: Repository<UserFollowersModel>,
+  ) {}
+
+  // 생략
+
+  // **** 4) 팔로우 요청
+  async followUser(followerId: number, followeeId: number) {
+    return await this.userFollowersRepository.save({
+      follower: {
+        id: followerId,
+      },
+      followee: {
+        id: followeeId,
+      },
+    })
+  }
+
+  // **** 5) 팔로워들 조회
+  async getFollowers(userId: number): Promise<UsersModel[]> {
+    const result = await this.userFollowersRepository.find({
+      where: {
+        followee: {
+          id: userId,
+        },
+      },
+      relations: {
+        follower: true,
+      },
+    })
+
+    return result.map(userFollow => userFollow.follower)
+  }
+}
+```
+
+users 모듈에 UserFollowersModel을 import한다.
+
+```ts src/users/users.module.ts
+@Module({
+  // 이 모듈 안에서 UsersModel을 어디서든 사용 가능
+  imports: [
+    TypeOrmModule.forFeature([
+      UsersModel, //
+      UserFollowersModel,
+    ]),
+  ],
+  exports: [UsersService],
+  controllers: [UsersController],
+  providers: [UsersService],
+})
+export class UsersModule {}
+```
 
 ---
 
-## 6. Confirm Follow 로직 추가
+## 6. Confirm Follow 로직
+
+users 컨트롤러 팔로우 요청 승인 엔드포인트를 추가한다.
+
+```ts users.controller.ts
+// **** 내 팔로워들 조회
+@Get('follow/me')
+async getFollow(
+  @User() user: UsersModel, //
+  @Query('includeNotConfirmed', new DefaultValuePipe(false), ParseBoolPipe) includeNotConfirmed: boolean,
+) {
+  return this.usersService.getFollowers(user.id, includeNotConfirmed)
+}
+
+// **** 팔로우 요청 승인
+@Patch('follow/:id/confirm')
+async patchFollowConfirm(
+  @User('id') followeeId: number, //
+  @Param('id', ParseIntPipe) followerId: number,
+) {
+  await this.usersService.confirmFollow(followerId, followeeId)
+  return true
+}
+```
+
+users 서비스에 팔로우 요청 승인 기능을 추가한다.
+
+```ts users.service.ts
+// **** 5) 팔로워들 조회
+async getFollowers(userId: number, includeNotConfirmed: boolean) {
+  const where = {
+    followee: { id: userId },
+  }
+
+  if (!includeNotConfirmed) {
+    where['isConfirmed'] = true
+  }
+
+  const result = await this.userFollowersRepository.find({
+    where,
+    relations: {
+      follower: true,
+      followee: true,
+    },
+  })
+
+  return result.map(el => ({
+    id: el.follower.id,
+    nickname: el.follower.nickname,
+    email: el.follower.email,
+    isConfirmed: el.isConfirmed,
+  }))
+}
+
+// **** 팔로우 요청 승인
+async confirmFollow(followerId: number, followeeId: number) {
+  const existing = await this.userFollowersRepository.findOne({
+    where: {
+      follower: { id: followerId },
+      followee: { id: followeeId },
+    },
+    relations: {
+      follower: true,
+      followee: true,
+    },
+  })
+
+  if (!existing) {
+    throw new BadRequestException('존재하지 않는 팔로우 요청입니다!')
+  }
+
+  await this.userFollowersRepository.save({
+    ...existing,
+    isConfirmed: true,
+  })
+
+  return true
+}
+```
 
 ---
 
-## 7. 팔로우 취소 요청 작업
+## 7. 팔로우 취소 요청
+
+users 컨트롤러 팔로우 요청 취소 엔드포인트를 추가한다.
+
+```ts users.controller.ts
+// **** 팔로우 요청 삭제
+@Delete('follow/:id')
+async deleteFollow(
+  @User() user: UsersModel, //
+  @Param('id', ParseIntPipe) followeeId: number,
+) {
+  await this.usersService.deleteFollow(user.id, followeeId)
+  return true
+}
+```
+
+users 서비스에 팔로우 요청 취소 기능을 추가한다.
+
+```ts users.service.ts
+// **** 팔로우 요청 삭제
+async deleteFollow(followerId: number, followeeId: number) {
+  await this.userFollowersRepository.delete({
+    follower: { id: followerId },
+    followee: { id: followeeId },
+  })
+
+  return true
+}
+```
