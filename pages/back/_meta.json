@@ -17,7 +17,7 @@
   "payment": "결제",
   "search": "검색",
   "msa": "MSA",
-  "crawling": "크롤링",
+  "crawling": "스크랩핑과 크롤링",
   "-- 3. Database & SQL --": {
     "type": "separator",
     "title": "3. Database & SQL"
