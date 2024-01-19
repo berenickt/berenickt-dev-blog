@@ -161,3 +161,7 @@ strong {
 .nx-mt-6 {
   margin-top: 0.8rem !important;
 }
+
+p {
+  white-space: pre-line;
+}

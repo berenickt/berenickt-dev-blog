@@ -1,5 +1,5 @@
 ---
-title: "02-저장 - add, commit, diff"
+title: '02-저장 - add, commit, diff'
 date: 2023/01/11
 ---
 
@@ -12,7 +12,7 @@ git init # git이 여러분이 파일생성하는거, 코드작성하는걸 추�
 git의 commit 기능을 쓰면 쓰면 파일의 현재상태를 매일매일 **기록**해둘 수 있습니다.
 정확히 말하면 **파일의 스냅샷**을 저장해줍니다.
 
-------
+---
 
 # 2. git add, commit
 
@@ -30,30 +30,30 @@ git을 이용해서 해당 파일 현재상태를 기록하려면,
 # git add 파일명
 # git commit -m '아무메세지'
 
-git add app.txt 
+git add app.txt
 git commit -m '첫 파일 만듬'
 ```
 
 이제부터 이 파일상태 그대로 되돌리거나 그럴 수 있고 나중에 파일변경 히스토리가 궁금하면 열람할 수도 있습니다.
 "기록"이라기보다는 "버전생성"이라고 부르는 경우가 많습니다.
 
-------
+---
 
-## 2.1 staging area & repository 
+## 2.1 staging area & repository
 
 버전만들 땐 `(1) git add`, `(2) git commit` 순서대로 하면 됩니다. 그림을 그려보면,
 
 ![git_2_1](https://raw.githubusercontent.com/berenickt/image-server/main/img/git_2_1.png)
 
-* `staging area`
-  * commit을 하기 전에 **commit할 파일들을 골라놓는 곳**
-  * staging area에 파일넣는 행위를 **staging**이라고 함
-  * `git add` 명령어로 staging 할 수 있음
-* `repository(저장소)`
-  * commit된 **파일의 버전들을 모아놓는 곳**
-  * repository의 실체를 구경하고 싶으면 작업폴더안에 숨겨져 있는 `.gi`t 폴더 열어보면 됨
+- `staging area`
+  - commit을 하기 전에 **commit할 파일들을 골라놓는 곳**
+  - staging area에 파일넣는 행위를 **staging**이라고 함
+  - `git add` 명령어로 staging 할 수 있음
+- `repository(저장소)`
+  - commit된 **파일의 버전들을 모아놓는 곳**
+  - repository의 실체를 구경하고 싶으면 작업폴더안에 숨겨져 있는 `.gi`t 폴더 열어보면 됨
 
-------
+---
 
 ## 2.2 명령어 정리
 
@@ -64,14 +64,14 @@ git add 파일명1 파일명2 # 여러 파일을 동시에 스테이징
 git add . # 작업폴더의 모든 파일을 전부 스테이징
 
 # 요즘 젊은이들은 인생이 힘들고 복잡할 때 "상태창!!"을 외치는데,
-# git도 마찬가지로 힘들고 복잡할 때 상태창을 띄울 수 있음 
+# git도 마찬가지로 힘들고 복잡할 때 상태창을 띄울 수 있음
 # git status : 지금 뭐 하는지 까먹었을 때도 자주 입력
 git status # 지금 변경된 파일, 스테이징된 파일 이런걸 쭉 알려줌
 
 git restore --staged 파일명 # 스테이징된 파일을 취소
 
 # commit 할 때 -m 뒤에 메세지 입력가능
-# 메세지에 코드에 무슨기능 추가했는지 이런거 적으면 됩니다. 
+# 메세지에 코드에 무슨기능 추가했는지 이런거 적으면 됩니다.
 git commit -m '메세지'
 
 # commit 기록을 한 눈에 파악하고 싶으면 git log 명령어 입력
@@ -84,39 +84,40 @@ git log --all --oneline --graph
 
 > ❓ 얼마나 자주 commit 하는게 좋나?
 >
-> ctrl + s 누르는 것 처럼 습관적으로 할 이유는 없고 간단한 기능을 하나 추가할 때마다 commit하면 됩니다. 
+> ctrl + s 누르는 것 처럼 습관적으로 할 이유는 없고 간단한 기능을 하나 추가할 때마다 commit하면 됩니다.
 >
 > 예를 들어, 회원가입 기능을 만든다고 하면,
 >
-> * 회원가입 폼 레이아웃을 만들면 commit
-> * 입력한 이메일이 맞는지 검증하는 기능을 만들었으면 commit
-> * 서버에 전송하는 기능을 만들었으면 commit
+> - 회원가입 폼 레이아웃을 만들면 commit
+> - 입력한 이메일이 맞는지 검증하는 기능을 만들었으면 commit
+> - 서버에 전송하는 기능을 만들었으면 commit
 >
 > 대충 작은 작업하나 마쳤으면 commit하는게 좋습니다.
 
-------
+---
 
 ## 2.3 에디터 부가기능
 
-웬만한 에디터들 보면 git 기능이 내장되어 있어서 그거 쓰면 터미널 켤 필요없이 편리하게 add, commit 가능합니다. 
+웬만한 에디터들 보면 git 기능이 내장되어 있어서 그거 쓰면 터미널 켤 필요없이 편리하게 add, commit 가능합니다.
 (git 기능없는 에디터면 git 부가기능 설치하면 됩니다.)
 
 ![git_2_2](https://raw.githubusercontent.com/berenickt/image-server/main/img/git_2_2.png)
 
-VSCode 에디터의 경우 왼쪽 git 처럼 생긴 메뉴 들어가보면 지금 어떤 파일이 변경되고 추가되었는지 알려줍니다. <br />
-* `+` 누르면 `git add` 한거랑 똑같고, 
-* `체크마크` 누르면 `git commit` 한거랑 똑같습니다.
+VSCode 에디터의 경우 왼쪽 git 처럼 생긴 메뉴 들어가보면 지금 어떤 파일이 변경되고 추가되었는지 알려줍니다.
+
+- `+` 누르면 `git add` 한거랑 똑같고,
+- `체크마크` 누르면 `git commit` 한거랑 똑같습니다.
 
 파일이 많고 복잡하면 이거 쓰는게 더 나을 수도 있습니다.
 
-------
+---
 
 # 3. git diff
 
 commit 하기 전에 이전과 현재 코드가 어떤 차이가 있는지 알고 싶으면, `git diff` 명령어 쓰면 됩니다.
 **바로 전 commit과 현재 코드의 차이점**을 비교해줍니다.
 
-하지만 터미널의 한계로 차이점보기가 힘들고, <br />
+하지만 터미널의 한계로 차이점보기가 힘들고,
 추가로 설정하지 않으면 불편해서 보통 git diff를 쌩으로 사용하진 않습니다.
 
 ```sh
@@ -124,18 +125,18 @@ commit 하기 전에 이전과 현재 코드가 어떤 차이가 있는지 알�
 $ git diff
 ```
 
-최근 commit과 비교하는게 아니라 **과거의 특정 commit과 현재 파일을 비교하고 싶으면** 커밋ID를 명시해주면 됩니다. 
+최근 commit과 비교하는게 아니라 **과거의 특정 commit과 현재 파일을 비교하고 싶으면** 커밋ID를 명시해주면 됩니다.
 (커밋ID는 `git log --oneline`입력하면, 볼 수 있음)
 
 ```sh
 $ git diff 커밋id1 커밋id2
 ```
 
-------
+---
 
 ## 3.1 git difftool
 
-이거 쓰면 비주얼적으로 훌륭하게 차이점을 분석해줍니다. 
+이거 쓰면 비주얼적으로 훌륭하게 차이점을 분석해줍니다.
 
 ```bash
 git difftool # 입력하면 현재 파일과 최근 commit의 차이점을 비교
@@ -145,8 +146,8 @@ git difftool 커밋id1 커밋id2 # 입력하면 특정 commit 2개의 차이점�
 
 ![git_2_3](https://raw.githubusercontent.com/berenickt/image-server/main/img/git_2_3.png)
 
-이것도 Vim 에디터가 뜨는데, `hjkl` 키로 이동가능하고, `:q` 여러번 입력해야 나갈 수 있습니다. 
-아니면 `:qa` 입력하세요. 실은 Vim 에디터와 터미널의 한계로 그렇게 편리하진 않습니다. 
+이것도 Vim 에디터가 뜨는데, `hjkl` 키로 이동가능하고, `:q` 여러번 입력해야 나갈 수 있습니다.
+아니면 `:qa` 입력하세요. 실은 Vim 에디터와 터미널의 한계로 그렇게 편리하진 않습니다.
 
 > 💡 git difftool을 Vim 말고 VSCode로 열고 싶으면
 >
@@ -157,7 +158,7 @@ git difftool 커밋id1 커밋id2 # 입력하면 특정 commit 2개의 차이점�
 >
 > 터미널에 차례로 2개 입력하면 됩니다.
 
-------
+---
 
 ## 3.2 에디터 부가기능
 
@@ -167,5 +168,5 @@ https://marketplace.visualstudio.com/items?itemName=mhutchie.git-graph
 
 VSCode 에디터 **extension 메뉴에서 git 검색**해서, **Git graph** 부가기능을 설치합니다.
 
-[왼쪽 Git 메뉴] - [Git graph 버튼]누르면 commit 내역을 한 눈에 쭉 살펴볼 수 있고, 
+[왼쪽 Git 메뉴] - [Git graph 버튼]누르면 commit 내역을 한 눈에 쭉 살펴볼 수 있고,
 파일명 우클릭하면 git diff도 가능하니, 과거 내역을 살펴보고 싶으면 이런 GUI 툴을 주로 활용 가능.

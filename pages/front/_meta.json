@@ -6,6 +6,7 @@
     "title": "1. CSR"
   },
   "react": "React",
+  "svelte": "Svelte",
   "-- 2. 렌더링 프레임워크 --": {
     "type": "separator",
     "title": "2. 렌더링 프레임워크"

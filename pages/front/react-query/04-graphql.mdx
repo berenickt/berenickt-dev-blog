@@ -5,16 +5,16 @@ date: 2023/12/14
 
 ## 1. GraphQL
 
-React Query의 fetching 메커니즘은 Promise에 대해 불가지론적(agnostically)으로 구축되어 있기 때문에,<br />
+React Query의 fetching 메커니즘은 Promise에 대해 불가지론적(agnostically)으로 구축되어 있기 때문에,
 GraphQL을 포함한 어떤 비동기 데이터 fetching이든 완전히(literally, 말 그대로) 사용가능하다!
 
 > cf. 불가지론
-> 
+>
 > - 아닐 불, 옳을 가, 알 지, 논한 논(론)
 > - 일반적으로 어떤 명제에 대해 알 수 없다고 주장하는 입장을 의미
 > - 여기서 데이터 가져오기(fetching)를 가져올지 못할지의 비동기적 의미로 해석하면 됨
 
-> React Query는 표준화된 캐싱을 지원하지 않음을 명심해라. <br />
+> React Query는 표준화된 캐싱을 지원하지 않음을 명심해라.
 > 대다수 사용자는 실제론 정규화된 캐시나, 그들이 생각한 만큼 캐시의 장점이 필요없다.
 > 매운 드문 상황발생할 수 있으므로, 먼저 react-query팀에게 확인하여 필요한 제품인지 확인해라!
 

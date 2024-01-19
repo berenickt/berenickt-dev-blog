@@ -528,7 +528,7 @@ export class AirplaneModel extends SingleBaseModel {
 export class AppModule {}
 ```
 
-DB에 들어간 컬럼명을 확인해보면, <br />
+DB에 들어간 컬럼명을 확인해보면,
 자식 컬럼이 들어간 single_base_model 하나만 생성된 것을 확인할 수 있다.
 
 ---
@@ -594,7 +594,7 @@ profile: ProfileModel
 })
 ```
 
-user 엔티티의 title을 지우고 대신, email 컬럼을 추가한다. <br />
+user 엔티티의 title을 지우고 대신, email 컬럼을 추가한다.
 기존 데이터가 저장되어있는 곳(postgres-data)을 지웠다가 다시 생성한다.(`docker-compose up`)
 
 ```ts user.entity.ts
@@ -912,7 +912,7 @@ export class AppController {
 
 ## 11. Relation Options
 
-postgres-data 파일을 지워 데이터를 초기화하고 다시 시작합니다. <br />
+postgres-data 파일을 지워 데이터를 초기화하고 다시 시작합니다.
 `user.entity.ts`에서 관계로 넣을 수 있는 옵션에 대해 알아봅시다.
 
 ```ts user.entity.ts

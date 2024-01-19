@@ -8,6 +8,7 @@ date: 2023/12/14
 React Query는 라이브러리와 프로젝트가 타입이 안전한지 확인하기 위해 TypeScript로 작성됨
 
 명심해야 할 사항
+
 - 현재(2023.12.12) TypeScript v4.7 이상을 사용해야 함
 
 ---
@@ -29,20 +30,19 @@ const { data } = useQuery({
   //      ^? const data: string | undefined
   queryKey: ['test'],
   queryFn: () => Promise.resolve(5),
-  select: (data) => data.toString(),
+  select: data => data.toString(),
 })
 ```
 
 아래 ts playground로 확인해봐도 된다.
 [typescript playground](https://www.typescriptlang.org/play?#code/JYWwDg9gTgLgBAbzgVwM4FMCKz1QJ5wC+cAZlBCHAORToCGAxjALQCOO+VAsAFC8MQAdqnhIAJnRh0icALwoM2XHgAUAbSox0IqgF0ANHBUBKOQD44ABXIhgGAHS1UEADYA3dCoCsxw0gwu6EwAXHASUuZhknT2MBAAyjBQwIIA5iaExrwA9Nlw+QUAegD8vEA)
 
-물론 `queryFn`을 잘 정의한 경우, 가장 잘 작동한다.<br />
+물론 `queryFn`을 잘 정의한 경우, 가장 잘 작동한다.
 다만 명심할 것은 대부분의 fetching 라이브러리들은 기본적으로 `any 타입`을 반환한다.
 그래서 타입이 잘 정의된 함수인지 확신이 있어야 한다.
 
 ```tsx
-const fetchGroups = (): Promise<Group[]> =>
-  axios.get('/groups').then((response) => response.data)
+const fetchGroups = (): Promise<Group[]> => axios.get('/groups').then(response => response.data)
 
 const { data } = useQuery({ queryKey: ['groups'], queryFn: fetchGroups })
 //      ^? const data: Group[] | undefined
@@ -52,8 +52,9 @@ const { data } = useQuery({ queryKey: ['groups'], queryFn: fetchGroups })
 
 ### 1.2 Type Narrowing(타입을 특정 타입으로 좁혀서 정의)
 
-React Query는 쿼리 결과에 대해 구별된 `union(공용체) 유형`을 사용한다.<br />
+React Query는 쿼리 결과에 대해 구별된 `union(공용체) 유형`을 사용한다.
 이는 상태(status) 필드와 boolean 타입의 flag로 구분된다.
+
 - e.g. 데이터를 정의하기 위해, `success 상태`인지 체크함
 
 ```tsx
@@ -81,7 +82,7 @@ const { error } = useQuery({ queryKey: ['groups'], queryFn: fetchGroups })
 //      ^? const error: Error
 ```
 
-너가 직접 만든 에러를 사용하거나, 발생하지 않은 `Error`를 사용하려는 경우, <br />
+너가 직접 만든 에러를 사용하거나, 발생하지 않은 `Error`를 사용하려는 경우,
 error 필드의 타입을 지정할 수 있습니다.
 
 ```tsx
@@ -89,9 +90,9 @@ const { error } = useQuery<Group[], string>(['groups'], fetchGroups)
 //      ^? const error: string | null
 ```
 
-그러나 이는 useQuery의 다른 모든 제네릭에 타입 추론이 동작하지 않는다는 단점이 있다. <br />
-`Error`가 아닌 것을 던지는 건 좋은 습관으로 고려되지 않는다. <br />
-그래서 AxiosError와 같은 하위 클래스가 있는 경우, <br />
+그러나 이는 useQuery의 다른 모든 제네릭에 타입 추론이 동작하지 않는다는 단점이 있다.
+`Error`가 아닌 것을 던지는 건 좋은 습관으로 고려되지 않는다.
+그래서 AxiosError와 같은 하위 클래스가 있는 경우,
 오류 필드를 구체적으로 지정하기 위해 `Type Narrowing`을 사용할 수 있다.
 
 ```tsx
@@ -110,14 +111,14 @@ if (axios.isAxiosError(error)) {
 
 ### 1.3 글로벌 에러 등록(registering)
 
-TanStack Query v5를 사용하면 모든 것에 대해 글로벌 오류 유형을 설정할 수 있습니다. <br />
-(^콜 사이드(call-sides)에 제네릭을 정의할 필요 없이,) <br />
+TanStack Query v5를 사용하면 모든 것에 대해 글로벌 오류 유형을 설정할 수 있습니다.
+(^콜 사이드(call-sides)에 제네릭을 정의할 필요 없이,)
 (^Register 인터페이스를 수정해서),
 
 이렇게 하면 타입추론이 계속 동직하지만, 오류 필드는 정의한 타입이 된다.
 
 ```tsx
-import '@tanstack/react-query';
+import '@tanstack/react-query'
 
 declare module '@tanstack/react-query' {
   interface Register {
@@ -133,15 +134,15 @@ const { error } = useQuery({ queryKey: ['groups'], queryFn: fetchGroups })
 
 ### 1.4 메타 입력 : 글로벌 Meta 등록하기
 
-글로벌 에러 타입을 등록하는 것과 마찬가지로 글로벌 `Meta` 유형도 등록할 수 있습니다. <br />
+글로벌 에러 타입을 등록하는 것과 마찬가지로 글로벌 `Meta` 유형도 등록할 수 있습니다.
 이를 통해 queries 및 mutations에 대한 `옵션 meta 필드`가 일관되고 타입이 안전해진다.
 
 ```tsx
-import '@tanstack/react-query';
+import '@tanstack/react-query'
 
 declare module '@tanstack/react-query' {
   interface Register {
-    queryMeta: MyMeta,
+    queryMeta: MyMeta
     mutationMeta: MyMeta
   }
 }
@@ -151,10 +152,10 @@ declare module '@tanstack/react-query' {
 
 ### 1.5 queries 옵션 입력
 
-useQuery에 인라인 query 옵션을 입력하면, 알아서 타입 추론해준다. <br />
-그러나 당신은 별도의 함수 안에 query 옵션을 추출하는 걸 원할지 지도 모른다. 
+useQuery에 인라인 query 옵션을 입력하면, 알아서 타입 추론해준다.
+그러나 당신은 별도의 함수 안에 query 옵션을 추출하는 걸 원할지 지도 모른다.
 (useQuery와 e.g. prefetchQuery와 같은 것들을 공유하기 위해,)
-이 경우 타입 추론이 사라진다.<br />
+이 경우 타입 추론이 사라진다.
 이를 되돌릴려면, queryOptions 도우미를 사용할 수 있다:
 
 ```tsx

@@ -94,7 +94,7 @@ NestJS에서 A, C는 `controller`, B는 `service`라고 볼 수 있겠죠.
 
 ## 2. Module, Provider, IoC
 
-contoller 파일에서 service의 기능을 어떻게 쓸 수 있을까? <br />
+contoller 파일에서 service의 기능을 어떻게 쓸 수 있을까?
 module 파일을 보면 2개의 파라미터를 받고 있다.
 
 ```ts posts.module.ts
@@ -162,8 +162,8 @@ import { PostsModule } from './posts/posts.module';
 export class AppModule {}
 ```
 
-NestJS는 여러가지 모듈들을 레고처럼 조합해서 합친다. <br />
-그렇지만 CLI로 생성하니 자동으로 AppModule에 추가된다. <br />
+NestJS는 여러가지 모듈들을 레고처럼 조합해서 합친다.
+그렇지만 CLI로 생성하니 자동으로 AppModule에 추가된다.
 코드처럼 다른 모듈을 새로 만들면 imports 부분에 추가해주면 된다.
 
 ---
@@ -183,5 +183,5 @@ async function bootstrap() {
 bootstrap()
 ```
 
-코드를 보면, NestFactory에 App 모듈을 넣어주고 있고, <br />
+코드를 보면, NestFactory에 App 모듈을 넣어주고 있고,
 3000번 포트에서 실행하고 있다.

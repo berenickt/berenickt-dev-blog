@@ -9,7 +9,7 @@ date: 2023/12/14
 
 ## 1. Manual(수동) Parallel Queries
 
-병렬 쿼리의 수가 변경되지 않는 경우, 병렬 쿼리를 사용하는 데 추가적인 노력이 필요하지 않다. <br />
+병렬 쿼리의 수가 변경되지 않는 경우, 병렬 쿼리를 사용하는 데 추가적인 노력이 필요하지 않다.
 TanStack Query의 `useQuery` 및 `useInfiniteQuery` 훅을 나란히 사용하면 된다!
 
 ```tsx
@@ -22,27 +22,27 @@ unction App () {
 }
 ```
 
-> React Query를 suspense 모드로 사용할 때, 병렬성(parallelism)의 이 패턴은 작동하지 않는다. <br />
-> 왜냐하면 첫 번째 query가 내부적으로 프로미스를 throw하고, 
-> 다른 query가 실행되기 전에, 컴포넌트를 중단시키기 때문이다. <br />
-> 이를 해결하기 위해서는(To get around this), `useSuspenseQueries` 훅을 사용하거나 (권장됨)  <br />
+> React Query를 suspense 모드로 사용할 때, 병렬성(parallelism)의 이 패턴은 작동하지 않는다.
+> 왜냐하면 첫 번째 query가 내부적으로 프로미스를 throw하고,
+> 다른 query가 실행되기 전에, 컴포넌트를 중단시키기 때문이다.
+> 이를 해결하기 위해서는(To get around this), `useSuspenseQueries` 훅을 사용하거나 (권장됨)  
 > 각 `useSuspenseQuery` 인스턴스에 대해 별도의 컴포넌트를 사용하여 직접 병렬성을 조율해야 한다.
 
 ---
 
 ## 2. Dynamic(동적) Parallel Queries with `useQueries`
 
-렌더링마다 실행해야 하는 query의 수가 변경되는 경우, 수동(manual) query를 사용할 수 없다.<br />
-왜냐하면 이는 훅의 규칙을 위반하기 때문입니다.<br />
+렌더링마다 실행해야 하는 query의 수가 변경되는 경우, 수동(manual) query를 사용할 수 없다.
+왜냐하면 이는 훅의 규칙을 위반하기 때문입니다.
 대신 TanStack Query는 (원하는 만큼 동적으로 병렬로 많은 쿼리를 실행할 수 있는) `useQueries` 훅을 제공합니다.
 
-`useQueries`는 (queries 키의 값으로 query 객체의 배열을 가지는) 옵션 객체를 받습니다.<br />
+`useQueries`는 (queries 키의 값으로 query 객체의 배열을 가지는) 옵션 객체를 받습니다.
 이는 query 결과의 배열을 반환합니다.
 
 ```tsx
 function App({ users }) {
   const userQueries = useQueries({
-    queries: users.map((user) => {
+    queries: users.map(user => {
       return {
         queryKey: ['user', user.id],
         queryFn: () => fetchUserById(user.id),

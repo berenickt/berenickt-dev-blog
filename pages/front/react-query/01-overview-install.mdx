@@ -6,29 +6,31 @@ date: 2023/12/14
 # React-Query - REST
 
 - https://tanstack.com/query/latest/
-- 공식문서 따라서 Tanstack-query v5 배우기 
+- 공식문서 따라서 Tanstack-query v5 배우기
 - `React-query`에서 `Tanstack-query`로 라이브러리명을 바꿨음
 - 공식문서 읽다가 오타나 잘못 표기된 정보가 있으면 github로 편집해서 알려줄 수도 있다.
 
 ## 1. 전반적인 소개(overview)
 
 - TanStack Query (FKA React Query)
-    - FKA : 'formerly known as' (~전에는 로 알려진)
-    - 데이터 가져오기(fetching) 뿐만 아니라,
-    - 웹앱에서 `서버 상태(state)`를 가져오고, 캐싱, 동기화, 업데이트할 수 있다.
+  - FKA : 'formerly known as' (~전에는 로 알려진)
+  - 데이터 가져오기(fetching) 뿐만 아니라,
+  - 웹앱에서 `서버 상태(state)`를 가져오고, 캐싱, 동기화, 업데이트할 수 있다.
 
 > 💡 cache(캐시)와 캐싱
-> - 원래 은밀한 장소에 숨겨 놓은 '은닉처'라는 의미를 지니고 있지만, 
-> - 컴퓨터 용어로 사용할 때는 '고속 기억장치'를 가리킵니다. 
+>
+> - 원래 은밀한 장소에 숨겨 놓은 '은닉처'라는 의미를 지니고 있지만,
+> - 컴퓨터 용어로 사용할 때는 '고속 기억장치'를 가리킵니다.
 > - 즉, 컴퓨터가 빨리 정보를 찾을 수 있도록 정보를 보관하는 메모리 부분을 cache 또는 cache memory라고 부름
-> 
+>
 > `캐싱`은 빠른 속도를 위해 캐시에 데이터 저장하는 행위를 말함
 
 - 대부분 웹 프레임워크에는 데이터를 가져오거나 업데이트하는 방법이 없음.
 - 전통적인 상태관리 라이브러리에는 클라이언트 상태 작업에 적합하고,
-    - 비동기 or 서버 상태 작업이 적합하지 않다.
+  - 비동기 or 서버 상태 작업이 적합하지 않다.
 
 > 💡 서버 상태(server state)
+>
 > - 개발자가 제어하거나 소유할 수 없는 위치에 원격으로 지속되는 것
 > - 가져오거나 업데이트를 위해 비동기(asynchronous) API 필요
 > - 공동 소유권을 의미하며, 님도 모르게 다른 사람에 의해 변경 될 수 있음
@@ -36,17 +38,17 @@ date: 2023/12/14
 
 일단 님이 서버 상태의 특징(nature)을 파악(grasp)했다면, 다음과 같이 더 많은 문제가 존재함
 
-- 캐싱... 
+- 캐싱...
 - 동일한 데이터에 대한 여러 요청을 단일 요청으로 중복 제거
 - 백그라운드에서 "오래된" 데이터 업데이트
 - 데이터가 "오래된" 시점 파악
 - 가능한 한 빨리 데이터 업데이트 반영
 - 페이지 매김 및 지연 로딩 데이터와 같은 성능 최적화
 - 서버 상태의 메모리 및 가비지컬렉션 관리
-    - cf. 가비지컬렉션 : 메모리 관리 기법 중 하나로 프로그램이 동적으로 할당했던 메모리 영역 중에서 필요없게 된 영역을 해제하는 기능
+  - cf. 가비지컬렉션 : 메모리 관리 기법 중 하나로 프로그램이 동적으로 할당했던 메모리 영역 중에서 필요없게 된 영역을 해제하는 기능
 - 구조적 공유로 쿼리 결과 메모이징(cf. Memoizing : 메모리써서 저장해놓는 것)
 
-위 문제들 다 해결했으면, 천재이니 react-query 안배워도 됨. <br />
+위 문제들 다 해결했으면, 천재이니 react-query 안배워도 됨.
 react-query팀도 위 문제들의 표면적인 부분을 조금씩 처리(scratching)하고 있음
 
 ---
@@ -65,11 +67,7 @@ react-query팀도 위 문제들의 표면적인 부분을 조금씩 처리(scrat
 [Open in CodeSandbox](https://codesandbox.io/p/devbox/github/tannerlinsley/react-query/tree/main/examples/react/simple?file=%2Fsrc%2Findex.jsx%3A16%2C45)
 
 ```tsx
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
 
 const queryClient = new QueryClient()
 
@@ -84,10 +82,7 @@ export default function App() {
 function Example() {
   const { isPending, error, data } = useQuery({
     queryKey: ['repoData'],
-    queryFn: () =>
-      fetch('https://api.github.com/repos/TanStack/query').then(
-        (res) => res.json(),
-      ),
+    queryFn: () => fetch('https://api.github.com/repos/TanStack/query').then(res => res.json()),
   })
 
   if (isPending) return 'Loading...'
@@ -98,8 +93,7 @@ function Example() {
     <div>
       <h1>{data.name}</h1>
       <p>{data.description}</p>
-      <strong>👀 {data.subscribers_count}</strong>{' '}
-      <strong>✨ {data.stargazers_count}</strong>{' '}
+      <strong>👀 {data.subscribers_count}</strong> <strong>✨ {data.stargazers_count}</strong>{' '}
       <strong>🍴 {data.forks_count}</strong>
     </div>
   )

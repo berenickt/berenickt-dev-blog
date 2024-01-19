@@ -100,7 +100,7 @@ function Detail(){
 // - 컴포넌트가 맨 처음 화면에 렌더링 & 다시 렌더링될 떄
 useEffect(() => {
   // 작업
-});
+})
 
 // 2. 함수의 인자로 (콜백함수, 배열)을 받는 경우
 // - (1) 컴포넌트가 맨 처음 화면 렌더링될 떄 실행
@@ -108,7 +108,7 @@ useEffect(() => {
 // - 2번쨰 배열 요소로 빈 배열[]을 전달하면, (1)만 실행됨
 useEffect(() => {
   // 작업
-}, [value]);
+}, [value])
 ```
 
 ---
@@ -121,8 +121,8 @@ useEffect(() => {
   return () => {
     // 예를 들어, 등록한 리스너를 제거해주는 작업을 여기서 함
     // 작업 정리
-  };
-}, []);
+  }
+}, [])
 ```
 
 ---
@@ -130,19 +130,19 @@ useEffect(() => {
 ## 4.3 예제1 : useEffect 사용
 
 ```jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 
 function App() {
-  const [count, setCount] = useState(1);
-  const [name, setName] = useState('');
+  const [count, setCount] = useState(1)
+  const [name, setName] = useState('')
 
   const handleCountUpdate = () => {
-    setCount(count + 1);
-  };
+    setCount(count + 1)
+  }
 
-  const handleInputChange = (e) => {
-    setName(e.target.value);
-  };
+  const handleInputChange = e => {
+    setName(e.target.value)
+  }
 
   // // 렌더링마다 매번 실행 - 렌더링 이후
   // useEffect(() => {
@@ -161,21 +161,21 @@ function App() {
 
   // 맨 처음 렌더링될 떄만 실행
   useEffect(() => {
-    console.log('마운팅');
-  }, []);
+    console.log('마운팅')
+  }, [])
 
   return (
     <div>
       <button onClick={handleCountUpdate}>업데이트</button>
       <span>count : {count} </span>
-      <br />
-      <input type='text' value={name} onChange={handleInputChange} />
+
+      <input type="text" value={name} onChange={handleInputChange} />
       <span>name : {name}</span>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
 ```
 
 ---
@@ -183,40 +183,40 @@ export default App;
 ## 4.4 예제2 : useEffect & Clean Up
 
 ```jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 
 function App() {
-  const [showTimer, setShowTimer] = useState(false);
+  const [showTimer, setShowTimer] = useState(false)
 
   return (
     <div>
       {showTimer && <Timer />}
       <button onClick={() => setShowTimer(!showTimer)}>Toggle Timer</button>
     </div>
-  );
+  )
 }
 
-const Timer = (props) => {
+const Timer = props => {
   useEffect(() => {
     const timer = setInterval(() => {
-      console.log('타이머 돌아가는중');
-    }, 1000);
+      console.log('타이머 돌아가는중')
+    }, 1000)
 
     // 정리 작업
     return () => {
-      clearInterval(timer);
-      console.log('타이머가 종료되었습니다.');
-    };
-  }, []);
+      clearInterval(timer)
+      console.log('타이머가 종료되었습니다.')
+    }
+  }, [])
 
   return (
     <div>
       <span>타이머를 시작합니다. 콘솔 확인하세요.</span>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
 ```
 
 ---

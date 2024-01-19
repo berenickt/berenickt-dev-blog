@@ -5,7 +5,7 @@ date: 2023/12/14
 
 # Query Functions
 
-Query Functions는 말 그대로 어떤 함수든 될 수 있다. (promise을 반환하는) <br />
+Query Functions는 말 그대로 어떤 함수든 될 수 있다. (promise을 반환하는)
 반환된 promise은 데이터를 해결하거나 오류를 던져야 한다.
 
 다음의 코드들은 유효한 쿼리 함수 구성이다.
@@ -53,7 +53,7 @@ const { error } = useQuery({
 
 ## 2. 기본적(default)으로 발생(throw)하지 않는 기타 클라이언트와 fetch 사용법
 
-axios나 graphql-request와 같은 대부분의 유틸리티는 실패한 HTTP 호출에 대해 자동으로 오류를 던지지만, <br />
+axios나 graphql-request와 같은 대부분의 유틸리티는 실패한 HTTP 호출에 대해 자동으로 오류를 던지지만,
 fetch와 같은 일부 유틸리티는 기본적으로 오류를 던지지 않는다.
 
 ```tsx
@@ -73,8 +73,8 @@ useQuery({
 
 ## 3. Query Function Variables(변수)
 
-Query keys는 가져오는 데이터를 고유하게 식별하기 위한 것일 뿐만 아니라, <br />
-QueryFunctionContext의 일부로 Query Function에 알맞게 전달됩니다. <br />
+Query keys는 가져오는 데이터를 고유하게 식별하기 위한 것일 뿐만 아니라,
+QueryFunctionContext의 일부로 Query Function에 알맞게 전달됩니다.
 항상 필요한 것은 아니지만, 너가 필요하다면, 너의 query function들을 추출할 수도 있다.
 
 ```tsx

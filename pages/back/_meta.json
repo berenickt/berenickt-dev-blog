@@ -24,6 +24,7 @@
   "database-type": "데이터베이스 종류",
   "oracle": "Oracle",
   "mysql": "MySQL",
+  "postgresql": "PostgreSQL",
   "redis": "Redis",
   "mongodb": "MongoDB"
 }

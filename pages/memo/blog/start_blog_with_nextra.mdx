@@ -5,12 +5,12 @@ date: 2023/11/22
 
 ## 1. Nextra를 이용해 블로그 만들기
 
-naver 블로그 → 티스토리 → jekyll github blog → velog → hexo blog → nextra blog까지 여러가지 블로그 플랫폼을 사용해왔다. <br/>
-티스토리를 쓰다보니 디자인은 마음대로 수정할 수 있었지만, 마크다운 지원이 아쉬워서 직접 블로그를 만들기로 했고, <br/>
+naver 블로그 → 티스토리 → jekyll github blog → velog → hexo blog → nextra blog까지 여러가지 블로그 플랫폼을 사용해왔다.
+티스토리를 쓰다보니 디자인은 마음대로 수정할 수 있었지만, 마크다운 지원이 아쉬워서 직접 블로그를 만들기로 했고,
 jekyll로 만들었으니나 ruby를 잘 몰라 수정하는데 약간의 제약이 있었다.
 
-이후 velog로 넘어갔으나 디자인을 마음대로 수정못해 아쉬웠고, hexo로 넘어가 디자인하고 잘 수정하면서 만족했으나, <br/>
-mdx가 써보고 싶어져서 이참에 next.js로 넘어가기고 했다가 발견한 것이 nextra이다. <br/>
+이후 velog로 넘어갔으나 디자인을 마음대로 수정못해 아쉬웠고, hexo로 넘어가 디자인하고 잘 수정하면서 만족했으나,
+mdx가 써보고 싶어져서 이참에 next.js로 넘어가기고 했다가 발견한 것이 nextra이다.
 결론은 굉장히 만족하면서 쓰고 있다.
 
 ---
@@ -19,14 +19,14 @@ mdx가 써보고 싶어져서 이참에 next.js로 넘어가기고 했다가 발
 
 - [Nextra – Next.js Static Site Generator](https://nextra.site/)
 
-> Nextra is a framework on top of Next.js, that lets you build content focused websites. <br/>
+> Nextra is a framework on top of Next.js, that lets you build content focused websites.
 > It has all the great features from Next.js, plus extra power to create Markdown-based content with ease.
 
 Next.js와 MDX를 합쳐놓은 프레임워크이다. next.js를 만든 vercel 팀에서 관리하는 정적 사이트 생성기이다.
 
 ### 1.2 테마를 이용해 빠르게 시작하기
 
-nextra에서는 현재 Documentation과 Blog 두 개의 테마를 제공한다. <br/>
+nextra에서는 현재 Documentation과 Blog 두 개의 테마를 제공한다.
 이 중 Docs 테마가 좀 더 다양한 기능을 제공하고 더 마음에 들어서 Docs 테마를 사용했다.
 
 #### 1.2.1 Install
@@ -58,7 +58,7 @@ module.exports = withNextra()
 
 #### 1.2.3 블로그 테마 구성 만들기
 
-프로젝트 루트 디렉터리에 `theme.config.jsx` 파일을 만든다. <br/>
+프로젝트 루트 디렉터리에 `theme.config.jsx` 파일을 만든다.
 해당 파일은 Nextra 블로그 테마를 구성하는데 사용된다.
 
 ```jsx
@@ -85,16 +85,16 @@ export default {
 },
 ```
 
-여기까지 수행하면 Nextra를 사용하기 위한 기본 구성을 마칠 수 있다. <br/>
+여기까지 수행하면 Nextra를 사용하기 위한 기본 구성을 마칠 수 있다.
 이제 간단한 글을 올려볼 수 있다.
 
 ---
 
 ## 2. 페이지 구성
 
-`pages` 폴더에 `_meta.json`를 생성하여 페이지에 대한 구성을 정의할 수 있다. <br/>
+`pages` 폴더에 `_meta.json`를 생성하여 페이지에 대한 구성을 정의할 수 있다.
 
-`"type": "page"`를 사용하면 사이드바가 아닌 내비케이션 바에 특수 페이지로 표시된다. <br/>
+`"type": "page"`를 사용하면 사이드바가 아닌 내비케이션 바에 특수 페이지로 표시된다.
 즉, 여러 개의 하위문서 또는 연락처와 같은 특수 페이지나 링크를 가질 수 있게 된다.
 
 About과 Posts 두 개의 메뉴를 갖도록 구성할 수 있다.
@@ -114,7 +114,7 @@ About과 Posts 두 개의 메뉴를 갖도록 구성할 수 있다.
 
 ### 2.1 About 글 작성
 
-Nextra를 사용하면 pages 디렉토리 안의 모든 파일이 MDX로 렌더링 된다. <br/>
+Nextra를 사용하면 pages 디렉토리 안의 모든 파일이 MDX로 렌더링 된다.
 즉 페이지에 표시될 글은 `.mdx` 파일에 Markdown으로 작성하면 된다.
 
 예로 About 페이지에 띄울 글을 아래와 같이 작성할 수 있다.
@@ -130,24 +130,24 @@ date: 2023/12/08
 
 > Email. dhktjdyd12@naver.com
 
-사용자 중심의 개발를 지향하는 낙천주의자입니다. <br/>
+사용자 중심의 개발를 지향하는 낙천주의자입니다.
 머리 속 생각을 정리하는 글을 쓰는 것을 즐깁니다.
 
-사람이 행복을 느끼는 알고리즘이 무엇일지 고민한 끝에, <br/>
-중요하게 여기는 가치는 성장, 베풂이라 생각합니다. <br/>
+사람이 행복을 느끼는 알고리즘이 무엇일지 고민한 끝에,
+중요하게 여기는 가치는 성장, 베풂이라 생각합니다.
 
-출처를 남기려고 노력하지만, 작업을 하다가 까먹을 수 있습니다. <br/>
+출처를 남기려고 노력하지만, 작업을 하다가 까먹을 수 있습니다.
 정확한 출처 표기를 하지 못했다면 죄송합니다.
 
 > 잡설
 >
-> 제가 가장 좋아하는 캐릭터는 스파이더맨과 조커입니다. <br/>
-> 두 캐릭터의 공통점은 온갖 역경과 고난이 그들에게 온다는 것입니다. <br/>
-> 그렇지만 결정적인 차이점은 스파이더맨에게는 자신을 끝까지 믿어주는 한 사람, 메이 숙모가 있다는 것이고, <br/>
-> 조커는 그러한 사람이 없단 점입니다. <br/>
+> 제가 가장 좋아하는 캐릭터는 스파이더맨과 조커입니다.
+> 두 캐릭터의 공통점은 온갖 역경과 고난이 그들에게 온다는 것입니다.
+> 그렇지만 결정적인 차이점은 스파이더맨에게는 자신을 끝까지 믿어주는 한 사람, 메이 숙모가 있다는 것이고,
+> 조커는 그러한 사람이 없단 점입니다.
 >
-> 한 사람의 인생에서 단 1명이라도 자신을 믿어준다는 것은 <br/>
-> 어마어마한 변화를 불러일으킬 수 있다는 점을 보여주는 예시가 아닐까 생각이 듭니다. <br/>
+> 한 사람의 인생에서 단 1명이라도 자신을 믿어준다는 것은
+> 어마어마한 변화를 불러일으킬 수 있다는 점을 보여주는 예시가 아닐까 생각이 듭니다.
 > 내가 사랑하는 가족, 친구들이 어려운 시기에 따뜻한 말 한마디 건네보는 건 어떨까요?
 ```
 
@@ -155,7 +155,7 @@ date: 2023/12/08
 
 ### 2.2 Posts 글 작성
 
-여러 개의 하위 문서를 가질 수도 있다. <br/>
+여러 개의 하위 문서를 가질 수도 있다.
 `posts` 폴더 아래에 MDX 파일을 추가하면 된다.
 
 ```mdx
@@ -192,7 +192,7 @@ yarn add next-seo
 
 ### 3.2 DefaultSeo 설정
 
-`_app.jsx`에 `DefaultSeo`를 설정할 수 있다. <br/>
+`_app.jsx`에 `DefaultSeo`를 설정할 수 있다.
 속성에 대해서는 [여기서](https://github.com/garmeeh/next-seo) 확인할 수 있다.
 
 ```jsx
@@ -234,7 +234,7 @@ export default function Nextra({ Component, pageProps }) {
 
 ## 4. 검색 엔진에 등록하기
 
-블로그를 만들면 바로 검색 엔진에 표시되는 것이 아니라 크롤링을 요청해야 한다.<br/>
+블로그를 만들면 바로 검색 엔진에 표시되는 것이 아니라 크롤링을 요청해야 한다.
 
 - [Google Search Console](https://search.google.com/search-console/about)
 - [Naver Search Advisor](https://searchadvisor.naver.com/)
@@ -244,7 +244,7 @@ export default function Nextra({ Component, pageProps }) {
 1. 제공되는 HTML 파일을 프로젝트에 넣는다.
 2. 사이트 홈페이지에 메타태그를 추가한다.
 
-권장하는 방법인 1번 방법을 사용해서 설정했다. <br/>
+권장하는 방법인 1번 방법을 사용해서 설정했다.
 HTML 파일을 다운로드 받아 `public` 폴더 아래에 추가해주었다.
 
 소유권 확인을 마치고 하루 이틀 정도 지나면 Google에서 검색 결과로 확인할 수 있다.
@@ -287,7 +287,7 @@ export default function Nextra({ Component, pageProps }) {
 
 ## 6. U+002C 에러
 
-렌더링 과정에서 이유는 모르겠지만, mdx에서 `<>, <>` 형태같은 괄호를 그냥 쓰면 렌더링이 되질 않는다. <br />
+렌더링 과정에서 이유는 모르겠지만, mdx에서 `<>, <>` 형태같은 괄호를 그냥 쓰면 렌더링이 되질 않는다.
 써야한다면 위와 같이 백틱으로 감싸서 사용하자.
 
 ```bash

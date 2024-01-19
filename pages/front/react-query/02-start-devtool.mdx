@@ -6,20 +6,15 @@ date: 2023/12/14
 ## 1. 빠른 시작
 
 React Query는 3가지 핵심 개념을 가진다.
-- `Queries`   (데이터 질문과 관련된 것, (데이터 있는지 질문(=조회)))
+
+- `Queries` (데이터 질문과 관련된 것, (데이터 있는지 질문(=조회)))
 - `Mutations` (데이터 변화와 관련된 것, (생성, 수정, 삭제))
 - `Query Invalidation` (query가 유효한지 검증)
 
 [CodesandBox Example](https://codesandbox.io/p/devbox/tanstack-query-example-react-simple-lskn7u?embed=1&file=%2Fsrc%2Findex.jsx%3A12%2C38)
 
 ```tsx
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { getTodos, postTodo } from '../my-api'
 
 // Create a client
@@ -52,11 +47,7 @@ function Todos() {
 
   return (
     <div>
-      <ul>
-        {query.data?.map((todo) => (
-          <li key={todo.id}>{todo.title}</li>
-        ))}
-      </ul>
+      <ul>{query.data?.map(todo => <li key={todo.id}>{todo.title}</li>)}</ul>
 
       <button
         onClick={() => {
@@ -64,8 +55,7 @@ function Todos() {
             id: Date.now(),
             title: 'Do Laundry',
           })
-        }}
-      >
+        }}>
         Add Todo
       </button>
     </div>
@@ -82,11 +72,10 @@ render(<App />, document.getElementById('root'))
 React Query는 전용 devtools와 함께 제공한다.
 
 > 2024.12.12 기준
-> 
-> 현재 devtools는 React Native를 지원하지 않습니다. <br />
-> 또한 DevTools를 사용하여 Queries를 관찰할 수 있지만, Mutations은 관찰 불가능 <br />
+>
+> 현재 devtools는 React Native를 지원하지 않습니다.
+> 또한 DevTools를 사용하여 Queries를 관찰할 수 있지만, Mutations은 관찰 불가능
 > https://tanstack.com/query/latest/docs/react/devtools#install-and-import-the-devtools
-
 
 ---
 
@@ -143,7 +132,7 @@ ReactQueryDevtools의 옵션은 공식문서 참고
 
 ### 2.4 production(실제 운영환경) 구간에서 Devtools
 
-Devtools는 프로덕션 빌드 단계에서 제외된다. <br />
+Devtools는 프로덕션 빌드 단계에서 제외된다.
 그러나 프로덕션 단계에서 devtools를 지연 로드하는 것이 바람직할 수 있음.
 
 ```tsx
@@ -155,11 +144,9 @@ import { Example } from './Example'
 const queryClient = new QueryClient()
 
 const ReactQueryDevtoolsProduction = React.lazy(() =>
-  import('@tanstack/react-query-devtools/build/modern/production.js').then(
-    (d) => ({
-      default: d.ReactQueryDevtools,
-    }),
-  ),
+  import('@tanstack/react-query-devtools/build/modern/production.js').then(d => ({
+    default: d.ReactQueryDevtools,
+  })),
 )
 
 function App() {
@@ -167,7 +154,7 @@ function App() {
 
   React.useEffect(() => {
     // @ts-ignore
-    window.toggleDevtools = () => setShowDevtools((old) => !old)
+    window.toggleDevtools = () => setShowDevtools(old => !old)
   }, [])
 
   return (
@@ -196,7 +183,7 @@ export default App
 
 ```tsx
 const ReactQueryDevtoolsProduction = React.lazy(() =>
-  import('@tanstack/react-query-devtools/production').then((d) => ({
+  import('@tanstack/react-query-devtools/production').then(d => ({
     default: d.ReactQueryDevtools,
   })),
 )
@@ -213,6 +200,7 @@ TypeScript의 경우 TypeScript v4.7 이상이 필요한 tsconfig에서 `moduleR
 - 하단에 `github에서 이 페이지 편집 버튼`을 눌러 정보가 편향되지 않도록 수정 가능함
 
 아이콘 별 의미
+
 - ✅ : 지원됨
 - 🟡 : 지원O, 비공식
 - 🔶 : 지원O, 문서화O, but 구현 시 추가 사용자 코드 필요

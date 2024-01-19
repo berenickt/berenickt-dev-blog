@@ -5,9 +5,9 @@ date: 2023/12/14
 
 # Query Keys
 
-본질적으로, TanStack Query는 query keys를 기반으로 query 캐싱을 관리한다. <br />
-query keys는 top level의 배열이어야 하며, <br />
-단일 문자열이 포함된 배열처럼 단순하거나 많은 문자열 및 중첩 객체 배열처럼 복잡할 수 있다. <br />
+본질적으로, TanStack Query는 query keys를 기반으로 query 캐싱을 관리한다.
+query keys는 top level의 배열이어야 하며,
+단일 문자열이 포함된 배열처럼 단순하거나 많은 문자열 및 중첩 객체 배열처럼 복잡할 수 있다.
 query keys가 직렬화 가능하고, query keys의 데이터가 유니크 한 이상, 너는 사용할 수 있다!
 
 ---
@@ -15,6 +15,7 @@ query keys가 직렬화 가능하고, query keys의 데이터가 유니크 한 �
 ## 1. 간단한 Query Keys
 
 key의 가장 간단한 형태는 상수값이 포함된 배열이다. 이 형식은 유용하다. 다음의 경우:
+
 - 일반 목록/인덱스 리소스
 - Non-hierarchical resources (계층적이지 않은 리소스)
 
@@ -30,8 +31,8 @@ useQuery({ queryKey: ['something', 'special'], ... })
 
 ## 2. 변수가 있는 배열 Keys
 
-query에서 데이터를 유니크하게 설명하기 위해 추가 정보가 필요할 때, <br />
-문자열이 있는 직렬화 가능한 객체를 원하는 수만큼 사용해서 설명할 수 있다. <br />
+query에서 데이터를 유니크하게 설명하기 위해 추가 정보가 필요할 때,
+문자열이 있는 직렬화 가능한 객체를 원하는 수만큼 사용해서 설명할 수 있다.
 이는 다음과 같은 경우에 유용하다.
 
 - 계층적(Hierarchical) 또는 중첩된 자원
@@ -74,7 +75,7 @@ useQuery({ queryKey: ['todos', undefined, page, status], ...})
 
 ## 4. 쿼리 함수가 쿼리 키에 포함된 변수에 의존하는 경우
 
-query keys는 가져오는 데이터를 고유하게 기술하기 때문에, 변경되는 모든 변수를 쿼리 함수에 포함해야 합니다. 
+query keys는 가져오는 데이터를 고유하게 기술하기 때문에, 변경되는 모든 변수를 쿼리 함수에 포함해야 합니다.
 예를 들면:
 
 ```tsx
@@ -86,9 +87,9 @@ function Todos({ todoId }) {
 }
 ```
 
-query keys는 query 함수에 대해 종속적인 역할을 한다는 것에 알아두세요.<br />
-종속 변수를 query keys에 추가하면 query가 독립적으로 캐시되고, <br />
-변수가 변경될 때마다, query가 자동으로 refetch됩니다.(`stableTime` 설정에 따라) <br />
+query keys는 query 함수에 대해 종속적인 역할을 한다는 것에 알아두세요.
+종속 변수를 query keys에 추가하면 query가 독립적으로 캐시되고,
+변수가 변경될 때마다, query가 자동으로 refetch됩니다.(`stableTime` 설정에 따라)
 자세한 내용과 예제는 전체 종속 변수 섹션을 참조하십시오.
 
 - https://tanstack.com/query/latest/docs/react/eslint/exhaustive-deps
@@ -97,5 +98,5 @@ query keys는 query 함수에 대해 종속적인 역할을 한다는 것에 알
 
 ## 5. 더 알아보기
 
-- 더 큰 응용 프로그램에서 query keys를 구성하는 방법에 대한 팁은 [Effective React query keys, 8-effective-react-query-keys](https://tanstack.com/query/latest/docs/react/community/tkdodos-blog#8-effective-react-query-keys)를 살펴보고 
+- 더 큰 응용 프로그램에서 query keys를 구성하는 방법에 대한 팁은 [Effective React query keys, 8-effective-react-query-keys](https://tanstack.com/query/latest/docs/react/community/tkdodos-blog#8-effective-react-query-keys)를 살펴보고
 - 다음에서 [쿼리 키 팩토리 패키지, query-key-factory](https://tanstack.com/query/latest/docs/react/community/community-projects#query-key-factory)를 확인하십시오
