@@ -27,5 +27,11 @@
   "mysql": "MySQL",
   "postgresql": "PostgreSQL",
   "redis": "Redis",
-  "mongodb": "MongoDB"
+  "mongodb": "MongoDB",
+  "-- 4. 다른 API --": {
+    "type": "separator",
+    "title": "4. 다른 API"
+  },
+  "graphql": "GraphQL",
+  "grpc": "gRPC"
 }
