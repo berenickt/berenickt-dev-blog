@@ -77,17 +77,17 @@
   },
   "react-native": "React Native",
   "flutter": "Flutter",
-  "-- 12. 데스크탑 앱 --": {
-    "type": "separator",
-    "title": "12. 데스크탑 앱"
-  },
-  "electron": "Electron",
-  "-- 13. 네이티브 앱 --": {
+  "-- 12. 네이티브 앱 --": {
     "type": "separator",
     "title": "13. 네이티브 앱"
   },
   "android": "Android",
   "ios": "IOS",
+  "-- 13. 데스크탑 앱 --": {
+    "type": "separator",
+    "title": "12. 데스크탑 앱"
+  },
+  "electron": "Electron",
   "-- 14. 기타 --": {
     "type": "separator",
     "title": "14. 기타"
