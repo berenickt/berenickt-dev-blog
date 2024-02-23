@@ -1,0 +1,147 @@
+---
+title: 'cf. Docker Cheatsheet'
+date: 2024/02/05
+---
+
+## 1. sudo 입력하지 않기
+
+Docker의 명령은 `docker <명령>` 형식으로, 항상 root 권한으로 실행해야 함.
+docker 명령은 root 권한으로 실행해야 하기 때문에 일반 계정에서는 항상 sudo를 사용해야 함
+But, 귀찮기 때문에 sudo를 입력하지 않는 방법이 있음
+
+(1) root 계정으로 로그인하거나, `sudo su`을 사용해 root 계정으로 전환
+
+```bash
+$ sudo su
+#
+```
+
+(2) 현재 계정을 docker 그룹에 포함시키기 (현재 계정에서 로그아웃한 뒤 다시 로그인)
+
+```bash
+$ sudo usermod -aG docker ${USER}
+$ sudo systemctl restart docker
+```
+
+---
+
+## 2. 컨테이너 관리 명령어
+
+```bash
+#### (1) 컨테이너 목록 (ps, Process Status의 약자)
+docker ps # 실행중인 컨테이너 목록 출력
+docker ps -a # 모든 컨테이너 목록 출력
+
+#### (2) 컨테이너 생성 (create)
+docker create [image] # 컨테이너 생성
+docker create -it [image] # 컨테이너 생성 및 실행
+docker rename [container] [new-name]
+
+#### (3) 컨테이너 삭제 (rm, remove의 약자)
+docker rm [container]
+docker rm -f [container]
+
+#### (4) 컨테이너 업데이트
+docker update [container] # 컨테이너 업데이트
+
+#### (5) 로그 출력 (logs)
+docker logs [container] # 실행 중인 컨테이너의 로그 출력
+docker logs -f --until=[interval] [container] # 특정 시간 이전에 생성된 로그 검색
+
+#### (5) 기타
+docker events [container] # 컨테이너 이벤트 출력
+docker port [container] # 컨테이너 포트 출력
+docker top [container] # 컨테이너에서 실행 중인 프로세스 표시
+docker stats [container] # 컨테이너에 대한 라이브 리소스 사용 통계 보기
+docker diff [container] # 컨테이너 파일 시스템 변경 내역 출력
+docker cp [file-path] CONTAINER:[path] # 컨테이너와 호스트 간 파일 복사
+```
+
+---
+
+## 3. 컨테이너 실행 명령어
+
+```bash
+#### (1) 컨테이너 실행 (run)
+docker run [image] [command] # 이미지를 기반으로 컨테이너에서 명령을 실행
+docker run --name [container-name] [image] # 컨테이너 이름 지정
+docker run -p [host-port]:[container-port] [image] # 호스트와 컨테이너 포트 연결
+docker run --rm [image] # 컨테이너 종료 시 자동으로 삭제
+docker run -d [image] # 백그라운드 모드로 실행
+docker run -it [image] # 대화형 모드로 실행
+# --interactive(-i, 대화형)와 --tty (-t) 옵션을 사용하여 대화형 모드로 실행
+
+#### (2) 컨테이너 시작, 정지, 재시작, 일시 정지, 일시 정지 해제
+docker start [container] # 컨테이너 시작
+docker stop [container] # 컨테이너 정지
+docker restart [container] 		# 컨테이너 재시작
+docker pause [container] # 컨테이너 일시 정지
+docker unpause [container] # 컨테이너 일시 정지 해제
+
+#### (3) 기타
+docker wait [container] # 컨테이너가 종료될 때까지 대기
+docker kill [container] # 컨테이너 강제 종료
+docker attach [container] # 로컬 표준 입력, 출력 및 오류 스트림을 실행 중인 컨테이너에 연결
+docker exec -it [container] [shell] # 실행 중인 컨테이너 내에서 셸을 실행
+```
+
+---
+
+## 4. 이미지 명령어
+
+```bash
+docker build [dockerfile-path] # Dockerfile에서 이미지를 만든다.
+docker build . # 현재 디렉터리에 있는 Dockerfile에서 이미지를 빌드
+docker build -t [name]:[tag] [dockerfile-path] # Dockerfile에서 이미지를 만들고 태그를 지정
+docker build -f [file-path] # 빌드할 파일을 지정
+
+docker pull [image] # 레지스트리에서 이미지를 가져오기
+docker push [image] # 레지스트리에 이미지 푸시
+
+docker import [url/file] # 파일이나 URL에서 이미지를 가져오기
+docker commit [container] [new-image] # 컨테이너에서 이미지를 만들기
+docker tag [image] [image]:[tag] # 이미지에 태그를 추가
+docker images # 이미지 목록 출력
+docker history [image] # 이미지 히스토리 출력
+docker rmi [image] # 이미지 삭제
+docker load --image [tar-file] # tar 아카이브 또는 stdin에서 이미지를 로드
+docker save [image] > [tar-file] # tar 아카이브 파일에 이미지를 저장
+docker image prune # 사용하지 않는 이미지 삭제
+```
+
+---
+
+## 5. 네트워크 명령어
+
+```bash
+docker network ls # 네트워크 목록 출력
+docker network rm [network] # 네트워크 삭제
+docker network inspect [network] # 네트워크 정보 출력
+docker network connect [network] [container] 		# 컨테이너에 네트워크 연결
+docker network disconnect [network] [container] # 컨테이너에서 네트워크 연결 해제
+```
+
+---
+
+## 6. 일반 관리 명령어
+
+```bash
+docker login            # Docker 레지스트리에 로그인
+docker logout           # Docker 레지스트리에서 로그아웃
+docker inspect [object] # Docker 객체 정보 출력
+docker version          # Docker 버전 정보 출력
+docker info             # Docker 시스템 정보 출력
+docker system prune     # 사용하지 않는 데이터 삭제
+```
+
+---
+
+## 7. 플러그인 관리 명령어
+
+```bash
+docker plugin enable [plugin]                # 플러그인 활성화
+docker plugin disable [plugin]               # 플러그인 비활성화
+docker plugin create [plugin] [path-to-data] # config.json 및 rootfs에서 플러그인 생성
+docker plugin inspect [plugin]               # 플러그인 정보 출력
+docker plugin rm [plugin]                    # 플러그인 삭제
+```
