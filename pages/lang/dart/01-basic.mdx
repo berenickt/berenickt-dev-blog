@@ -1,6 +1,744 @@
 ---
-title: '01-기본'
+title: '01-기본 문법'
 date: 2024/02/29
 ---
 
 ## 1. 변수
+
+- 참고 : https://dart-ko.dev/language
+- 온라인 도구 : https://dartpad.dev/
+
+변수 선언하는 법
+
+```dart
+void main() {
+  var name = '메시';
+  print(name);
+}
+```
+
+### 1.1 변수 타입
+
+#### 1.1.1 정수(integer)
+
+```dart
+void main() {
+  int number1 = 2;
+  int number2 = 4;
+
+  print(number1 + number2);
+  print(number1 - number2);
+  print(number1 * number2);
+  print(number1 / number2);
+}
+```
+
+---
+
+#### 1.1.2 실수(double)
+
+```dart
+void main() {
+  // 실수(double)
+  double number1 = 2.5;
+  double number2 = 0.5;
+
+  print(number1 + number2);
+  print(number1 - number2);
+  print(number1 * number2);
+  print(number1 / number2);
+}
+```
+
+---
+
+#### 1.1.3 불린(boolean)
+
+```dart
+void main() {
+  // 참과 거짓(boolean)
+  bool isTrue = true;
+  bool isFalse = false;
+
+  print(isTrue);
+  print(isFalse);
+}
+```
+
+---
+
+#### 1.1.4 문자(String)
+
+```dart
+void main() {
+  // 글자(string)
+  String name = "메시";
+  String name2 = "호날두";
+
+  print(name + name2);
+  print(name + ' ' + name2);
+  print('${name.runtimeType}와 ${name2}');
+  print('$name와 $name2');
+}
+```
+
+---
+
+#### 1.1.5 다이나믹(dynamic)
+
+```dart
+/*
+📌 dynamic 타입 : 중간에 타입 변경 가능
+📌 var 타입 : 중간에 타입 변경 불가능
+*/
+void main() {
+  dynamic name  = "메시";
+  print(name);
+
+  dynamic age = 20;
+  print(age);
+
+  var name2 = "호날두";
+  print(name2);
+
+  print(name.runtimeType); // String
+  print(name2.runtimeType); // String
+
+  name = 30;
+  name2 = 30; // 에러
+}
+```
+
+---
+
+### 1.2 nullable과 non-nullable
+
+```dart
+/*
+📌 nullable : null 허용
+📌 non-nullable : null 불허용
+📌 null : 값이 없음
+*/
+void main() {
+  String name = '메시';
+  print(name);
+
+  String? name2 = "호날두"; // null을 허용
+  print(name2!); // null이 아님을 확신할 때 사용
+}
+```
+
+---
+
+### 1.3 final과 const
+
+```dart
+/*
+📌 final : 한번 할당되면 변경 불가
+📌 const : 한번 할당되면 변경 불가, 빌드 시점에 값을 알고 있어야 함
+@see https://dart-ko.dev/language/variables#final-const
+*/
+void main() {
+  // final String name = '메시';
+  final name = '메시'; // 타입 생략 가능
+  print(name);
+
+  // const String name2 = '호날두';
+  const name2 = '호날두'; // 타입 생략 가능
+  print(name2);
+}
+```
+
+---
+
+#### 1.3.1 DateTime
+
+```dart
+void main() {
+  DateTime now = DateTime.now();
+  print(now); // 코드가 실행된 순간의 시간을 출력
+}
+```
+
+---
+
+#### 1.3.2 final과 const의 차이
+
+```dart
+void main() {
+  // 📌 final : 한번 할당되면 변경 불가
+  final DateTime now = DateTime.now();
+  print(now); // 코드가 실행된 순간의 시간을 출력
+
+  // 📌 const : 한번 할당되면 변경 불가, 빌드 시점에 값을 알고 있어야 함
+  const DateTime now = DateTime.now(); // 에러
+}
+```
+
+---
+
+## 2. 연산자
+
+- cf. https://dart-ko.dev/language/operators
+
+### 2.1 정수 산술 연산자
+
+```dart
+void main() {
+  int number = 2;
+
+  print(number + 2);
+  print(number - 2);
+  print(number * 2);
+  print(number / 2);
+
+  print('--------------------');
+  print(number % 2); // 0
+  print(number % 3); // 2
+  print(number); // 2
+
+  print('--------------------');
+  number ++;
+  print(number); // 3
+
+  number --;
+  print(number); // 2
+}
+```
+
+---
+
+### 2.2 실수 산술 연산자
+
+```dart
+void main() {
+  double number = 4.0;
+  print(number); // 4
+
+  number += 1;
+  print(number); // 5
+
+  number -= 1;
+  print(number); // 4
+
+  number *= 2;
+  print(number); // 8
+
+  number /= 2;
+  print(number); // 4
+}
+```
+
+---
+
+### 2.3 널 조건 연산자
+
+```dart
+void main() {
+  double? number = 4.0;
+  print(number); // 4
+
+  number = 2.0;
+  print(number); // 2
+
+  number = null;
+  print(number); // null
+
+  // number가 null이면, 3.0으로 초기화
+  number ??= 3.0;
+  print(number); // 3
+}
+```
+
+---
+
+### 2.4 동등, 관계 연산자
+
+```dart
+void main() {
+  int number1 = 1;
+  int number2 = 2;
+
+  print(number1 > number2); // false
+  print(number1 < number2); // true
+  print(number1 >= number2); // false
+  print(number1 <= number2); // true
+  print(number1 == number2); // false
+  print(number1 != number2); // true
+}
+```
+
+---
+
+### 2.5 타입 테스트 연산자
+
+```dart
+void main() {
+  int number1 = 1;
+
+  print(number1 is int); // true
+  print(number1 is! int); // false
+
+  print(number1 is String); // false
+  print(number1 is! String); // true
+}
+```
+
+---
+
+### 2.6 논리 연산자
+
+```dart
+void main() {
+  // 📌 && - and 조건
+  bool result = 12 > 10 && 1 > 0;
+  print(result); // true
+
+  bool result2 = 12 > 10 && 0 > 1;
+  print(result2); // false
+
+  // 📌 || - or 조건
+  bool result3 = 12 > 10 || 1 > 0;
+  print(result3); // true
+
+  bool result4 = 12 > 10 || 0 > 1;
+  print(result4); // true
+
+  bool result5 = 12 < 10 || 0 > 1;
+  print(result5); // false
+}
+```
+
+---
+
+## 3. 자료구조
+
+### 3.1 리스트(List)
+
+```dart
+void main() {
+  // 📌 리스트(List)
+  List<String> team = ['Messi', 'Ronaldo', 'Neymar', 'Mbappe'];
+  List<int> numbers = [1, 2, 3, 4, 5];
+
+  // 📌 순서(index), 0부터 시작
+  print(team[0]); // Messi
+  print(numbers[2]); // 3
+
+  // 📌 길이(length)
+  print(team.length); // 4
+  print(numbers.length); // 5
+
+  // 📌 추가(add)
+  team.add('Suarez');
+  print(team); // [Messi, Ronaldo, Neymar, Mbappe, Suarez]
+
+  // 📌 삭제(remove)
+  team.remove('Ronaldo');
+  print(team); // [Messi, Neymar, Mbappe, Suarez]
+
+  // 📌 값의 인덱스 위치(indexOf)
+  print(team.indexOf('Mbappe')); // 2
+}
+```
+
+---
+
+### 3.2 맵(Map)
+
+```dart
+void main() {
+  // 📌 Map (Key, Value 형태)
+  Map<String, String> team = {
+    '바르셀로나': '메시',
+    '레알마드리드': '호날두',
+    '맨체스터시티': '홀란드',
+  };
+  print(team);
+
+  Map<String, bool> isTeam = {
+    '바르샤': true,
+    '레알': true,
+    '맨시티': false,
+  };
+  print(isTeam);
+
+  // 📌 Map 추가
+  isTeam.addAll({
+    '맨유': false,
+  });
+  print(isTeam);
+  print(isTeam['맨시티']); //
+
+  isTeam['아스날'] = false;
+  print(isTeam);
+
+  isTeam['맨유'] = true;
+  print(isTeam);
+
+  print('---------------------------');
+  // 📌 Map 삭제
+  isTeam.remove('맨시티');
+  print(isTeam);
+
+  print('---------------------------');
+  // 📌 key값만, values값만 가져오기
+  print(isTeam.keys);
+  print(isTeam.values);
+}
+```
+
+---
+
+### 3.3 Set
+
+- `Map` : Key, Value 형태의 자료구조, 중복 허용
+- `Set` : 중복을 허용하지 않는 자료구조
+
+```dart
+void main() {
+  // 📌 Set
+  final Set<String> names = {'메시', '호날두', '네이마르'};
+  print(names);
+
+  // 📌 add : 추가
+  names.add('베일');
+  print(names);
+
+  // 📌 remove : 삭제
+  names.remove('메시');
+  print(names);
+
+  // 📌 contains : 존재여부를 boolean값으로 반환
+  print(names.contains('호날두'));
+}
+```
+
+---
+
+## 4. 제어문
+
+### 4.1 if문
+
+```dart
+void main() {
+  int number = 3;
+
+  if (number % 3 == 0) {
+    print('나머지가 0입니다.');
+  } else if (number % 3 == 1) {
+    print('나머지가 1입니다.');
+  } else {
+    print('나머지가 2입니다.');
+  }
+}
+```
+
+---
+
+### 4.2 switch문
+
+```dart
+void main() {
+  int number = 3;
+
+  switch (number % 3) {
+    case 0:
+      print('나머지가 0입니다.');
+      break;
+    case 1:
+      print('나머지가 1입니다.');
+      break;
+    default:
+      print('나머지가 2입니다.');
+      break;
+  }
+}
+```
+
+---
+
+## 5. 반복문
+
+### 5.1 for loop
+
+```dart
+void main() {
+  for(int i = 0; i < 10; i++) {
+    print(i);
+  }
+}
+```
+
+```dart
+void main() {
+  int total = 0;
+
+  List<int> numbers = [1, 2, 3, 4, 5];
+
+  for (int i = 0; i < numbers.length; i++) {
+    total += numbers[i];
+  }
+
+  print(total);
+}
+```
+
+---
+
+#### 5.1.1 for-in loop
+
+```dart
+void main() {
+  int total = 0;
+
+  List<int> numbers = [1, 2, 3, 4, 5];
+
+  for(int number in numbers) {
+    total += number;
+  }
+
+  print(total);
+}
+```
+
+---
+
+### 5.2 while loop
+
+```dart
+void main() {
+	// while문
+  int total = 0;
+
+  while(total < 10) {
+    total += 1;
+  }
+
+  print(total);
+
+	// do-while문
+  do {
+    total += 1;
+  } while (total < 20);
+
+  print(total);
+}
+```
+
+```dart
+void main() {
+  int total = 0;
+
+  while(total < 10) {
+    total += 1;
+
+    if(total == 5) {
+      break;
+    }
+  }
+
+  print(total);
+}
+```
+
+#### 5.2.1 continue
+
+```dart
+void main() {
+  for(int i = 0; i < 10; i++) {
+    if(i == 5) {
+      continue;
+    }
+    print(i); // 0 1 2 3 4 6 7 8 9
+  }
+}
+```
+
+#### 5.2.2 break
+
+```dart
+void main() {
+  for(int i = 0; i < 10; i++) {
+    if(i == 5) {
+      break;
+    }
+    print(i); // 0 1 2 3 4
+  }
+}
+```
+
+---
+
+## 6. enum
+
+```dart
+enum Status {
+  approved, // 승인
+  pending, // 대기
+  rejected, // 거절
+}
+
+void main() {
+  Status status = Status.pending;
+
+  if (status == Status.approved) {
+    print('승인');
+  } else if (status == Status.pending) {
+    print('대기');
+  } else {
+    print('거절');
+  }
+}
+```
+
+---
+
+## 7. 함수
+
+### 7.1 함수 선언
+
+```dart
+void main() {
+  addNumbers(10, 20, 30);
+  addNumbers(10);
+}
+
+// 3개의 숫자를 더하고 짝수인지 홀수인지 판별하는 함수
+// 📌 positional parameter : 순서가 중요한 파라미터
+// 📌 optional parameter : 있어도 되고, 없어도 되는 파라미터
+addNumbers(int x, [int y = 20, int z = 50]) {
+  int sum = x + y + z;
+
+  print('x: $x');
+  print('y: $y');
+  print('z: $z');
+
+  if (sum % 2 == 0) {
+    print('짝수');
+  } else {
+    print('홀수');
+  }
+}
+```
+
+#### 7.1.1 named parameter
+
+```dart
+void main() {
+  addNumbers(y: 10, x: 20);
+  addNumbers(x: 10, y: 20, z: 30);
+}
+
+// 3개의 숫자를 더하고 짝수인지 홀수인지 판별하는 함수
+// 📌 named parameter : 이름이 있는 파라미터(순서가 중요하지 않음)
+addNumbers({
+  required int x,
+  required int y,
+  int z = 30,
+}) {
+  int sum = x + y + z;
+
+  print('x: $x');
+  print('y: $y');
+  print('z: $z');
+
+  if (sum % 2 == 0) {
+    print('짝수');
+  } else {
+    print('홀수');
+  }
+}
+```
+
+#### 7.2 void, return
+
+```dart
+// void : 공허한, 반환값이 없는
+void main() {
+  int result = addNumbers(y: 10, x: 20);
+  int result2 = addNumbers(x: 10, y: 30, z: 40);
+
+  print('result: $result');
+  print('result2: $result2');
+
+  print('sum: ${result + result2}');
+}
+
+int addNumbers({
+  required int x,
+  required int y,
+  int z = 30,
+}) {
+  int sum = x + y + z;
+
+  print('x: $x');
+  print('y: $y');
+  print('z: $z');
+
+  if (sum % 2 == 0) {
+    print('짝수');
+  } else {
+    print('홀수');
+  }
+
+  return sum;
+}
+```
+
+---
+
+### 7.3 화살표 함수
+
+```dart
+void main() {
+  int result = addNumbers(10, y: 20);
+  int result2 = addNumbers(10, y: 30, z: 40);
+
+  print('result: $result');
+  print('result2: $result2');
+
+  print('sum: ${result + result2}');
+}
+
+int addNumbers(int x, {
+  required int y,
+  int z = 30,
+}) => x + y + z;
+```
+
+---
+
+## 8. 타입 선언(TypeDef)
+
+```dart
+void main() {
+  Opertaion operation = add;
+  int result = operation(10, 20, 30);
+  print(result); // 60
+
+  operation = subtract;
+  int result2 = operation(10, 20, 30);
+  print(result2); // -40
+
+  int result3 = calculate(30, 40, 50, add);
+  print(result3); // 120
+
+  int result4 = calculate(40, 50, 60, subtract);
+  print(result4); // -70
+}
+
+// signature
+typedef Opertaion = int Function(int x, int y, int z);
+
+// 더하기
+int add(int x, int y, int z) => x + y + z;
+
+// 빼기
+int subtract(int x, int y, int z) => x - y - z;
+
+// 계산
+int calculate(int x, int y, int z, Opertaion operation) {
+  return operation(x, y, z);
+}
+```
