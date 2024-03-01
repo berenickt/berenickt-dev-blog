@@ -1,0 +1,252 @@
+---
+title: '04-비동기 프로그래밍'
+date: 2024/02/29
+---
+
+## 1. 비동기(async) 프로그래밍
+
+```dart
+void main() {
+  addNumbers(1, 1);
+  addNumbers(2, 2);
+}
+
+void addNumbers(int num1, int num2) {
+  print('계산 중: ${num1 + num2}');
+  print('계산 완료: ${num1 + num2}');
+}
+```
+
+---
+
+### 1.1 Future.delayed
+
+```dart
+void main() {
+  // Future - 미래에 받아올 값
+  Future<String> name = Future.value('홍길동');
+  Future<int> number = Future.value(1);
+  Future<bool> isTrue = Future.value(true);
+
+  print('함수 시작');
+
+  // delay - 지연되다
+  // 2개의 파라미터
+  // 1번 파라미터 : 지연할 기간 (얼마나 지연할건지) Duration
+  // 2번 파라미터 : 지연 시간이 지난 후 실행할 함수
+  Future.delayed(Duration(seconds: 2), () => {
+    print('2초 뒤에 실행됩니다.')
+  });
+}
+```
+
+---
+
+### 1.2 비동기 함수 예제
+
+```dart
+void main() {
+  // Future - 미래에 받아올 값
+  Future<String> name = Future.value('홍길동');
+  Future<int> number = Future.value(1);
+  Future<bool> isTrue = Future.value(true);
+
+  addNumbers(1, 1);
+  addNumbers(2, 2);
+}
+
+void addNumbers(int num1, int num2) {
+  print('계산 시작 : $num1 + $num2');
+
+  // 서버 시뮬레이션
+  Future.delayed(Duration(seconds: 2), () => {
+    print('계산 완료 : $num1 + $num2 = ${num1 + num2}')
+  });
+
+  print('함수 완료: $num1 + $num2');
+}
+```
+
+---
+
+## 2. async/await
+
+- await는 future를 return해주는 함수만 사용 가능
+
+```dart
+void main() async {
+  // Future - 미래에 받아올 값
+  Future<String> name = Future.value('홍길동');
+  Future<int> number = Future.value(1);
+  Future<bool> isTrue = Future.value(true);
+
+  await addNumbers(1, 1);
+  await addNumbers(2, 2);
+}
+
+Future<void> addNumbers(int num1, int num2) async {
+  print('계산 시작 : $num1 + $num2');
+
+  // 서버 시뮬레이션
+  await Future.delayed(Duration(seconds: 2), () => {
+    print('계산 완료 : $num1 + $num2 = ${num1 + num2}')
+  });
+
+  print('함수 완료: $num1 + $num2');
+}
+```
+
+---
+
+### 2.1 future await 예제
+
+```dart
+void main() async {
+  // Future - 미래에 받아올 값
+  Future<String> name = Future.value('홍길동');
+  Future<int> number = Future.value(1);
+  Future<bool> isTrue = Future.value(true);
+
+  final result1 = await addNumbers(1, 1);
+  final result2 = await addNumbers(2, 2);
+
+  print('result1: $result1');
+  print('result2: $result2');
+  print('result1 + result2 = ${result1 + result2}');
+}
+
+Future<int> addNumbers(int num1, int num2) async {
+  print('계산 시작 : $num1 + $num2');
+
+  // 서버 시뮬레이션
+  await Future.delayed(Duration(seconds: 2), () => {
+    print('계산 완료 : $num1 + $num2 = ${num1 + num2}')
+  });
+
+  print('함수 완료: $num1 + $num2');
+
+  return num1 + num2;
+}
+```
+
+---
+
+## 3. Stream
+
+- `Future`는 비동기적으로 하나의 값을 받아올 수 있는 객체
+- `Stream(개울)`은 비동기적으로 여러개의 값을 받아올 수 있는 객체
+  - 데이터가 계속 개울의 물처럼 흐름
+  - 사용자가 직접 닫기 전까지 무한하게 데이터를 받아올 수 있음
+  - 기본적으로 제공하는 패키지를 불러와서 Stream을 사용할 수 있음
+
+```dart
+import 'dart:async';
+
+void main() {
+  final controller = StreamController();
+  final stream = controller.stream;
+
+  final streamListener1 = stream.listen((val) {
+    print('Listener 1: $val');
+  });
+
+  controller.sink.add(1);
+  controller.sink.add(2);
+  controller.sink.add(3);
+  controller.sink.add(4);
+  controller.sink.add(5);
+}
+```
+
+---
+
+### 3.1 stream을 여러번 listen하는 법
+
+```dart
+import 'dart:async';
+
+void main() {
+  final controller = StreamController();
+  final stream = controller.stream.asBroadcastStream(); // 여러번 listen 가능
+
+  final streamListener1 = stream.listen((val) {
+    print('Listener 1: $val');
+  });
+
+  final streamListener2 = stream.listen((val) {
+    print('Listener 2: $val');
+  });
+
+  controller.sink.add(1);
+  controller.sink.add(2);
+  controller.sink.add(3);
+  controller.sink.add(4);
+  controller.sink.add(5);
+}
+```
+
+---
+
+### 3.2 함수로 stream을 제공하는 법
+
+```dart
+import 'dart:async';
+
+void main() {
+  calculate(2).listen((val) {
+    print('calculate(2) : $val');
+  });
+
+  calculate(4).listen((val) {
+    print('calculate(4) : $val');
+  });
+}
+
+Stream<int> calculate(int number) async* {
+  for (int i = 0; i < 5; i++) {
+    yield i * number;
+
+    await Future.delayed(Duration(seconds: 1));
+  }
+}
+```
+
+---
+
+### 3.3 Stream await하는 법
+
+```dart
+import 'dart:async';
+
+void main() {
+  playAllStream().listen((val) {
+    print(val);
+  });
+}
+
+Stream<int> playAllStream() async* {
+  yield* calculate(1);
+  yield* calculate(1000);
+}
+
+Stream<int> calculate(int number) async* {
+  for (int i = 0; i < 5; i++) {
+    yield i * number;
+
+    await Future.delayed(Duration(seconds: 1));
+  }
+}
+```
+
+```결과
+0
+1
+2
+3
+4
+0
+1000
+2000
+3000
+4000
+```

@@ -6,19 +6,14 @@
   },
   "html": "HTML",
   "css": "CSS",
-  "-- JavaScript & TypeScript --": {
-    "type": "separator",
-    "title": "JavaScript & TypeScript"
-  },
-  "js": "JavaScript",
-  "js-dom": "JS-DOM",
-  "ts": "TypeScript",
   "-- 인터프리터 언어 --": {
     "type": "separator",
     "title": "인터프리터 언어"
   },
+  "js": "JavaScript",
+  "js-dom": "JS-DOM",
+  "ts": "TypeScript",
   "python": "Python",
-  "dart": "Dart",
   "-- 컴파일 언어 --": {
     "type": "separator",
     "title": "컴파일 언어"
@@ -26,5 +21,7 @@
   "java": "Java",
   "c": "C언어",
   "cpp": "C++",
-  "rust": "Rust"
+  "rust": "Rust",
+  "go": "Go",
+  "dart": "Dart"
 }
