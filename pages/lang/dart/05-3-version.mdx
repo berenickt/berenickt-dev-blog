@@ -1,0 +1,331 @@
+---
+title: '05-3.0 추가 문법'
+date: 2024/02/29
+---
+
+## 1. Record 타입
+
+- Record 타입은 타입과 타입의 순서를 무조건 보장받을 수 있다.
+
+```dart
+void main() {
+  final result = nameAndAge({
+    'name': '민지',
+    'age': 20,
+  });
+
+  print(result); // (민지, 20)
+  print(result.$1); // 민지
+  print(result.$2); // 20
+
+  final result3 = getNewJeansWithType();
+  for (final item in result3) {
+    print(item.$1);
+    print(item.$2);
+  }
+
+  final result4 = getNewJeansWithType2();
+  for (final item in result4) {
+    print(item.$1);
+    print(item.$2);
+  }
+
+  print('-------------------------------');
+
+  final result5 = getNewJeansWithType3();
+  for (final item in result5) {
+    print(item.name);
+    print(item.age);
+  }
+
+  final result6 = getMinji();
+  print(result6);
+}
+
+// Record
+(String, int) nameAndAge(Map<String, dynamic> json) {
+  return (
+    json['name'] as String,
+    json['age'] as int,
+  );
+}
+
+List<Map<String, dynamic>> getNewJeans() {
+  return [
+    {'name': '민지', 'age': 20},
+    {'name': '해린', 'age': 18},
+  ];
+}
+
+List<(String, int)> getNewJeansWithType() {
+  return [
+    ('민지', 20),
+    ('해린', 18),
+  ];
+}
+
+List<(String name, int age)> getNewJeansWithType2() {
+  return [
+    ('민지', 20),
+    ('해린', 18),
+  ];
+}
+
+List<({String name, int age})> getNewJeansWithType3() {
+  return [
+    (name: '민지', age: 20),
+    (name: '해린', age: 18),
+  ];
+}
+
+(String name, String group, int age) getMinji() {
+  return ('민지', '뉴진스', 20);
+}
+```
+
+---
+
+## 2. 디스럭쳐링(Destructuring, 분해)
+
+```dart
+void main() {
+  final (name, age) = ('민지', 20);
+  print(name);
+  print(age);
+
+  final newJeans = ['민지', '해린'];
+  final [String a, String b] = newJeans;
+  print(a);
+  print(b);
+
+  final numbers = [1, 2, 3, 4, 5, 6, 7, 8];
+  final [x, y, ..., z] = numbers;
+  print(x);
+  print(y);
+  print(z);
+
+  final [xx, yy, ...rest, zz] = numbers;
+  print(xx);
+  print(yy);
+  print(zz);
+  print(rest); // [3, 4, 5, 6, 7]
+
+  // _ : 무시
+  final [xxx, _, yyy, ...rest2, zzz, _] = numbers;
+  print(xxx); // 1
+  print(yyy); // 3
+  print(zzz); // 8
+  print(rest2); // [4, 5, 6, 7]
+
+  final minJiMap = {
+    'name': '민지',
+    'age': 20,
+  };
+  final {'name': name3, 'age': age3} = minJiMap;
+  print(name3);
+  print(age3);
+
+  print('-------------------');
+  final minJiIdol = Idol(name: '민지', age: 20);
+  final Idol(name: name4, age: age4) = minJiIdol;
+  print(name4);
+  print(age4);
+}
+
+class Idol {
+  final String name;
+  final int age;
+
+  Idol({required this.name, required this.age});
+}
+```
+
+---
+
+## 3. 패턴 매칭
+
+```dart
+void main() {
+  // Validation(유효성 검사)
+  final minJi = ('민지', 20);
+
+  final (name as String, age as int) = minJi;
+
+  print(name);
+  print(age);
+
+  // switcher('aaa');
+  // switcher('bbb');
+  // switcher(['1', '2']);
+  // switcher([1, 2, 3]);
+  // switcher([4, 5, 6]);
+  // switcher([4, 5, 6, 7]);
+  // switcher([6, 9]);
+  // switcher([6, '9']);
+  switcher(7);
+  switcher(17);
+
+  print(switcher2(5, true));
+  print(switcher2(7, true));
+  print(switcher2(7, false));
+
+  forLooper();
+
+  ifMatcher();
+}
+
+void switcher(dynamic anything) {
+  switch (anything) {
+    case 'aaa':
+      print('match : aaa');
+      break;
+    case ['1', '2']:
+      print('match : 1, 2');
+      break;
+    case [_, _, _]:
+      print('match : [_, _, _]');
+      break;
+    case [int a, int b]:
+      print('match : [int $a, int $b]');
+      break;
+    case < 10 && > 5:
+      print('match : < 10 && > 5');
+      break;
+    default:
+      print('no match');
+  }
+}
+
+String switcher2(dynamic val, bool condition) => switch(val) {
+  5 => 'match: 5',
+  7 when condition => 'match 7 and true',
+  _ => 'no match',
+}
+
+void forLooper() {
+  final List<Map<String, dynamic>> members = [
+    {'name': '민지', 'age': 20},
+    {'name': '민호', 'age': 30},
+  ];
+
+  for(final member in members) {
+    print(member['name']);
+    print(member['age']);
+  }
+
+  print('-------------------');
+
+  for(var {'name': name, 'age': age} in members) {
+    print(name);
+    print(age);
+  }
+}
+
+void ifMatcher() {
+  final minJi = {
+    'name': '민지',
+    'age': 20,
+  };
+
+  print('-------------------');
+
+  if(minJi case {'name': String name, 'age': int age }) {
+    print(name);
+    print(age);
+  }
+}
+```
+
+---
+
+## 4. 클래스
+
+### 4.1 final class
+
+```dart
+// final로 클래스를 선언하면,
+// 다른 파일에서 extends, implements, mixin을 사용할 수 없다.
+final class Person {
+  final String name;
+  final int age;
+
+  Person({
+    required this.name,
+    required this.age,
+  })
+}
+```
+
+---
+
+### 4.2 base class
+
+```dart
+// base로 선언하면 extends는 가능하지만, implements는 불가능하다.
+// base, sealed, final로 선언된 클래스만 extends가 가능하다.
+base class Person {
+  final String name;
+  final int age;
+
+  Person({
+    required this.name,
+    required this.age,
+  })
+}
+```
+
+---
+
+### 4.3 interface class
+
+```dart
+// interface로 선언하면 implements만 가능하다.
+interface class Person {
+  final String name;
+  final int age;
+
+  Person({
+    required this.name,
+    required this.age,
+  })
+}
+```
+
+---
+
+### 4.4 sealed class
+
+```dart
+// sealed 클래스는 abstract이면서, final이다.
+// 그리고 패턴매칭을 사용할 수 있도록 해준다.
+sealed class Person{}
+
+class Idol extends Person {}
+
+class Engineer extends Person {}
+
+class Chef extends Person {}
+
+String whoIsHe(Person person) => switch(person) {
+  Idol i => '아이돌',
+  Engineer e => '엔지니어',
+  _ => '나머지',
+};
+```
+
+---
+
+### 4.5 mixing class
+
+```dart
+// Minxin Class
+// 1) mixin은 extends나 with을 사용할 수 없다.
+//    그렇기 떄문에 mixin class도 마찬가지로 사용 불가능하다.
+// 2) 클래스는 on 키워드를 사용할 수 없다.
+//    그렇기 떄문에 mixin class도 on z키워드를 사용할 수 없다.
+mixin class AnimalMixin {
+  String bark() {
+    return '멍멍';
+  }
+}
+```
