@@ -1,5 +1,5 @@
 ---
-title: '01-React Native 소개 및 개발환경'
+title: '01-소개 및 개발환경'
 date: 2024/01/10
 ---
 
@@ -54,7 +54,7 @@ date: 2024/01/10
 
 ---
 
-## 4. 초기 환경 구축 & 설치할 항목 (Mac M1)
+## 4. CLI 환경설정 (Mac M1)
 
 - 공식문서 참고 : https://reactnative.dev/docs/environment-setup?guide=native
 - Node, Watchman, React Native CLI, JDK 및 Android Studio가 필요하다.
@@ -66,12 +66,14 @@ date: 2024/01/10
 ```bash
 brew install node
 
-
+# yarn 설치
+npm install --global yarn
+yarn --version
 ```
 
 - Homebrew를 사용하여 Node 및 Watchman을 설치합니다.
 - 이미 node가 설치되어있는 경우 node version이 14 이상인지 확인.
-- ~/.zshrc 파일을 열어서 export PATH=~/.npm/bin:$PATH 를 추가하고 source ~/.zshrc 입력 후 엔터.
+- `~/.zshrc` 파일을 열어서 `export PATH=~/.npm/bin:$PATH`를 추가하고 `source ~/.zshrc` 입력 후 엔터.
   - (이렇게 하면 npm 패키지를 globlal로 설치시에 sudo를 사용하지 않아도 된다)
 
 ---
@@ -244,7 +246,7 @@ react-native: 0.61.5
 
 ---
 
-## 5. 프로젝트 설치 & 시뮬레이터 구동
+## 5. CLI 프로젝트 설치 & 시뮬레이터 구동
 
 설치가 완료됐다면,
 시작할 프로젝트를 생성할 디렉토리의 위치에 새 React-Native 프로젝트를 만들어준다.
@@ -261,6 +263,26 @@ $ react-native init --version 0.61.5 cli_first
 
 ### 6.1 IOS 시뮬레이터 구동
 
+```bash
+$ yarn start
+
+$ yarn ios
+```
+
 ---
 
 ### 6.2 Android 시뮬레이터 구동
+
+---
+
+## 6. Expo 프로젝트 설치 & 시뮬레이터 구동
+
+- https://docs.expo.dev/get-started/installation/#expo-cli
+
+```bash
+# expo 프로젝트 생성
+$ npx create-expo-app 프로젝트명
+
+$ npx expo start
+# 원하는 기기를 i나 a 등을 눌러서 열기
+```
