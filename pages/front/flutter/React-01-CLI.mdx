@@ -1,0 +1,229 @@
+---
+title: '01-환경설정'
+date: 2024/03/03
+---
+
+## 1. Mac
+
+### 1.1 소개 및 시스템 사양 확인
+
+- https://docs.flutter.dev/get-started/install/macos/desktop
+- 최소 10GB 정도, 50GB까지 하면 좋음
+
+---
+
+### 1.2 Rosetta 설치 [Apple Slicon만]
+
+- https://docs.flutter.dev/get-started/install/macos/desktop#software-requirements
+
+```bash
+$ sudo softwareupdate --install-rosetta --agree-to-license
+```
+
+---
+
+### 1.3 Homebrew 설치
+
+- https://brew.sh/ko/
+
+```bash
+# Homebrew 설치
+$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Shell 타입 확인
+$ echo $SHELL
+
+# /bin/zsh 잘 나왔으면, Brew 환경변수에 등록
+$ echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> $HOME/.zshrc
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Homebrew 버전 확인
+$ brew --version
+```
+
+---
+
+### 1.4 Flutter SDK 설치
+
+#### 1.4.1 Brew로 설치
+
+```bash
+# Flutter를 Homebrew를 통해 설치
+$ brew install --cask flutter
+
+# Flutter 설치 현황 확인
+$ flutter doctor
+```
+
+---
+
+#### 1.4.2 직접 설치
+
+- https://docs.flutter.dev/get-started/install/macos/desktop?tab=download#install-the-flutter-sdk
+
+```bash
+$ vi ~/.zshrc
+
+##########################.zshrc
+# 맨 밑에 아래 문구 추가 - 내 문서(Documents)에 설치해야 함
+export PATH="$PATH:$HOME/Documents/flutter/bin"
+##########################:wq로 저장하고 나가기
+# 터미널 종료 후 다시 켜기
+
+# Flutter 설치 현황 확인
+$ flutter doctor
+```
+
+---
+
+### 1.5 XCode 설치
+
+- App Store에서 XCode 다운
+- https://apps.apple.com/kr/app/xcode/id497799835?mt=12
+
+MacOS XCode 설치 커맨드
+
+```bash
+sudo xcode-select --install
+sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+sudo xcodebuild -runFirstLaunch
+```
+
+Xcode를 실행 → 메뉴 창에 [Windows] → [Devices and Simulators] →
+
+- [Simulators] → [필터에 +버튼] →
+- [OS Version] → [Download more simulator runtimes...] →
+- [macOS, iOS, iOS Simulator 버전의 Get버튼]
+
+그려면 Simulator 탭 안에 다양한 버전의 아이폰들이 나온다.
+
+---
+
+### 1.6 Android Studio 설치
+
+- https://developer.android.com/studio?hl=ko
+- 약관동의 후, Apple chip을 다운로드
+- 계속 다음 버튼을 클릭해서 설치 완료
+- Plugins에 Marketplace에 `Dart`를 검색해서 설치
+- Plugins에 Marketplace에 `Flutter`를 검색해서 설치 후 IDE 재시작
+- [More Actions] 버튼 클릭 → [SDK Manager]
+- cf. 만약 Android SDK Locations 경로가 적혀있지 않으면 [Edit] 버튼 클릭
+  - Android SDK, Android SDK Platform 체크하고 다음을 계속 눌러서 설치하고 Finish
+  - 설치가 완료되면 경로가 추가될 것임
+- Anroid 14.0, Android API 34를 체크하고 [Apply] 누른 다음, [OK]클릭해서 다운받고 Finish
+- [SDK Tools] 탭으로 이동 후 [Android SDK Builid Tools 34] 체크
+  - [Android SDK Command-line Tools (latest)] 체크
+  - [Android Emulator] 체크
+  - [Android SDK Platform-Tools] 체크
+  - [NDK (Side by side)] 체크 후 Apply후 OK를 눌러 설치하고 Finish
+  - cf. 인텔 맥인 경우, Intel x86 Emulator Accelerator도 체크
+- 모든 설치가 끝났으면, Android SDK Location의 경로 위치를 복사
+
+```bash
+$ vi ~/.zshrc
+
+# Android Home 환경변수 등록
+###################.zshrc
+# 맨 밑에 아래 문구 추가
+export ANDROID_HOME={복사한경로}
+###################:wq로 저장하고 나가기
+
+# Flutter 설치 현황 확인
+$ flutter doctor
+```
+
+---
+
+#### 1.6.1 flutter doctor 확인 시 에러가 난 경우
+
+- Android toolchain - develop for Android devices (Android SDK version 34.0.0)
+  - ! Some Android licenses not accepted. To resolve this, run: flutter doctor --android-licenses
+
+```bash
+$ flutter doctor --android-licenses
+# 질문이 나올 떄마다 Y를 눌러 Enter를 눌러서 Android License에 동의하기
+```
+
+- Chrome - develop for the web (Cannot find Chrome executable at /Applications/Google
+  - Chrome.app/Contents/MacOS/Google Chrome)
+  - 해결법 : [크롬 브라우저](https://www.google.co.kr/chrome/?brand=IBEF&gclid=CjwKCAiAmJGgBhAZEiwA1JZolr5I70DgBM3ClAqLzNLilivCrme3dSQAjoStx-rsaxjLwJqMSgj2FBoCYrAQAvD_BwE&gclsrc=aw.ds)을 다운로드
+
+---
+
+### 1.7 Android Emulator 세팅
+
+Android 시작화면에서 [New Flutter Project]를 클릭
+
+- [Flutter]를 클릭하고 Flutter SDK Path에 다음 경로를 입력하고 Next
+  - 터미널 창에 `flutter doctor -v`을 입력해서 맨 처음 Flutter의 경로를 복붙
+
+```bash
+$ flutter doctor -v
+[✓] Flutter (Channel ~~~~~~~~)
+  • Flutter version 3.19.2 on channel stable at {여기에 있는 경로}
+```
+
+- 바탕화면에 프로젝트명을 `test_proj`라고 만들고,
+  - Project location 위치를 `사용자/Desktop/test_proj`로 변경한 다음 [Create]
+- 프로젝트가 열리면 상단 [Tools] → [Device Manager] 클릭
+  - 왼쪽 [Create Device, +기호]를 클릭
+  - Pixel 7 Pro를 선택, (cf. 만약 다른 핸드폰 선택 시 Play Store 마크가 있는 기종을 선택) → Next
+- API 34버전이 다운로드가 안되어 있으면 다운로드하고 Next
+  - AVD Name : `Flutter ~~`라고 원하는 에뮬레이터명을 변경
+  - [Portrait]를 선택
+  - [Show Advanced Settings] 클릭
+  - Memory and Storage 섹션에 Internal Storage: 8GB 입력하고 Finish
+- 상단 [Android Studio → Settings] 클릭
+  - `emulator` 검색한 뒤,
+  - Tools → Emulator에 Launch in the Running Devices tool window 체크 해제
+  - Apply하고 OK
+- 디바이스 매니저에 `Flutter ~~`라고 지은 에뮬레이터를 화살표를 눌러서 실행
+  - cf. 에뮬레이터를 실행하는 것은 많은 컴퓨터 리소스를 잡아먹기 때문에, 조금 오래 걸릴 수 있음
+  - 오른쪽 `...`을 클릭하고 [Settings] → [Emulator always on top] 옵션을 클릭
+- 안드로이드 스튜디오 오른쪽 상단에 어떤 기기로 실행할 것인지 선택할 수 있다.
+  - Web으로 실행할지, 선택한 에뮬레이터 모바일로 실행할지 등
+  - 초록색 화살표 버튼을 클릭하면 선택한 기기로 실행된다.
+  - 각자의 컴퓨터 리소스에 따라 시간이 꽤나 걸리지만, 한 번 실행하고 난 뒤에는 빨라진다.
+  - 실행이 완료되면, 오른쪽 아래 +버튼을 클릭하면 화면의 숫자가 커지는 간단한 앱이 뜬다.
+
+---
+
+### 1.8 IOS Simulator 세팅
+
+안드로이드 스튜디오 오른쪽 상단에 기기 선택에서 [Open iOS Simulator]를 클릭
+
+- cf. 맥에서는 안드로이드 스튜디오보다 IOS 시뮬레이터가 속도가 빠르다.
+- cf. 시뮬레이터의 상단 [File → Open Simulator → 원하는 기종] 선택으로 기기를 바꿀 수도 있다.
+- 시뮬레이터의 상단 [Window → Stay on Top] 선택해 시뮬레이터가 항상 맨 위로 오도록 선택
+
+안드로이드 스튜디오의 오른쪽 상단 기기 선택에서 [아이폰 기종]을 선택
+
+- 초록색 화살표의 재생 기호를 선택하면 똑같이 선택한 기기로 실행된다.
+- 역시 각자의 컴퓨터 리소스에 따라 시간이 꽤나 걸리지만, 한 번 실행하고 난 뒤에는 빨라진다.
+- 실행이 완료되면, 오른쪽 아래 +버튼을 클릭하면 화면의 숫자가 커지는 간단한 앱이 뜬다.
+
+cf. 안드로이드 스튜디오는 왼쪽에 파일 트리가 Project가 되도록 설정하면 된다.
+
+---
+
+## 2. Windows
+
+- https://docs.flutter.dev/get-started/install/windows
+
+### 2.1 Git 설치
+
+---
+
+### 2.2 시스템 사양 확인
+
+---
+
+### 2.3 Flutter SDK 설치
+
+---
+
+### 2.4 Android Studio 설치
+
+---
+
+### 2.5 Emulator 세팅
