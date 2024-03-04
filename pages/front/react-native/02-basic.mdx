@@ -1,0 +1,293 @@
+---
+title: '02-기본 Core 컴포넌트'
+date: 2024/01/10
+---
+
+## 1. View and Components
+
+### 1.1 View
+
+![react-native자주쓰는 core components](https://reactnative.dev/docs/assets/diagram_ios-android-views.svg)
+
+- 위 그림은 각각 Android와 iOS에서 화면을 그릴 떄, 쓰는 컴포넌트들을 보여준다.
+- 리스트들 중에서 하나의 아이템을 표현할 떄,
+
+  - Android는 ViewGroup으로 감싸고, 그 안쪽 아이콘은 ImageView, 글자는 TextView 컴포넌트를 사용
+  - iOS는 UIView으로 감싸고, 그 안쪽 아이콘은 UIImageView, 글자는 UITextView 컴포넌트를 사용
+
+- 그러면 React Native에서는 각 OS별 컴포넌트들을 어떤 걸로 대체해야 할까?
+
+  - 바로 Native Component이다.
+
+- cf. https://reactnative.dev/docs/intro-react-native-components
+
+---
+
+### 1.2 Native Component
+
+![](https://reactnative.dev/docs/assets/diagram_react-native-components.svg)
+
+`Native Components`: 플랫폼(iOS 또는 Android)의 view를 JS로 호출할 수 있게 해주는 React 컴포넌트
+
+- 코드를 작성할 땐, JavaScript와 React Component
+- Runtime에서 React Native가 구현한 코드에 상응하는 안드로이드와 iOS view를 생성함
+- 다른 사람이 만든 Native Component를 사용할 수도 있음: [React Native Directory](https://reactnative.directory/)
+
+---
+
+### 1.3 대표적인 Core Components
+
+| REACT NATIVE UI COMPONENT |  ANDROID VIEW  |     IOS VIEW     |       WEB ANALOG        | DESCRIPTION                                                            |
+| :-----------------------: | :------------: | :--------------: | :---------------------: | :--------------------------------------------------------------------- |
+|         `<View>`          | `<ViewGroup>`  |    `<UIView>`    | A non-scrolling `<div>` | flexbox, 스타일, 일부 터치 처리, 접근성 컨트롤을 지원하는 컨테이너     |
+|         `<Text>`          |  `<TextView>`  |  `<UITextView>`  |          `<p>`          | 텍스트 문자열을 표시, 스타일링하고 중첩하며, 심지어 터치 이벤트를 처리 |
+|         `<Image>`         | `<ImageView>`  | `<UIImageView>`  |         `<img>`         | 다양한 유형의 이미지를 표시                                            |
+|      `<ScrollView>`       | `<ScrollView>` | `<UIScrollView>` |         `<div>`         | 여러 컴포넌트와 뷰를 포함할 수 있는 일반 스크롤 컨테이너               |
+|       `<TextInput>`       |  `<EditText>`  | `<UITextField>`  |  `<input type="text">`  | 사용자가 텍스트를 입력할 수 있게 함                                    |
+
+- `Core Components` : React Native가 기본적으로 제공하는 Native Components 세트
+- 그 외 모든 Core Component는 공식 문서 [Core Components and APIs · React Native](https://reactnative.dev/docs/components-and-apis)를 확인
+
+---
+
+## 2. Core Components 예시
+
+### 2.1 Text Input
+
+- `<TextInput>` : html에서의 `<input type="text">` 와 동일
+- 유저의 텍스트 입력을 받을 수 있는 컴포넌트
+- cf. https://reactnative.dev/docs/next/handling-text-input
+
+```tsx
+import React, { useState } from 'react'
+import { Text, TextInput, View } from 'react-native'
+
+const PizzaTranslator = () => {
+  const [text, setText] = useState('')
+
+  return (
+    <View style={{ padding: 100 }}>
+      <TextInput
+        style={{ height: 40 }}
+        placeholder="Type here to translate!"
+        onChangeText={newText => setText(newText)}
+        defaultValue={text}
+      />
+      <Text style={{ padding: 10, fontSize: 42 }}>
+        {text
+          .split(' ')
+          .map(word => word && '🍕')
+          .join(' ')}
+      </Text>
+    </View>
+  )
+}
+
+export default PizzaTranslator
+```
+
+---
+
+### 2.2 Scroll View
+
+- `View`는 2가지 종류가 있다.
+  1. `<View>`: 스크롤이 불가능한 `<div>`
+  2. `<ScrollView>`: 스크롤 가능한 `<div>`
+- 스크롤 가능한 컨테이너를 만드려면 `<ScrollView>`를 사용해야 합니다.
+- cf. https://reactnative.dev/docs/next/using-a-scrollview
+
+```tsx
+import React from 'react'
+import { Image, ScrollView, Text } from 'react-native'
+
+const logo = {
+  uri: 'https://reactnative.dev/img/tiny_logo.png',
+  width: 64,
+  height: 64,
+}
+
+const App = () => (
+  <ScrollView>
+    <Text style={{ fontSize: 96 }}>Scroll me plz</Text>
+    <Image source={logo} />
+    <Image source={logo} />
+    <Image source={logo} />
+    <Image source={logo} />
+    <Image source={logo} />
+    <Text style={{ fontSize: 96 }}>If you like</Text>
+    <Image source={logo} />
+    <Image source={logo} />
+    <Image source={logo} />
+    <Image source={logo} />
+    <Image source={logo} />
+    <Text style={{ fontSize: 96 }}>Scrolling down</Text>
+    <Image source={logo} />
+    <Image source={logo} />
+    <Image source={logo} />
+    <Image source={logo} />
+    <Image source={logo} />
+    <Text style={{ fontSize: 96 }}>What's the best</Text>
+    <Image source={logo} />
+    <Image source={logo} />
+    <Image source={logo} />
+    <Image source={logo} />
+    <Image source={logo} />
+    <Text style={{ fontSize: 96 }}>Framework around?</Text>
+    <Image source={logo} />
+    <Image source={logo} />
+    <Image source={logo} />
+    <Image source={logo} />
+    <Image source={logo} />
+    <Text style={{ fontSize: 80 }}>React Native</Text>
+  </ScrollView>
+)
+
+export default App
+```
+
+iOS의 경우, ScrollView에서 줌이 가능하게 할 수 있음
+
+- `maximumZoomScale`: 최대 줌 스케일 설정
+- `minimumZoomScale`: 최소 줌 스케일 설정
+
+```tsx
+<ScrollView minimumZoomScale={1.0} maximumZoomScale={2.0}>
+	<!-- ~~~ -->
+</ScrollView>
+```
+
+iOS 시뮬레이터에서 pinch 줌을 하려면?
+
+- option키를 누르고 드래그
+
+스크롤뷰는 화면에는 안보이는 아이템도 한번에 랜더링 해버림 → 많은 아이템이 있다면 랜더링 시간 길어짐
+
+- 아이템이 많다면 **[List View](https://reactnative.dev/docs/using-a-listview)**를 사용.
+
+---
+
+### 2.3 List View
+
+#### 2.3.1 FlatList
+
+- 화면에 현재 보이는 부분만 먼저 랜더링 됨
+- props 설명
+  - `data`: 출력하고자 하는 모든 아이템들의 정보를 array(list) 형태로 전달
+  - `renderItem`: 각 요소들을 어떤 포맷으로 출력할 것인지 구현하는 곳
+  - `keyExtractor`: 각 아이템마다 unique한 key 값을 줌 (React에서의 key와 동일한 역할)
+- cf. https://reactnative.dev/docs/next/using-a-listview
+
+```tsx
+import React from 'react'
+import { FlatList, StyleSheet, Text, View } from 'react-native'
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 22,
+  },
+  item: {
+    padding: 10,
+    fontSize: 18,
+    height: 44,
+  },
+})
+
+const FlatListBasics = () => {
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={[
+          { key: 'Devin' },
+          { key: 'Dan' },
+          { key: 'Dominic' },
+          { key: 'Jackson' },
+          { key: 'James' },
+          { key: 'Joel' },
+          { key: 'John' },
+          { key: 'Jillian' },
+          { key: 'Jimmy' },
+          { key: 'Julie' },
+        ]}
+        renderItem={({ item }) => <Text style={styles.item}>{item.key}</Text>}
+      />
+    </View>
+  )
+}
+
+export default FlatListBasics
+```
+
+---
+
+#### 2.3.2 SectionList
+
+- FlatList들을 구분할 수 있는 세션 헤더가 존재 (iOS의 `UITableView`와 비슷함)
+- props 설명
+  - `sections`: 출력하고자 하는 모든 [Section의 정보](https://reactnative.dev/docs/sectionlist#section)를 array(list) 형태로 전달
+    - (각 세션은 FlatList이기 때문에 FlatList의 props에 대한 정보를 정의해야 함)
+  - `renderItem`: 각 아이템들을 어떤 포맷으로 출력할 것인지 구현하는 곳
+  - `renderSectionHeader`: 세션을 구분하는 헤더를 구현하는 곳
+  - `keyExtractor`: 각 아이템마다 unique한 key 값을 줌 (React에서의 key와 동일한 역할)
+- cf. https://reactnative.dev/docs/sectionlist
+
+```tsx
+import React from 'react'
+import { StyleSheet, Text, View, SafeAreaView, SectionList, StatusBar } from 'react-native'
+
+const DATA = [
+  {
+    title: 'Main dishes',
+    data: ['Pizza', 'Burger', 'Risotto'],
+  },
+  {
+    title: 'Sides',
+    data: ['French Fries', 'Onion Rings', 'Fried Shrimps'],
+  },
+  {
+    title: 'Drinks',
+    data: ['Water', 'Coke', 'Beer'],
+  },
+  {
+    title: 'Desserts',
+    data: ['Cheese Cake', 'Ice Cream'],
+  },
+]
+
+const SectionListBasics = () => (
+  <SafeAreaView style={styles.container}>
+    <SectionList
+      sections={DATA}
+      keyExtractor={(item, index) => item + index}
+      renderItem={({ item }) => (
+        <View style={styles.item}>
+          <Text style={styles.title}>{item}</Text>
+        </View>
+      )}
+      renderSectionHeader={({ section: { title } }) => <Text style={styles.header}>{title}</Text>}
+    />
+  </SafeAreaView>
+)
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: StatusBar.currentHeight,
+    marginHorizontal: 16,
+  },
+  item: {
+    backgroundColor: '#f9c2ff',
+    padding: 20,
+    marginVertical: 8,
+  },
+  header: {
+    fontSize: 32,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+  },
+})
+
+export default SectionListBasics
+```

@@ -1,0 +1,39 @@
+---
+title: 'react-native 에러 모음'
+date: 2024/01/10
+---
+
+# react-native 에러 모음
+
+## 1. fb-watchman 에러
+
+```bash
+metro-file-map: Watchman crawl failed. Retrying once with node crawler.
+  Usually this happens when watchman isn't running. Create an empty `.watchmanconfig` file in your project's root folder or initialize a git or hg repository in your project.
+  Error: Watchman error: std::__1::system_error: open: 님파일경로: Operation not permitted. Make sure watchman is running for this project. See https://facebook.github.io/watchman/docs/troubleshooting.
+
+/경로/node_modules/fb-watchman/index.js:99
+          var error = new Error(obj.error);
+                      ^
+Error: std::__1::system_error: open: 님파일경로: Operation not permitted
+    at BunserBuf.<anonymous> (님파일경로/node_modules/fb-watchman/index.js:99:23)
+    at BunserBuf.emit (node:events:514:28)
+    at BunserBuf.process (님파일경로/node_modules/bser/index.js:292:10)
+    at 님파일경로/node_modules/bser/index.js:247:12
+    at processTicksAndRejections (node:internal/process/task_queues:77:11)
+```
+
+(1) 원인
+
+macOS의 보안 제한 사항으로 watchman이 디스크 엑세스 권한을 받지 못한 상태
+
+(2) 해결
+
+```bash
+$ watchman watch-del-all
+$ watchman shutdown-server
+```
+
+터미널에서 위 두 명령을 실행하고,
+다시 빌드해보면 watchman에게 디스크 권한을 줄지 물어보는 창이 나타나고, 수락해주면 문제 해결
+cf. https://jsdev.kr/t/react-native-fb-watchman/7303
