@@ -1,0 +1,227 @@
+---
+title: '03-컴포넌트 종류-hooks'
+date: 2024/01/10
+---
+
+## 1. 컴포넌트의 종류
+
+### 1.1 클래스형 컴포넌트
+
+- class 키워드 필요
+- Component로 상속 받아야 함
+- render() 메소드 반드시 필요
+- state, lifeCycle 관련 기능 사용 가능
+- 함수형보다 메모리 자원을 더 사용
+
+```tsx
+/**
+ * 클래스형 컴포넌트
+ */
+class FriendList extends React.Component {
+  render() {
+    return (
+      <View>
+        <Friend name="뭐시기1" />
+        <Friend name="뭐시기2" />
+        <Friend name="뭐시기3" />
+        <Friend name="뭐시기4" />
+        <Friend name="뭐시기5" />
+        <Friend name="뭐시기6" />
+      </View>
+    )
+  }
+}
+```
+
+---
+
+### 1.2 함수형 컴포넌트
+
+- state, lifeCycle 관련 기능 사용 불가능 -> hook으로 해결
+- 클래스형보다 메모리 자원을 덜 사용
+- 컴포넌트 선언이 편함
+- 공식문서에서도 함수형 컴포넌트 + hook 사용을 권장
+
+```tsx
+/**
+ * 함수형 컴포넌트
+ */
+const Friend = props => {
+  return <Text>{props.name}</Text>
+}
+
+export default () => {
+  return (
+    <View>
+      <Friend name="뭐시기1" />
+      <Friend name="뭐시기2" />
+      <Friend name="뭐시기3" />
+      <Friend name="뭐시기4" />
+      <Friend name="뭐시기5" />
+      <Friend name="뭐시기6" />
+    </View>
+  )
+}
+```
+
+---
+
+## 2. Hooks
+
+### 2.1 useState
+
+```tsx
+import React, { useState } from 'react'
+import { View, Text, Button, Switch, TextInput } from 'react-native'
+
+const Component = () => {
+  const [count, setCount] = useState(0) // number
+  const [isOn, setIsOn] = useState(false) // boolean
+  const [name, setName] = useState('') // string
+
+  return (
+    <View>
+      <Text>You clicked {count} times</Text>
+      <Button title="Click me" onPress={() => setCount(count + 1)} />
+
+      <Text>-------</Text>
+      <Switch
+        value={isOn}
+        onValueChange={v => {
+          console.log('v', v)
+          setIsOn(v)
+        }}
+      />
+
+      <Text>-------</Text>
+      <TextInput
+        value={name}
+        onChangeText={v => {
+          console.log('v', v)
+          setName(v)
+        }}
+      />
+    </View>
+  )
+}
+
+export default Component
+```
+
+---
+
+### 2.2 useEffect
+
+```tsx
+import React, { useEffect, useState } from 'react'
+import { View, Text, Button, TextInput, Switch, ActivityIndicator } from 'react-native'
+
+const Component = () => {
+  const [count, setCount] = useState(0)
+  const [isOn, setIsOn] = useState(true)
+  const [input, setInput] = useState('')
+  const [isRefresh, setIsRefresh] = useState(false)
+
+  useEffect(() => {
+    console.log('didMount')
+  }, [])
+
+  useEffect(() => {
+    console.log('didUpdate - count', count)
+  }, [count])
+
+  useEffect(() => {
+    console.log('didUpdate - isOn', isOn)
+  }, [isOn])
+
+  useEffect(() => {
+    console.log('didUpdate - input', input)
+  }, [input])
+
+  useEffect(() => {
+    // 2초 동안 true인 isRefresh를 유지하다 false로 변경
+    if (isRefresh) {
+      setTimeout(() => {
+        setIsRefresh(false)
+      }, 2000)
+    }
+  }, [isRefresh])
+
+  return (
+    <View style={{ alignItems: 'center' }}>
+      <Text>You clicked {count} times</Text>
+      <Button title="Click me" onPress={() => setCount(count + 1)} />
+
+      <Text style={{ marginVertical: 15 }}>-------------------------------------------------</Text>
+      <Switch value={isOn} onValueChange={setIsOn} />
+
+      <Text style={{ marginVertical: 15 }}>-------------------------------------------------</Text>
+
+      <Text>input: {input}</Text>
+      <TextInput value={input} onChangeText={setInput} style={{ borderBottomWidth: 1, borderColor: 'grey' }} />
+
+      <Text style={{ marginVertical: 15 }}>-------------------------------------------------</Text>
+      <Button
+        title="새로고침!"
+        onPress={() => {
+          setIsRefresh(true)
+        }}
+      />
+      {isRefresh && <ActivityIndicator />}
+    </View>
+  )
+}
+
+export default Component
+```
+
+---
+
+### 2.3 커스텀 hooks
+
+```tsx
+import React, { useState } from 'react'
+import { Button, TextInput, View } from 'react-native'
+
+const InputBox = props => {
+  return (
+    <View style={{ flexDirection: 'row' }}>
+      <TextInput
+        value={props.value}
+        onChangeText={props.onChangeText}
+        style={{ borderBottomWidth: 1, width: 200 }}
+        placeholder={props.placeholder}
+      />
+      <Button title="초기화" onPress={props.onReset} />
+    </View>
+  )
+}
+
+const useInput = initialValue => {
+  const [value, setValue] = useState(initialValue)
+
+  const resetValue = () => setValue(initialValue)
+
+  return {
+    value,
+    setValue,
+    resetValue,
+  }
+}
+
+const CustomHook = () => {
+  const { value: name, setValue: setName, resetValue: resetName } = useInput('')
+  const { value: age, setValue: setAge, resetValue: resetAge } = useInput('')
+  const { value: city, setValue: setCity, resetValue: resetCity } = useInput('')
+
+  return (
+    <View>
+      <InputBox value={name} onChangeText={setName} placeholder="이름을 입력해 주세요" onReset={resetName} />
+      <InputBox value={age} onChangeText={setAge} placeholder="나이를 입력해 주세요" onReset={resetAge} />
+      <InputBox value={city} onChangeText={setCity} placeholder="사는 곳을 입력해 주세요" onReset={resetCity} />
+    </View>
+  )
+}
+
+export default CustomHook
+```
