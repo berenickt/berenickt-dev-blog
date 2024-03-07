@@ -1,0 +1,154 @@
+---
+title: '10-react-native-cli'
+date: 2024/01/10
+---
+
+## 1. react-native-cli
+
+- `Expo CLI`
+  - Javascript만으로도 앱이 작성 가능
+  - 앱의 빌드 크기가 큼
+- `React-Native CLI`
+  - react-native만 설치되어 있음
+  - 원하는 네이티브 모듈 작성 가능
+
+---
+
+### 1.1 react-native-cli 기능
+
+#### (1) 프로젝트 생성
+
+```bash
+react-native init [ProjectName] --template templateName
+```
+
+- 최초 프로젝트 생성을 도와주는 command
+- templateName에 주로 typescript 관련 template을 넣음
+
+---
+
+#### (2) 앱을 실행
+
+```bash
+react-native run-ios
+react-native run-android
+```
+
+앱을 실행 시켜주는 커맨드
+
+---
+
+#### (3) Metro Bundler를 실행
+
+```bash
+react-native start
+react-native start -- --reset-cache # 남은 캐시가 있는 경우라면
+```
+
+- Metro Bundler를 실행 시켜주는 커맨드
+- webpack과 비슷하게 javascript를 하나의 파일로 만들기 위한 역활
+
+---
+
+#### (4) log 보기
+
+```bash
+react-native log-android
+react-native log-ios
+```
+
+- android / ios native log를 보기 위한 것
+
+---
+
+### 1.2 Expo와 다른점
+
+- React-Native에 필요한 모듈만 탑재
+- 앱에서 필요한 라이브러리를 그때마다 추가
+- EAS와 다르게 빌드를 직접 해 줘야 함
+- 제한없는 Third party Library 이용 가능
+
+---
+
+## 2. 새로운 Dependency manager
+
+### 2.1 Gradle이란 ?
+
+- android dependency manager
+- android 폴더 하위에 build.gradle이라는 이름으로 존재
+
+---
+
+### 2.2 android/build.gradle
+
+- 전체 라이브러리에서 사용하는 디펜던시의 버전을 종합적으로 관리
+  - e.g. kotlin maven version
+- 디펜던시 별로 각자 다른 버전을 가지고 있지 않게 하는 역활
+
+---
+
+### 2.3 android/app/build.gradle
+
+- 작성하는 app module의 dependency들을 관리
+
+---
+
+### 2.4 cocoapods
+
+- ios 프로젝트 내부에서 Dependency 관리를 위한 tool
+- ios 폴더 하위 Podfile
+
+---
+
+### 2.5 Auto-linking
+
+- React-Native 0.60.0 버전부터 가능
+- 별도로 설정하지 않더라도 build time에 라이브러리를 Link 할 수 있는 기능
+- cocoapod이나 build.gradle파일을 많이 열어보지 않아도 됨
+
+---
+
+## 3. Debugger tool Flipper
+
+### 3.1 Flipper
+
+- 2020년도에 발표된 모바일 디버깅 툴
+- React-Native 0.62버전부터 기본으로 내장되어 사용
+- Layout Inspector를 통해 현재 View의 상태를 바로 알수 있는 기능 제공
+
+---
+
+### 3.2 Layout Inspector
+
+- Layout Inspector를 통해 현재 View의 상태를 바로 알수 있는 기능 제공
+
+---
+
+### 3.3 React Dev Tools
+
+- Layout Inspector에서 제공하는 기능에 state를 더해 볼 수 있음
+
+---
+
+### 3.4 Images
+
+- 현재 화면에 보이고 있는 이미지가 나열 됨 (Android 제공)
+
+---
+
+### 3.5 Databases
+
+- Mobile 환경에서의 Database가 어떻게 구성 되어있는지 제공
+
+---
+
+### 3.6 Setup Doctor
+
+- 동작을 제대로 안하는 경우에는 Setup Doctor Tool로 점검 가능
+
+---
+
+### 3.7 React-Native-Debugger
+
+- React-Native에서만 사용 가능
+- Redux action이 발생되는것을 알 수 있음
