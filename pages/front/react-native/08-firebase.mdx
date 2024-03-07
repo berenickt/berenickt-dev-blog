@@ -1,0 +1,114 @@
+---
+title: '08-Firebase'
+date: 2024/01/10
+---
+
+## 1. Firebase
+
+- 구글에서 만들어진 BAAS(Backend As A Service)
+- 모바일에서 필요한 거의 모든 기능을 제공
+- 저장장치, 테스팅 푸시 등 필요한 거의 모든 기능을 제공
+
+---
+
+### 1.1 RealTime DataBase
+
+- 실시간으로 접근 할 수 있는 database
+- NoSQL의 형태로 구성되어있음
+- 실질적으로 저장되는 값은 key와 value값으로 구성된 JSON Object
+
+---
+
+### 1.2 제한사항
+
+- 동시 연결수에 대한 제한이 있음 (무료 plan 100, 유료 plan 20만)
+- 한번에 Write은 1MB 내외
+
+---
+
+### 1.3 Storage
+
+- 파일 저장을 위해서 사용
+- 프로필 사진, 임시 저장하는 파일 저장 가능.
+
+---
+
+### 1.4 Cloud Firestore
+
+- 데이터를 저장 하기 위한 제품
+- 실시간성, NoSQL을 지원한다는 점은 Realtime database와 비슷
+- 저장하는 값 : JSON 형태가 아닌 Collections를 저장
+  - `Document` : Data가 집합해있는 단위
+  - `Collections` : Document가 집합해있는 단
+
+---
+
+### 1.5 RealTime Database vs Cloud Firestore
+
+- `RealTime Database`
+  - JSON Object 저장
+  - 정렬 및 필터링 + 조건문 불가
+  - 용량 또는 데이터 크기에 과금
+  - 데이터가 작고 CRUD가 자주 발생하면 Realtime database
+- `Cloud firestore`
+  - Document 단위로 저장
+  - 정렬 및 필터링 + 조건문 가능
+  - document CRUD에 따라 과금
+  - 큰단위 데이터 요청시에는 Cloud Firestore
+
+---
+
+## 2. crashlytics / remote config / abtest
+
+### 2.1 Crashlytics
+
+- 앱이 강제종료 되었음을 알려주는 Tool
+- 로직을 잘 작성하더라도 라이브러리 등에서 크래시가 날 수도 있음
+
+---
+
+### 2.2 Remote Config
+
+- 원격에 있는 상수값을 업데이트 해줄 수 있는 Tool
+- 특정 기능에 대한 ON/OFF 또는 특정화면의 텍스트를 바구는것으로 활용
+
+---
+
+### 2.2.1 Remote Config 주의점
+
+- Remote Config값을 조회 실패했을때 대비하여 기본값을 설정
+- 실패 등 여러가지 이유로 인하여 최신값을 항상 보여주지는 않음
+
+---
+
+### 2.3 AB Test
+
+- A그룹과 B그룹을 두고 어떤 그룹이 더 많은 전환율을 보이는지 체크
+- 기존 버전과 신규로 변경된 버전에서의 분기
+- 개선된 버전에서의 유저 피드백을 받는다는 이점
+- AB Test (사전작업)
+  - `Remote Config` : config 설정된 값들에 대하여 가능
+  - `Analytics` : 분석을 위해 필요
+
+---
+
+## 3. React-Native-Firebase
+
+- Firebase를 사용 가능 하도록 만들어둔 Package
+- https://rnfirebase.io/
+
+---
+
+## 4. Authentication
+
+- `Social Login`
+  - 소셜 계정을 활용하여 로그인 혹은 회원가입을 할 수 있는 기능
+  - (e.g. Google로 로그인, Github으로 로그인 등)
+- `OAuth 2.0`
+  - 인증을 위한 개방형 표준 프로토콜
+  - Third party 프로그램에게 리소스 소유자를 대신하여 서버에서 데이터 제공
+- `OAuth 2.0`
+  - `Authentication` : 인증 하는 단계
+  - `Authorization` : 인증이 끝난 뒤 Access Token이 부여되는것
+  - `Access Token` : 유저에게 권한 받았음을 인증하는 Token
+  - `Refresh Token` : Access Token을 Refresh 하기 위한 Token
