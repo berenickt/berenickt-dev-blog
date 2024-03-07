@@ -1,0 +1,414 @@
+---
+title: '06-06-global-state-management'
+date: 2024/01/10
+---
+
+## 1. 전역 상태 관리
+
+### 1.1 state란 ?
+
+- `state` : React component에서 관리되고 있는 어떤 값
+- `전역 상태 관리(global state management)`
+  - Global한 어떤것에 넣고 각자 따로 필요한것들만 보게 만드는것
+- 상태관리 라이브러리 사용 (e.g. redux, context API, recoil 등)
+
+---
+
+## 2. Flux
+
+- Facebook에서 만든 오픈소스 라이브러리
+- 현재는 유지보수만 되는중.
+- Redux나 Recoil등을 사용하기를 권장
+- cf. https://facebook.github.io/flux/
+
+---
+
+### 2.1 Flux 기본 구성
+
+```
+                    ← Action  ←
+Action → Dispatcher →  Store  →  View
+```
+
+Action, Dispatcher, Store, View 등으로 구성됨
+
+- `Action`
+  - 사용자의 Input을 통해서, 또는 상태를 바꿔야만 할때 발생
+  - Action (type, parameter)
+- `Dispatcher (발송인)`
+  - 모든 데이터의 흐름을 관리하는 **중앙 허브**
+  - Store로의 접근이 가능
+- `Store, View`
+  - 상태 저장소. 상태를 업데이트 할 수 있는 함수를 제공
+  - 변경된 뒤에는 View로 전달
+
+---
+
+## 3. Redux
+
+```
+Action      ⎯
+             ├→ Reducer ⎯→ Store New State
+Prev State  ⎯
+```
+
+- Flux에서 Reducer의 개념이 들어간것
+- `Reducer` : Action과 마지막 Store의 상태를 기준으로 새로운 상태를 만들어 주는 것
+
+---
+
+### 3.1 Redux 사용 규칙
+
+(1) Single source of truth
+
+- 애플리케이션의 모든 상태는 하나의 저장소 안에 저장해야 한다
+- 여러개 일 경우 충돌 혹은 동기화에 대한 이슈가 발생
+- 디버깅과 생산성 향상의 이점을 가지고 있음
+
+(2) State is read-only
+
+- 상태는 읽기만 허용
+- 액션을 통해서만 변경 가능
+- 변화의 의도를 파악하고 중앙에서 흐름 관리를 엄격하게 하기 위함
+
+(3) Changes are made with pure functions
+
+- 변화는 순수함수로만 해야함
+- `순수함수` : 외부 값에 의존하지 않고 매개변수만을 통해서 반환값을 만들어 내는 것
+
+```js
+let c = 3
+const sum = (a, b) => {
+  return a + b + c
+}
+console.log(sum(1, 2)) //return 6
+c = 5
+console.log(sum(1, 2)) //return 8
+```
+
+---
+
+## 4. Redux middleware
+
+### 4.1 Redux 데이터 흐름
+
+```
+        ← Action  ←
+Reducer →  Store  →  View
+```
+
+---
+
+### 4.2 Middleware
+
+```
+middleware  ← store.dispatch  ← Action
+    ↓                             ↑
+Reducer     →      Store      →  View
+```
+
+- store.dispatch 함수의 실행 뒤 어떠한 작업을 하기 위해 호출
+
+---
+
+### 4.3 redux logger
+
+- `prev state`와 `next state, action` 등을 나열해 보여줌
+- 디버깅을 위하여 사용
+
+---
+
+### 4.4 thunk
+
+특정 작업을 나중에 하기 위해서 만들어둔 함수
+
+```js
+const a = 5
+console.log(a)
+
+const func = () => {
+  return 5
+}
+
+console.log(func())
+```
+
+---
+
+### 4.5 redux-thunk
+
+- 비동기 작업을 처리할때 가장 많이 사용하는 middleware
+- 객체 대신 함수를 Dispatch 할 수 있게 해주는 것
+
+```js
+const increase = () => {
+  return {
+    type: 'INCREASE',
+  }
+}
+const increaseCountOnSleep = () => dispatch => {
+  dispatch({ type: 'WAIT' })
+  setTimeout(() => {
+    dispatch(increase())
+  }, 1000)
+}
+```
+
+```js
+const successGetMyInfo = myInfo => dispatch => {
+  return {
+    type: 'SUCCESS_MY_INFO',
+  }
+}
+const getMyInfo = () => dispatch => {
+  dispatch({ type: 'REQUEST_MY_INFO' })
+  try {
+    //API 호출 하는 코드
+    dispatch(successGetMyInfo('내 정보'))
+  } catch (ex) {
+    dispatch(failureGetMyInfo())
+  }
+}
+```
+
+---
+
+### 4.6 redux-saga
+
+action의 발생여부를 모니터링 하다가 그 뒤 작업을 진행 하도록 함
+
+```js
+const increase = () => ({ type: 'INCREASE' })
+function* increaseSaga() {
+  yield delay(1000)
+  yield put(increse())
+}
+
+function* counterSaga() {
+  // takeEvery : 액션을 모니터링 하고 발생하면 increaseSaga 호출
+  yield takeEvery('INCREASE_ASYNC', increaseSaga)
+}
+```
+
+---
+
+### 4.7 redux-thunk vs redux-saga
+
+둘다 비동기 처리를 위한것으로, 상황에 맞게 사용
+
+- `redux thunk`
+  - pros
+    - 낮은 Boilerplate
+    - 이해하기 쉬운 코드
+  - cons
+    - 잘못 다뤄지면 수없이 많은 콜백 지옥에 빠짐
+- `redux saga`
+  - pros
+    - 초기에 구현해야할 Boilerplate가 많음
+    - 순수함수로 작성되기 때문에 테스트 적용이 쉬움
+  - cons
+    - 높은 러닝커브 (ES6 제너레이터)
+
+---
+
+## 5. Redux에서 자주 사용하는 hook
+
+### 5.1 useSelector
+
+store에 있는 값을 가져오기 위함
+
+```jsx
+const componentA = () => {
+  const value = useSelector(state => state.value)
+  return (
+    // 또 다른 View code
+    <View></View>
+  )
+}
+```
+
+---
+
+### 5.2 useDispatch
+
+redux action을 사용하기 위한 hook
+
+```jsx
+const componentA = () => {
+  const dispatch = useDispatch()
+  const someAction = useCallback(() => {
+    dispatch(someActions())
+  }, [])
+  return (
+    // 또다른 View code
+    <View></View>
+  )
+}
+```
+
+---
+
+### 5.3 useSelector (before hook)
+
+hook이 있기 전에는 connect 함수를 통하여 진행
+
+```jsx
+const componentA = () => {
+  /* 컴포넌트를 구성하는 코드  */
+}
+const mapStateToProps = state => {
+  return {
+    /* 담고 싶은 state 지정*/
+  }
+}
+const mapDispatchToProps = dispatch => {
+  return {
+    /*사용할 action 저장*/
+  }
+}
+export default connect(mapStateToProps, mapDidpatchToProps)
+```
+
+---
+
+### 5.4 createSelector
+
+- reselect package에 있는 함수
+- Memoization등 캐싱을 하기 위해 사용
+
+```jsx
+const valueSelector = createSelector(
+  state => state.value,
+  value => {
+    /* 어떠한 연산*/
+  },
+)
+const componentA = () => {
+  const value = useSelector(valueSelector)
+  return (
+    // 또다른 View code
+    <View></View>
+  )
+}
+```
+
+---
+
+## 6. Context API
+
+- React 16.3 버전부터 지원
+- props-drilling을 제거하기 위해 탄생
+- 간단한 전역변수(e.g. theme, intl)를 선언할때 사용
+
+---
+
+### 6.1 Context API 구성요소, Provider
+
+값을 제공 해주기 위하여 root component로 사용
+
+```jsx
+const SomeContext = createContext()
+
+const componentA = () => {
+  return (
+    // 또다른 View code
+    <SomeContext.Provider value={'testValue'}>{/* 값을 사용해야하는 컴퍼넌트들 */}</SomeContext.Provider>
+  )
+}
+```
+
+---
+
+### 6.2 Context API 구성요소, Consumer
+
+제공된 값에 접근 할 수 있도록 하는것
+
+```jsx
+const componentB = () => {
+  return (
+    // 또다른 View code
+    <SomeContext.Consumer>
+      {context => {
+        /* child에 있는 컴포넌트에서만 값 사용 가능 */
+      }}
+    </SomeContext.Consumer>
+  )
+}
+```
+
+---
+
+### 6.3 Redux vs Context API
+
+- `Context API` : 상태 관리 도구 X, 전역 변수 관리 O
+- 상태관리 도구의 조건
+  - 초기값을 저장하는가?
+  - 스스로 값을 읽어올 수 있는가?
+  - 스스로 값 업데이트가 가능한가?
+- Context API
+  - 초기값을 저장하는가? (Provider에서 value등을 설정 가능)
+  - 스스로 값을 읽어올 수 있는가? (스스로 state를 가지고 있지 않아 값을 전달 해줘야함)
+  - 스스로 값 업데이트가 가능한가 ? (스스로 state를 가지고 있지 않아 update함수를 함께 전달해줘야 함)
+- Redux
+  - 초기값을 저장하는가? (reducer 생성시 초기값 지정 가능)
+  - 스스로 값을 읽어올 수 있는가? (selector, mapStateToProps 등 함수를 통하여 읽어오기 가능)
+  - 스스로 값 업데이트가 가능한가? (dispatch action을 통해서 가능)
+- 언제 Context API를 사용하는가
+  - 주로 static한 잘 변경되지 않는 정보에 대해서 적용
+  - App theme 저장 (light, dark) 다국적 앱에서 언어 팩 등
+
+---
+
+## 7. Recoil
+
+- 2020년도 발표, (cf. https://recoiljs.org/ko/ )
+- Redux, MobX등 기존 상태 관리 라이브러리의 아쉬운 점들을 극복하고자 탄생
+- Redux의 장단점
+  - pros
+    - 그동안 많은 검증을 거친 라이브러리
+    - redux-logger 등 디버그를 위한 편의가 잘 갖춰져 있음
+  - cons
+    - 높은 학습비용(러닝커브)
+    - boilerplate가 다소 있는 편
+
+---
+
+### 7.1 Recoil 구성요소
+
+#### 7.1.1 Atom
+
+상태의 단위, 업데이트 또는 subscribe 등이 가능
+
+```jsx
+const fontSize = atom({
+  key: 'UNIQUE_KEY',
+  value: {
+    /* 상태 관리시 사용 할 value*/
+  },
+})
+
+const componentA = () => {
+  const [fontSize, setFontSize] = useRecoilState(myState)
+  return /* View return */ <View></View>
+}
+```
+
+---
+
+#### 7.1.2 selectors
+
+atoms나 selector의 파생데이터를 계산하는데 사용
+
+```jsx
+const fontSizeLabelState = selector({
+  key: 'UNIQUE_KEY',
+  get: ({ get }) => {
+    const fontSize = get(fontSizeState)
+    return `fontSize is ${fontSize}`
+  },
+})
+
+const componentA = () => {
+  const fontSizeLabel = useRecoilValue(fontSizeLabelState)
+}
+```
