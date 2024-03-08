@@ -1,5 +1,5 @@
 ---
-title: '01-소개 및 개발환경'
+title: '01-소개 및 개발환경-M1'
 date: 2024/01/10
 ---
 
@@ -54,20 +54,37 @@ date: 2024/01/10
 
 ---
 
-## 4. CLI 환경설정 (Mac M1)
+## 4. CLI 환경설정 (Mac M1 - 24.03 기준)
 
 - 공식문서 참고 : https://reactnative.dev/docs/environment-setup?guide=native
 - Node, Watchman, React Native CLI, JDK 및 Android Studio가 필요하다.
 
----
+------
 
 ### 4.1 Homebrew 설치
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+## 설치여부 및 버전 체크
+$ brew --version
+
+## 설치하기
+$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# 참고로, 기존 Homebrew 경로는 Intel칩 기준이라, /opt 경로로 바꿔줘야 한다
+## /opt 경로 바꾸기
+$ echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/<USER_ID>/.zprofile
+
+$ eval "$(/opt/homebrew/bin/brew shellenv)"
+ 
+## brew 동작 확인
+$ brew help
+
+## 만약 권한이 없다고 하면 아래 명령어 입력
+$ sudo chown -R $(whoami) /opt/homebrew
 ```
 
-- https://brew.sh/
+* `Homebrew` : MAC/Linux에서 패키지를 설치하고 관리할 수 있는 맥용 패키지 관리자
+* https://brew.sh/
 
 ---
 
@@ -93,14 +110,8 @@ yarn --version
 
 ```bash
 # watchman 설치 및 버전 확인
-brew install watchman
-arch -arm64 brew install watchman # m1 맥북
-
-watchman --version
-
-``
-
-
+$ brew install watchman
+$ watchman -v
 ```
 
 - watchman은 파일 시스템의 변경 사항을 관찰하기 위한 Facebook 도구
@@ -122,7 +133,11 @@ rbenv global 2.7.5    # 장치에 기본 루비 버전을 아래 버전으로 �
 ruby --version
 
 # CocoaPods 설치
-sudo gem install cocoapods
+$ sudo gem install cocoapods
+$ pod --version
+
+# jekyll, bundler
+$ gem install jekyll bunlder
 ```
 
 - 코코아팟은 오브젝트C나 스위프트로 개발된 오픈 라이브러리들을
@@ -156,6 +171,18 @@ sudo gem install cocoapods
    - Locations 바로 옆 Platforms에 시뮬레이터 목록이 있다.
    - 밑에 +버튼을 눌러 최신 버전으로 다운로드하면 된다.
 
+➡️ 아이폰 **iOS16**버전 이상에서 빌드를 돌리고 싶다면, Xcode는 iOS16을 지원하는 14버전 이상으로 받아준다.
+
+✅ Xcode > Preferences > Locations > Command Line Tools 선택
+
+✅Cocoapods을 이용하는 Xcode Project의 경우 pod 명령어를 기본 터미널로 바로 사용할 경우 정상적으로 동작되지 않는다. 
+
+* 이때 아래와 같이 터미널에 Rosetta로 실행되도록 설정해 주어야 한다. 
+* **'Rosetta를 사용하여 열기' 항목에 체크**를 해준다.
+* application > 터미널 우클릭 > 정보가져오기에서 로제타로 실행을 클릭
+* application > iTerm2 우클릭 > 정보가져오기에서 로제타로 실행을 클릭
+* `Intel`과 `Apple Silicon`간에 소통을 도와주는 `로제타(Rosetta)`를 사용하기 위해서
+
 ---
 
 ### 4.6 JDK
@@ -170,7 +197,11 @@ java --version
 javac -version
 ```
 
-- Homebrew를 사용하여 Azul Zulu 라는 OpenJDK 배포판을 설치
+- React Native 공식문서에 따르면, Homebrew로 Azul Zulu OpenJDK 설치를 권장한다.
+  - 이는 Intel칩, M1칩 맥북 모두 지원한다. **11버전 이상** 설치를 권장함.
+  - 이전에 다른 버전의 자바가 깔려있었다면 환경변수 수정해주기
+  - Homebrew를 사용하여 Azul Zulu 라는 OpenJDK 배포판을 설치
+
 - Zulu OpenJDK 배포판은 Intel 및 M1 Mac 용 JDK를 제공한다.
 - 시스템이 이미 JDK가 설치되어 있는 경우 JDK 11 이상인지 확인.
 
@@ -178,11 +209,19 @@ javac -version
 
 ### 4.7 Android Studio
 
-- https://developer.android.com/studio
-  - Android Developer 페이지에 접속해, Android Studio의 설치파일을 다운로드
-  - M1 Mac 사용 시 Mac with Apple chip을 선택
-  - Intel Mac 사용 시 Mac with Intel chip을 선택
-- 다운받은 dmg 파일을 더블 클릭, Android Studio -> Applications로 옮긴 뒤에 실행한다.
+Android Studio 설치 시 아래 세 가지 요소는 반드시 설치해야 한다.
+
+1. Android SDK
+2. Android SDK Platform
+3. Android Virtual Device
+
+https://developer.android.com/studio
+- Android Developer 페이지에 접속해, Android Studio의 설치파일을 다운로드
+- M1 Mac 사용 시 Mac with Apple chip을 선택
+- Intel Mac 사용 시 Mac with Intel chip을 선택
+
+다운받은 dmg 파일을 더블 클릭, Android Studio -> Applications로 옮긴 뒤에 실행한다.
+
 - Do not import settings 선택
 - Welcome 페이지에서 Next →
   - Standard 선택 후 Next →
@@ -235,7 +274,8 @@ export PATH=$PATH:$ANDROID_HOME/tools/bin
 export PATH=$PATH:$ANDROID_HOME/platform-tools
 # ================================================
 
-source ~/.zshrc # 변경 내용 바로 적용
+$ source ~/.zshrc # 변경 내용 바로 적용
+$ echo PATH
 ```
 
 Android의 SDK Manager의 위치를 확인하고,
@@ -262,9 +302,6 @@ Android의 SDK Manager의 위치를 확인하고,
 # npm
 npm install -g react-native-cli
 
-# yarn
-yarn global add react-native-cli
-
 ## 버전확인
 $ react-native -v
 react-native-cli: 2.0.1
@@ -283,7 +320,7 @@ react-native: 0.61.5
 $ react-native init 프로젝트명
 
 # 버전 명시할 경우 react-native init --version 버전 프로젝트명
-$ react-native init --version 0.61.5 cli_first
+$ react-native init --version 0.61.5 cliFirst
 ```
 
 ---
@@ -313,3 +350,4 @@ $ npx create-expo-app 프로젝트명
 $ npx expo start
 # 원하는 기기를 i나 a 등을 눌러서 열기
 ```
+
