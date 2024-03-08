@@ -58,7 +58,7 @@ date: 2024/01/10
 (1) Key값 중복으로 인한 value 덮어써짐 혹은 삭제된 사례
 
 - Unique한 문자열을 만들기 위해서 여러 노력들을 해봄
-- UUID 문자열 만들어 사용 ex) 43833a60-cad 등
+- UUID 문자열 만들어 사용 (e.g. 43833a60-cad 등)
 - 화면 또는 동작을 String으로 조합함 @/화면명/액션명
 
 (2) AsyncStorage의 모든 함수는 Promise로 제공됨
@@ -94,15 +94,15 @@ const result = await AsyncStorage.getItem('KEY') // result is value
 - 어떤 동작을 위한 요청인지를 미리 나타내는것
 - 종류 : GET, POST, PUT, PATCH, DELETE
   - `GET` : 특정 리소스를 가져와야 할때 사용
-    - e.g.) 특정 회원의 데이터 조회, 특정 성별을 가진 회원들을 조회 등
+    - e.g. 특정 회원의 데이터 조회, 특정 성별을 가진 회원들을 조회 등
   - `POST` : 어떠한 데이터의 저장해야 할때 사용
-    - e.g.) 회원가입, 로그인 등
+    - e.g. 회원가입, 로그인 등
   - `PUT` : 특정 리소스를 업데이트 할때 사용
-    - e.g.) 회원의 주소 데이터, 결제 데이터 등
+    - e.g. 회원의 주소 데이터, 결제 데이터 등
   - `PATCH` : 특정 리소스 중 특정 정보만 변경할때 사용
-    - e.g.) 회원의 나이, 전화번호 등
+    - e.g. 회원의 나이, 전화번호 등
   - `DELETE` : 리소스를 아에 삭제
-    - e.g.) 회원 탈퇴 등
+    - e.g. 회원 탈퇴 등
 
 ---
 
@@ -112,8 +112,12 @@ const result = await AsyncStorage.getItem('KEY') // result is value
 
 1. `Path parameter` : URL Path내부에 값을 함께 넘기는것
    - e.g. `/person/{:userId}/`
+
+```
+/person?birthday={:date}&sort={:regeditDate}
+```
+
 2. `Query parameter` : URL 뒷부분에 ?를 붙이고 그 뒤에 key값과 value값을 넘겨주는 것
-   - e.g. `/person?birthday={:date}&sort={:regeditDate}`
 3. `Request Body`
    - URL에 데이터가 보이지 않고, Body에 작성해서 넘기게 됨
    - 데이터가 긴 경우 Request Body 사용이 적합 (URL 길이제한)
@@ -131,7 +135,7 @@ const result = await AsyncStorage.getItem('KEY') // result is value
 ### 2.4 Response status code
 
 - 결과 처리에 대해서 숫자 형태로 서버로부터 전달받음
-- 자주 사용하는 코드 [200, 400, 403, 404, 500]
+- 자주 사용하는 코드
   - `200` : 정상적으로 처리 됨
   - `500` : 서버에서 처리 중 에러가 발생함
   - `400` : Client에서 값을 잘못 전달함
