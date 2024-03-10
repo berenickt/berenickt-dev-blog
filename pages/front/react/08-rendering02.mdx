@@ -1,5 +1,5 @@
 ---
-title: '08-Rendering - Lists and Keys'
+title: '08-map-key'
 date: 2022/12/22
 ---
 
@@ -13,11 +13,11 @@ for 반복문은 JSX 중괄호 안에서 사용할 수 없어서 `map()`을 대�
 ### 1.1.1 배열 요소만큼 반복실행
 
 ```js
-let array = [2, 3, 4];
+let array = [2, 3, 4]
 
 array.map(() => {
-  console.log(1); // 1이 3번 출력
-});
+  console.log(1) // 1이 3번 출력
+})
 ```
 
 ---
@@ -28,11 +28,11 @@ array.map(() => {
 (그냥 소괄호안에 있는 함수를 `콜백함수`라고 합니다).
 
 ```js
-let array = [2, 3, 4];
+let array = [2, 3, 4]
 
-array.map((Element) => {
-  console.log(Element); // 2, 3, 4
-});
+array.map(Element => {
+  console.log(Element) // 2, 3, 4
+})
 ```
 
 ---
@@ -40,12 +40,12 @@ array.map((Element) => {
 ### 1.1.3 요소 조작해 새 배열로
 
 ```js
-let array = [2, 3, 4];
+let array = [2, 3, 4]
 
-let newArray = array.map((Element) => {
-  return Element * 10;
-});
-console.log(newArray); // [20, 30, 40]
+let newArray = array.map(Element => {
+  return Element * 10
+})
+console.log(newArray) // [20, 30, 40]
 ```
 
 ---
@@ -55,12 +55,12 @@ console.log(newArray); // [20, 30, 40]
 - Rendering Multiple Components = 다수 컴포넌트 렌더링
 
 ```jsx
-const numbers = [1, 2, 3, 4, 5];
-const listItems = numbers.map((numbers) => <li>{numbers}</li>);
+const numbers = [1, 2, 3, 4, 5]
+const listItems = numbers.map(numbers => <li>{numbers}</li>)
 
 // 전체 listItems 배열을 <ul> 요소 안에 삽입한 뒤 DOM에서 렌더링
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<ul>{listItems}</ul>); // 1부터 5까지의 숫자로 이루어진 리스트
+const root = ReactDOM.createRoot(document.getElementById('root'))
+root.render(<ul>{listItems}</ul>) // 1부터 5까지의 숫자로 이루어진 리스트
 ```
 
 ---
@@ -72,15 +72,15 @@ root.render(<ul>{listItems}</ul>); // 1부터 5까지의 숫자로 이루어진 
 
 ```jsx
 function NumberList(props) {
-  const numbers = props.numbers;
-  const listItems = numbers.map((number) => <li key={number.toString()}>{number}</li>);
-  return <ul>{listItems}</ul>;
+  const numbers = props.numbers
+  const listItems = numbers.map(number => <li key={number.toString()}>{number}</li>)
+  return <ul>{listItems}</ul>
 }
 
-const numbers = [1, 2, 3, 4, 5];
+const numbers = [1, 2, 3, 4, 5]
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<NumberList numbers={numbers} />);
+const root = ReactDOM.createRoot(document.getElementById('root'))
+root.render(<NumberList numbers={numbers} />)
 ```
 
 이 코드를 실행하면, 리스트 아이템에 키를 넣어야한다는 경고가 표시됩니다.
@@ -112,22 +112,22 @@ key는 주변 배열의 컨텍스트에서만 의미가 있습니다.
 ```jsx
 function ListItem(props) {
   // Correct! There is no need to specify the key here:
-  return <li>{props.value}</li>;
+  return <li>{props.value}</li>
 }
 
 function NumberList(props) {
-  const numbers = props.numbers;
-  const listItems = numbers.map((number) => (
+  const numbers = props.numbers
+  const listItems = numbers.map(number => (
     // Correct! Key should be specified inside the array.
     <ListItem key={number.toString()} value={number} />
-  ));
-  return <ul>{listItems}</ul>;
+  ))
+  return <ul>{listItems}</ul>
 }
 
-const numbers = [1, 2, 3, 4, 5];
+const numbers = [1, 2, 3, 4, 5]
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<NumberList numbers={numbers} />);
+const root = ReactDOM.createRoot(document.getElementById('root'))
+root.render(<NumberList numbers={numbers} />)
 ```
 
 ---
@@ -138,25 +138,25 @@ JSX는 **중괄호를 이용하면 모든 표현식을 포함**할 수 있기 �
 
 ```jsx
 function ListItem(props) {
-  return <li>{props.value}</li>;
+  return <li>{props.value}</li>
 }
 
 function NumberList(props) {
-  const numbers = props.numbers;
+  const numbers = props.numbers
   // 중광호를 이용해 map() 넣을 수 있음
   return (
     <ul>
-      {numbers.map((number) => (
+      {numbers.map(number => (
         <ListItem key={number.toString()} value={number} />
       ))}
     </ul>
-  );
+  )
 }
 
-const numbers = [1, 2, 3, 4, 5];
+const numbers = [1, 2, 3, 4, 5]
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<NumberList numbers={numbers} />);
+const root = ReactDOM.createRoot(document.getElementById('root'))
+root.render(<NumberList numbers={numbers} />)
 ```
 
 때로는 코드가 더 명확해질 수도 있지만 이 스타일도 악용될 수 있습니다.
@@ -168,30 +168,30 @@ map() 바디가 너무 중첩되어있다면, 컴포넌트로 추출 하는 것�
 # 3. 예제
 
 ```jsx
-import { useState } from 'react';
+import { useState } from 'react'
 
 export default function App() {
-  const [inputValue, setInputValue] = useState('');
-  const [list, setList] = useState(['밥먹기', '코딩하기']);
+  const [inputValue, setInputValue] = useState('')
+  const [list, setList] = useState(['밥먹기', '코딩하기'])
 
   const addTodoList = () => {
-    setList((prevList) => {
-      return [inputValue, ...prevList];
-    });
-    setInputValue('');
-  };
+    setList(prevList => {
+      return [inputValue, ...prevList]
+    })
+    setInputValue('')
+  }
 
   return (
     <>
-      <input type='text' value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
+      <input type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} />
       <button onClick={addTodoList}>추가</button>
       <ul>
-        {list.map((item) => {
-          return <li>{item}</li>;
+        {list.map(item => {
+          return <li>{item}</li>
         })}
       </ul>
     </>
-  );
+  )
 }
 ```
 
@@ -206,17 +206,17 @@ export default function App() {
   // 생략
   return (
     <>
-      <input type='text' value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
+      <input type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} />
       <button onClick={addTodoList}>추가</button>
       <ul>
-        {list.map((item) => {
+        {list.map(item => {
           // key값이 없으면 경고가 뜬다. key값은 고유한 값이어야 하고, index를 사용하면 안된다.
           // 이제 전체 항목을 업데이트하는 것이 아니라, 특정 key값의 항목만 추가한다.
-          return <li key={item}>{item}</li>;
+          return <li key={item}>{item}</li>
         })}
       </ul>
     </>
-  );
+  )
 }
 ```
 
@@ -231,18 +231,18 @@ export default function App() {
   // 생략
   return (
     <>
-      <input type='text' value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
+      <input type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} />
       <button onClick={addTodoList}>추가</button>
       <ul>
         {list.map((item, index) => {
           // key값이 없으면 경고가 뜬다. key값은 고유한 값이어야 하고, index를 사용하면 안된다.
           // index는 안정적(고정적)이지 않기 때문에, 새 항목을 추가하면, index 순서가 추가한 만큼 밀림
           // 그래서 React는 key값이 고정적이지 않다고 판단해서, 새 항목을 추가하면, 전체 항목을 업데이트함
-          return <li key={index}>{item}</li>;
+          return <li key={index}>{item}</li>
         })}
       </ul>
     </>
-  );
+  )
 }
 ```
 
@@ -255,10 +255,10 @@ export default function App() {
 ## 3.2 key값은 고유해야 함
 
 ```jsx
-import { useState } from 'react';
+import { useState } from 'react'
 
 export default function App() {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState('')
   const [list, setList] = useState([
     {
       id: '1',
@@ -268,32 +268,32 @@ export default function App() {
       id: '2',
       value: '코딩하기',
     },
-  ]);
+  ])
 
   const addTodoList = () => {
-    setList((prevList) => {
+    setList(prevList => {
       return [
         {
           id: list.length + 1 + '',
           value: inputValue,
         },
         ...prevList,
-      ];
-    });
-    setInputValue('');
-  };
+      ]
+    })
+    setInputValue('')
+  }
 
   return (
     <>
-      <input type='text' value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
+      <input type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} />
       <button onClick={addTodoList}>추가</button>
       <ul>
-        {list.map((item) => {
-          return <li key={item.id}>{item.value}</li>;
+        {list.map(item => {
+          return <li key={item.id}>{item.value}</li>
         })}
       </ul>
     </>
-  );
+  )
 }
 ```
 

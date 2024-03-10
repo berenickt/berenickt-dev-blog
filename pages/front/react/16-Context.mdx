@@ -1,6 +1,6 @@
 ---
-title: 'State Management 기본 - Context API'
-date: 2022/12/29
+title: 'Context API'
+date: 2022/12/22
 ---
 
 # 1. State Management(상태관리)
@@ -17,19 +17,19 @@ date: 2022/12/29
 
 ```jsx
 export default function App() {
-  return <GrandParent value='Hello World!' />;
+  return <GrandParent value="Hello World!" />
 }
 
 function Parent({ value }) {
-  return <Child value={value} />;
+  return <Child value={value} />
 }
 
 function Child({ value }) {
-  return <Message value={value} />;
+  return <Message value={value} />
 }
 
 function Message({ value }) {
-  return <div>Received: {value}</div>;
+  return <div>Received: {value}</div>
 }
 ```
 
@@ -80,12 +80,12 @@ function Message({ value }) {
 ## 2.1 예제 1 : Context 기본 사용법
 
 ```jsx
-import { createContext, useContext } from 'react';
+import { createContext, useContext } from 'react'
 
 // 1. Context 만들기
 // - createContext()로 Context 만들 수 있음
 // - 기본 값을 설정하고 싶다면, createContext 함수에 인자로 기본 값을 넣어주면 됨
-const MyContext = createContext('기본값');
+const MyContext = createContext('기본값')
 
 export default function App() {
   // 2. Context 객체 안에는 Provider라는 컴포넌트가 들어있음
@@ -93,27 +93,27 @@ export default function App() {
   // 자식 컴포넌트들에서 해당 값에 바로 접근 가능
   return (
     <>
-      <MyContext.Provider value='Hello World'>
+      <MyContext.Provider value="Hello World">
         <Parent />
       </MyContext.Provider>
       <Parent />
     </>
-  );
+  )
 }
 
 function Parent() {
-  return <Child />;
+  return <Child />
 }
 
 function Child() {
-  return <Message />;
+  return <Message />
 }
 
 function Message() {
   // 3. Context 안에 있던 state 사용하려면, useContext() 사용
   // - useContext() : Context 해체해주는 함수, 공유했던 모든 state가 담겨있음
-  const value = useContext(MyContext);
-  return <div>데이터 도착함!😁 : {value}</div>;
+  const value = useContext(MyContext)
+  return <div>데이터 도착함!😁 : {value}</div>
 }
 ```
 
@@ -125,7 +125,7 @@ function Message() {
 
 ```js
 // Context/ThemeContext.js
-import React from 'react';
+import React from 'react'
 
 export const themes = {
   light: {
@@ -136,10 +136,10 @@ export const themes = {
     foreground: '#ffffff',
     background: '#222222',
   },
-};
+}
 
 // createContext()로 Context 만들 수 있음
-export const ThemeContext = React.createContext(themes.dark);
+export const ThemeContext = React.createContext(themes.dark)
 ```
 
 새 Context를 만들 때는 createContext 함수를 사용합니다. 파라미터에는 해당 Context의 기본 상태를 지정합니다.
@@ -152,21 +152,21 @@ export const ThemeContext = React.createContext(themes.dark);
 
 ```jsx
 // Context/Example
-import React, { Component } from 'react';
-import ThemeButton from './ThemeButton';
-import { ThemeContext, themes } from './ThemeContext';
+import React, { Component } from 'react'
+import ThemeButton from './ThemeButton'
+import { ThemeContext, themes } from './ThemeContext'
 
 export default class Example extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       theme: themes.light,
-    };
+    }
     this.toggleTheme = () => {
-      this.setState((prev) => ({
+      this.setState(prev => ({
         theme: prev.theme === themes.dark ? themes.light : themes.dark,
-      }));
-    };
+      }))
+    }
   }
   render() {
     // 📝 Context에 저장된 데이터를 사용하기 위해, Context의 Provider를 사용
@@ -177,11 +177,13 @@ export default class Example extends Component {
       <div>
         <ThemeContext.Provider value={this.state.theme}>
           <ThemeButton changeTheme={this.toggleTheme} />
-          <ThemeContext.Consumer>{(theme) => <div style={{ height: 300, width: 300, backgroundColor: theme.background }}></div>}</ThemeContext.Consumer>
+          <ThemeContext.Consumer>
+            {theme => <div style={{ height: 300, width: 300, backgroundColor: theme.background }}></div>}
+          </ThemeContext.Consumer>
         </ThemeContext.Provider>
         <ThemeButton />
       </div>
-    );
+    )
   }
 }
 ```
@@ -192,34 +194,37 @@ export default class Example extends Component {
 
 ```jsx
 // context/ThemeButton.jsx
-import React, { useContext } from 'react';
-import { ThemeContext } from './ThemeContext';
+import React, { useContext } from 'react'
+import { ThemeContext } from './ThemeContext'
 
 export default function ThemeButton(props) {
   // Context 안에 있던 state 사용하려면
   // (1) 만들어둔 Context를 import
   // (2) useContext() 안에 넣기
   // -- useContext()는 Context 해체해주는 함수, 공유했던 모든 state가 담겨있음
-  const theme = useContext(ThemeContext);
+  const theme = useContext(ThemeContext)
   return (
-    <button {...props} onClick={props.changeTheme} style={{ backgroundColor: theme.background, color: theme.foreground }}>
+    <button
+      {...props}
+      onClick={props.changeTheme}
+      style={{ backgroundColor: theme.background, color: theme.foreground }}>
       버튼
     </button>
-  );
+  )
 }
 ```
 
 App 컴포넌트에 추가
 
 ```jsx
-import Example from './components/3-10_Context/Example';
+import Example from './components/3-10_Context/Example'
 
 export default function App() {
   return (
     <>
       <Example />
     </>
-  );
+  )
 }
 ```
 

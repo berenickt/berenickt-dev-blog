@@ -1,5 +1,5 @@
 ---
-title: '04-Components Basic - Props vs State'
+title: '04-상태(state)와 Props'
 date: 2022/12/22
 ---
 
@@ -24,27 +24,27 @@ date: 2022/12/22
 > ```js
 > /* 배열에 있는 값이 유용해서 변수로 빼려면? */
 > // 📝 기존 방법
-> let num = [1, 2];
-> let a = num[0];
-> let b = num[1];
+> let num = [1, 2]
+> let a = num[0]
+> let b = num[1]
 >
 > //  📝 Destructuring 문법 : Array에 있는 값을 변수로 빼줌
 > // 왼쪽 오른쪽 형식을 똑같이 맞춰주시면 자동으로 알아서 변수가 생성됨
-> let [c, d] = [1, 2];
+> let [c, d] = [1, 2]
 > ```
 
 state 쓰려면 react로부터 import 해와야 합니다.
 
 ```jsx
-import { useState } from 'react'; // 추가
+import { useState } from 'react' // 추가
 
 function App() {
   // [초기변수, 변경도와주는 함수] = useState(초기값)
-  let [a, b] = useState('저쩌구'); // ['저쩌구', state변경을 도와주는 함수]
+  let [a, b] = useState('저쩌구') // ['저쩌구', state변경을 도와주는 함수]
   // a 변수에는 '저쩌구'라는 값이 초기값으로 할당
   // b 함수는 a 변수의 값의 수정을 도와주는 함수가 항당
 
-  return <h1>{a}</h1>;
+  return <h1>{a}</h1>
 }
 ```
 
@@ -82,16 +82,16 @@ function App() {
 export default function Composition() {
   return (
     <div>
-      <Welcome name='메시' />
-      <Welcome name='호날두' />
-      <Welcome name='네이마르' />
+      <Welcome name="메시" />
+      <Welcome name="호날두" />
+      <Welcome name="네이마르" />
     </div>
-  );
+  )
 }
 
 // 2. 자식컴포넌트 만드는 곳에 가서 props라는 파라미터 등록 후`props.받아온 부모state`로 사용
 function Welcome(props) {
-  return <h1>Hello, {props.name}</h1>;
+  return <h1>Hello, {props.name}</h1>
 }
 ```
 
@@ -103,20 +103,20 @@ function Welcome(props) {
 
 ```jsx
 function formatDate(date) {
-  return date.toLocaleDateString();
+  return date.toLocaleDateString()
 }
 
 function Comment(props) {
   return (
-    <div className='Comment'>
-      <div className='UserInfo'>
-        <img className='Avatar' src={props.author.avatarUrl} alt={props.author.name} />
-        <div className='UserInfo-name'>{props.author.name}</div>
+    <div className="Comment">
+      <div className="UserInfo">
+        <img className="Avatar" src={props.author.avatarUrl} alt={props.author.name} />
+        <div className="UserInfo-name">{props.author.name}</div>
       </div>
-      <div className='Comment-text'>{props.text}</div>
-      <div className='Comment-date'>{formatDate(props.date)}</div>
+      <div className="Comment-text">{props.text}</div>
+      <div className="Comment-date">{formatDate(props.date)}</div>
     </div>
-  );
+  )
 }
 
 const comment = {
@@ -126,10 +126,10 @@ const comment = {
     name: 'Hello Kitty',
     avatarUrl: 'http://placekitten.com/g/64/64',
   },
-};
+}
 
 export default function Extraction() {
-  return <Comment date={comment.date} text={comment.text} author={comment.author} />;
+  return <Comment date={comment.date} text={comment.text} author={comment.author} />
 }
 ```
 
@@ -137,32 +137,32 @@ export default function Extraction() {
 
 ```jsx
 function formatDate(date) {
-  return date.toLocaleDateString();
+  return date.toLocaleDateString()
 }
 
 // Comment 컴포넌트 안에 있던 여러 데이터들을 의미있는 값들을 기준으로 분리함
 // 이렇게 분리하면 재사용성 좋음
 function Avatar(props) {
-  return <img className='Avatar' src={props.user.avatarUrl} alt={props.user.name} />;
+  return <img className="Avatar" src={props.user.avatarUrl} alt={props.user.name} />
 }
 
 function UserInfo(props) {
   return (
-    <div className='UserInfo'>
+    <div className="UserInfo">
       <Avatar user={props.user} />
-      <div className='UserInfo-name'>{props.user.name}</div>
+      <div className="UserInfo-name">{props.user.name}</div>
     </div>
-  );
+  )
 }
 
 function Comment(props) {
   return (
-    <div className='Comment'>
+    <div className="Comment">
       <UserInfo user={props.author} />
-      <div className='Comment-text'>{props.text}</div>
-      <div className='Comment-date'>{formatDate(props.date)}</div>
+      <div className="Comment-text">{props.text}</div>
+      <div className="Comment-date">{formatDate(props.date)}</div>
     </div>
-  );
+  )
 }
 
 const comment = {
@@ -172,9 +172,9 @@ const comment = {
     name: 'Hello Kitty',
     avatarUrl: 'http://placekitten.com/g/64/64',
   },
-};
+}
 
 export default function Extraction() {
-  return <Comment date={comment.date} text={comment.text} author={comment.author} />;
+  return <Comment date={comment.date} text={comment.text} author={comment.author} />
 }
 ```

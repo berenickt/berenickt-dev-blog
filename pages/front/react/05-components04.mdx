@@ -1,5 +1,5 @@
 ---
-title: '05-Components Basic - Conditional Rendering(조건부 렌더링)'
+title: '05-조건부 렌더링'
 date: 2022/12/22
 ---
 
@@ -22,7 +22,7 @@ function Hello({ color, name, isSpecial }) {
       {isSpecial ? <b>*</b> : null}
       안녕하세요 {name}
     </div>
-  );
+  )
 }
 ```
 
@@ -39,15 +39,15 @@ function Hello({ color, name, isSpecial }) {
 
 ```js
 function print(person) {
-  console.log(person.name);
+  console.log(person.name)
 }
 
 const person = {
   name: '메시',
-};
+}
 
 // print함수의 파라미터가 비어있으면 에러💥
-print(); // TypeError: Cannot read property 'name' of undefined
+print() // TypeError: Cannot read property 'name' of undefined
 ```
 
 만약에 다음과 같이 print 에 null 값이 파라미터로 전달되면 어떨까요?
@@ -55,14 +55,14 @@ print(); // TypeError: Cannot read property 'name' of undefined
 ```js
 function print(person) {
   if (person === undefined) {
-    console.log('person이 없네요');
-    return;
+    console.log('person이 없네요')
+    return
   }
-  console.log(person.name);
+  console.log(person.name)
 }
 
-const person = null;
-print(person); // TypeError: Cannot read property 'name' of null
+const person = null
+print(person) // TypeError: Cannot read property 'name' of null
 ```
 
 person 이 undefined 이거나, null 인 상황을 대비하려면 다음과 같이 코드를 작성합니다.
@@ -70,14 +70,14 @@ person 이 undefined 이거나, null 인 상황을 대비하려면 다음과 같
 ```js
 function print(person) {
   if (person === undefined || person === null) {
-    console.log('person이 없네요');
-    return;
+    console.log('person이 없네요')
+    return
   }
-  console.log(person.name);
+  console.log(person.name)
 }
 
-const person = null;
-print(person);
+const person = null
+print(person)
 ```
 
 ---
@@ -92,14 +92,14 @@ function print(person) {
   // 2. Falsy 한 값 앞에 느낌표를 붙여주면 true 로전환
   if (!person) {
     // <- 📝 person이 undefined나 null인 경우
-    console.log('person이 없네요');
-    return;
+    console.log('person이 없네요')
+    return
   }
-  console.log(person.name);
+  console.log(person.name)
 }
 
-const person = null;
-print(person);
+const person = null
+print(person)
 ```
 
 ---
@@ -109,12 +109,12 @@ print(person);
 Truthy 한 값과 Falsy 한 값은 if 문에서도 사용 가능
 
 ```js
-const value = { a: 1 };
+const value = { a: 1 }
 
 // 1. value 가 Truthy 한 값이기 때문에, 콘솔에 메시지가 출력됨
 // 2. 반면, value 가 null, undefined, 0, '', NaN 중 하나라면, 나타나지 않음
 if (value) {
-  console.log('value 가 Truthy 하네요.');
+  console.log('value 가 Truthy 하네요.')
 }
 ```
 
@@ -126,12 +126,12 @@ if (value) {
 
 ```js
 // 📝 AND(&&) 연산자
-true && true; // true
-true && false; // false
+true && true // true
+true && false // false
 
 // 📝 OR(||) 연산자
-true || false; // true
-false || true; // true
+true || false // true
+false || true // true
 ```
 
 ---
@@ -143,16 +143,16 @@ false || true; // true
 ```js
 const dog = {
   name: '멍멍이',
-};
+}
 
 function getName(animal) {
   // 2. animal 객체가 undefined 이기 때문에
-  return animal.name; // 3. undefined 에서 name 값을 조회 할 수 없어서 에러 발생😭
+  return animal.name // 3. undefined 에서 name 값을 조회 할 수 없어서 에러 발생😭
 }
 
 // 1. getName의 파라미터에 제대로된 객체가 주어지지 않으면?
-const name = getName();
-console.log(name);
+const name = getName()
+console.log(name)
 ```
 
 함수에서 animal 값이 제대로 주어졌을 때만 name을 조회하고, 그렇지 않을때는 그냥 undefined를 반환하게 하고 싶으면?
@@ -162,9 +162,9 @@ function getName(animal) {
   // animal 값이 제대로 주어졌을 때만 name을 조회
   // animal 값이 없으면 undefined 반환
   if (animal) {
-    return animal.name;
+    return animal.name
   }
-  return undefined;
+  return undefined
 }
 ```
 
@@ -175,30 +175,30 @@ function getName(animal) {
 ```js
 const dog = {
   name: '멍멍이',
-};
+}
 
 function getName(animal) {
   // animal 값이 제대로 주어졌을 때만 animal.name 반환
   // animal 값이 없으면 undefined 반환
-  return animal && animal.name;
+  return animal && animal.name
 }
 
-const name = getName();
-console.log(name); // undefined
+const name = getName()
+console.log(name) // undefined
 ```
 
 추가 예시
 
 ```js
-console.log(true && 'hello'); // hello
-console.log(false && 'hello'); // false
-console.log('hello' && 'bye'); // bye
-console.log(null && 'hello'); // null
-console.log(undefined && 'hello'); // undefined
-console.log('' && 'hello'); // ''
-console.log(0 && 'hello'); // 0
-console.log(1 && 'hello'); // hello
-console.log(1 && 1); // 1
+console.log(true && 'hello') // hello
+console.log(false && 'hello') // false
+console.log('hello' && 'bye') // bye
+console.log(null && 'hello') // null
+console.log(undefined && 'hello') // undefined
+console.log('' && 'hello') // ''
+console.log(0 && 'hello') // 0
+console.log(1 && 'hello') // hello
+console.log(1 && 1) // 1
 ```
 
 ---
@@ -209,11 +209,11 @@ console.log(1 && 1); // 1
 
 ```js
 function getName(animal) {
-  const name = animal && animal.name;
+  const name = animal && animal.name
   if (!name) {
-    return '이름이 없는 동물입니다';
+    return '이름이 없는 동물입니다'
   }
-  return name;
+  return name
 }
 ```
 
@@ -221,10 +221,10 @@ function getName(animal) {
 
 ```js
 function getName(animal) {
-  const name = animal && animal.name;
+  const name = animal && animal.name
 
   // name이 falsy한값이라면, ||의 오른쪽의 값 출력
-  return name || '이름이 없는 동물입니다.';
+  return name || '이름이 없는 동물입니다.'
 }
 ```
 
@@ -242,7 +242,7 @@ function Hello({ name, isSpecial }) {
       {isSpecial && <b>*</b>}
       안녕하세요 {name}
     </>
-  );
+  )
 }
 ```
 
@@ -257,9 +257,9 @@ function App() {
   return (
     <>
       {/* isSpecial 이름만 넣어주면 isSpecial={true}와 동일한 의미 */}
-      <Hello name='react' color='red' isSpecial />
-      <Hello color='pink' />
+      <Hello name="react" color="red" isSpecial />
+      <Hello color="pink" />
     </>
-  );
+  )
 }
 ```

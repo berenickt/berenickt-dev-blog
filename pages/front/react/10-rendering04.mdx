@@ -1,5 +1,5 @@
 ---
-title: '10-Rendering - Refs Hooks'
+title: '10-useRef'
 date: 2022/12/22
 ---
 
@@ -10,7 +10,7 @@ date: 2022/12/22
 함수형 컴포넌트에서 useRef를 부르면, ref 오브젝트를 반환합니다.
 
 ```jsx
-const ref = useRef(value);
+const ref = useRef(value)
 
 // ref 오브젝트는 { currnt: value } <- 이런 식으로 생성됨
 // useRef의 인자로 넣어준 value는 ref안에 current에 저장됨
@@ -37,25 +37,25 @@ useRef가 유용한 상황 2가지
 ## 1.2 예제 : Ref와 State 비교
 
 ```jsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react'
 
 function App() {
   // React에서 state가 변경되는 것 = 컴포넌트가 리렌더링
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   // Ref는 아무리 수정해도, 컴포넌트를 다시 렌더링하지 않음
-  const countRef = useRef(0); // countRef.current로 접근
+  const countRef = useRef(0) // countRef.current로 접근
 
-  console.log('렌더링');
+  console.log('렌더링')
 
   const increaseCountState = () => {
-    setCount(count + 1);
-  };
+    setCount(count + 1)
+  }
 
   const increaseCountRef = () => {
-    countRef.current = countRef.current + 1;
-    console.log('Ref :', countRef.current);
-  };
+    countRef.current = countRef.current + 1
+    console.log('Ref :', countRef.current)
+  }
 
   return (
     <div>
@@ -64,10 +64,10 @@ function App() {
       <button onClick={increaseCountState}>State 올려</button>
       <button onClick={increaseCountRef}>Ref 올려</button>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
 ```
 
 ---
@@ -75,33 +75,33 @@ export default App;
 ## 1.3 예제2 : Ref와 변수 비교
 
 ```jsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react'
 
 function App() {
   // 컴포넌트가 렌더링 된다는 것 = 컴포넌트를 나타내는 함수가 다시 불린다는 것
   // 함수가 불릴 떄마다 함수 내부의 변수들은 초기화됨
   // 그렇지만 Ref는 아무리 렌더링되도 값을 유지함
-  const [renderer, setRenderer] = useState(0);
-  const countRef = useRef(0);
-  let countVar = 0;
+  const [renderer, setRenderer] = useState(0)
+  const countRef = useRef(0)
+  let countVar = 0
 
   const doRendering = () => {
-    setRenderer(renderer + 1);
-  };
+    setRenderer(renderer + 1)
+  }
 
   const increaseRef = () => {
-    countRef.current = countRef.current + 1;
-    console.log('ref: ', countRef.current);
-  };
+    countRef.current = countRef.current + 1
+    console.log('ref: ', countRef.current)
+  }
 
   const increaseVar = () => {
-    countVar = countVar + 1;
-    console.log('var: ', countVar);
-  };
+    countVar = countVar + 1
+    console.log('var: ', countVar)
+  }
 
   const printResults = () => {
-    console.log(`ref : ${countRef.current}, var: ${countVar}`);
-  };
+    console.log(`ref : ${countRef.current}, var: ${countVar}`)
+  }
 
   return (
     <div>
@@ -112,10 +112,10 @@ function App() {
       <button onClick={increaseVar}>Var 올려</button>
       <button onClick={printResults}>Ref, Var 값 출력</button>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
 ```
 
 ---
@@ -123,11 +123,11 @@ export default App;
 ## 1.4 예제3 : 무한루프
 
 ```jsx
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react'
 
 function App() {
-  const [count, setCount] = useState(1);
-  const renderCount = useRef(1);
+  const [count, setCount] = useState(1)
+  const renderCount = useRef(1)
 
   // 무한 루프에 빠짐, State끼리 서로 렌더링되어서
   // const [renderCount, setRenderCount] = useState(1);
@@ -138,19 +138,19 @@ function App() {
 
   // Ref는 리렌더링을 발생시키지 않으니까, 무한루프에 안빠짐
   useEffect(() => {
-    renderCount.current = renderCount.current + 1;
-    console.log('렌더링 수 :', renderCount.current);
-  });
+    renderCount.current = renderCount.current + 1
+    console.log('렌더링 수 :', renderCount.current)
+  })
 
   return (
     <div>
       <p>countVar : {count}</p>
       <button onClick={() => setCount(count + 1)}>올려!</button>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
 ```
 
 ---
@@ -158,30 +158,30 @@ export default App;
 # 2. useRef : DOM 요소 접근
 
 ```jsx
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react'
 
 function App() {
-  const inputRef = useRef();
+  const inputRef = useRef()
 
   useEffect(() => {
     // console.log(inputRef);
-    inputRef.current.focus(); // 렌더링되면 자동으로 focus됨
-  }, []);
+    inputRef.current.focus() // 렌더링되면 자동으로 focus됨
+  }, [])
 
   const login = () => {
-    alert(`환영합니다 ${inputRef.current.value}`);
-    inputRef.current.focus();
-  };
+    alert(`환영합니다 ${inputRef.current.value}`)
+    inputRef.current.focus()
+  }
 
   return (
     <div>
-      <input ref={inputRef} type='text' placeholder='username' />
+      <input ref={inputRef} type="text" placeholder="username" />
       <button onClick={login}>로그인</button>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
 ```
 
 ---

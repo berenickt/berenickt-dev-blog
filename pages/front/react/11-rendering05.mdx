@@ -1,5 +1,5 @@
 ---
-title: '11-Rendering - Events(이벤트)'
+title: '11-React-Event'
 date: 2022/12/22
 ---
 
@@ -11,7 +11,7 @@ date: 2022/12/22
   - e.g. `Form`요소는 값이 바뀔 때 `onchange`이벤트를 실행
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <title>Event 예제</title>
@@ -62,15 +62,15 @@ React에서는 다음과 같이 작성할 수 있습니다.
 function Form() {
   // 여기서 e는 합성 이벤트
   function handleSubmit(e) {
-    e.preventDefault();
-    console.log('You clicked submit.');
+    e.preventDefault()
+    console.log('You clicked submit.')
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <button type='submit'>Submit</button>
+      <button type="submit">Submit</button>
     </form>
-  );
+  )
 }
 ```
 
@@ -88,26 +88,26 @@ React를 사용할 때 DOM 엘리먼트가 생성된 후 리스너를 추가하�
 ```jsx
 class Toggle extends React.Component {
   constructor(props) {
-    super(props);
-    this.state = { isToggleOn: true };
+    super(props)
+    this.state = { isToggleOn: true }
 
     // 콜백에서 `this`가 작동하려면 아래와 같이 바인딩 해주어야 함
-    this.handleClick = this.handleClick.bind(this);
+    this.handleClick = this.handleClick.bind(this)
   }
 
   handleClick() {
-    this.setState((prevState) => ({
+    this.setState(prevState => ({
       isToggleOn: !prevState.isToggleOn,
-    }));
+    }))
   }
 
   render() {
-    return <button onClick={this.handleClick}>{this.state.isToggleOn ? 'ON' : 'OFF'}</button>;
+    return <button onClick={this.handleClick}>{this.state.isToggleOn ? 'ON' : 'OFF'}</button>
   }
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<Toggle />);
+const root = ReactDOM.createRoot(document.getElementById('root'))
+root.render(<Toggle />)
 ```
 
 JSX 콜백 안에서 `this`의 의미에 대해 주의해야 합니다.
@@ -179,21 +179,21 @@ React의 이벤트들은 이벤트 버블링 단계에서 호출됨
 
 ```jsx
 export default function Event() {
-  const handleClick = (e) => {
-    console.log('버튼 눌렀네?🤡 - 세번쨰 호출');
-  };
+  const handleClick = e => {
+    console.log('버튼 눌렀네?🤡 - 세번쨰 호출')
+  }
 
-  const handleClickCapture = (e) => {
-    console.log('handleClickCapture 버튼👽 - 첫번쨰 호출');
-  };
+  const handleClickCapture = e => {
+    console.log('handleClickCapture 버튼👽 - 첫번쨰 호출')
+  }
 
-  const handleClickCapture2 = (e) => {
-    console.log('handleClickCapture2 버튼🤪 - 두번쨰 호출');
-  };
+  const handleClickCapture2 = e => {
+    console.log('handleClickCapture2 버튼🤪 - 두번쨰 호출')
+  }
 
   const handleClickBubble = () => {
-    console.log('handleClickBubble 버튼😫 - 네번쨰 호출');
-  };
+    console.log('handleClickBubble 버튼😫 - 네번쨰 호출')
+  }
 
   return (
     <div onClickCapture={handleClickCapture}>
@@ -201,7 +201,7 @@ export default function Event() {
         <button onClick={handleClick}>Button</button>
       </div>
     </div>
-  );
+  )
 }
 ```
 

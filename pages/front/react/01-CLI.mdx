@@ -1,100 +1,100 @@
 ---
-title: "01-React 쓰는 이유 & 개발환경(CLI Tools)"
+title: '01-React 왜 쓰나'
 date: 2022/12/22
 ---
 
 # 1. React 쓰는 이유
 
-* React = User Interface를 만들기 위한 **JavaScript 라이브러리**
-  * Facebook(Meta), AirBnb, Netflix, Instagram 등 정말 많은 곳에서 React를 사용
-  * 2013년 Facebook의 Jordan Walke가 만듬
-    * [Jordan Walke Twitter](https://twitter.com/jordwalke)
-    * [Jordan Walke GitHub](https://github.com/jordwalke) 
+- React = User Interface를 만들기 위한 **JavaScript 라이브러리**
+  - Facebook(Meta), AirBnb, Netflix, Instagram 등 정말 많은 곳에서 React를 사용
+  - 2013년 Facebook의 Jordan Walke가 만듬
+    - [Jordan Walke Twitter](https://twitter.com/jordwalke)
+    - [Jordan Walke GitHub](https://github.com/jordwalke)
 
 Instagram 등의 같은 앱에 들어가면, 새로고침 없이 부드럽게 동작합니다.
 이런 걸`Single Page Application (SPA)`이라고 함
 
-* HTML 파일을 1개만 쓰고, 다른 페이지를 보여주고 싶을 때, HTML 일부분만 바꿔서 보여줌
-  * 그래서 부드럽게 동작
-* 큰 프로젝트일 수록 HTML 관리 편해짐
-* React Native를 쓰면 같은 리액트 문법으로 모바일 앱개발도 가능
+- HTML 파일을 1개만 쓰고, 다른 페이지를 보여주고 싶을 때, HTML 일부분만 바꿔서 보여줌
+  - 그래서 부드럽게 동작
+- 큰 프로젝트일 수록 HTML 관리 편해짐
+- React Native를 쓰면 같은 리액트 문법으로 모바일 앱개발도 가능
 
-------
+---
 
 ## 1.1 SPA, CSR, SSG, SSR
 
-* `SPA (Single Page Application)`
-  * 사용자가 버튼을 클릭했을 떄, 다른 페이지를 다운로드하면 깜빡거리는 것이 아니라,
-  * 한 어플리케이션 내에서 어떤 컴포넌트를 보여줬다가 숨기는 등 페이지 내에서 동작하는 것
-* `CSR (Client Side Rendering)`
-  * 사용자가 웹 어플리케이션에 접속했을 떄, 즉각적으로 HTML을 보는 것이 아니라,
-  * 작성한 JS, React 라이브러리 등을 모두 다운로드 받은 후에 Client(사용자) 측에서 Rendering이 이루어짐
+- `SPA (Single Page Application)`
+  - 사용자가 버튼을 클릭했을 떄, 다른 페이지를 다운로드하면 깜빡거리는 것이 아니라,
+  - 한 어플리케이션 내에서 어떤 컴포넌트를 보여줬다가 숨기는 등 페이지 내에서 동작하는 것
+- `CSR (Client Side Rendering)`
+  - 사용자가 웹 어플리케이션에 접속했을 떄, 즉각적으로 HTML을 보는 것이 아니라,
+  - 작성한 JS, React 라이브러리 등을 모두 다운로드 받은 후에 Client(사용자) 측에서 Rendering이 이루어짐
 
 그 외 React와 함께 Gatsby, Next.js 프레임워크를 사용하면, SSG/SSR를 함께 구현 가능
 
-* `SSG (Static Site Generation)`
-* `SSR (Server Side Rendering)`
+- `SSG (Static Site Generation)`
+- `SSR (Server Side Rendering)`
 
-------
+---
 
 ## 1.2 라이브러리 vs 프레임워크
 
-* `FrameWorks` : 무언가 만드는데 필요한 모든 것을 제공
-  * 정해진 틀이 있고, 틀 안에서 원하는 것을 만듬
-  * e.g. Angular, Android, IOS
-  * 단점
-    * 프레임워크에서 권장하는 것을 모두 공부해야 함
-    * 자율성이 떨어짐. 정해진 규칙만 따라가야 함
-* `Library` : 큰 골격이 정해져 있고, 좁은 문제를 해결하기 위한 솔루션 단위
-  * e.g. React
-  * 웹 어플리케이션을 만드는데 UI를 만드는 것을 도와주는 라이브러리 중 하나가 React
-  * UI 관련 문제만 해결하는 라이브러리이기 때문에 배울 것이 상대적으로 적고, 진입장벽이 낮음
+- `FrameWorks` : 무언가 만드는데 필요한 모든 것을 제공
+  - 정해진 틀이 있고, 틀 안에서 원하는 것을 만듬
+  - e.g. Angular, Android, IOS
+  - 단점
+    - 프레임워크에서 권장하는 것을 모두 공부해야 함
+    - 자율성이 떨어짐. 정해진 규칙만 따라가야 함
+- `Library` : 큰 골격이 정해져 있고, 좁은 문제를 해결하기 위한 솔루션 단위
+  - e.g. React
+  - 웹 어플리케이션을 만드는데 UI를 만드는 것을 도와주는 라이브러리 중 하나가 React
+  - UI 관련 문제만 해결하는 라이브러리이기 때문에 배울 것이 상대적으로 적고, 진입장벽이 낮음
 
-------
+---
 
 # 2. React 개발환경
 
 ## 2.1 준비물
 
-* [Node.js](https://nodejs.org/ko/)
-  * 브라우저 밖에서 JavaScript를 실행할 수 있게 해주는 환경
-  * Node.js 설치하면 NPM도 같이 설치됨
-* NPM (Package Manager)
-  * 외부 라이브러리를 쉽게 설치하고, 버전을 관리할 수 있게 해주는 도구
-  * NPM을 쓰면, `package.json` 파일이 프로젝트 root에 자동으로 생성되는데, 
-  * 여기에 프로젝트명, 프로젝트 버전, 모든 외부 라이브러의 버전이 적혀있음
-* NPX
-  * npm 라이브러리를 개별적으로 실행하고 싶을 떄, 쓰는 도구
-  * `NPM`이 **패키지를 관리**한다면, `NPX`는 **패키지를 개별적으로 실행하는 도구**
-* [Yarn 쓰려면](https://yarnpkg.com/getting-started/install) (Package Manager)
-  * NPM과 같은 Package Manager로 NPM을 대체하는 것으로 yarn으로 facebook에서 만듬
-  * NPM과 Yarn은 서로 호환이 되기 때문에, 추천하는 방식은 아니지만, NPM 썻다가 Yarn 썻다가 해도 됨
-  * 다만 NPM이든 Yarn이든 한 가지를 일관성있게 사용하는 것이 좋음
-  * Yarn 쓰는 이유
-    * NPM은 사용하는 외부 라이브러리가 많을 수록 프로젝트를 실행하는 속도가 현저히 떨어짐
-    * 왜냐하면 필요한 라이브러리들을 하나씩 순차적으로 실행하고 설치하기 때문
-    * Yarn은 필요한 라이브러리를 동시에 병렬적으로 설치하고 실행
-    * NPM에 비해 상대적으로 빠르고, 보안 측면에서도 Yarn이 더 뛰어나다고 알려짐
-* [Git](https://git-scm.com/downloads)
-* 편집기 e.g. VSCode
-* 북마크 해놓고 보기
-  * [React 공식 사이트](https://reactjs.org/) 
-  * [React 베타 문서](https://beta.reactjs.org/) 
+- [Node.js](https://nodejs.org/ko/)
+  - 브라우저 밖에서 JavaScript를 실행할 수 있게 해주는 환경
+  - Node.js 설치하면 NPM도 같이 설치됨
+- NPM (Package Manager)
+  - 외부 라이브러리를 쉽게 설치하고, 버전을 관리할 수 있게 해주는 도구
+  - NPM을 쓰면, `package.json` 파일이 프로젝트 root에 자동으로 생성되는데,
+  - 여기에 프로젝트명, 프로젝트 버전, 모든 외부 라이브러의 버전이 적혀있음
+- NPX
+  - npm 라이브러리를 개별적으로 실행하고 싶을 떄, 쓰는 도구
+  - `NPM`이 **패키지를 관리**한다면, `NPX`는 **패키지를 개별적으로 실행하는 도구**
+- [Yarn 쓰려면](https://yarnpkg.com/getting-started/install) (Package Manager)
+  - NPM과 같은 Package Manager로 NPM을 대체하는 것으로 yarn으로 facebook에서 만듬
+  - NPM과 Yarn은 서로 호환이 되기 때문에, 추천하는 방식은 아니지만, NPM 썻다가 Yarn 썻다가 해도 됨
+  - 다만 NPM이든 Yarn이든 한 가지를 일관성있게 사용하는 것이 좋음
+  - Yarn 쓰는 이유
+    - NPM은 사용하는 외부 라이브러리가 많을 수록 프로젝트를 실행하는 속도가 현저히 떨어짐
+    - 왜냐하면 필요한 라이브러리들을 하나씩 순차적으로 실행하고 설치하기 때문
+    - Yarn은 필요한 라이브러리를 동시에 병렬적으로 설치하고 실행
+    - NPM에 비해 상대적으로 빠르고, 보안 측면에서도 Yarn이 더 뛰어나다고 알려짐
+- [Git](https://git-scm.com/downloads)
+- 편집기 e.g. VSCode
+- 북마크 해놓고 보기
+  - [React 공식 사이트](https://reactjs.org/)
+  - [React 베타 문서](https://beta.reactjs.org/)
 
-------
+---
 
 ## 2.2 React 개발에 자주 쓰는 CLI Tool
 
 1. [create-react-app](https://create-react-app.dev) (줄여서 CRA)
+
    - Webpack bundler 사용
 
 2. [vite](https://vitejs.dev)
    1. Esbuild bundler 사용
-   2. Esbuild  = go 언어로 작성된 자바스크립트 빌트툴
+   2. Esbuild = go 언어로 작성된 자바스크립트 빌트툴
    3. CRA보다 빠름
 
-
-------
+---
 
 ## 2.3 React 프로젝트 생성
 
@@ -115,18 +115,18 @@ $ npm run dev # Vite 실행
 > ```sh
 > # npm 6.x
 > npm create vite@latest ${디렉터리 명} --template ${템플릿 명}
-> 
+>
 > # npm 7+
 > npm create vite@latest ${디렉터리 명} -- --template ${템플릿 명}
-> 
+>
 > # JavaScript react 템플릿 생성
 > npm create vite@latest vite-test -- --template react
-> 
+>
 > # TypeScript react-ts 템플릿 생성
 > npm create vite@latest vite-test -- --template react-ts
 > ```
 
-------
+---
 
 ## 2.4 React 폴더 구조
 
@@ -134,7 +134,7 @@ CRA 기준
 
 ```sh
 React 프로젝트
-└─ 프로젝트명 # 만든 프로젝트 명 
+└─ 프로젝트명 # 만든 프로젝트 명
    ├─ node_modules # Node.js 라이브러리들 보관함
    ├─ public # static 파일 모아놓은 곳 (e.g. HTML, 이미지 등)
    │  ├─ favicon.ico
@@ -157,7 +157,7 @@ React 프로젝트
    ├─ README.md
 ```
 
-------
+---
 
 # 3. React 특징 : Virtual Dom Tree
 
@@ -167,19 +167,19 @@ HTML은 DOM Tree를 만들어서 웹페이지 구조를 tree 형태로 구현합
 DOM Tree에 변화가 일어나면 웹 브라우저가 CSS를 다시 연산하고, 레이아웃을 구성하고, 페이지를 리페인트합니다.
 DOM Tree의 변경사항을 수정하는 과정이 시간이 허비됩니다.
 
-그래서 React는 바로  브라우저의 Dom Tree를 바로 변경하는 것이 아니라, Virtual Dom Tree를 가집니다.
+그래서 React는 바로 브라우저의 Dom Tree를 바로 변경하는 것이 아니라, Virtual Dom Tree를 가집니다.
 그래서 React에서 무언가 변경되면, 바로 Virtual DOM에 업데이트하는 것이 아니라,
 **변경되기 이전에 Virtual DOM Tree와 비교**를 하고, 다른 점을 판단한 다음에, 실제 DOM Tree에 업데이트를 합니다.
 
-* 그래서 React에서 아무리 state를 많이 변경해도, 브라우저에서는 실제 업데이트 노드만 업데이트되기 때문에 효율적
-* 사용자가 느끼기에 빠르게 업데이트 되기 위해서는 최소 60fps속도가 되어야 함 (1초에 60개의 화면)
+- 그래서 React에서 아무리 state를 많이 변경해도, 브라우저에서는 실제 업데이트 노드만 업데이트되기 때문에 효율적
+- 사용자가 느끼기에 빠르게 업데이트 되기 위해서는 최소 60fps속도가 되어야 함 (1초에 60개의 화면)
 
-------
+---
 
 # [참고]
 
-* [React Developer 로드맵](https://roadmap.sh/react)
-* [React 공식문서](https://ko.reactjs.org/docs/getting-started.html)
-* [React 공식 베타문서](https://beta.reactjs.org/)
-* [Create React App 공식문서](https://create-react-app.dev/)
-* [Vite 공식문서](https://vitejs.dev/)
+- [React Developer 로드맵](https://roadmap.sh/react)
+- [React 공식문서](https://ko.reactjs.org/docs/getting-started.html)
+- [React 공식 베타문서](https://beta.reactjs.org/)
+- [Create React App 공식문서](https://create-react-app.dev/)
+- [Vite 공식문서](https://vitejs.dev/)

@@ -1,5 +1,5 @@
 ---
-title: '06-Components Basic - Composition vs Inheritance'
+title: '06-합성 & 상속'
 date: 2022/12/22
 ---
 
@@ -28,21 +28,21 @@ UI가 아닌 기능을 여러 컴포넌트에서 재사용하기를 원한다면
 
 ```jsx
 function FancyBorder(props) {
-  return <div className={'FancyBorder FancyBorder-' + props.color}>{props.children}</div>;
+  return <div className={'FancyBorder FancyBorder-' + props.color}>{props.children}</div>
 }
 
 function WelcomeDialog() {
   // <FancyBorder> JSX 태그 안에 있는 것들이 FancyBorder 컴포넌트의 자식 prop으로 전달
   return (
-    <FancyBorder color='blue'>
+    <FancyBorder color="blue">
       <h1>제목</h1>
       <p>설명 뭐시기</p>
     </FancyBorder>
-  );
+  )
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<WelcomeDialog />);
+const root = ReactDOM.createRoot(document.getElementById('root'))
+root.render(<WelcomeDialog />)
 ```
 
 ---
@@ -54,21 +54,21 @@ root.render(<WelcomeDialog />);
 
 ```jsx
 function FancyBorder(props) {
-  return <div className={'FancyBorder FancyBorder-' + props.color}>{props.children}</div>;
+  return <div className={'FancyBorder FancyBorder-' + props.color}>{props.children}</div>
 }
 
 function Dialog(props) {
   return (
-    <FancyBorder color='blue'>
-      <h1 className='Dialog-title'>{props.title}</h1>
-      <p className='Dialog-message'>{props.message}</p>
+    <FancyBorder color="blue">
+      <h1 className="Dialog-title">{props.title}</h1>
+      <p className="Dialog-message">{props.message}</p>
     </FancyBorder>
-  );
+  )
 }
 
 // 특수 기능을 가진 WelcomeDialog
 function WelcomeDialog() {
-  return <Dialog title='특수화' message='쉽네' />;
+  return <Dialog title="특수화" message="쉽네" />
 }
 ```
 

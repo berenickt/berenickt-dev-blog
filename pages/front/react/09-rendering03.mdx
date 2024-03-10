@@ -1,5 +1,5 @@
 ---
-title: '09-Rendering - Render Props - 작성중'
+title: '09-Render Props'
 date: 2022/12/22
 ---
 
@@ -15,7 +15,7 @@ Render Props = **무엇을 렌더링 할지 컴포넌트에 알려주는 함수*
 - c.f. https://ko.reactjs.org/docs/render-props.html
 
 ```jsx
-<DataProvider render={(data) => <h1>Hello {data.target}</h1>} />
+<DataProvider render={data => <h1>Hello {data.target}</h1>} />
 ```
 
 Render Props 패턴으로 구현된 컴포넌트는 자체적으로 렌더링 로직을 구현하는 대신,
@@ -41,23 +41,23 @@ Cross-Cutting Concerns
 마우스를 따라다니는 이미지를 붙이고 싶으면?
 
 ```jsx
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React, { useState } from 'react'
+import styled from 'styled-components'
 
 // 마우스가 움직일 때마다 좌표를 알 수 있는 Mouse 컴포넌트
 export default function Mouse() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
-  const handleMouseMove = (event) => {
-    setMousePosition({ x: event.clientX, y: event.clientY });
-  };
+  const handleMouseMove = event => {
+    setMousePosition({ x: event.clientX, y: event.clientY })
+  }
 
   return (
     <div style={{ height: '100vh' }} onMouseMove={handleMouseMove}>
       <Image position={mousePosition} />
       Mouse X = {mousePosition.x} Y = {mousePosition.y}
     </div>
-  );
+  )
 }
 
 // styled components 라이브러리를 사용해서 이미지 대신 사용함
@@ -68,44 +68,44 @@ const Image = styled.div`
   position: absolute;
   left: ${({ position }) => position.x}px;
   top: ${({ position }) => position.y}px;
-`;
+`
 ```
 
 위와 같이 하드코딩하면, 다른 이미지를 렌더링 하고 싶을 땐 또다시 하드코딩으로 바꿔야 한다.
 
 ```jsx
-import Mouse from './components/renderProps/Mouse';
-import Image from './components/renderProps/Image';
+import Mouse from './components/renderProps/Mouse'
+import Image from './components/renderProps/Image'
 
 export default function App() {
   return (
     <div>
       {/* Mouse 컴포넌트에 render props로 렌더링 할 컴포넌트를 넘김 */}
-      <Mouse render={(position) => <Image position={position} />} />
+      <Mouse render={position => <Image position={position} />} />
     </div>
-  );
+  )
 }
 ```
 
 그래서 재사용을 위해서는 Mouse 컴포넌트에 render props로 렌더링 할 컴포넌트를 넘겨준다.
 
 ```jsx
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
 // 1. props로 render를 받음
 export default function Mouse({ render }) {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
-  const handleMouseMove = (event) => {
-    setMousePosition({ x: event.clientX, y: event.clientY });
-  };
+  const handleMouseMove = event => {
+    setMousePosition({ x: event.clientX, y: event.clientY })
+  }
 
   return (
     <div style={{ height: '100vh' }} onMouseMove={handleMouseMove}>
       {render(mousePosition)}
       마우스의 X좌표 = {mousePosition.x}, Y좌표 = {mousePosition.y}
     </div>
-  );
+  )
 }
 ```
 

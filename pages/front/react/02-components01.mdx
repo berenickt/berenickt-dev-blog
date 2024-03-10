@@ -1,5 +1,5 @@
 ---
-title: '02-Components Basic - JSX'
+title: '02-jsx'
 date: 2022/12/22
 ---
 
@@ -34,7 +34,7 @@ date: 2022/12/22
 컴포넌트에 여러 요소가 있다면 반드시 부모 요소 하나로 감싸야 함
 
 ```jsx
-import React from 'react';
+import React from 'react'
 function App() {
   // 여러 요소가 있다면 반드시 부모 요소(div) 하나로 감싸야 한다.
   return (
@@ -42,10 +42,10 @@ function App() {
       <h1>뭐시기</h1>
       <h2>저시기</h2>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
 ```
 
 부모 요소에 div 사용하기 싫으면? React v16부터 도입된 `Fragment` 기능 쓰자
@@ -58,7 +58,7 @@ function App() {
       <h1>뭐시기</h1>
       <h2>저시기</h2>
     </Fragment>
-  );
+  )
 }
 ```
 
@@ -70,7 +70,7 @@ function App() {
       <h1>뭐시기</h1>
       <h2>저시기</h2>
     </>
-  );
+  )
 }
 ```
 
@@ -80,13 +80,13 @@ function App() {
 
 ```jsx
 function App() {
-  const name = '리액트';
+  const name = '리액트'
   return (
     <>
       {/* {}로 감싸서 표현 */}
       <h1>Hello {name}</h1>
     </>
-  );
+  )
 }
 ```
 
@@ -101,8 +101,8 @@ function App() {
 
 ```jsx
 function App() {
-  const name = '리액트';
-  return <div>{name === '리액트' ? <h1>리액트</h1> : <h1>리액트 아님</h1>}</div>;
+  const name = '리액트'
+  return <div>{name === '리액트' ? <h1>리액트</h1> : <h1>리액트 아님</h1>}</div>
 }
 ```
 
@@ -114,11 +114,11 @@ function App() {
 - 대신 **map()**을 사용하면 됨
 
 ```js
-let array = [2, 3, 4];
+let array = [2, 3, 4]
 
-array.map((Element) => {
-  console.log(Element); // 2, 3, 4
-});
+array.map(Element => {
+  console.log(Element) // 2, 3, 4
+})
 ```
 
 JSX에서 HTML을 반복 생성하고 싶으면, 다음처럼 사용
@@ -129,10 +129,10 @@ function App() {
   return (
     <div>
       {[1, 2, 3].map(function () {
-        return <div>안녕</div>;
+        return <div>안녕</div>
       })}
     </div>
-  );
+  )
 }
 ```
 
@@ -140,11 +140,11 @@ function App() {
 
 ```jsx
 function App() {
-  let arr = [];
+  let arr = []
   for (let i = 0; i < 3; i++) {
-    arr.push(<div>안녕</div>);
+    arr.push(<div>안녕</div>)
   }
-  return <div>{arr}</div>;
+  return <div>{arr}</div>
 }
 ```
 
@@ -157,10 +157,10 @@ function App() {
 
 ```jsx
 function App() {
-  const name = '리액트 아님';
+  const name = '리액트 아님'
   // name이 '리액트'이면, <h1>리액트입니다.</h1>이거 보여주고
   // name이 다른 거라면, null 반환하셈
-  return <div>{name === '리액트' && <h1>리액트임</h1>}</div>;
+  return <div>{name === '리액트' && <h1>리액트임</h1>}</div>
 
   // 위 문법과 같은 문법
   // return <div>{name === '리액트' ? <h1>리액트입니다.</h1> : null}</div>;
@@ -175,9 +175,9 @@ function App() {
 
 ```jsx
 function App() {
-  const name = undefined;
+  const name = undefined
   // 값이 undefined라서 오류가 날 떄, 오류 처리할 때
-  return name || '값이 undefined임';
+  return name || '값이 undefined임'
 }
 ```
 
@@ -196,8 +196,8 @@ function App() {
     backgroundColor: 'black',
     color: 'aqua',
     fontSize: '48px', // font-size -> fontSize
-  };
-  return <div style={style}> 글씨 </div>;
+  }
+  return <div style={style}> 글씨 </div>
 }
 ```
 
@@ -218,7 +218,7 @@ function App() {
 ```jsx
 function App() {
   // class가 아니라 className 사용
-  return <div className='react'>글씨</div>;
+  return <div className="react">글씨</div>
 }
 ```
 
@@ -232,8 +232,8 @@ function App() {
   return (
     <>
       {/* 주석은 이렇게 씀 */}
-      <div className='react'>글씨</div>
+      <div className="react">글씨</div>
     </>
-  );
+  )
 }
 ```

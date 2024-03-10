@@ -1,5 +1,5 @@
 ---
-title: '12-Rendering - High Order Components(고차 컴포넌트)'
+title: '12-고차컴포넌트(HOC)'
 date: 2022/12/22
 ---
 
@@ -11,7 +11,7 @@ date: 2022/12/22
   - 결국 재사용할려고 씀
 
 ```jsx
-const EnhancedComponent = higherOrderComponent(WrappedComponent);
+const EnhancedComponent = higherOrderComponent(WrappedComponent)
 ```
 
 컴포넌트는 props를 UI로 변환하는 반면에, 고차 컴포넌트는 컴포넌트를 새로운 컴포넌트로 변환합니다.
@@ -24,19 +24,19 @@ const EnhancedComponent = higherOrderComponent(WrappedComponent);
 
 ```jsx
 export default function Button() {
-  return <button>버튼</button>;
+  return <button>버튼</button>
 }
 ```
 
 ```jsx
 export default function Input() {
-  return <input defaultValue='input 기본값' />;
+  return <input defaultValue="input 기본값" />
 }
 ```
 
 ```jsx
-import Input from './components/12_HOC/Input';
-import Button from './components/12_HOC/Button';
+import Input from './components/12_HOC/Input'
+import Button from './components/12_HOC/Button'
 
 export default function App() {
   return (
@@ -44,7 +44,7 @@ export default function App() {
       <Input />
       <Button />
     </>
-  );
+  )
 }
 ```
 
@@ -62,18 +62,18 @@ export default function App() {
 ## 2.1 공통 기능 넣기
 
 ```jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 
 export default function Button() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 3000);
+    const timer = setTimeout(() => setLoading(false), 3000)
 
-    return () => clearTimeout(timer);
-  }, []);
+    return () => clearTimeout(timer)
+  }, [])
 
-  return loading ? <p>로딩 중...</p> : <button>버튼</button>;
+  return loading ? <p>로딩 중...</p> : <button>버튼</button>
 }
 ```
 
@@ -83,46 +83,46 @@ export default function Button() {
 - HOC는 이름 지을 떄는 with로 시작하는게 관행임
 
 ```jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 
 export default function withLoading(Component) {
   // 로딩화면을 3초 보여준 후에 컴포넌트를 보여주는 기능
-  const WithLoaindgComponent = (props) => {
-    const [loading, setLoading] = useState(true);
+  const WithLoaindgComponent = props => {
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-      const timer = setTimeout(() => setLoading(false), 3000);
+      const timer = setTimeout(() => setLoading(false), 3000)
 
-      return () => clearTimeout(timer);
-    }, []);
+      return () => clearTimeout(timer)
+    }, [])
 
-    return loading ? <p>로딩 중...</p> : <Component {...props} />;
-  };
+    return loading ? <p>로딩 중...</p> : <Component {...props} />
+  }
 
-  return WithLoaindgComponent;
+  return WithLoaindgComponent
 }
 ```
 
 위와 같이 기능을 분리하고, 다음처럼 재사용하고 싶은 컴포넌트를 인자로 붙여주면 됩니다.
 
 ```jsx
-import withLoading from './withLoading';
+import withLoading from './withLoading'
 
 function Button() {
-  return <button>버튼</button>;
+  return <button>버튼</button>
 }
 
-export default withLoading(Button); // HOC함수(재사용할 컴포넌트)
+export default withLoading(Button) // HOC함수(재사용할 컴포넌트)
 ```
 
 ```jsx
-import withLoading from './withLoading';
+import withLoading from './withLoading'
 
 function Input() {
-  return <input defaultValue='input 기본값' />;
+  return <input defaultValue="input 기본값" />
 }
 
-export default withLoading(Input); // HOC함수(재사용할 컴포넌트)
+export default withLoading(Input) // HOC함수(재사용할 컴포넌트)
 ```
 
 ---
