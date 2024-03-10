@@ -16,9 +16,9 @@
     "type": "separator",
     "title": "3. Data Fetching"
   },
-  "rest": "REST-API란?",
-  "react-query": "REST-React-Query",
-  "graphql": "GraphQL",
+  "data-fetching": "Data Fetching 라이브러리",
+  "react-query": "React-Query (Tanstack Query)",
+  "graphql": "Apllo-Client",
   "-- 4. Router 라이브러리 --": {
     "type": "separator",
     "title": "4. Router 라이브러리"
@@ -28,6 +28,7 @@
     "type": "separator",
     "title": "5. State Management"
   },
+  "state-management": "상태 관리 라이브러리",
   "redux-toolkit": "Redux ToolKit",
   "recoil": "Recoil",
   "mobx": "Mobx",
@@ -36,10 +37,11 @@
     "type": "separator",
     "title": "6. Styling 라이브러리"
   },
+  "styling": "Styling 라이브러리",
+  "postcss": "PostCSS",
   "sass": "Sass",
   "emotion": "Emotion",
   "styled-components": "Styled Components",
-  "postcss": "PostCSS",
   "-- 7. UI 라이브러리 --": {
     "type": "separator",
     "title": "7. UI 라이브러리"
