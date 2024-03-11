@@ -1,5 +1,5 @@
 // @see https://codehike.org/docs/themes
-const { remarkCodeHike } = require("@code-hike/mdx")
+const { remarkCodeHike } = require('@code-hike/mdx')
 
 const withNextra = require('nextra')({
   // basic settings
@@ -15,12 +15,15 @@ const withNextra = require('nextra')({
   mdxOptions: {
     // @see https://codehike.org/docs/configuration
     remarkPlugins: [
-      [remarkCodeHike, {
-        theme: "dark-plus",
-        lineNumbers: true,
-        showCopyButton: true,
-        autoImport: true,
-      }],
+      [
+        remarkCodeHike,
+        {
+          theme: 'dark-plus',
+          lineNumbers: true,
+          showCopyButton: true,
+          autoImport: true,
+        },
+      ],
     ],
   },
   //
