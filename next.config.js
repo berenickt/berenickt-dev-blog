@@ -22,6 +22,8 @@ const withNextra = require('nextra')({
           lineNumbers: true,
           showCopyButton: true,
           autoImport: true,
+          // @see https://github.com/shuding/nextra/issues/2477
+          skipLanguages: ['mermaid'], // mermaid
         },
       ],
     ],
