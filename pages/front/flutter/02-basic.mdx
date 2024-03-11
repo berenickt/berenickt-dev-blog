@@ -1,0 +1,60 @@
+---
+title: '02-기본'
+date: 2024/03/03
+---
+
+## 1. Hello World
+
+```dart lib/main.dart
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(
+    MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Text(
+            'Hello World',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+```
+
+---
+
+## 2. 위젯 트리(Widget Tree)
+
+```dart
+void main() {
+  // runApp : 플러터의 진입 포인트
+  runApp(
+    // Widget : 클래스의 일종으로 화면을 구성하는 기본 단위
+    MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Text('Hello World',
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+```
+
+- `Widget` : 화면을 구성하는 기본 단위
+- `Widget Tree` : 위젯들의 부모, 자식 관계를 나타내는 것
+  - 위 코드에서 위젯 트리는 다음과 같다.
+  - MaterialApp → Scaffold → Center → Text
