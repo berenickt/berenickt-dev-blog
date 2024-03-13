@@ -3,33 +3,37 @@ title: '01-Routes 정의하기'
 date: 2023/12/30
 ---
 
-# Defining Routes
+# Routes 정의하기
 
-> We recommend reading the [Routing Fundamentals](/docs/app/building-your-application/routing) page before continuing.
+> 계속하기 전에 [라우팅 기본 사항 페이지](https://nextjs.org/docs/app/building-your-application/routing)를 읽어보시기 바랍니다.
 
-This page will guide you through how to define and organize routes in your Next.js application.
+이 페이지에서는 Next.js 애플리케이션에서 경로를 정의하고 구성하는 방법을 안내합니다.
 
-## Creating Routes
+## 1. Creating Routes
 
-Next.js uses a file-system based router where **folders** are used to define routes.
+Next.js는 폴더를 사용하여 경로를 정의하는 파일 시스템 기반 라우터를 사용합니다.
 
-Each folder represents a [**route** segment](/docs/app/building-your-application/routing#route-segments) that maps to a **URL** segment. To create a [nested route](/docs/app/building-your-application/routing#nested-routes), you can nest folders inside each other.
+각 폴더는 URL 세그먼트에 매핑되는 경로 세그먼트를 나타냅니다. 중첩된 경로를 만들려면, 각 폴더를 서로 중첩할 수 있습니다.
 
 ![라우팅-용어](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Froute-segments-to-path-segments.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
 
-A special [`page.js` file](/docs/app/building-your-application/routing/pages-and-layouts#pages) is used to make route segments publicly accessible.
+경로 세그먼트를 공개적으로 액세스할 수 있도록 하기 위해 특별한 `page.js` 파일이 사용됩니다.
 
 ![라우팅-용어](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fdefining-routes.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
 
-In this example, the `/dashboard/analytics` URL path is _not_ publicly accessible because it does not have a corresponding `page.js` file. This folder could be used to store components, stylesheets, images, or other colocated files.
+이 예제에서는 `/dashboard/analytics` URL 경로에 해당하는 page.js 파일이 없기 때문에, 공개적으로 액세스할 수 없습니다.
+이 폴더는 컴포넌트, 스타일시트, 이미지 또는 기타 배치된 파일을 저장하는 데 사용할 수 있습니다.
 
-> **Good to know**: `.js`, `.jsx`, or `.tsx` file extensions can be used for special files.
+> **알아둘만한 점** : `.js`, `.jsx` 또는 `.tsx` 파일 확장자는 특수 파일에 사용할 수 있습니다.
 
-## Creating UI
+---
 
-[Special file conventions](/docs/app/building-your-application/routing#file-conventions) are used to create UI for each route segment. The most common are [pages](/docs/app/building-your-application/routing/pages-and-layouts#pages) to show UI unique to a route, and [layouts](/docs/app/building-your-application/routing/pages-and-layouts#layouts) to show UI that is shared across multiple routes.
+## 2. Creating UI
 
-For example, to create your first page, add a `page.js` file inside the `app` directory and export a React component:
+[특별한 파일 규칙](https://nextjs.org/docs/app/building-your-application/routing#file-conventions)을 사용하여 각 경로 세그먼트에 대한 UI를 생성합니다.
+가장 일반적인 것은 경로에 고유한 UI를 표시하는 `페이지`와 여러 경로에서 공유되는 UI를 표시하는 `레이아웃`입니다.
+
+예를 들어, 첫 번째 페이지를 만들려면 `app` 디렉토리에 `page.js` 파일을 추가하고, React 컴포넌트를 내보내세요:
 
 ```tsx app/page.tsx
 export default function Page() {
