@@ -5,14 +5,14 @@ date: 2023/12/30
 
 # Error Handling
 
-The `error.js` file convention allows you to gracefully handle unexpected runtime errors in [nested routes](/docs/app/building-your-application/routing#nested-routes).
+`error.js` 파일 규칙을 사용하면 [중첩된 경로](https://nextjs.org/docs/app/building-your-application/routing#nested-routes)에서 예기치 않은 런타임 오류를 우아하게 처리할 수 있습니다.
 
-- Automatically wrap a route segment and its nested children in a [React Error Boundary](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
-- Create error UI tailored to specific segments using the file-system hierarchy to adjust granularity.
-- Isolate errors to affected segments while keeping the rest of the application functional.
-- Add functionality to attempt to recover from an error without a full page reload.
+- 경로 세그먼트와 그 중첩된 자식들을 [React Error Boundary](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary)에서 자동으로 래핑합니다.
+- 파일 시스템 계층 구조를 사용하여 특정 세그먼트에 맞춘 오류 UI를 생성하여 세분성을 조정하세요.
+- 애플리케이션의 나머지 기능은 유지하면서 영향을 받는 세그먼트에 대한 오류를 격리합니다.
+- 전체 페이지를 다시 로드하지 않고 오류에서 복구를 시도하는 기능을 추가합니다.
 
-Create error UI by adding an `error.js` file inside a route segment and exporting a React component:
+경로 세그먼트 내에 `error.js` 파일을 추가하고, React 컴포넌트를 내보내서 오류 UI를 생성합니다:
 
 ![라우팅-용어](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Ferror-special-file.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
 
@@ -44,22 +44,25 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
 
 ---
 
-### How `error.js` Works
+### 1. error.js 작동 방식
 
 ![라우팅-용어](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Ferror-overview.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
 
-- `error.js` automatically creates a [React Error Boundary](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary) that **wraps** a nested child segment or `page.js` component.
-- The React component exported from the `error.js` file is used as the **fallback** component.
-- If an error is thrown within the error boundary, the error is **contained**, and the fallback component is **rendered**.
-- When the fallback error component is active, layouts **above** the error boundary **maintain** their state and **remain** interactive, and the error component can display functionality to recover from the error.
+- `error.js`는 중첩된 자식 세그먼트 또는 `page.js` 컴포넌트를 감싸는 [React Error Boundary](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary)를 자동으로 생성합니다.
+- `error.js` 파일에서 내보낸 React 컴포넌트가 **fallback** 컴포넌트로 사용됩니다.
+- 에러 경계 내에서 에러가 발생하면, 에러가 포함되고 **fallback** 컴포넌트가 렌더링됩니다.
+- `fallback error 컴포넌트`가 활성화되면, 오류 경계 위의 레이아웃은 해당 상태를 유지하고 대화형 상태를 유지하며,
+  - 오류 컴포넌트는 오류를 복구하는 기능을 표시할 수 있습니다.
 
 ---
 
-### Recovering From Errors
+### 2. 오류로부터 복구하기
 
-The cause of an error can sometimes be temporary. In these cases, simply trying again might resolve the issue.
+오류의 원인은 일시적인 것일 수도 있습니다. 이러한 경우, 다시 시도하기만 하면 문제가 해결될 수 있습니다.
 
-An error component can use the `reset()` function to prompt the user to attempt to recover from the error. When executed, the function will try to re-render the Error boundary's contents. If successful, the fallback error component is replaced with the result of the re-render.
+`오류 컴포넌트`는 `reset()` 함수를 사용하여, 사용자에게 오류 복구를 시도하라는 메시지를 표시할 수 있습니다.
+이 함수가 실행되면 오류 경계의 내용을 다시 렌더링하려고 시도합니다.
+성공하면, `fallback 오류 컴포넌트`가 다시 렌더링한 결과로 대체됩니다.
 
 ```tsx app/dashboard/error.tsx
 'use client'
@@ -76,42 +79,47 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
 
 ---
 
-### Nested Routes
+### 3. Nested Routes
 
-React components created through [special files](/docs/app/building-your-application/routing#file-conventions) are rendered in a [specific nested hierarchy](/docs/app/building-your-application/routing#component-hierarchy).
+특수 파일을 통해 생성된 React 컴포넌트는 특정 중첩 계층 구조로 렌더링됩니다.
 
-For example, a nested route with two segments that both include `layout.js` and `error.js` files are rendered in the following _simplified_ component hierarchy:
+예를 들어, `layout.js` 파일과 `error.js` 파일이 모두 포함된 두 개의 세그먼트가 있는 중첩된 경로는 다음과 같은 단순화된 컴포넌트 계층 구조로 렌더링됩니다:
 
 ![Nested Routes](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fnested-error-component-hierarchy.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
 
-The nested component hierarchy has implications for the behavior of `error.js` files across a nested route:
+중첩된 컴포넌트 계층 구조는 중첩된 경로에서 `error.js` 파일의 동작에 영향을 미칩니다:
 
-- Errors bubble up to the nearest parent error boundary. This means an `error.js` file will handle errors for all its nested child segments. More or less granular error UI can be achieved by placing `error.js` files at different levels in the nested folders of a route.
-- An `error.js` boundary will **not** handle errors thrown in a `layout.js` component in the **same** segment because the error boundary is nested **inside** that layout's component.
-
----
-
-### Handling Errors in Layouts
-
-`error.js` boundaries do **not** catch errors thrown in `layout.js` or `template.js` components of the **same segment**. This [intentional hierarchy](#nested-routes) keeps important UI that is shared between sibling routes (such as navigation) visible and functional when an error occurs.
-
-To handle errors within a specific layout or template, place an `error.js` file in the layout's parent segment.
-
-To handle errors within the root layout or template, use a variation of `error.js` called `global-error.js`.
+- 오류는 가장 가까운 상위 오류 경계까지 버블링됩니다.
+  - 즉, `error.js` 파일은 중첩된 모든 하위 세그먼트에 대한 오류를 처리합니다.
+  - 경로의 중첩된 폴더에서 `error.js` 파일을 서로 다른 수준에 배치하면, 다소 세분화된 오류 UI를 구현할 수 있습니다.
+- `error.js` 경계는 동일한 세그먼트의 `layout.js` 컴포넌트에서 발생한 오류를 처리하지 않습니다.
+  - 오류 경계가 해당 레이아웃의 컴포넌트 안에 중첩되어 있기 때문에,
 
 ---
 
-### Handling Errors in Root Layouts
+### 4. Handling Errors in Layouts
 
-The root `app/error.js` boundary does **not** catch errors thrown in the root `app/layout.js` or `app/template.js` component.
+`error.js` 경계는 같은 세그먼트의 `layout.js` 또는 `template.js` 컴포넌트에서 발생한 오류를 포착하지 않습니다.
+이 의도적인 계층 구조는 오류가 발생했을 때, 형제 경로 간에 공유되는 중요한 UI(예: 탐색)가 계속 표시되고 작동하도록 합니다.
 
-To specifically handle errors in these root components, use a variation of `error.js` called `app/global-error.js` located in the root `app` directory.
+특정 레이아웃 또는 템플릿 내에서 오류를 처리하려면, 레이아웃의 상위 세그먼트에 `error.js` 파일을 배치하세요.
 
-Unlike the root `error.js`, the `global-error.js` error boundary wraps the **entire** application, and its fallback component replaces the root layout when active. Because of this, it is important to note that `global-error.js` **must** define its own `<html>` and `<body>` tags.
+루트 레이아웃 또는 템플릿 내에서 오류를 처리하려면, `global-error.js`라는 `error.js`의 변형을 사용합니다.
 
-`global-error.js` is the least granular error UI and can be considered "catch-all" error handling for the whole application. It is unlikely to be triggered often as root components are typically less dynamic, and other `error.js` boundaries will catch most errors.
+---
 
-Even if a `global-error.js` is defined, it is still recommended to define a root `error.js` whose fallback component will be rendered **within** the root layout, which includes globally shared UI and branding.
+### 5. Handling Errors in Root Layouts
+
+루트 `app/error.js` 경계는 루트 `app/layout.js` 또는 `app/template.js` 컴포넌트에서 발생하는 오류를 포착하지 못합니다.
+
+이러한 루트 컴포넌트의 오류를 구체적으로 처리하려면 root app 디렉터리에 있는 `app/global-error.js`라는 `error.js`의 변형을 사용하세요.
+
+루트 `error.js`와 달리 `global-error.js` 오류 경계는 전체 애플리케이션을 감싸며,
+활성화되면 해당 폴백 컴포넌트가 루트 레이아웃을 대체합니다.
+따라서 `global-error.js`는 자체 `<html>` 및 `<body>` 태그를 정의해야 한다는 점에 유의해야 합니다.
+
+`global-error.js`는 가장 세분화된 오류 UI이며 전체 애플리케이션에 대한 "포괄적인" 오류 처리로 간주할 수 있습니다.
+루트 컴포넌트는 일반적으로 덜 동적이며, 다른 `error.js` 경계가 대부분의 오류를 포착하므로 자주 트리거되지 않을 가능성이 높습니다.
 
 ```tsx app/global-error.tsx
 'use client'
@@ -128,20 +136,26 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
 }
 ```
 
----
-
-### Handling Server Errors
-
-If an error is thrown inside a Server Component, Next.js will forward an `Error` object (stripped of sensitive error information in production) to the nearest `error.js` file as the `error` prop.
+> **알아두면 유용합니다**:
+>
+> `global-error.js`는 프로덕션 환경에서만 활성화됩니다. 개발 환경에서는 오류 오버레이가 대신 표시됩니다.
 
 ---
 
-#### Securing Sensitive Error Information
+### 6. Handling Server Errors
 
-During production, the `Error` object forwarded to the client only includes a generic `message` and `digest` property.
+서버 컴포넌트 내에서 오류가 발생하면,
+Next.js는 프로덕션에서 민감한 오류 정보를 제거한 `Error` 객체를 가장 가까운 `error.js` 파일에 `error` 프로퍼티로 전달합니다.
 
-This is a security precaution to avoid leaking potentially sensitive details included in the error to the client.
+---
 
-The `message` property contains a generic message about the error and the `digest` property contains an automatically generated hash of the error that can be used to match the corresponding error in server-side logs.
+#### 6.1 Securing Sensitive Error Information
 
-During development, the `Error` object forwarded to the client will be serialized and include the `message` of the original error for easier debugging.
+프로덕션 중에 클라이언트에 전달되는 `Error` 개체에는 일반 `message`와 `digest` 속성만 포함됩니다.
+
+이는 오류에 포함된 잠재적으로 민감한 세부 정보가 클라이언트에 유출되지 않도록 하기 위한 보안 예방 조치입니다.
+
+`message` 속성에는 오류에 대한 일반 메시지가 포함되며,
+`digest` 속성에는 서버 측 로그에서 해당 오류와 일치하는 데 사용할 수 있는 자동으로 생성된 오류 해시가 포함됩니다.
+
+개발 중에 클라이언트로 전달되는 `Error` 객체는 직렬화되며, 디버깅을 쉽게 할 수 있도록 원래 오류의 `message`를 포함합니다.
