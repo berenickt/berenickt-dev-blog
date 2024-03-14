@@ -3,56 +3,62 @@ title: '11-Intercepting Routes'
 date: 2023/12/30
 ---
 
-# Intercepting Routes
+# Intercepting(인터셉팅) Routes
 
-Intercepting routes allows you to load a route from another part of your application within the current layout. This routing paradigm can be useful when you want to display the content of a route without the user switching to a different context.
+인터셉팅 라우트를 사용해서 현재 레이아웃 내에서, 애플리케이션의 다른 부분의 경로를 로드할 수 있습니다.
+이 라우팅 패러다임은 다음과 같은 경우에 유용할 수 있습니다. - 사용자가 다른 컨텍스트로 전환하지 않고, 경로의 콘텐츠를 표시하려는 경우.
 
-For example, when clicking on a photo in a feed, you can display the photo in a modal, overlaying the feed. In this case, Next.js intercepts the `/photo/123` route, masks the URL, and overlays it over `/feed`.
+예를 들어 피드 안에 있는 사진을 클릭할 때, 사진을 보여주기 위한 모달이 피드 위에 표시됩니다.
+이 경우에 Next.js는 `/feed` 경로를 가로채고 URL이 `/photo/123`으로 보이도록 "마스킹"합니다.
 
 ![Intercepting Routes](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fintercepting-routes-soft-navigate.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
 
-However, when navigating to the photo by clicking a shareable URL or by refreshing the page, the entire photo page should render instead of the modal. No route interception should occur.
+그러나, 공유 가능한 URL을 클릭하거나 페이지를 새로 고침하여 사진으로 이동할 때, 모달 대신 전체 사진 페이지가 렌더링되어야 합니다.
+경로 차단이 발생하지 않아야 합니다.
 
 ![Intercepting Routes](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fintercepting-routes-hard-navigate.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
 
 ---
 
-## Convention
+## 1. Convention(규칙)
 
-Intercepting routes can be defined with the `(..)` convention, which is similar to relative path convention `../` but for segments.
+인터셉팅 라우트는 상대 경로 규칙 `../`과 유사한 `(..)` 규칙으로 정의할 수 있습니다. `(..)` 규칙은 세그먼트를 기준으로 동작합니다.
 
-You can use:
+이렇게 사용할 수 있습니다.
 
-- `(.)` to match segments on the **same level**
-- `(..)` to match segments **one level above**
-- `(..)(..)` to match segments **two levels above**
-- `(...)` to match segments from the **root** `app` directory
+- `(.)` **동등한 레벨**의 세그먼트와 일치
+- `(..)` **한 단계 상위 레벨**의 세그먼트와 일치
+- `(..)(..)` **두 단계 상위 레벨**의 세그먼트와 일치
+- `(...)` **루트** `app` 디렉토리의 세그먼트와 일치
 
-For example, you can intercept the `photo` segment from within the `feed` segment by creating a `(..)photo` directory.
+예를 들어, `(..)photo` 디렉토리를 생성하여 `feed` 세그먼트 안에서 `photo` 세그먼트를 가로챌 수 있습니다
 
 ![Intercepting Routes](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fintercepted-routes-files.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
 
-> Note that the `(..)` convention is based on _route segments_, not the file-system.
+> Note : `(..)` 컨벤션은 `file-system`이 아닌 `route segments`를 기준으로 합니다.
 
 ---
 
-## Examples
+## 2. 예시
 
-### Modals
+### 2.1 Modals
 
-Intercepting Routes can be used together with [Parallel Routes](/docs/app/building-your-application/routing/parallel-routes) to create modals.
+모달을 생성하기 위해서 인터셉팅 라우트를 [병렬 라우트](https://nextjs.org/docs/app/building-your-application/routing/parallel-routes)와 같이 사용할 수 있습니다.
 
-Using this pattern to create modals overcomes some common challenges when working with modals, by allowing you to:
+이 패턴을 사용해서 모달을 생성하면 모달 작업 시 흔히 격는 여려움을 해결할 수 있으며 아래와 같은 동작이 가능합니다.
 
-- Make the modal content **shareable through a URL**
-- **Preserve context** when the page is refreshed, instead of closing the modal
-- **Close the modal on backwards navigation** rather than going to the previous route
-- **Reopen the modal on forwards navigation**
+- **URL을 통해서 공유 가능한** 모달 컨탠츠를 만들 수 있습니다.
+- 페이지가 새로고침 될 때 모달을 닫지 않고 **컨탠츠를 유지**할 수 있습니다.
+- **뒤로 가기** 상황에서 이전 페이지로 가지 않고 **모달을 닫을 수 있습니다.**
+- **앞으로 가기** 상황에서 **모달을 다시 열 수 있습니다.**
 
 ![Modals](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fintercepted-routes-modal-example.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
 
-> In the above example, the path to the `photo` segment can use the `(..)` matcher since `@modal` is a _slot_ and not a _segment_. This means that the `photo` route is only one _segment_ level higher, despite being two _file-system_ levels higher.
+위의 예에서, `@modal`은 세그먼트가 아니라 슬롯이므로, `photo` 세그먼트 경로에 `(..)` 일치자를 사용할 수 있습니다.
+즉, `photo` 경로는 파일 시스템 레벨이 두 개 더 높지만, 세그먼트 레벨은 한 개만 더 높습니다.
 
-Other examples could include opening a login modal in a top navbar while also having a dedicated `/login` page, or opening a shopping cart in a side modal.
+단계별 예시는 [병렬 경로](https://nextjs.org/docs/app/building-your-application/routing/parallel-routes#modals) 설명서를 참조하거나, [이미지 갤러리 예시](https://github.com/vercel/nextgram)를 참조하세요.
 
-[View an example](https://github.com/vercel-labs/nextgram) of modals with Intercepted and Parallel Routes.
+> **알아두면 유용합니다**:
+>
+> 다른 예로는 상단 탐색 모음에서 로그인 모달을 열면서, 전용 `/login` 페이지도 함께 열거나 사이드 모달에서 장바구니를 여는 것 등이 있습니다.
