@@ -30,8 +30,6 @@ Selecting an authentication strategy should align with your application's specif
 
 In this section, we'll explore the process of adding basic email-password authentication to a web application. While this method provides a fundamental level of security, it's worth considering more advanced options like OAuth or passwordless logins for enhanced protection against common security threats. The authentication flow we'll discuss is as follows:
 
-<PagesOnly>
-
 1. The user submits their credentials through a login form.
 2. The form sends a request that is handled by an API route.
 3. Upon successful verification, the process is completed, indicating the user's successful authentication.
@@ -156,10 +154,6 @@ export default async function handler(req, res) {
 }
 ```
 
-</PagesOnly>
-
-<AppOnly>
-
 1. The user submits their credentials through a login form.
 2. The form calls a Server Action.
 3. Upon successful verification, the process is completed, indicating the user's successful authentication.
@@ -243,15 +237,11 @@ export async function authenticate(_currentState, formData) {
 }
 ```
 
-</AppOnly>
-
 In this code, the `signIn` method checks the credentials against stored user data.
 After the authentication provider processes the credentials, there are two possible outcomes:
 
 - **Successful Authentication**: This outcome implies that the login was successful. Further actions, such as accessing protected routes and fetching user information, can then be initiated.
 - **Failed Authentication**: In cases where the credentials are incorrect or an error is encountered, the function returns a corresponding error message to indicate the authentication failure.
-
-<AppOnly>
 
 Finally, in your `login-form.tsx` component, you can use React's `useFormState` to call the Server Action and handle form errors, and use `useFormStatus` to handle the pending state of the form:
 
@@ -314,8 +304,6 @@ function LoginButton() {
   )
 }
 ```
-
-</AppOnly>
 
 For a more streamlined authentication setup in Next.js projects, especially when offering multiple login methods, consider using a comprehensive [authentication solution](#examples).
 
@@ -388,8 +376,6 @@ export const config = {
 
 This example uses [`Response.redirect`](https://developer.mozilla.org/en-US/docs/Web/API/Response/redirect_static) for handling redirects early in the request pipeline, making it efficient and centralizing access control.
 
-<AppOnly>
-
 For specific redirection needs, the `redirect` function can be used in Server Components, Route Handlers, and Server Actions to provide more control. This is useful for role-based navigation or context-sensitive scenarios.
 
 ```ts filename="app/page.tsx" switcher
@@ -420,13 +406,9 @@ export default function Page() {
 }
 ```
 
-</AppOnly>
-
 After successful authentication, it's important to manage user navigation based on their roles. For example, an admin user might be redirected to an admin dashboard, while a regular user is sent to a different page. This is important for role-specific experiences and conditional navigation, such as prompting users to complete their profile if needed.
 
 When setting up authorization, it's important to ensure that the main security checks happen where your app accesses or changes data. While Middleware can be useful for initial validation, it should not be the sole line of defense in protecting your data. The bulk of security checks should be performed in the Data Access Layer (DAL).
-
-<PagesOnly>
 
 ### Protecting API Routes
 
@@ -487,10 +469,6 @@ export default async function handler(req, res) {
 ```
 
 This example demonstrates an API Route with a two-tier security check for authentication and authorization. It first checks for an active session, and then verifies if the logged-in user is an 'admin'. This approach ensures secure access, limited to authenticated and authorized users, maintaining robust security for request processing.
-
-</PagesOnly>
-
-<AppOnly>
 
 This approach, highlighted in [this security blog](/blog/security-nextjs-server-components-actions), advocates for consolidating all data access within a dedicated DAL. This strategy ensures consistent data access, minimizes authorization bugs, and simplifies maintenance. To ensure comprehensive security, consider the following key areas:
 
@@ -630,8 +608,6 @@ export default function Dashboard() {
 
 In this example, the Dashboard component renders different UIs for 'admin', 'user', and unauthorized roles. This pattern ensures that each user interacts only with components appropriate to their role, enhancing both security and user experience.
 
-</AppOnly>
-
 ### Best Practices
 
 - **Secure Session Management**: Prioritize the security of session data to prevent unauthorized access and data breaches. Use encryption and secure storage practices.
@@ -657,8 +633,6 @@ Additionally, while individual cookies are limited in size (typically around 4KB
 Setting a cookie in a Next.js project might look something like this:
 
 **Setting a cookie on the server:**
-
-<PagesOnly>
 
 ```ts filename="pages/api/login.ts" switcher
 import { serialize } from 'cookie'
@@ -696,10 +670,6 @@ export default function handler(req, res) {
   res.status(200).json({ message: 'Successfully set cookie!' })
 }
 ```
-
-</PagesOnly>
-
-<AppOnly>
 
 ```ts filename="app/actions.ts" switcher
 'use server'
@@ -755,8 +725,6 @@ export async function getSessionData(req) {
 }
 ```
 
-</AppOnly>
-
 ### Database Sessions
 
 Database session management involves storing session data on the server, with the user's browser only receiving a session ID. This ID references the session data stored server-side, without containing the data itself. This method enhances security, as it keeps sensitive session data away from the client-side environment, reducing the risk of exposure to client-side attacks. Database sessions are also more scalable, accommodating larger data storage needs.
@@ -766,8 +734,6 @@ However, this approach has its tradeoffs. It can increase performance overhead d
 Here's a simplified example of implementing database sessions in a Next.js application:
 
 **Creating a Session on the Server**:
-
-<PagesOnly>
 
 ```ts filename="pages/api/create-session.ts" switcher
 import db from '../../lib/db'
@@ -810,10 +776,6 @@ export default async function handler(req, res) {
 }
 ```
 
-</PagesOnly>
-
-<AppOnly>
-
 ```js
 import db from './lib/db'
 
@@ -835,8 +797,6 @@ export async function getSession() {
   return sessionId ? await db.findSession(sessionId) : null
 }
 ```
-
-</AppOnly>
 
 ### Selecting Session Management in Next.js
 
