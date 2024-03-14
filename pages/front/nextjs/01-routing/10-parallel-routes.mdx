@@ -5,146 +5,186 @@ date: 2023/12/30
 
 # Parallel Routes
 
-Parallel Routing allows you to simultaneously or conditionally render one or more pages in the same layout. For highly dynamic sections of an app, such as dashboards and feeds on social sites, Parallel Routing can be used to implement complex routing patterns.
+`병렬 경로(Parallel Routes)`를 사용하면 동일한 레이아웃 내에서 하나 이상의 페이지를 동시에 또는 조건부로 렌더링할 수 있습니다.
+대시보드나 소셜 사이트의 피드와 같이 앱의 매우 동적인 섹션에 유용합니다.
 
-For example, you can simultaneously render the team and analytics pages.
+예를 들어, 대시보드를 고려할 때, 병렬 경로를 사용하여 `team` 페이지와 `analytics` 페이지를 동시에 렌더링할 수 있습니다:
 
 ![Parallel Routes](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fparallel-routes.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
 
-Parallel Routing allows you to define independent error and loading states for each route as they're being streamed in independently.
-
-![Parallel Routes](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fparallel-routes-cinematic-universe.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
-
-Parallel Routing also allows you to conditionally render a slot based on certain conditions, such as authentication state. This enables fully separated code on the same URL.
-
-![Parallel Routes](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fconditional-routes-ui.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
-
 ---
 
-## Convention
+## 1. Slots(슬롯; 자리)
 
-Parallel routes are created using named **slots**. Slots are defined with the `@folder` convention, and are passed to the same-level layout as props.
+병렬 경로는 명명된 Slots을 사용하여 만들어집니다. Slots은 `@folder` 규칙으로 정의됩니다.
+예를 들어, 다음 파일 구조는 두 개의 Slots을 정의합니다: `@analytics`과 `@team`:
 
-> Slots are _not_ route segments and _do not affect the URL structure_. The file path `/@team/members` would be accessible at `/members`.
+![Slots](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fparallel-routes-file-system.png&w=1920&q=75&dpl=dpl_9HPqi1eAufCFG4xJNTWtsQb8vSdt)
 
-For example, the following file structure defines two explicit slots: `@analytics` and `@team`.
-
-![Convention](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fparallel-routes-file-system.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
-
-The folder structure above means that the component in `app/layout.js` now accepts the `@analytics` and `@team` slots props, and can render them in parallel alongside the `children` prop:
+Slots은 공유 부모 레이아웃에 props으로 전달됩니다.
+위의 예제에서, `app/layout.js`의 컴포넌트는 이제 `@analytics` 및 `@team` 슬롯 props을 허용하며,
+하위 props과 함께 병렬로 렌더링할 수 있습니다:
 
 ```tsx app/layout.tsx
-export default function Layout(props: {
+export default function Layout({
+  children,
+  team,
+  analytics,
+}: {
   children: React.ReactNode
   analytics: React.ReactNode
   team: React.ReactNode
 }) {
   return (
     <>
-      {props.children}
-      {props.team}
-      {props.analytics}
+      {children}
+      {team}
+      {analytics}
     </>
   )
 }
 ```
 
-> **Good to know**: The `children` prop is an implicit slot that does not need to be mapped to a folder. This means `app/page.js` is equivalent to `app/@children/page.js`.
+그러나 Slots은 경로 세그먼트가 아니며 URL 구조에 영향을 미치지 않습니다.
+예를 들어, `/dashboard/@analytics/views`의 경우, `@analytics`가 Slots이므로 URL은 `/dashboard/views`가 됩니다.
+
+> **알아두면 유용합니다**:
+>
+> 자식 프로퍼티는 폴더에 매핑할 필요가 없는 암시적 Slots입니다.
+> 즉, `app/page.js`는 `app/@children/page.js`와 동일합니다.
 
 ---
 
-## Unmatched Routes
+## 2. Active state and navigation
 
-By default, the content rendered within a slot will match the current URL.
+기본적으로, Next.js는 각 slot의 활성 상태(또는 하위 페이지)를 추적합니다.
+그러나, 슬롯 내에서 렌더링되는 콘텐츠는 탐색 유형에 따라 달라집니다:
 
-In the case of an unmatched slot, the content that Next.js renders differs based on the routing technique and folder structure.
+- `소프트 탐색(soft navigation)`:
+  - 클라이언트 측 탐색 중에 Next.js는 부분 렌더링을 수행하여 슬롯 내의 하위 페이지를 변경하는 동시에,
+  - 다른 슬롯의 활성 하위 페이지는 현재 URL과 일치하지 않더라도 유지합니다.
+- `하드 탐색(hard navigation)`:
+  - 전체 페이지 로드(브라우저 새로 고침) 후 Next.js는 현재 URL과 일치하지 않는 슬롯의 활성 상태를 확인할 수 없습니다.
+  - 대신 일치하지 않는 슬롯에 대해 `default.js` 파일을 렌더링하거나, `default.js`가 존재하지 않는 경우, 404를 렌더링합니다.
 
----
-
-### `default.js`
-
-You can define a `default.js` file to render as a fallback when Next.js cannot recover a slot's active state based on the current URL.
-
-Consider the following folder structure. The `@team` slot has a `settings` directory, but `@analytics` does not.
-
-![default.js](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fparallel-routes-unmatched-routes.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
-
----
-
-#### Navigation
-
-On navigation, Next.js will render the slot's previously active state, even if it doesn't match the current URL.
+> **알아두면 유용합니다**:
+>
+> 일치하지 않는 경로에 대한 404는 의도하지 않은 페이지에 실수로 병렬 경로가 렌더링되는 것을 방지하는 데 도움이 됩니다.
 
 ---
 
-#### Reload
+### 2.1 default.js
 
-On reload, Next.js will first try to render the unmatched slot's `default.js` file. If that's not available, a 404 gets rendered.
+초기 로드 또는 전체 페이지 다시 로드 중에 일치하지 않는 slot에 대한 폴백으로 렌더링할 `default.js` 파일을 정의할 수 있습니다.
 
-> The 404 for unmatched routes helps ensure that you don't accidentally render a route that shouldn't be parallel rendered.
+다음 폴더 구조를 고려하세요. `@team` 슬롯에는 `/settings` 페이지가 있지만, `@analytics`에는 설정 페이지가 없습니다.
+
+![default.js](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fparallel-routes-unmatched-routes.png&w=1920&q=75&dpl=dpl_9HPqi1eAufCFG4xJNTWtsQb8vSdt)
+
+`/dashboard/settings`으로 이동할 때, `@team` slot은 `@analytics` slot의 현재 활성 페이지를 유지하면서, `/settings` 페이지를 렌더링합니다.
+
+새로 고침 시, Next.js는 `@analytics`에 대한 `default.js`를 렌더링합니다. `default.js`가 존재하지 않으면 404가 대신 렌더링됩니다.
+
+또한 `children`는 암시적 slot이므로, Next.js가 상위 페이지의 활성 상태를 복구할 수 없는 경우,
+하위 페이지에 대한 폴백을 렌더링하는 `default.js` 파일도 만들어야 합니다.
 
 ---
 
-## `useSelectedLayoutSegment(s)`
+### 2.2 useSelectedLayoutSegment(s)
 
-Both [`useSelectedLayoutSegment`](/docs/app/api-reference/functions/use-selected-layout-segment) and [`useSelectedLayoutSegments`](/docs/app/api-reference/functions/use-selected-layout-segments) accept a `parallelRoutesKey`, which allows you to read the active route segment within that slot.
+[`useSelectedLayoutSegment`](https://nextjs.org/docs/app/api-reference/functions/use-selected-layout-segment) 와 [`useSelectedLayoutSegments`](https://nextjs.org/docs/app/api-reference/functions/use-selected-layout-segments) 는 모두 슬롯 내에서 활성 경로 세그먼트를 읽을 수 있는 `parallelRoutesKey` 매개변수를 허용합니다.
 
 ```tsx app/layout.tsx
 'use client'
 
 import { useSelectedLayoutSegment } from 'next/navigation'
 
-export default function Layout(props: {
-  //...
-  auth: React.ReactNode
-}) {
+export default function Layout({ auth }: { auth: React.ReactNode }) {
   const loginSegments = useSelectedLayoutSegment('auth')
   // ...
 }
 ```
 
-When a user navigates to `@auth/login`, or `/login` in the URL bar, `loginSegments` will be equal to the string `"login"`.
+사용자가 `app/@auth/login`(또는 URL 표시줄의 `/login`)으로 이동하면 `loginSegments`는 `"login"` 문자열과 동일합니다.
 
 ---
 
-## Examples
+## 3. 예시
 
-### Modals
+### 3.1 Conditional(조건부) Routes
 
-Parallel Routing can be used to render modals.
+병렬 경로를 사용하여 사용자 역할과 같은 특정 조건에 따라 조건부로 경로를 렌더링할 수 있습니다.
+예를 들어, `/admin` 또는 `/user` 역할에 대해 다른 대시보드 페이지를 렌더링할 수 있습니다:
 
-![Modals](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fparallel-routes-auth-modal.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
+![Conditional Routes](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fconditional-routes-ui.png&w=1920&q=75&dpl=dpl_9HPqi1eAufCFG4xJNTWtsQb8vSdt)
 
-The `@auth` slot renders a `<Modal>` component that can be shown by navigating to a matching route, for example `/login`.
+```tsx app/dashboard/layout.tsx
+import { checkUserRole } from '@/lib/auth'
 
-```tsx app/layout.tsx
-export default async function Layout(props: {
-  // ...
-  auth: React.ReactNode
-}) {
+export default function Layout({ user, admin }: { user: React.ReactNode; admin: React.ReactNode }) {
+  const role = checkUserRole()
+  return <>{role === 'admin' ? admin : user}</>
+}
+```
+
+---
+
+### 3.2 Tab Groups
+
+슬롯 안에 `layout`을 추가하여, 사용자가 슬롯을 독립적으로 탐색할 수 있도록 할 수 있습니다. 이 기능은 탭을 만들 때 유용합니다.
+
+예를 들어, `@analytics` 슬롯에는 두 개의 하위 페이지가 있습니다: `/page-views` 및 `/visitors`.
+
+![Tab Groups](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fparallel-routes-tab-groups.png&w=1920&q=75&dpl=dpl_9HPqi1eAufCFG4xJNTWtsQb8vSdt)
+
+`@analytics` 내에서, layout 파일을 만들어 두 페이지 간에 탭을 공유합니다:
+
+```tsx app/dashboard/@analytics/layout.tsx
+import Link from 'next/link'
+
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      {/* ... */}
-      {props.auth}
+      <nav>
+        <Link href="/dashboard/page-views">Page Views</Link>
+        <Link href="/dashboard/visitors">Visitors</Link>
+      </nav>
+      <div>{children}</div>
     </>
   )
 }
 ```
 
-```tsx app/@auth/login/page.tsx
-import { Modal } from 'components/modal'
+---
 
-export default function Login() {
-  return (
-    <Modal>
-      <h1>Login</h1>
-      {/* ... */}
-    </Modal>
-  )
+### 3.3 Modal
+
+병렬 경로를 인터셉팅 경로와 함께 사용하여 모달을 만들 수 있습니다.
+이를 통해 모달을 만들 때 다음과 같은 일반적인 문제를 해결할 수 있습니다:
+
+- URL을 통해 모달 콘텐츠를 공유할 수 있도록 설정합니다.
+- 페이지를 새로 고칠 때 모달을 닫는 대신 컨텍스트를 유지합니다.
+- 이전 경로로 이동하지 않고 뒤로 탐색할 때 모달을 닫습니다.
+- 앞으로 탐색에서 모달을 다시 엽니다.
+
+사용자가 클라이언트 측 탐색을 사용하여 레이아웃에서 로그인 모달을 열거나 별도의 `/login` 페이지에 액세스할 수 있는, 다음 UI 패턴을 고려하세요:
+
+![Modal](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fparallel-routes-auth-modal.png&w=1920&q=75&dpl=dpl_9HPqi1eAufCFG4xJNTWtsQb8vSdt)
+
+이 패턴을 구현하려면, 먼저 기본 로그인 페이지를 렌더링하는 `/login` 경로를 생성합니다.
+
+![Modal-2](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fparallel-routes-modal-login-page.png&w=1920&q=75&dpl=dpl_9HPqi1eAufCFG4xJNTWtsQb8vSdt)
+
+```tsx app/login/page.tsx
+import { Login } from '@/app/ui/login'
+
+export default function Page() {
+  return <Login />
 }
 ```
 
-To ensure that the contents of the modal don't get rendered when it's not active, you can create a `default.js` file that returns `null`.
+그런 다음 `@auth` 슬롯에, `null`을 반환하는 `default.js` 파일을 추가합니다.
+이렇게 하면 모달이 활성화되어 있지 않을 때 렌더링되지 않습니다.
 
 ```tsx app/@auth/default.tsx
 export default function Default() {
@@ -152,34 +192,99 @@ export default function Default() {
 }
 ```
 
----
+`@auth` 슬롯 내에서 `/(.)login` 폴더를 업데이트하여 `/login` 경로를 가로채세요.
+`<Modal>` 컴포넌트와 그 하위 컴포넌트를 `/(.)login/page.tsx` 파일로 가져옵니다:
 
-#### Dismissing a modal
+```tsx app/@auth/(.)login/page.tsx
+import { Modal } from '@/app/ui/modal'
+import { Login } from '@/app/ui/login'
 
-If a modal was initiated through client navigation, e.g. by using `<Link href="/login">`, you can dismiss the modal by calling `router.back()` or by using a `Link` component.
-
-```tsx app/@auth/login/page.tsx
-'use client'
-import { useRouter } from 'next/navigation'
-import { Modal } from 'components/modal'
-
-export default function Login() {
-  const router = useRouter()
+export default function Page() {
   return (
     <Modal>
-      <span onClick={() => router.back()}>Close modal</span>
-      <h1>Login</h1>
-      ...
+      <Login />
     </Modal>
   )
 }
 ```
 
-> More information on modals is covered in the [Intercepting Routes](/docs/app/building-your-application/routing/intercepting-routes) section.
+> **알아두면 유용합니다**:
+>
+> - 경로를 가로채는 데 사용되는 규칙(e.g.: `(.)`)은 파일 시스템 구조에 따라 다릅니다. 경로 인터셉트 규칙을 참조하십시오.
+> - `<Modal>` 기능을 모달 콘텐츠(`<Login>`)와 분리하면 모달 내부의 모든 콘텐츠(예: `forms`)가 서버 컴포넌트인지 확인할 수 있습니다.
+>   - 자세한 내용은 클라이언트 및 서버 컴포넌트 인터리빙을 참조하세요.
 
-If you want to navigate elsewhere and dismiss a modal, you can also use a catch-all route.
+---
 
-![Dismissing a modal](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fparallel-routes-catchall.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
+#### 3.3.1 모달 열기
+
+이제 Next.js 라우터를 활용하여 모달을 열고 닫을 수 있습니다.
+이렇게 하면 모달이 열려 있을 때와 앞뒤로 탐색할 때 URL이 올바르게 업데이트됩니다.
+
+모달을 열려면, `@auth` 슬롯을 부모 레이아웃에 프로퍼티로 전달하고, `children` 프로퍼티와 함께 렌더링합니다.
+
+```tsx app/layout.tsx
+import Link from 'next/link'
+
+export default function Layout({ auth, children }: { auth: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <>
+      <nav>
+        <Link href="/login">Open modal</Link>
+      </nav>
+      <div>{auth}</div>
+      <div>{children}</div>
+    </>
+  )
+}
+```
+
+사용자가 `<Link>`를 클릭하면, `/login` 페이지로 이동하는 대신 모달이 열립니다.
+그러나, 새로 고침 또는 최초 로드 시에는 `/login`으로 이동하면, 기본 로그인 페이지로 이동합니다.
+
+---
+
+#### 3.3.2 모달 닫기
+
+`router.back()`을 호출하거나, `Link` 컴포넌트를 사용하여 모달을 닫을 수 있습니다.
+
+```tsx app/ui/modal.tsx
+'use client'
+
+import { useRouter } from 'next/navigation'
+
+export function Modal({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
+
+  return (
+    <>
+      <button
+        onClick={() => {
+          router.back()
+        }}>
+        Close modal
+      </button>
+      <div>{children}</div>
+    </>
+  )
+}
+```
+
+`Link` 컴포넌트를 사용하여 더 이상 `@auth` 슬롯을 렌더링해서는 안 되는 페이지에서 다른 페이지로 이동하는 경우,
+`null`를 반환하는 catch-all 경로를 사용합니다.
+
+```tsx app/ui/modal.tsx
+import Link from 'next/link'
+
+export function Modal({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <Link href="/">Close modal</Link>
+      <div>{children}</div>
+    </>
+  )
+}
+```
 
 ```tsx app/@auth/[...catchAll]/page.tsx
 export default function CatchAll() {
@@ -187,21 +292,20 @@ export default function CatchAll() {
 }
 ```
 
-> Catch-all routes take precedence over `default.js`.
+> **알아두면 유용합니다**:
+>
+> - [활성 상태 및 탐색](https://nextjs.org/docs/app/building-your-application/routing/parallel-routes#active-state-and-navigation)에 설명된 동작 때문에 모달을 닫을 때, `@auth` 슬롯에 포괄적인 경로를 사용합니다.
+>   - 더 이상 슬롯과 일치하지 않는 경로에 대한 클라이언트 측 탐색이 계속 표시되므로,
+>   - 모달을 닫으려면 슬롯을 null을 반환하는 경로에 일치시켜야 합니다.
+> - 다른 예로는 갤러리에서 사진 모달을 열면서 전용 `/photo/[id]` 페이지도 함께 열거나, 사이드 모달에서 쇼핑 카트를 여는 것 등이 있습니다.
+> - 가로채기 및 병렬 경로가 있는 [모달의 예시](https://github.com/vercel/nextgram)를 확인하세요.
 
 ---
 
-### Conditional Routes
+### 3.4 로딩 및 오류 UI
 
-Parallel Routes can be used to implement conditional routing. For example, you can render a `@dashboard` or `@login` route depending on the authentication state.
+`병렬 경로(Parallel Routes)`를 독립적으로 스트리밍할 수 있으므로, 각 경로에 대해 독립적인 오류 및 로딩 상태를 정의할 수 있습니다:
 
-```tsx app/layout.tsx
-import { getUser } from '@/lib/auth'
+![Loading and Error UI](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fparallel-routes-cinematic-universe.png&w=1920&q=75&dpl=dpl_9HPqi1eAufCFG4xJNTWtsQb8vSdt)
 
-export default function Layout({ dashboard, login }: { dashboard: React.ReactNode; login: React.ReactNode }) {
-  const isLoggedIn = getUser()
-  return isLoggedIn ? dashboard : login
-}
-```
-
-![Conditional Routes](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fconditional-routes-ui.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
+자세한 내용은 [로딩 UI](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming) 및 [오류 처리](https://nextjs.org/docs/app/building-your-application/routing/error-handling) 문서를 참조하세요.
