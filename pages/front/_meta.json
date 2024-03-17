@@ -17,8 +17,8 @@
     "title": "3. Data Fetching"
   },
   "data-fetching": "Data Fetching 라이브러리",
-  "react-query": "React-Query (Tanstack Query)",
-  "graphql": "Apllo-Client",
+  "apollo-client": "Apollo Client",
+  "tanstack-query": "Tanstack Query",
   "-- 4. Router 라이브러리 --": {
     "type": "separator",
     "title": "4. Router 라이브러리"
