@@ -3,7 +3,7 @@ title: 'Redux/Toolkit'
 date: 2022/12/30
 ---
 
-# 2. Redux
+# Redux
 
 - https://redux-toolkit.js.org/
 - Redux 개발자도구
@@ -14,9 +14,9 @@ date: 2022/12/30
 
 ---
 
-## 2.1 개념
+## 1. 개념
 
-### 2.1.1 액션 (Action)
+### 1.1 액션 (Action)
 
 - 상태에 어떠한 변화가 필요하게 될 땐, `액션`이란 것을 발생시킵니다.
 - 이는, **하나의 객체로 표현**되는데요, 액션 객체는 다음과 같은 형식으로 이뤄져있습니다.
@@ -45,7 +45,7 @@ date: 2022/12/30
 
 ---
 
-### 2.1.2 액션 생성함수 (Action Creator)
+### 1.2 액션 생성함수 (Action Creator)
 
 - **액션을 만드는 함수**
 - 단순히 **파라미터를 받아와서 액션 객체 형태로** 만들어줌
@@ -67,7 +67,7 @@ const changeInput = text => ({
 
 ---
 
-### 2.1.3 리듀서 (Reducer)
+### 1.3 리듀서 (Reducer)
 
 - **변화를 일으키는 함수**입니다.
 - 리듀서는 두가지의 파라미터를 받아옵니다.
@@ -98,7 +98,7 @@ function reducer(state, action) {
 
 ---
 
-### 2.1.4 스토어 (Store)
+### 1.4 스토어 (Store)
 
 - **state들을 보관하는 파일**
 - 리덕스에서는 한 애플리케이션 당 하나의 스토어를 만듭니다.
@@ -106,7 +106,7 @@ function reducer(state, action) {
 
 ---
 
-### 2.1.5 디스패치 (dispatch)
+### 1.5 디스패치 (dispatch)
 
 - 스토어의 내장함수 중 하나
 - 디스패치는, **액션을 발생 시키는 것**이라고 이해하시면 됩니다.
@@ -116,7 +116,7 @@ function reducer(state, action) {
 
 ---
 
-### 2.1.6 구독 (subscribe)
+### 1.6 구독 (subscribe)
 
 - 구독 또한 스토어의 내장함수 중 하나
 - subscribe 함수는, **함수 형태의 값을 파라미터로 받아옵니다**.
@@ -124,7 +124,7 @@ function reducer(state, action) {
 
 ---
 
-# 3. 리덕스 without 리액트
+## 2. 리덕스 without 리액트
 
 - 리덕스는 리액트에 종속되지 않습니다. 리액트에서 사용하려고 만든거긴 하지만,
 - 실제로 다른 UI 라이브러리나 프레임워크와 함께 사용 될 수도 있습니다 (예: angular-redux, ember-redux...)
@@ -137,7 +137,7 @@ function reducer(state, action) {
 
 ---
 
-## 3.1 DOM 레퍼런스 가져오기
+### 2.1 DOM 레퍼런스 가져오기
 
 ```javascript
 // index.js
@@ -156,7 +156,7 @@ const minusButton = document.getElementById('minus-btn')
 
 ---
 
-## 3.2 액션 타입 정의
+### 2.2 액션 타입 정의
 
 ```js
 // index.js
@@ -173,7 +173,7 @@ const DECREMENT = 'DECREMENT'
 
 ---
 
-## 3.3 액션 생성 함수 정의
+### 2.3 액션 생성 함수 정의
 
 ```js
 // index.js
@@ -193,7 +193,7 @@ const decrement = () => ({ type: DECREMENT })
 
 ---
 
-## 3.4 초기값 설정
+### 2.4 초기값 설정
 
 ```js
 // index.js
@@ -208,7 +208,7 @@ const initialState = {
 
 ---
 
-## 3.5 리듀서 함수 정의
+### 2.5 리듀서 함수 정의
 
 ```js
 // index.js
@@ -247,7 +247,7 @@ function reducer(state = initialState, action) {
 
 ---
 
-## 3.6 스토어 만들기
+### 2.6 스토어 만들기
 
 ```js
 // index.js
@@ -263,7 +263,7 @@ const store = createStore(reducer)
 
 ---
 
-## 3.7 render() 구현
+### 2.7 render() 구현
 
 ```js
 // index.js
@@ -290,7 +290,7 @@ render()
 
 ---
 
-## 3.8 스토어 구독(subscribe) 하기
+### 2.8 스토어 구독(subscribe) 하기
 
 ```javascript
 // **** 예시임
@@ -318,7 +318,7 @@ store.subscribe(render)
 
 ---
 
-## 3.9 이벤트 달아주기, 액션 발생시키기
+### 2.9 이벤트 달아주기, 액션 발생시키기
 
 ```js
 // index.js
@@ -350,9 +350,9 @@ https://codesandbox.io/s/vvzqnvw17y
 
 ---
 
-# 4. 리덕스 with 리액트
+## 3. 리덕스 with 리액트
 
-## 4.1 리덕스의 3가지 규칙
+### 3.1 리덕스의 3가지 규칙
 
 1. `하나의 앱에선 스토어 1개만 만들어서 사용`
    1. 여러개의 스토어를 사용하는것은 사실 가능하기는 하나, 권장하지 않음
@@ -380,7 +380,7 @@ https://codesandbox.io/s/vvzqnvw17y
 
 ---
 
-## 4.2 리액트에서 리덕스를 쓰려면
+### 3.2 리액트에서 리덕스를 쓰려면
 
 다음 라이브러리들이 설치되어야 합니다.
 
@@ -396,13 +396,13 @@ https://codesandbox.io/s/vvzqnvw17y
 
 ---
 
-## 4.3 Immer.js를 사용한 불변성 관리
+### 3.3 Immer.js를 사용한 불변성 관리
 
 - cf. [Immutable.js 혹은 Immer.js 를 사용한 더 쉬운 불변성 관리](https://velog.io/@velopert/20180908-1909-작성됨-etjltaigd1)
 
 ---
 
-# 5. 공식문서 예제 따라해보기
+## 4. 공식문서 예제 따라해보기
 
 - https://react-redux.js.org/tutorials/quick-start
 
@@ -412,7 +412,7 @@ npm install @reduxjs/toolkit react-redux
 
 ---
 
-## 5.1 Redux Store 만들기
+### 4.1 Redux Store 만들기
 
 store = state들을 보관하는 파일
 
@@ -427,7 +427,7 @@ export default configureStore({
 
 ---
 
-## 5.2 Redux State Slice 생성
+### 4.2 Redux State Slice 생성
 
 ```jsx
 // src/index.js
@@ -461,7 +461,7 @@ root.render(
 
 ---
 
-## 5.3 Store에 Slice Reducer 추가
+### 4.3 Store에 Slice Reducer 추가
 
 Redux store에 state 보관하는 법
 
@@ -514,7 +514,7 @@ export default configureStore({
 
 ---
 
-## 5.4 컴포넌트에서 State, Actions 사용
+### 4.4 컴포넌트에서 State, Actions 사용
 
 ```jsx
 import { useDispatch, useSelector } from 'react-redux'
@@ -539,7 +539,7 @@ export default function Counter() {
 
 ---
 
-## 5.5 비교용 Counter2
+### 4.5 비교용 Counter2
 
 ```jsx
 import { useDispatch, useSelector } from 'react-redux'
@@ -586,7 +586,7 @@ export default function App() {
 
 ---
 
-# [참고]
+## [참고]
 
 - cf. [Velog - 상태 관리 라이브러리의 미학: Redux 또는 MobX 를 통한 상태 관리](https://velog.io/@velopert/redux-or-mobx)
 - cf. [Velog 리덕스(Redux)는 왜 쓰는 건데⁉](https://velog.io/@wooder2050/%EB%A6%AC%EB%8D%95%EC%8A%A4Redux%EB%8A%94-%EC%99%9C-%EC%93%B0%EB%8A%94-%EA%B1%B4%EB%8D%B0)
