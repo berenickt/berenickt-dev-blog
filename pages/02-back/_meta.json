@@ -1,16 +1,16 @@
 {
   "intro": "Backend 로드맵",
-  "-- 1. Node 백엔드 --": {
+  "-- (1) Node 백엔드 --": {
     "type": "separator",
-    "title": "1. Node 백엔드"
+    "title": "(1) Node 백엔드"
   },
-  "nodejs": "Node.js",
-  "expressjs": "Express.js",
-  "nestjs": "Nest.js",
+  "nodejs": "NodeJs",
+  "expressjs": "ExpressJs",
+  "nestjs": "NestJs",
   "rxjs": "RxJS",
-  "-- 2. 기능 이론 --": {
+  "-- (2) 기능 이론 --": {
     "type": "separator",
-    "title": "2. 기능 이론"
+    "title": "(2) 기능 이론"
   },
   "crawling": "스크랩핑과 크롤링",
   "login": "로그인",
@@ -18,9 +18,9 @@
   "payment": "결제",
   "search": "검색",
   "msa": "MSA",
-  "-- 3. Database & SQL --": {
+  "-- (3) Database & SQL --": {
     "type": "separator",
-    "title": "3. Database & SQL"
+    "title": "(3) Database & SQL"
   },
   "database-type": "데이터베이스 종류",
   "oracle": "Oracle",
@@ -28,9 +28,9 @@
   "postgresql": "PostgreSQL",
   "redis": "Redis",
   "mongodb": "MongoDB",
-  "-- 4. 다른 API --": {
+  "-- (4) 다른 API --": {
     "type": "separator",
-    "title": "4. 다른 API"
+    "title": "(4) 다른 API"
   },
   "graphql": "GraphQL",
   "grpc": "gRPC"

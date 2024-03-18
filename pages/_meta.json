@@ -1,25 +1,29 @@
 {
-  "front": {
+  "01-front": {
     "type": "page",
     "title": "Front"
   },
-  "back": {
+  "02-back": {
     "type": "page",
     "title": "Back"
   },
-  "devops": {
+  "03-devops": {
     "type": "page",
     "title": "DevOps"
   },
-  "cs": {
+  "04-mobile": {
+    "type": "page",
+    "title": "Mobile"
+  },
+  "05-cs": {
     "type": "page",
     "title": "CS"
   },
-  "lang": {
+  "06-lang": {
     "type": "page",
     "title": "Lang"
   },
-  "memo": {
+  "07-memo": {
     "type": "page",
     "title": "Memo"
   },

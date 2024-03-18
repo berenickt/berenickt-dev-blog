@@ -1,41 +1,41 @@
 {
   "intro": "Front 로드맵",
-  "front-architecture": "프론트엔드 역사와 미래(feat. 상태관리)",
-  "-- 1. CSR --": {
+  "front-architecture": "프론트엔드 역사와 미래",
+  "-- (1) CSR --": {
     "type": "separator",
-    "title": "1. CSR"
+    "title": "(1) CSR"
   },
   "react": "React",
   "svelte": "Svelte",
-  "-- 2. 렌더링 프레임워크 --": {
+  "-- (2) 렌더링 프레임워크 --": {
     "type": "separator",
-    "title": "2. 렌더링 프레임워크"
+    "title": "(2) 렌더링 프레임워크"
   },
-  "nextjs": "Next.js",
-  "-- 3. Data Fetching --": {
+  "nextjs": "NextJs",
+  "-- (3) Data Fetching --": {
     "type": "separator",
-    "title": "3. Data Fetching"
+    "title": "(3) Data Fetching"
   },
   "data-fetching": "Data Fetching 라이브러리",
   "apollo-client": "Apollo Client",
   "tanstack-query": "Tanstack Query",
-  "-- 4. Router 라이브러리 --": {
+  "-- (4) Router 라이브러리 --": {
     "type": "separator",
-    "title": "4. Router 라이브러리"
+    "title": "(4) Router 라이브러리"
   },
   "react-router": "React-Router",
-  "-- 5. State Management --": {
+  "-- (5) State Management --": {
     "type": "separator",
-    "title": "5. State Management"
+    "title": "(5) State Management"
   },
   "state-management": "상태 관리 라이브러리",
   "redux-toolkit": "Redux ToolKit",
   "recoil": "Recoil",
   "mobx": "Mobx",
   "zustand": "Zustand",
-  "-- 6. Styling 라이브러리 --": {
+  "-- (6) Styling 라이브러리 --": {
     "type": "separator",
-    "title": "6. Styling 라이브러리"
+    "title": "(6) Styling 라이브러리"
   },
   "styling": "Styling 라이브러리",
   "postcss": "PostCSS",
@@ -43,57 +43,40 @@
   "emotion": "Emotion",
   "styled-components": "Styled Components",
   "tailwindcss": "TailwindCSS",
-  "-- 7. UI 라이브러리 --": {
+  "-- (7) UI 라이브러리 --": {
     "type": "separator",
-    "title": "7. UI 라이브러리"
+    "title": "(7) UI 라이브러리"
   },
   "ui-lib-kind": "UI 라이브러리 종류",
   "ui-lib": "UI 라이브러리",
-  "-- 8. Test 라이브러리 --": {
+  "-- (8) Test 라이브러리 --": {
     "type": "separator",
-    "title": "8. Test 라이브러리"
+    "title": "(8) Test 라이브러리"
   },
   "tdd": "테스트 주도 개발(TDD)",
   "jest": "Jest",
   "cypress": "Cypress",
   "react-test-lib": "React Test Lib(RTL)",
   "storybook": "Storybook",
-  "-- 9. 3D & 인터랙티브 --": {
+  "-- (9) 3D & 인터랙티브 --": {
     "type": "separator",
-    "title": "9. 데이터 시각화 & 인터랙티브 웹"
+    "title": "(9) 3D & 인터랙티브"
   },
+  "threejs": "Three.js",
   "canvas": "Canvas",
   "d3js": "D3.js",
   "chartjs": "Chart.js",
   "web-gl": "WebGL",
-  "threejs": "Three.js",
-  "-- 10. 번들러 --": {
+  "-- (10) 번들러 --": {
     "type": "separator",
-    "title": "10. 번들러"
+    "title": "(10) 번들러"
   },
   "webpack": "WebPack",
   "turbopack": "TurboPack",
   "vite": "Vite",
-  "-- 11. 크로스 플랫폼 앱 --": {
+  "-- (11) 기타 --": {
     "type": "separator",
-    "title": "11. 크로스 플랫폼 앱"
-  },
-  "react-native": "React Native",
-  "flutter": "Flutter",
-  "-- 12. 네이티브 앱 --": {
-    "type": "separator",
-    "title": "13. 네이티브 앱"
-  },
-  "android": "Android",
-  "ios": "IOS",
-  "-- 13. 데스크탑 앱 --": {
-    "type": "separator",
-    "title": "12. 데스크탑 앱"
-  },
-  "electron": "Electron",
-  "-- 14. 기타 --": {
-    "type": "separator",
-    "title": "14. 기타"
+    "title": "(11) 기타"
   },
   "web-rtc": "WebRtc-영상",
   "tensorflow": "TensorFlow-인공지능"
