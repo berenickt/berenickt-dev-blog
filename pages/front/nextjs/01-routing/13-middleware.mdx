@@ -272,10 +272,13 @@ export function middleware(request: NextRequest) {
   // 요청을 확인하기 위해 인증 함수를 호출
   if (!isAuthenticated(request)) {
     // 오류 메시지를 나타내는 JSON으로 응답
-    return new NextResponse(JSON.stringify({ success: false, message: 'authentication failed' }), {
-      status: 401,
-      headers: { 'content-type': 'application/json' },
-    })
+    return new NextResponse(
+      JSON.stringify({ success: false, message: 'authentication failed' }),
+      {
+        status: 401,
+        headers: { 'content-type': 'application/json' },
+      },
+    )
   }
 }
 ```
@@ -332,7 +335,10 @@ export default async function middleware(req) {
   }
 
   // trailing slash 처리 적용
-  if (!pathname.endsWith('/') && !pathname.match(/((?!\.well-known(?:\/.*)?)(?:[^/]+\/)*[^/]+\.\w+)/)) {
+  if (
+    !pathname.endsWith('/') &&
+    !pathname.match(/((?!\.well-known(?:\/.*)?)(?:[^/]+\/)*[^/]+\.\w+)/)
+  ) {
     req.nextUrl.pathname += '/'
     return NextResponse.redirect(req.nextUrl)
   }

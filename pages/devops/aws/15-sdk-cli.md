@@ -142,7 +142,11 @@ npm install --save @aws-sdk/client-s3
 `index.js` 파일을 하나 만든다.
 
 ```js index.js
-import { CreateBucketCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import {
+  CreateBucketCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3'
 
 export async function main() {
   const s3Client = new S3Client({})

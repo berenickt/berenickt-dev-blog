@@ -21,7 +21,13 @@ date: 2023/12/30
 
 import { useEffect } from 'react'
 
-export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string }
+  reset: () => void
+}) {
   useEffect(() => {
     // Log the error to an error reporting service
     console.error(error)
@@ -34,7 +40,8 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
         onClick={
           // Attempt to recover by trying to re-render the segment
           () => reset()
-        }>
+        }
+      >
         Try again
       </button>
     </div>
@@ -67,7 +74,13 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
 ```tsx app/dashboard/error.tsx
 'use client'
 
-export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string }
+  reset: () => void
+}) {
   return (
     <div>
       <h2>Something went wrong!</h2>
@@ -124,7 +137,13 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
 ```tsx app/global-error.tsx
 'use client'
 
-export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function GlobalError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string }
+  reset: () => void
+}) {
   return (
     <html>
       <body>

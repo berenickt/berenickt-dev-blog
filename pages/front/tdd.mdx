@@ -103,18 +103,18 @@ test("2+2는 5가 아님", () => {
 
 ```jsx
 // App.test.js
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { render, screen } from '@testing-library/react'
+import App from './App'
 
 test('renders learn react link', () => {
   // ** render : DOM에 컴포넌트를 랜더링하는 함수
   // 인자로 랜더링할 React 컴포넌트가 들어감
-  render(<App />);
+  render(<App />)
 
   // render의 인자로 들어있는 컴포넌트에 learn react라는 텍스트가 들어있는지 없는지 테스트
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
-});
+  const linkElement = screen.getByText(/learn react/i)
+  expect(linkElement).toBeInTheDocument()
+})
 ```
 
 ---
@@ -221,7 +221,12 @@ npm install eslint-plugin-testing-library eslint-plugin-jest-dom
 // .eslintrc.json
 {
   "plugins": ["testing-library", "jest-dom"],
-  "extends": ["react-app", "react-app/jest", "plugin:testing-library/react", "plugin:jest-dom/recommend"]
+  "extends": [
+    "react-app",
+    "react-app/jest",
+    "plugin:testing-library/react",
+    "plugin:jest-dom/recommend"
+  ]
 }
 ```
 

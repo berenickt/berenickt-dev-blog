@@ -93,7 +93,11 @@ export default function DashboardLayout({
 이 레이아웃은 필수이며, 서버에서 반환된 초기 HTML을 수정할 수 있도록 `html` 및 `body` 태그를 포함해야 합니다.
 
 ```tsx app/layout.tsx
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
       <body>{children}</body>
@@ -114,7 +118,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ![Nesting Layouts](https://nextjs.org/_next/image?url=%2Fdocs%2Flight%2Fnested-layout.png&w=3840&q=75&dpl=dpl_AGVpExNSxGb3dC5jrZYnL2rzPEsj)
 
 ```tsx app/dashboard/layout.tsx
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return <section>{children}</section>
 }
 ```

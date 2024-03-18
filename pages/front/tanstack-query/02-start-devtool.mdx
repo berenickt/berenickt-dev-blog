@@ -14,7 +14,13 @@ React Query는 3가지 핵심 개념을 가진다.
 [CodesandBox Example](https://codesandbox.io/p/devbox/tanstack-query-example-react-simple-lskn7u?embed=1&file=%2Fsrc%2Findex.jsx%3A12%2C38)
 
 ```tsx
-import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 import { getTodos, postTodo } from '../my-api'
 
 // Create a client
@@ -55,7 +61,8 @@ function Todos() {
             id: Date.now(),
             title: 'Do Laundry',
           })
-        }}>
+        }}
+      >
         Add Todo
       </button>
     </div>
@@ -144,9 +151,11 @@ import { Example } from './Example'
 const queryClient = new QueryClient()
 
 const ReactQueryDevtoolsProduction = React.lazy(() =>
-  import('@tanstack/react-query-devtools/build/modern/production.js').then(d => ({
-    default: d.ReactQueryDevtools,
-  })),
+  import('@tanstack/react-query-devtools/build/modern/production.js').then(
+    d => ({
+      default: d.ReactQueryDevtools,
+    }),
+  ),
 )
 
 function App() {

@@ -243,7 +243,10 @@ index 1이 (-)일 때의 자식 노드의 경우의 수 (+), (-) 를 모두 탐�
 function solution(numbers, target) {
   function DFS(index, sum) {
     if (index === numbers.length) return sum === target ? 1 : 0
-    return DFS(index + 1, sum + numbers[index]) + DFS(index + 1, sum - numbers[index])
+    return (
+      DFS(index + 1, sum + numbers[index]) +
+      DFS(index + 1, sum - numbers[index])
+    )
   }
   return DFS(0, 0)
 }
@@ -294,7 +297,13 @@ function solution(maps) {
 
     for (let i = 0; i < DIRECTION.length; i++) {
       const [nextX, nextY] = [x + DIRECTION[i][0], y + DIRECTION[i][1]]
-      if (nextX < 0 || nextX >= X_LEN || nextY < 0 || nextY >= Y_LEN || maps[nextX][nextY] === 0) {
+      if (
+        nextX < 0 ||
+        nextX >= X_LEN ||
+        nextY < 0 ||
+        nextY >= Y_LEN ||
+        maps[nextX][nextY] === 0
+      ) {
         continue
       }
 

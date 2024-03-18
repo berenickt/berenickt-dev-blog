@@ -252,7 +252,12 @@ $ nest g resource
 `chats/chats.gateway.ts` 파일을 만든다.
 
 ```ts chats/chats.gateway.ts
-import { MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets'
+import {
+  MessageBody,
+  OnGatewayConnection,
+  SubscribeMessage,
+  WebSocketGateway,
+} from '@nestjs/websockets'
 import { Socket } from 'socket.io'
 
 @WebSocketGateway({
@@ -765,7 +770,10 @@ export class ChatsMessagesService {
     })
   }
 
-  paginteMessages(dto: BasePaginationDto, overrideFindOptions: FindManyOptions<MessagesModel>) {
+  paginteMessages(
+    dto: BasePaginationDto,
+    overrideFindOptions: FindManyOptions<MessagesModel>,
+  ) {
     return this.commonService.paginate(
       dto, //
       this.messagesRepository,
@@ -810,7 +818,10 @@ export class ChatsGateway implements OnGatewayConnection {
   ) {}
   // 생략
   @SubscribeMessage('send_message')
-  async sendMessage(@MessageBody() dto: CreateMessagesDto, @ConnectedSocket() socket: Socket) {
+  async sendMessage(
+    @MessageBody() dto: CreateMessagesDto,
+    @ConnectedSocket() socket: Socket,
+  ) {
     const chatExists = await this.chatsService.checkIfChatExists(dto.chatId)
 
     if (!chatExists) {
@@ -821,7 +832,9 @@ export class ChatsGateway implements OnGatewayConnection {
     }
 
     const message = await this.messageService.createMessage(dto)
-    socket.to(message.chat.id.toString()).emit('receive_message', message.message)
+    socket
+      .to(message.chat.id.toString())
+      .emit('receive_message', message.message)
   }
 }
 ```

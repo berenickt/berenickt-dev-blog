@@ -254,14 +254,20 @@ HEX 표기법은 앞에 #을 붙이는 것이 특징입니다.
 
 - `line-height`: 줄 간격, 행간
 
-<img src="https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_2_2.png" alt="CSS_2_2" />
+<img
+  src="https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_2_2.png"
+  alt="CSS_2_2"
+/>
 
 - 웹페이지에 텍스트를 쓰게되면 위아래에 임의의 공간이 발생합니다.
 - 이를 정식 명칭으로 `리딩(leading) 영역`이라고 합니다.
 - 리딩 영역이 자동으로 생기는 이유는 여러 줄의 텍스트가 생성되었을 떄,
 - 글자와 글자 사이에 간격을 주어 가독성을 높이기 위함입니다.
 
-<img src="https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_2_3.png" alt="CSS_2_3" />
+<img
+  src="https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_2_3.png"
+  alt="CSS_2_3"
+/>
 
 - line-height의 높이를 임의적으로 조절하고 싶을 떄,
 - `line-height` 속성을 사용하면 됩니다. 참고로 **폰트 글꼴의 디자이너가 임의로 만든 공간은 CSS로 제어가 불가능**합니다.
@@ -556,7 +562,10 @@ p {
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+<link
+  href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
+  rel="stylesheet"
+/>
 ```
 
 ```html
@@ -570,7 +579,10 @@ p {
     <title>Google Web Font</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
   </head>
 
@@ -735,7 +747,10 @@ margin 겹침 현상은 <u>인접한 margin 값이 둘 중 더 큰 값으로 통
 어떤 두 요소가 있는데 첫 번째 요소에는 margin 값이 아래쪽에 20px이 적용됐고,
 두 번째 요소에는 margin 값이 위쪽으로 30px이 적용됐다고 가정해 보겠습니다. 이를 그림으로 표현하면 다음과 같습니다.
 
-<img src="https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_2_4.png" alt="CSS_2_4" />
+<img
+  src="https://raw.githubusercontent.com/berenickt/image-server/main/img/CSS_2_4.png"
+  alt="CSS_2_4"
+/>
 
 두 요소 사이의 간격은 <u>20px과 30px을 합한</u> 50px이 될 것 같지만, 실제로는 <u>30px이 적용</u>됩니다. 이러한 현상이 바로 `margin 겹침 현상`입니다. 이는 같은 레벨(형제 관계)에 있는 요소들의 margin 영역이 중첩되면 더 큰 값을 가진 margin 영역으로 병합되어 출력되는 현상입니다.
 

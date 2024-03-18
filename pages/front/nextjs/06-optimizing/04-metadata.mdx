@@ -47,7 +47,10 @@ type Props = {
   searchParams: { [key: string]: string | string[] | undefined }
 }
 
-export async function generateMetadata({ params, searchParams }: Props, parent: ResolvingMetadata): Promise<Metadata> {
+export async function generateMetadata(
+  { params, searchParams }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
   // read route params
   const id = params.id
 
@@ -251,7 +254,8 @@ export async function GET() {
           textAlign: 'center',
           alignItems: 'center',
           justifyContent: 'center',
-        }}>
+        }}
+      >
         Hello world!
       </div>
     ),
@@ -299,7 +303,10 @@ export default async function Page({ params }) {
   return (
     <section>
       {/* Add JSON-LD to your page */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* ... */}
     </section>
   )

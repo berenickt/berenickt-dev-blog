@@ -59,7 +59,7 @@ date: 2024/01/10
 - 공식문서 참고 : https://reactnative.dev/docs/environment-setup?guide=native
 - Node, Watchman, React Native CLI, JDK 및 Android Studio가 필요하다.
 
-------
+---
 
 ### 4.1 Homebrew 설치
 
@@ -75,7 +75,7 @@ $ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/
 $ echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/<USER_ID>/.zprofile
 
 $ eval "$(/opt/homebrew/bin/brew shellenv)"
- 
+
 ## brew 동작 확인
 $ brew help
 
@@ -83,8 +83,8 @@ $ brew help
 $ sudo chown -R $(whoami) /opt/homebrew
 ```
 
-* `Homebrew` : MAC/Linux에서 패키지를 설치하고 관리할 수 있는 맥용 패키지 관리자
-* https://brew.sh/
+- `Homebrew` : MAC/Linux에서 패키지를 설치하고 관리할 수 있는 맥용 패키지 관리자
+- https://brew.sh/
 
 ---
 
@@ -175,13 +175,13 @@ $ gem install jekyll bunlder
 
 ✅ Xcode > Preferences > Locations > Command Line Tools 선택
 
-✅Cocoapods을 이용하는 Xcode Project의 경우 pod 명령어를 기본 터미널로 바로 사용할 경우 정상적으로 동작되지 않는다. 
+✅Cocoapods을 이용하는 Xcode Project의 경우 pod 명령어를 기본 터미널로 바로 사용할 경우 정상적으로 동작되지 않는다.
 
-* 이때 아래와 같이 터미널에 Rosetta로 실행되도록 설정해 주어야 한다. 
-* **'Rosetta를 사용하여 열기' 항목에 체크**를 해준다.
-* application > 터미널 우클릭 > 정보가져오기에서 로제타로 실행을 클릭
-* application > iTerm2 우클릭 > 정보가져오기에서 로제타로 실행을 클릭
-* `Intel`과 `Apple Silicon`간에 소통을 도와주는 `로제타(Rosetta)`를 사용하기 위해서
+- 이때 아래와 같이 터미널에 Rosetta로 실행되도록 설정해 주어야 한다.
+- **'Rosetta를 사용하여 열기' 항목에 체크**를 해준다.
+- application > 터미널 우클릭 > 정보가져오기에서 로제타로 실행을 클릭
+- application > iTerm2 우클릭 > 정보가져오기에서 로제타로 실행을 클릭
+- `Intel`과 `Apple Silicon`간에 소통을 도와주는 `로제타(Rosetta)`를 사용하기 위해서
 
 ---
 
@@ -198,6 +198,7 @@ javac -version
 ```
 
 - React Native 공식문서에 따르면, Homebrew로 Azul Zulu OpenJDK 설치를 권장한다.
+
   - 이는 Intel칩, M1칩 맥북 모두 지원한다. **11버전 이상** 설치를 권장함.
   - 이전에 다른 버전의 자바가 깔려있었다면 환경변수 수정해주기
   - Homebrew를 사용하여 Azul Zulu 라는 OpenJDK 배포판을 설치
@@ -216,6 +217,7 @@ Android Studio 설치 시 아래 세 가지 요소는 반드시 설치해야 한
 3. Android Virtual Device
 
 https://developer.android.com/studio
+
 - Android Developer 페이지에 접속해, Android Studio의 설치파일을 다운로드
 - M1 Mac 사용 시 Mac with Apple chip을 선택
 - Intel Mac 사용 시 Mac with Intel chip을 선택
@@ -350,4 +352,3 @@ $ npx create-expo-app 프로젝트명
 $ npx expo start
 # 원하는 기기를 i나 a 등을 눌러서 열기
 ```
-

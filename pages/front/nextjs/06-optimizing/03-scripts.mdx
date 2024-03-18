@@ -12,7 +12,11 @@ To load a third-party script for multiple routes, import `next/script` and inclu
 ```tsx app/dashboard/layout.tsx
 import Script from 'next/script'
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <>
       <section>{children}</section>
@@ -33,7 +37,11 @@ To load a third-party script for all routes, import `next/script` and include th
 ```tsx app/layout.tsx
 import Script from 'next/script'
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
       <body>{children}</body>

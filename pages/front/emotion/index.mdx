@@ -17,17 +17,17 @@ $ npm i @emotion/styled @emotion/react
 ### 3.2.1 App.js
 
 ```jsx
-import './App.css';
-import EmotionExample from './components/EmotionExample/EmotionExample';
+import './App.css'
+import EmotionExample from './components/EmotionExample/EmotionExample'
 // import StyledComponentsExample from './components/StyledComponentsExample/StyledComponentsExample';
 
 export default function App() {
   return (
-    <div className='App'>
+    <div className="App">
       <EmotionExample />
       {/* <StyledComponentsExample /> */}
     </div>
-  );
+  )
 }
 ```
 
@@ -36,8 +36,8 @@ export default function App() {
 ```jsx
 // src/components/EmotionExample/EmotionExample.jsx
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
-import styled from '@emotion/styled';
+import { css } from '@emotion/react'
+import styled from '@emotion/styled'
 
 const Button = styled.button`
   padding: 32px;
@@ -49,26 +49,26 @@ const Button = styled.button`
   &:hover {
     color: white;
   }
-`;
+`
 
-const color = 'white';
+const color = 'white'
 
 const style = css`
   color: hotpink;
-`;
+`
 
 const SomeComponent = ({ children }) => (
   <div css={style}>
     Some hotpink text.
     {children}
   </div>
-);
+)
 
 const anotherStyle = css({
   textDecoration: 'underline',
-});
+})
 
-const P = (props) => (
+const P = props => (
   <p
     css={{
       margin: 0,
@@ -79,9 +79,9 @@ const P = (props) => (
     }}
     {...props} // <- props contains the `className` prop
   />
-);
+)
 
-const ArticleText = (props) => (
+const ArticleText = props => (
   <P
     css={{
       fontSize: 14,
@@ -90,18 +90,20 @@ const ArticleText = (props) => (
     }}
     {...props} // <- props contains the `className` prop
   />
-);
+)
 
-const AnotherComponent = () => <div css={[anotherStyle, style]}>Some text with an underline.</div>;
+const AnotherComponent = () => (
+  <div css={[anotherStyle, style]}>Some text with an underline.</div>
+)
 
 const danger = css`
   color: red;
-`;
+`
 
 const base = css`
   background-color: darkgreen;
   color: turquoise;
-`;
+`
 
 export default function EmotionExample() {
   return (
@@ -126,11 +128,14 @@ export default function EmotionExample() {
       <ArticleText>Article</ArticleText>
       <div>
         <div css={base}>This will be turquoise</div>
-        <div css={[danger, base]}>This will be also be turquoise since the base styles overwrite the danger styles.</div>
+        <div css={[danger, base]}>
+          This will be also be turquoise since the base styles overwrite the
+          danger styles.
+        </div>
         <div css={[base, danger]}>This will be red</div>
       </div>
     </>
-  );
+  )
 }
 ```
 
@@ -148,7 +153,7 @@ https://emotion.sh/docs/media-queries
 ```jsx
 // src/components/EmotionExample/EmotionExample.jsx
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
+import { css } from '@emotion/react'
 
 export default function EmotionExample() {
   return (
@@ -164,7 +169,7 @@ export default function EmotionExample() {
         Some text!
       </p>
     </>
-  );
+  )
 }
 ```
 
@@ -177,7 +182,7 @@ https://emotion.sh/docs/globals
 ```jsx
 // src/components/EmotionExample/EmotionExample.jsx
 /** @jsxImportSource @emotion/react */
-import { Global, css } from '@emotion/react';
+import { Global, css } from '@emotion/react'
 
 export default function EmotionExample() {
   return (
@@ -201,7 +206,7 @@ export default function EmotionExample() {
       </p>
       <p>Hello, world!</p>
     </>
-  );
+  )
 }
 ```
 
@@ -214,7 +219,7 @@ export default function EmotionExample() {
 ```jsx
 // src/components/EmotionExample/EmotionExample.jsx
 /** @jsxImportSource @emotion/react */
-import { Global, css, keyframes } from '@emotion/react';
+import { Global, css, keyframes } from '@emotion/react'
 
 const bounce = keyframes`
   from, 20%, 53%, 80%, to {
@@ -232,7 +237,7 @@ const bounce = keyframes`
   90% {
     transform: translate3d(0,-4px,0);
   }
-`;
+`
 
 export default function EmotionExample() {
   return (
@@ -263,7 +268,7 @@ export default function EmotionExample() {
         some bouncing text!
       </div>
     </>
-  );
+  )
 }
 ```
 
@@ -276,7 +281,7 @@ https://emotion.sh/docs/class-names
 ```jsx
 // src/components/EmotionExample/EmotionExample.jsx
 /** @jsxImportSource @emotion/react */
-import { Global, css, keyframes, ClassNames } from '@emotion/react';
+import { Global, css, keyframes, ClassNames } from '@emotion/react'
 
 const bounce = keyframes`
   from, 20%, 53%, 80%, to {
@@ -294,15 +299,15 @@ const bounce = keyframes`
   90% {
     transform: translate3d(0,-4px,0);
   }
-`;
+`
 
 // this might be a component from npm that accepts a wrapperClassName prop
-let SomeComponent = (props) => (
+let SomeComponent = props => (
   <div className={props.wrapperClassName}>
     in the wrapper!
     <div className={props.className}>{props.children}</div>
   </div>
-);
+)
 
 export default function EmotionExample() {
   return (
@@ -345,7 +350,7 @@ export default function EmotionExample() {
         )}
       </ClassNames>
     </>
-  );
+  )
 }
 ```
 

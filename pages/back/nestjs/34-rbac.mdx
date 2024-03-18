@@ -36,7 +36,13 @@ deletePost(@Param('id', ParseIntPipe) id: number) {
 `users/guard/roles.guard.ts` 파일을 만든다.
 
 ```ts users/guard/roles.guard.ts
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common'
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common'
 
 import { Reflector } from '@nestjs/core'
 import { ROLES_KEY } from '../decorator/roles.decorator'
@@ -64,7 +70,9 @@ export class RolesGuard implements CanActivate {
     }
 
     if (user.role !== requiredRole) {
-      throw new ForbiddenException(`이 작업을 수행할 권한이 없습니다. ${requiredRole} 권한이 필요합니다.`)
+      throw new ForbiddenException(
+        `이 작업을 수행할 권한이 없습니다. ${requiredRole} 권한이 필요합니다.`,
+      )
     }
 
     return true
@@ -251,7 +259,13 @@ postRegisterEmail(@Body() body: RegisterUserDto) {
 모든 API를 비공개로 바꿨으니, 공개 API로 만들 API를 찾아서 IsPublic 어노테이션을 붙여준다.
 
 ```ts common.controller.ts
-import { Controller, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common'
+import {
+  Controller,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common'
 import { CommonService } from './common.service'
 import { FileInterceptor } from '@nestjs/platform-express'
 

@@ -114,7 +114,14 @@ export default Component
 
 ```tsx
 import React, { useEffect, useState } from 'react'
-import { View, Text, Button, TextInput, Switch, ActivityIndicator } from 'react-native'
+import {
+  View,
+  Text,
+  Button,
+  TextInput,
+  Switch,
+  ActivityIndicator,
+} from 'react-native'
 
 const Component = () => {
   const [count, setCount] = useState(0)
@@ -152,15 +159,25 @@ const Component = () => {
       <Text>You clicked {count} times</Text>
       <Button title="Click me" onPress={() => setCount(count + 1)} />
 
-      <Text style={{ marginVertical: 15 }}>-------------------------------------------------</Text>
+      <Text style={{ marginVertical: 15 }}>
+        -------------------------------------------------
+      </Text>
       <Switch value={isOn} onValueChange={setIsOn} />
 
-      <Text style={{ marginVertical: 15 }}>-------------------------------------------------</Text>
+      <Text style={{ marginVertical: 15 }}>
+        -------------------------------------------------
+      </Text>
 
       <Text>input: {input}</Text>
-      <TextInput value={input} onChangeText={setInput} style={{ borderBottomWidth: 1, borderColor: 'grey' }} />
+      <TextInput
+        value={input}
+        onChangeText={setInput}
+        style={{ borderBottomWidth: 1, borderColor: 'grey' }}
+      />
 
-      <Text style={{ marginVertical: 15 }}>-------------------------------------------------</Text>
+      <Text style={{ marginVertical: 15 }}>
+        -------------------------------------------------
+      </Text>
       <Button
         title="새로고침!"
         onPress={() => {
@@ -216,9 +233,24 @@ const CustomHook = () => {
 
   return (
     <View>
-      <InputBox value={name} onChangeText={setName} placeholder="이름을 입력해 주세요" onReset={resetName} />
-      <InputBox value={age} onChangeText={setAge} placeholder="나이를 입력해 주세요" onReset={resetAge} />
-      <InputBox value={city} onChangeText={setCity} placeholder="사는 곳을 입력해 주세요" onReset={resetCity} />
+      <InputBox
+        value={name}
+        onChangeText={setName}
+        placeholder="이름을 입력해 주세요"
+        onReset={resetName}
+      />
+      <InputBox
+        value={age}
+        onChangeText={setAge}
+        placeholder="나이를 입력해 주세요"
+        onReset={resetAge}
+      />
+      <InputBox
+        value={city}
+        onChangeText={setCity}
+        placeholder="사는 곳을 입력해 주세요"
+        onReset={resetCity}
+      />
     </View>
   )
 }

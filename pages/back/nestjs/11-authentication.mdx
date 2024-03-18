@@ -576,7 +576,11 @@ export class AuthController {
   }
 
   @Post('register/email')
-  registerEmail(@Body('nickname') nickname: string, @Body('email') email: string, @Body('password') password: string) {
+  registerEmail(
+    @Body('nickname') nickname: string,
+    @Body('email') email: string,
+    @Body('password') password: string,
+  ) {
     return this.authService.registerWithEmail({
       nickname,
       email,

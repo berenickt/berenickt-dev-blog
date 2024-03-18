@@ -83,7 +83,12 @@ deletePost(@Param('id', ParseIntPipe) id: number) {
 - 커스텀 파이프를 만들기 위해 import 하는 건 그냥 외우면 된다.
 
 ```ts password.pipe.ts
-import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common'
+import {
+  ArgumentMetadata,
+  BadRequestException,
+  Injectable,
+  PipeTransform,
+} from '@nestjs/common'
 
 @Injectable()
 export class PasswordPipe implements PipeTransform {
@@ -146,7 +151,12 @@ new로 인스턴스화를 해주면, 해당 함수가 실행될 떄마다 Defaul
 `password.pipe.ts`에 최소, 최대길이 커스텀 파이프를 만든다.
 
 ```ts password.pipe.ts
-import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common'
+import {
+  ArgumentMetadata,
+  BadRequestException,
+  Injectable,
+  PipeTransform,
+} from '@nestjs/common'
 
 @Injectable()
 export class PasswordPipe implements PipeTransform {
@@ -167,7 +177,9 @@ export class MaxLengthPipe implements PipeTransform {
 
   transform(value: any, metadata: ArgumentMetadata) {
     if (value.toString().length > this.length) {
-      throw new BadRequestException(`${this.subject}의 최대 길이는 ${this.length}입니다.`)
+      throw new BadRequestException(
+        `${this.subject}의 최대 길이는 ${this.length}입니다.`,
+      )
     }
     return value.toString()
   }

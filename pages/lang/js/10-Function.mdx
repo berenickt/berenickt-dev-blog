@@ -411,14 +411,22 @@ arr.reduce((accumulator, currentValue, index, array) => {}, initialValue)
 ```js
 const numberArr = [1, 2, 3, 4, 5]
 
-const sum = numberArr.reduce((previousValue, currentValue, currentIndex, thisArray) => {
-  console.log(
-    'Current Index: ' + currentIndex + ' / Previous Value: ' + previousValue + ' / Current Value: ' + currentValue,
-  )
+const sum = numberArr.reduce(
+  (previousValue, currentValue, currentIndex, thisArray) => {
+    console.log(
+      'Current Index: ' +
+        currentIndex +
+        ' / Previous Value: ' +
+        previousValue +
+        ' / Current Value: ' +
+        currentValue,
+    )
 
-  // 연산한 결과값을 누산기previousValue에 넣어 최종값을 얻는다.
-  return previousValue + currentValue
-}, 0)
+    // 연산한 결과값을 누산기previousValue에 넣어 최종값을 얻는다.
+    return previousValue + currentValue
+  },
+  0,
+)
 
 console.log('Sum: ' + sum)
 // Current Index: 0 / Previous Value: 0 / Current Value: 1

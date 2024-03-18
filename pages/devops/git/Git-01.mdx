@@ -1,16 +1,16 @@
 ---
-title: "01-Git 쓰는 이유와 설치"
+title: '01-Git 쓰는 이유와 설치'
 date: 2023/01/11
 ---
 
 # 1. git을 왜 쓰나
 
-코드를 짜든 디자인을 하든 레포트를 쓰든 **파일 변경내역을 보존하고 관리**하는 과정이 필요합니다. 
+코드를 짜든 디자인을 하든 레포트를 쓰든 **파일 변경내역을 보존하고 관리**하는 과정이 필요합니다.
 
-* 2023-01-11-디자인 시안_최종
-* 2023-01-12-디자인 시안_최종의 최종
-* 2023-01-13-디자인 시안_최종의 최종2
-* 2023-01-14-디자인 시안_진짜 마지막
+- 2023-01-11-디자인 시안\_최종
+- 2023-01-12-디자인 시안\_최종의 최종
+- 2023-01-13-디자인 시안\_최종의 최종2
+- 2023-01-14-디자인 시안\_진짜 마지막
 
 > Q. 2일 전 코드로 되돌아가려면?
 >
@@ -21,9 +21,9 @@ date: 2023/01/11
 
 Git은 **토르발스 리눅스(Linux 창시자)가 2005년에 만든 프로그램**
 
-* git checkout 파생명령어 20개 외울 필요없이 신 문법 switch, restore 등을 사용
+- git checkout 파생명령어 20개 외울 필요없이 신 문법 switch, restore 등을 사용
 
-------
+---
 
 # 2. git 설치
 
@@ -31,15 +31,15 @@ Git은 **토르발스 리눅스(Linux 창시자)가 2005년에 만든 프로그�
 
 https://git-scm.com/download/win
 
-(1) 설치시 기본 에디터가 Vim으로 설정되어있으면, 설치한 **VSCode 에디터로**  변경
+(1) 설치시 기본 에디터가 Vim으로 설정되어있으면, 설치한 **VSCode 에디터로** 변경
 
-* [Use Visual Studio Code as Git’s default editor] 선택
+- [Use Visual Studio Code as Git’s default editor] 선택
 
 (2) 기본 브랜치 이름을 요즘은 master라고 안쓰고, **main**이라고 씀, main으로 변경하기
 
-* [Override the default branch name for new repositoriex]에서 main으로 적기
+- [Override the default branch name for new repositoriex]에서 main으로 적기
 
-------
+---
 
 ## 2.2 Mac
 
@@ -48,7 +48,7 @@ $ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/
 $ brew install git # git 설치
 ```
 
-------
+---
 
 # 3. git 이름, 이메일 설정
 
@@ -73,35 +73,35 @@ $ git config user.email
 berenickt99@gmail.com
 ```
 
-Git을 설치하게 되면 Git에 관련된 모든 환경설정이 `.gitconfig`라는 파일 안에 저장되는데, 
+Git을 설치하게 되면 Git에 관련된 모든 환경설정이 `.gitconfig`라는 파일 안에 저장되는데,
 터미널에서도 간단하게 확인 가능
 
-------
+---
 
 # 4. core.autocrlf 설정
 
 > CR, LF, CRLF
 >
-> * `CR(Carriage-Return)` : 현재 커서를 줄 올림 없이 가장 앞으로 옮기는 동작
-> * `LF(Line-Feed)` : 커서는 그 자리에 그대로 둔 상황에서 종이만 한 줄 올려 줄을 바꾸는 동작
-> * `CRLF (Carriage-Return+Line-Feed)` : 줄바꿈
+> - `CR(Carriage-Return)` : 현재 커서를 줄 올림 없이 가장 앞으로 옮기는 동작
+> - `LF(Line-Feed)` : 커서는 그 자리에 그대로 둔 상황에서 종이만 한 줄 올려 줄을 바꾸는 동작
+> - `CRLF (Carriage-Return+Line-Feed)` : 줄바꿈
 
-운영체제마다 에디터에서 새로운 줄바꿈을 할 때, 들어가는 문자열이 다릅니다. 
+운영체제마다 에디터에서 새로운 줄바꿈을 할 때, 들어가는 문자열이 다릅니다.
 
-* 윈도우의 경우 carriage-return과 line feed가 동시에 들어가는 반면에, 
-* MAC에서는 line feed 하나만 들어갑니다. 
+- 윈도우의 경우 carriage-return과 line feed가 동시에 들어가는 반면에,
+- MAC에서는 line feed 하나만 들어갑니다.
 
-이런 차이점 떄문에 Git Repository를 다양한 운영체제에서 쓰는 경우 내가 수정하지 않았음에도 불구하고 
-줄바꿈 문자열이 달라져서 Git History나 Git Blame을 보는데 문제가 있을 수 있습니다. 
+이런 차이점 떄문에 Git Repository를 다양한 운영체제에서 쓰는 경우 내가 수정하지 않았음에도 불구하고
+줄바꿈 문자열이 달라져서 Git History나 Git Blame을 보는데 문제가 있을 수 있습니다.
 
 이것을 수정하는 속성이 autocrlf 설정입니다.
 
-* 윈도우에서 true로 설정하게 되면 
-  * Git에 저장할 떄는 carriage-return을 삭제하게 되고, 
-  * 다시 Git에서 윈도우로 가져올 떄는 자동으로 carriage-return을 붙여줍니다. 
-* Mac에서는 input으로 설정하게 되면
-  * Git에서 받아올 떄는 별다른 수정이 일어나지 않지만,
-  * 저장할 떄는 carriage-return을 삭제해줍니다.
+- 윈도우에서 true로 설정하게 되면
+  - Git에 저장할 떄는 carriage-return을 삭제하게 되고,
+  - 다시 Git에서 윈도우로 가져올 떄는 자동으로 carriage-return을 붙여줍니다.
+- Mac에서는 input으로 설정하게 되면
+  - Git에서 받아올 떄는 별다른 수정이 일어나지 않지만,
+  - 저장할 떄는 carriage-return을 삭제해줍니다.
 
 ```sh
 # MAC 사용자는 git config --global core.autocrlf input
@@ -116,7 +116,7 @@ $ git config --global core.autocrlf true
 # 파일은 작업 디렉토리에 원래 줄 끝이 있습니다.
 ```
 
-------
+---
 
 # [참고]
 

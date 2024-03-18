@@ -18,7 +18,11 @@ CSS Modules can be imported into any file inside the `app` directory:
 ```tsx app/dashboard/layout.tsx
 import styles from './styles.module.css'
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return <section className={styles.dashboard}>{children}</section>
 }
 ```
@@ -59,7 +63,11 @@ Inside the root layout (`app/layout.js`), import the `global.css` stylesheet to 
 // These styles apply to every route in the application
 import './global.css'
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
       <body>{children}</body>
@@ -77,7 +85,11 @@ Stylesheets published by external packages can be imported anywhere in the `app`
 ```tsx app/layout.tsx
 import 'bootstrap/dist/css/bootstrap.css'
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
       <body className="container">{children}</body>

@@ -121,7 +121,13 @@ export default function Layout({ auth }: { auth: React.ReactNode }) {
 ```tsx app/dashboard/layout.tsx
 import { checkUserRole } from '@/lib/auth'
 
-export default function Layout({ user, admin }: { user: React.ReactNode; admin: React.ReactNode }) {
+export default function Layout({
+  user,
+  admin,
+}: {
+  user: React.ReactNode
+  admin: React.ReactNode
+}) {
   const role = checkUserRole()
   return <>{role === 'admin' ? admin : user}</>
 }
@@ -226,7 +232,13 @@ export default function Page() {
 ```tsx app/layout.tsx
 import Link from 'next/link'
 
-export default function Layout({ auth, children }: { auth: React.ReactNode; children: React.ReactNode }) {
+export default function Layout({
+  auth,
+  children,
+}: {
+  auth: React.ReactNode
+  children: React.ReactNode
+}) {
   return (
     <>
       <nav>
@@ -261,7 +273,8 @@ export function Modal({ children }: { children: React.ReactNode }) {
       <button
         onClick={() => {
           router.back()
-        }}>
+        }}
+      >
         Close modal
       </button>
       <div>{children}</div>

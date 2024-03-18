@@ -38,12 +38,20 @@ Interceptors에는 AOP([Aspect Oriented Programming](https://en.wikipedia.org/wi
 `common/interceptor/log.interceptor.ts` 파일을 만든다.
 
 ```ts common/interceptor/log.interceptor.ts
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common'
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common'
 import { Observable, tap } from 'rxjs'
 
 @Injectable()
 export class LogInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> {
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler<any>,
+  ): Observable<any> {
     /**
      * 요청이 들어올때 REQ 요청이 들어온 타임스탬프를 찍는다.
      * [REQ] {요청 path} {요청 시간}
@@ -126,7 +134,10 @@ import { DataSource } from 'typeorm'
 export class TransactionInterceptor implements NestInterceptor {
   constructor(private readonly dataSource: DataSource) {}
 
-  async intercept(context: ExecutionContext, next: CallHandler<any>): Promise<Observable<any>> {
+  async intercept(
+    context: ExecutionContext,
+    next: CallHandler<any>,
+  ): Promise<Observable<any>> {
     const req = context.switchToHttp().getRequest()
 
     // 트랜잭션과 관련되 모든 쿼리를 담당할 쿼리 러너를 생성한다.
@@ -165,19 +176,25 @@ export class TransactionInterceptor implements NestInterceptor {
 `common/decorator/query-runner.decorator.ts` 파일을 만든다.
 
 ```ts common/decorator/query-runner.decorator.ts
-import { ExecutionContext, InternalServerErrorException, createParamDecorator } from '@nestjs/common'
+import {
+  ExecutionContext,
+  InternalServerErrorException,
+  createParamDecorator,
+} from '@nestjs/common'
 
-export const QueryRunner = createParamDecorator((data, context: ExecutionContext) => {
-  const req = context.switchToHttp().getRequest()
+export const QueryRunner = createParamDecorator(
+  (data, context: ExecutionContext) => {
+    const req = context.switchToHttp().getRequest()
 
-  if (!req.queryRunner) {
-    throw new InternalServerErrorException(
-      `QueryRunner Decorator를 사용하려면 TransactionInterceptor를 적용해야 합니다.`,
-    )
-  }
+    if (!req.queryRunner) {
+      throw new InternalServerErrorException(
+        `QueryRunner Decorator를 사용하려면 TransactionInterceptor를 적용해야 합니다.`,
+      )
+    }
 
-  return req.queryRunner
-})
+    return req.queryRunner
+  },
+)
 ```
 
 posts 컨트롤러에 Transaction Interceptor을 적용한다.

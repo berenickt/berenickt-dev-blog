@@ -639,7 +639,9 @@ const raw = 'AAAAAABBBDFFFFFFFKK'
 const compressed = '6A3B1D7F2K'
 
 const regExp = /(.)\1*/g
-const result = raw.match(regExp).reduce((a, b) => a + `${b.length}${b.slice(0, 1)}`, '')
+const result = raw
+  .match(regExp)
+  .reduce((a, b) => a + `${b.length}${b.slice(0, 1)}`, '')
 
 console.log(result) // 6A3B1D7F2K
 console.log(result === compressed) // true

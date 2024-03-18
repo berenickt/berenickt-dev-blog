@@ -73,7 +73,9 @@ root.render(<ul>{listItems}</ul>) // 1부터 5까지의 숫자로 이루어진 �
 ```jsx
 function NumberList(props) {
   const numbers = props.numbers
-  const listItems = numbers.map(number => <li key={number.toString()}>{number}</li>)
+  const listItems = numbers.map(number => (
+    <li key={number.toString()}>{number}</li>
+  ))
   return <ul>{listItems}</ul>
 }
 
@@ -183,7 +185,11 @@ export default function App() {
 
   return (
     <>
-      <input type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} />
+      <input
+        type="text"
+        value={inputValue}
+        onChange={e => setInputValue(e.target.value)}
+      />
       <button onClick={addTodoList}>추가</button>
       <ul>
         {list.map(item => {
@@ -206,7 +212,11 @@ export default function App() {
   // 생략
   return (
     <>
-      <input type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} />
+      <input
+        type="text"
+        value={inputValue}
+        onChange={e => setInputValue(e.target.value)}
+      />
       <button onClick={addTodoList}>추가</button>
       <ul>
         {list.map(item => {
@@ -231,7 +241,11 @@ export default function App() {
   // 생략
   return (
     <>
-      <input type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} />
+      <input
+        type="text"
+        value={inputValue}
+        onChange={e => setInputValue(e.target.value)}
+      />
       <button onClick={addTodoList}>추가</button>
       <ul>
         {list.map((item, index) => {
@@ -285,7 +299,11 @@ export default function App() {
 
   return (
     <>
-      <input type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} />
+      <input
+        type="text"
+        value={inputValue}
+        onChange={e => setInputValue(e.target.value)}
+      />
       <button onClick={addTodoList}>추가</button>
       <ul>
         {list.map(item => {

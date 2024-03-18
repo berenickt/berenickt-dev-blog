@@ -77,7 +77,9 @@ import { Tabs } from 'nextra/components'
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
   <Tabs.Tab>**pnpm**: Fast, disk space efficient package manager.</Tabs.Tab>
-  <Tabs.Tab>**npm** is a package manager for the JavaScript programming language.</Tabs.Tab>
+  <Tabs.Tab>
+    **npm** is a package manager for the JavaScript programming language.
+  </Tabs.Tab>
   <Tabs.Tab>**Yarn** is a software packaging system.</Tabs.Tab>
 </Tabs>
 
@@ -86,7 +88,9 @@ import { Tabs } from 'nextra/components'
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
   <Tabs.Tab>**pnpm**: Fast, disk space efficient package manager.</Tabs.Tab>
-  <Tabs.Tab>**npm** is a package manager for the JavaScript programming language.</Tabs.Tab>
+  <Tabs.Tab>
+    **npm** is a package manager for the JavaScript programming language.
+  </Tabs.Tab>
   <Tabs.Tab>**Yarn** is a software packaging system.</Tabs.Tab>
 </Tabs>
 ```
@@ -107,6 +111,7 @@ Contents for step 1.
 ### Step 2
 
 Contents for step 2.
+
 </Steps>
 
 ```mdx
@@ -120,7 +125,9 @@ Contents for step 1.
 ### Step 2
  
 Contents for step 2.
-</Steps>
+</Steps
+
+>
 ```
 
 ---
@@ -128,8 +135,8 @@ Contents for step 2.
 ## 4. File Tree
 
 import { FileTree } from 'nextra/components'
- 
-<FileTree>
+
+;<FileTree>
   <FileTree.Folder name="pages" defaultOpen>
     <FileTree.File name="_meta.json" />
     <FileTree.File name="contact.md" />
@@ -156,7 +163,9 @@ import { FileTree } from 'nextra/components'
       <FileTree.File name="index.mdx" />
     </FileTree.Folder>
   </FileTree.Folder>
-</FileTree>
+</FileTree
+
+>
 ```
 
 ---
@@ -165,21 +174,22 @@ import { FileTree } from 'nextra/components'
 
 ### 5.1 파일 위치 표시
 
-```mdx
+````mdx
 ```js rooms/models.js
 import { useState } from 'react'
- 
+
 function Counter() {
   const [count, setCount] = useState(0)
   return <button onClick={() => setCount(count + 1)}>{count}</button>
 }
 ```
+````
 
-result : 
+result :
 
 ```js rooms/models.js
 import { useState } from 'react'
- 
+
 function Counter() {
   const [count, setCount] = useState(0)
   return <button onClick={() => setCount(count + 1)}>{count}</button>
@@ -190,21 +200,22 @@ function Counter() {
 
 ### 5.2 특정 줄 강조 표시
 
-```mdx
+````mdx
 ```js rooms/models.js focus=5:6
 import { useState } from 'react'
- 
+
 function Counter() {
   const [count, setCount] = useState(0)
   return <button onClick={() => setCount(count + 1)}>{count}</button>
 }
 ```
+````
 
-result : 
+result :
 
 ```js rooms/models.js focus=5:6
 import { useState } from 'react'
- 
+
 function Counter() {
   const [count, setCount] = useState(0)
   return <button onClick={() => setCount(count + 1)}>{count}</button>

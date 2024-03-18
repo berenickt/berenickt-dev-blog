@@ -1,0 +1,20 @@
+---
+title: 'classNames'
+date: 2023/12/12
+---
+
+## 1. classNames
+
+리액트에서 조건부 스타일을 줄때 classNames 라이브러리를 활용
+
+```tsx
+import styles from './styles.module.scss'
+
+function MyComponent({ isFullWidth }) {
+  return (
+    <div className={`${styles.container} block ${isFullWidth ? 'w-full' : ''}`}>
+      MyComponent
+    </div>
+  )
+}
+```

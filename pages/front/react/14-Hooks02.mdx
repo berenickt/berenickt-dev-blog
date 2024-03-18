@@ -84,7 +84,11 @@ export default function Content({ isDark }) {
   return (
     <div
       className="content"
-      style={{ backgroundColor: isDark ? 'black' : 'lightgray', color: isDark ? 'white' : 'black' }}>
+      style={{
+        backgroundColor: isDark ? 'black' : 'lightgray',
+        color: isDark ? 'white' : 'black',
+      }}
+    >
       <p>메시님, 안녕하세요!</p>
     </div>
   )
@@ -103,7 +107,10 @@ export default function Footer({ isDark, setIsDark }) {
     setIsDark(!isDark)
   }
   return (
-    <footer className="footer" style={{ backgroundColor: isDark ? 'black' : 'lightgray' }}>
+    <footer
+      className="footer"
+      style={{ backgroundColor: isDark ? 'black' : 'lightgray' }}
+    >
       <button className="button" onClick={toggleTheme}>
         Dark Mode
       </button>
@@ -123,7 +130,11 @@ export default function Header({ isDark }) {
   return (
     <header
       className="header"
-      style={{ backgroundColor: isDark ? 'black' : 'lightgray', color: isDark ? 'white' : 'black' }}>
+      style={{
+        backgroundColor: isDark ? 'black' : 'lightgray',
+        color: isDark ? 'white' : 'black',
+      }}
+    >
       <h1>Welcom 메시!</h1>
     </header>
   )
@@ -286,7 +297,11 @@ export default function Content() {
   return (
     <div
       className="content"
-      style={{ backgroundColor: isDark ? 'black' : 'lightgray', color: isDark ? 'white' : 'black' }}>
+      style={{
+        backgroundColor: isDark ? 'black' : 'lightgray',
+        color: isDark ? 'white' : 'black',
+      }}
+    >
       <p>{user}님, 안녕하세요!</p>
     </div>
   )
@@ -302,7 +317,10 @@ export default function Footer() {
   }
 
   return (
-    <footer className="footer" style={{ backgroundColor: isDark ? 'black' : 'lightgray' }}>
+    <footer
+      className="footer"
+      style={{ backgroundColor: isDark ? 'black' : 'lightgray' }}
+    >
       <button className="button" onClick={toggleTheme}>
         Dark Mode
       </button>
@@ -321,7 +339,11 @@ export default function Header() {
   return (
     <header
       className="header"
-      style={{ backgroundColor: isDark ? 'black' : 'lightgray', color: isDark ? 'white' : 'black' }}>
+      style={{
+        backgroundColor: isDark ? 'black' : 'lightgray',
+        color: isDark ? 'white' : 'black',
+      }}
+    >
       <h1>Welcom {user}!</h1>
     </header>
   )
@@ -445,10 +467,18 @@ export default function App() {
   return (
     <div>
       <h3>어려운 계산기</h3>
-      <input type="number" value={hardNumber} onChange={e => setHardNumber(parseInt(e.target.value))} />
+      <input
+        type="number"
+        value={hardNumber}
+        onChange={e => setHardNumber(parseInt(e.target.value))}
+      />
       <span>+ 10000 = {hardSum}</span>
       <h3>쉬운 계산기</h3>
-      <input type="number" value={easyNumber} onChange={e => setEashNumber(parseInt(e.target.value))} />
+      <input
+        type="number"
+        value={easyNumber}
+        onChange={e => setEashNumber(parseInt(e.target.value))}
+      />
       <span>+ 1 = {easySum}</span>
     </div>
   )
@@ -484,7 +514,11 @@ export default function App() {
   return (
     <div>
       <h2>하루에 몇끼 먹어요?</h2>
-      <input type="number" value={number} onChange={e => setNumber(e.target.value)} />
+      <input
+        type="number"
+        value={number}
+        onChange={e => setNumber(e.target.value)}
+      />
       <hr />
       <h2>어느 나라에 있어요?</h2>
       <p>나라 : {location.country}</p>
@@ -618,7 +652,11 @@ export default function App() {
 
   return (
     <div>
-      <input type="number" value={number} onChange={e => setNumber(e.target.value)} />
+      <input
+        type="number"
+        value={number}
+        onChange={e => setNumber(e.target.value)}
+      />
       <button onClick={() => setToggle(!toggle)}>{toggle.toString()}</button>
 
       <button onClick={someFunction}>Call someFunc</button>
@@ -664,7 +702,11 @@ export default function App() {
 
   return (
     <div style={{ background: isDark ? 'black' : 'white' }}>
-      <input type="number" value={size} onChange={e => setSize(e.target.value)} />
+      <input
+        type="number"
+        value={size}
+        onChange={e => setSize(e.target.value)}
+      />
       <button onClick={() => setIsDark(!isDark)}>Change Theme</button>
       <Box createBoxStyle={createBoxStyle} />
     </div>
@@ -731,9 +773,26 @@ export default function App() {
     <div>
       <h2>useReducer 은행에 오신 것을 환영합니다.</h2>
       <p>잔고: {money}원</p>
-      <input type="number" value={number} onChange={e => setNumber(parseInt(e.target.value))} step="1000" />
-      <button onClick={() => dispatch({ type: ACTION_TYPES.deposit, payload: number })}>예금</button>
-      <button onClick={() => dispatch({ type: ACTION_TYPES.withdraw, payload: number })}>출금</button>
+      <input
+        type="number"
+        value={number}
+        onChange={e => setNumber(parseInt(e.target.value))}
+        step="1000"
+      />
+      <button
+        onClick={() =>
+          dispatch({ type: ACTION_TYPES.deposit, payload: number })
+        }
+      >
+        예금
+      </button>
+      <button
+        onClick={() =>
+          dispatch({ type: ACTION_TYPES.withdraw, payload: number })
+        }
+      >
+        출금
+      </button>
     </div>
   )
 }
@@ -754,10 +813,15 @@ export default function Student({ name, dispatch, id, isHere }) {
           textDecoration: isHere ? 'line-through' : 'none',
           color: isHere ? 'grey' : 'black',
         }}
-        onClick={() => dispatch({ type: 'mark-student', payload: { id } })}>
+        onClick={() => dispatch({ type: 'mark-student', payload: { id } })}
+      >
         {name}
       </span>
-      <button onClick={() => dispatch({ type: 'delete-student', payload: { id } })}>삭제</button>
+      <button
+        onClick={() => dispatch({ type: 'delete-student', payload: { id } })}
+      >
+        삭제
+      </button>
     </div>
   )
 }
@@ -783,7 +847,9 @@ const reducer = (state, action) => {
     case 'delete-student':
       return {
         count: state.count - 1,
-        students: state.students.filter(student => student.id !== action.payload.id),
+        students: state.students.filter(
+          student => student.id !== action.payload.id,
+        ),
       }
     case 'mark-student':
       return {
@@ -813,11 +879,26 @@ export default function App() {
     <div>
       <h1>출석부</h1>
       <p>총 학생 수 : {studentsInfo.count}</p>
-      <input type="text" placeholder="이름을 입력하세요" value={name} onChange={e => setName(e.target.value)} />
-      <button onClick={() => dispatch({ type: 'add-student', payload: { name } })}>추가</button>
+      <input
+        type="text"
+        placeholder="이름을 입력하세요"
+        value={name}
+        onChange={e => setName(e.target.value)}
+      />
+      <button
+        onClick={() => dispatch({ type: 'add-student', payload: { name } })}
+      >
+        추가
+      </button>
       {studentsInfo.students.map(student => {
         return (
-          <Student key={student.id} name={student.name} dispatch={dispatch} id={student.id} isHere={student.isHere} />
+          <Student
+            key={student.id}
+            name={student.name}
+            dispatch={dispatch}
+            id={student.id}
+            isHere={student.isHere}
+          />
         )
       })}
     </div>

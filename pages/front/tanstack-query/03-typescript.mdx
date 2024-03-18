@@ -42,7 +42,8 @@ const { data } = useQuery({
 그래서 타입이 잘 정의된 함수인지 확신이 있어야 한다.
 
 ```tsx
-const fetchGroups = (): Promise<Group[]> => axios.get('/groups').then(response => response.data)
+const fetchGroups = (): Promise<Group[]> =>
+  axios.get('/groups').then(response => response.data)
 
 const { data } = useQuery({ queryKey: ['groups'], queryFn: fetchGroups })
 //      ^? const data: Group[] | undefined

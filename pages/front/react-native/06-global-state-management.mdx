@@ -312,7 +312,9 @@ const SomeContext = createContext()
 const componentA = () => {
   return (
     // 또다른 View code
-    <SomeContext.Provider value={'testValue'}>{/* 값을 사용해야하는 컴퍼넌트들 */}</SomeContext.Provider>
+    <SomeContext.Provider value={'testValue'}>
+      {/* 값을 사용해야하는 컴퍼넌트들 */}
+    </SomeContext.Provider>
   )
 }
 ```

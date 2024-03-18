@@ -67,7 +67,11 @@ react-query팀도 위 문제들의 표면적인 부분을 조금씩 처리(scrat
 [Open in CodeSandbox](https://codesandbox.io/p/devbox/github/tannerlinsley/react-query/tree/main/examples/react/simple?file=%2Fsrc%2Findex.jsx%3A16%2C45)
 
 ```tsx
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query'
 
 const queryClient = new QueryClient()
 
@@ -82,7 +86,10 @@ export default function App() {
 function Example() {
   const { isPending, error, data } = useQuery({
     queryKey: ['repoData'],
-    queryFn: () => fetch('https://api.github.com/repos/TanStack/query').then(res => res.json()),
+    queryFn: () =>
+      fetch('https://api.github.com/repos/TanStack/query').then(res =>
+        res.json(),
+      ),
   })
 
   if (isPending) return 'Loading...'
@@ -93,7 +100,8 @@ function Example() {
     <div>
       <h1>{data.name}</h1>
       <p>{data.description}</p>
-      <strong>👀 {data.subscribers_count}</strong> <strong>✨ {data.stargazers_count}</strong>{' '}
+      <strong>👀 {data.subscribers_count}</strong>{' '}
+      <strong>✨ {data.stargazers_count}</strong>{' '}
       <strong>🍴 {data.forks_count}</strong>
     </div>
   )

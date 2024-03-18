@@ -28,7 +28,11 @@ UI가 아닌 기능을 여러 컴포넌트에서 재사용하기를 원한다면
 
 ```jsx
 function FancyBorder(props) {
-  return <div className={'FancyBorder FancyBorder-' + props.color}>{props.children}</div>
+  return (
+    <div className={'FancyBorder FancyBorder-' + props.color}>
+      {props.children}
+    </div>
+  )
 }
 
 function WelcomeDialog() {
@@ -54,7 +58,11 @@ root.render(<WelcomeDialog />)
 
 ```jsx
 function FancyBorder(props) {
-  return <div className={'FancyBorder FancyBorder-' + props.color}>{props.children}</div>
+  return (
+    <div className={'FancyBorder FancyBorder-' + props.color}>
+      {props.children}
+    </div>
+  )
 }
 
 function Dialog(props) {

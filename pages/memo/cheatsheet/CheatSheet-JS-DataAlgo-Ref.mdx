@@ -12,10 +12,10 @@ date: 2023/02/06
 - 주어진 숫자와 같거나 작은 정수 중에서 가장 큰 수를 반환
 
 ```js
-console.log(Math.floor(5.95)); // 5
-console.log(Math.floor(5.05)); // 5
-console.log(Math.floor(5)); // 5
-console.log(Math.floor(-5.05)); // -6
+console.log(Math.floor(5.95)) // 5
+console.log(Math.floor(5.05)) // 5
+console.log(Math.floor(5)) // 5
+console.log(Math.floor(-5.05)) // -6
 ```
 
 ---
@@ -26,12 +26,12 @@ console.log(Math.floor(-5.05)); // -6
 - 주어진 숫자보다 크거나 같은 숫자 중 가장 작은 숫자를 integer 로 반환
 
 ```js
-Math.ceil(0.95); // 1
-Math.ceil(4); // 4
-Math.ceil(7.004); // 8
-Math.ceil(-0.95); // -0
-Math.ceil(-4); // -4
-Math.ceil(-7.004); // -7
+Math.ceil(0.95) // 1
+Math.ceil(4) // 4
+Math.ceil(7.004) // 8
+Math.ceil(-0.95) // -0
+Math.ceil(-4) // -4
+Math.ceil(-7.004) // -7
 ```
 
 ---
@@ -61,7 +61,7 @@ Math.ceil(-7.004); // -7
 #### 2.1.1 파라미터
 
 ```js
-parseInt(string, radix);
+parseInt(string, radix)
 ```
 
 - **string** : 숫자로 변환할 문자열
@@ -83,26 +83,26 @@ parseInt(string, radix);
 
 ```js
 // 1. 문자열을 정수로 리턴, 음수 표현 가능
-console.log(parseInt('10')); // 10
-console.log(parseInt('-10')); // -10
+console.log(parseInt('10')) // 10
+console.log(parseInt('-10')) // -10
 
 // 2. 소수점은 제거 후, 정수값만 리턴
-console.log(parseInt('10.9')); // 10
+console.log(parseInt('10.9')) // 10
 
 // 3. 문자열이 아닌 다른 타입이 전다뢰면, 문자열로 변환해 리턴
-console.log(parseInt(10)); // 10
+console.log(parseInt(10)) // 10
 
 // 4. 숫자가 아닌 문자 이후의 값은 무시, 그 이전 숫자만 변환
-console.log(parseInt('10n')); // 10
-console.log(parseInt('10nnn13')); // 10
+console.log(parseInt('10n')) // 10
+console.log(parseInt('10nnn13')) // 10
 
 // 5. 처음에 오는 공백 문자는 허용, 뒤에 공백은 무시
-console.log(parseInt('    10')); // 10
-console.log(parseInt('10      ')); // 10
+console.log(parseInt('    10')) // 10
+console.log(parseInt('10      ')) // 10
 
 // 6. 첫 글자가 숫자가 아니면 NaN(Not a Number)을 리턴
-console.log(parseInt('k10')); // NaN
-console.log(parseInt('')); // NaN
+console.log(parseInt('k10')) // NaN
+console.log(parseInt('')) // NaN
 ```
 
 ---
@@ -111,18 +111,18 @@ console.log(parseInt('')); // NaN
 
 ```js
 // 1. 10진법 -> 2진법
-console.log(parseInt('10', 2)); // 2
+console.log(parseInt('10', 2)) // 2
 
 // 2. 2진법에는 2라는 숫자가 없어서, NaN
-console.log(parseInt('2', 2)); // NaN
+console.log(parseInt('2', 2)) // NaN
 
 // cf. 16진법을 컴퓨터에서 표현하려면, 'Ox' 또는 'OX'로 시작
 // 3. 16진법 -> 10진법
-console.log(parseInt('0xF')); // 15
-console.log(parseInt('0XF')); // 15
+console.log(parseInt('0xF')) // 15
+console.log(parseInt('0XF')) // 15
 
 // 4. 16진수 범위 0~F, 16진수 범위 밖의 문자는 무시
-console.log(parseInt('0XFkk')); // 15
+console.log(parseInt('0XFkk')) // 15
 ```
 
 ---
@@ -133,7 +133,7 @@ console.log(parseInt('0XFkk')); // 15
 
 ```js
 str.replace(regexp|substr, newSubstr|function)
-// 첫번째 파라미터 : 정규표현식(RegExp) | 문자열 String, 
+// 첫번째 파라미터 : 정규표현식(RegExp) | 문자열 String,
 // 두번쨰 파라미터 : 첫번째 파라미터를 대신할 문자열 String | 대신해서 호출할 함수
 
 replaceAll(pattern, replacement)
@@ -141,27 +141,27 @@ replaceAll(pattern, replacement)
 // 두번째 파라미터 : 문자열, 함수
 ```
 
-* [MDN replaceAll](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replaceAll)
-* [MDN replace](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
-* 어떤 패턴에 일치하는 일부 또는 모든 부분이 교체된 새로운 문자열을 반환
+- [MDN replaceAll](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replaceAll)
+- [MDN replace](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
+- 어떤 패턴에 일치하는 일부 또는 모든 부분이 교체된 새로운 문자열을 반환
 
 ```js
-const p = 'lazy dog. If the dog reacted, was it really lazy?';
+const p = 'lazy dog. If the dog reacted, was it really lazy?'
 
 // 📝 1. replace() : 첫 번쨰 해당하는 문자열만 치환
-console.log(p.replace('dog', 'monkey'));
+console.log(p.replace('dog', 'monkey'))
 // lazy monkey. If the dog reacted, was it really lazy?"
 
-const regex = /Dog/i; // 정규표현식도 사용 가능
-console.log(p.replace(regex, 'ferret'));
+const regex = /Dog/i // 정규표현식도 사용 가능
+console.log(p.replace(regex, 'ferret'))
 // lazy ferret. If the dog reacted, was it really lazy?"
 
 // 📝 2. replaceAll() : 해당하는 모든 문자열 치환
-console.log(p.replaceAll('dog', 'monkey'));
+console.log(p.replaceAll('dog', 'monkey'))
 // lazy monkey. If the monkey reacted, was it really lazy?"
 
-const regex = /Dog/gi;
-console.log(p.replaceAll(regex, 'ferret'));
+const regex = /Dog/gi
+console.log(p.replaceAll(regex, 'ferret'))
 // lazy ferret. If the ferret reacted, was it really lazy?"
 
 // **** 응용 예시
@@ -208,10 +208,10 @@ console.log(text3.replace('안녕', '#@$%안녕#@$%').split('#@$%')) // [ '철�
 - `substring(시작 인덱스, 끝 인덱스-미포함)`
 
 ```js
-const str = 'Mozilla';
+const str = 'Mozilla'
 
-console.log(str.substring(1, 3)); // "oz"
-console.log(str.substring(2)); // "zilla"
+console.log(str.substring(1, 3)) // "oz"
+console.log(str.substring(2)) // "zilla"
 ```
 
 ---
@@ -224,11 +224,11 @@ console.log(str.substring(2)); // "zilla"
 - `padStart(목표문자열길이, 채워넣을 다른 문자열)`
 
 ```js
-'abc'.padStart(10); // "       abc"
-'abc'.padStart(10, 'foo'); // "foofoofabc"
-'abc'.padStart(6, '123465'); // "123abc"
-'abc'.padStart(8, '0'); // "00000abc"
-'abc'.padStart(1); // "abc"
+'abc'.padStart(10) // "       abc"
+'abc'.padStart(10, 'foo') // "foofoofabc"
+'abc'.padStart(6, '123465') // "123abc"
+'abc'.padStart(8, '0') // "00000abc"
+'abc'.padStart(1) // "abc"
 ```
 
 ---
@@ -255,19 +255,19 @@ console.log(str.substring(2)); // "zilla"
 - 메모리가 연속적인 밀집 배열(dense array)가 아닌 비 연속적인 희소 배열(sparse array)
 
 ```js
-let nums = [];
+let nums = []
 
-nums.push('one');
-nums.push('two');
-console.log(nums.length); // 2
-console.log(nums); // [ 'one', 'two' ]
+nums.push('one')
+nums.push('two')
+console.log(nums.length) // 2
+console.log(nums) // [ 'one', 'two' ]
 
-nums['once'] = 'once';
-nums['twice'] = 'twice';
-console.log(nums.length); // 2
-console.log(nums); // [ 'one', 'two', once: 'once', twice: 'twice' ]
+nums['once'] = 'once'
+nums['twice'] = 'twice'
+console.log(nums.length) // 2
+console.log(nums) // [ 'one', 'two', once: 'once', twice: 'twice' ]
 
-console.log(Object.getOwnPropertyDescriptor(nums));
+console.log(Object.getOwnPropertyDescriptor(nums))
 ```
 
 ---
@@ -275,14 +275,14 @@ console.log(Object.getOwnPropertyDescriptor(nums));
 ### 4.2 Array.isArray() : 존재 여부
 
 ```js
-let num = 123.456;
-let str = 'Here I am!';
-let fruits = ['apple', 'orange', 'melon'];
+let num = 123.456
+let str = 'Here I am!'
+let fruits = ['apple', 'orange', 'melon']
 
 // Array.isArray : 배열이면 true, 아니면 false
-console.log(Array.isArray(num)); // false
-console.log(Array.isArray(str)); // false
-console.log(Array.isArray(fruits)); // true
+console.log(Array.isArray(num)) // false
+console.log(Array.isArray(str)) // false
+console.log(Array.isArray(fruits)) // true
 ```
 
 ---
@@ -290,15 +290,15 @@ console.log(Array.isArray(fruits)); // true
 ### 4.3 delete array[index] : 일부 요소 삭제
 
 ```js
-let fruits = ['🍎', '🍑', '🍌'];
+let fruits = ['🍎', '🍑', '🍌']
 
-console.log(fruits); // [ '🍎', '🍑', '🍌' ]
-console.log(fruits.length); // 3
+console.log(fruits) // [ '🍎', '🍑', '🍌' ]
+console.log(fruits.length) // 3
 
 // 배열 일부 요소 삭제, 삭제해도 배열 사이즈가 그대로인 문제점이 존재
-delete fruits[1];
-console.log(fruits); // [ '🍎', <1 empty item>, '🍌' ]
-console.log(fruits.length); // 3
+delete fruits[1]
+console.log(fruits) // [ '🍎', <1 empty item>, '🍌' ]
+console.log(fruits.length) // 3
 ```
 
 ---
@@ -306,17 +306,17 @@ console.log(fruits.length); // 3
 ### 4.4 unshift, shift : 앞에서 추가, 삭제
 
 ```js
-let fruits = ['🍎', '🍑', '🍌'];
+let fruits = ['🍎', '🍑', '🍌']
 
 // (1) Array.shift() : 배열 앞에서 삭제
-ret = fruits.shift();
-console.log(fruits); // [ '🍑', '🍌' ]
-console.log(ret); // 🍎
+ret = fruits.shift()
+console.log(fruits) // [ '🍑', '🍌' ]
+console.log(ret) // 🍎
 
 // (2) Array.unshift(element) : 배열 앞에서 추가
-ret = fruits.unshift('🍉');
-console.log(fruits); // [ '🍉', '🍑', '🍌' ]
-console.log(ret); // 3
+ret = fruits.unshift('🍉')
+console.log(fruits) // [ '🍉', '🍑', '🍌' ]
+console.log(ret) // 3
 ```
 
 ---
@@ -324,17 +324,17 @@ console.log(ret); // 3
 ### 4.5 push, pop : 뒤에서 추가, 삭제
 
 ```js
-let fruits = ['🍎', '🍑', '🍌'];
+let fruits = ['🍎', '🍑', '🍌']
 
 // Array.push(element) : 배열 뒤에서 추가
-ret = fruits.push('🍉');
-console.log(fruits); // [ '🍎', '🍑', '🍌', '🍉' ]
-console.log(ret); // 4
+ret = fruits.push('🍉')
+console.log(fruits) // [ '🍎', '🍑', '🍌', '🍉' ]
+console.log(ret) // 4
 
 // Array.pop() : 배열 뒤에서 삭제
-ret = fruits.pop();
-console.log(fruits); // [ '🍎', '🍑', '🍌' ]
-console.log(ret); // 🍉
+ret = fruits.pop()
+console.log(fruits) // [ '🍎', '🍑', '🍌' ]
+console.log(ret) // 🍉
 ```
 
 ---
@@ -348,13 +348,13 @@ console.log(ret); // 🍉
   - item1, item2, ... : 배열에 추가할 요소를 생략하면 제거만 수행 (optional)
 
 ```js
-const months = ['Jan', 'March', 'April', 'June'];
+const months = ['Jan', 'March', 'April', 'June']
 
-months.splice(1, 0, 'Feb'); // 1번 인덱스에 삽입
-console.log(months); // [ 'Jan', 'Feb', 'March', 'April', 'June' ]
+months.splice(1, 0, 'Feb') // 1번 인덱스에 삽입
+console.log(months) // [ 'Jan', 'Feb', 'March', 'April', 'June' ]
 
-months.splice(4, 1, 'May'); // 4번 인덱스에 1개 요소 대체
-console.log(months); // [ 'Jan', 'Feb', 'March', 'April', 'May' ]
+months.splice(4, 1, 'May') // 4번 인덱스에 1개 요소 대체
+console.log(months) // [ 'Jan', 'Feb', 'March', 'April', 'May' ]
 ```
 
 ---
@@ -368,25 +368,25 @@ console.log(months); // [ 'Jan', 'Feb', 'March', 'April', 'May' ]
 
 ```js
 // slice(시작인덱스, end인덱스-미포함)
-const fruits = ['🍎', '🍓', '🍌', '🍊', '🍇'];
+const fruits = ['🍎', '🍓', '🍌', '🍊', '🍇']
 
 // 2번 인덱스부터
-console.log(fruits.slice(2)); // [ '🍌', '🍊', '🍇' ]
+console.log(fruits.slice(2)) // [ '🍌', '🍊', '🍇' ]
 
 // 2번 인덱스부터 4번 인덱스 이전까지
-console.log(fruits.slice(2, 4)); // [ '🍌', '🍊' ]
+console.log(fruits.slice(2, 4)) // [ '🍌', '🍊' ]
 
 // 1번 인덱스부터 5번 인덱스 이전까지
-console.log(fruits.slice(1, 5)); // [ '🍓', '🍌', '🍊', '🍇' ]
+console.log(fruits.slice(1, 5)) // [ '🍓', '🍌', '🍊', '🍇' ]
 
 // 뒤에서 2 인덱스까지
-console.log(fruits.slice(-2)); // [ '🍊', '🍇' ]
+console.log(fruits.slice(-2)) // [ '🍊', '🍇' ]
 
 // 2번 인덱스부터 뒤에서 1 인덱스까지
-console.log(fruits.slice(2, -1)); // [ '🍌', '🍊' ]
+console.log(fruits.slice(2, -1)) // [ '🍌', '🍊' ]
 
 // 원본 배열은 변경되지 않음
-console.log(fruits.slice()); // [ '🍎', '🍓', '🍌', '🍊', '🍇' ]
+console.log(fruits.slice()) // [ '🍎', '🍓', '🍌', '🍊', '🍇' ]
 ```
 
 ---
@@ -394,11 +394,11 @@ console.log(fruits.slice()); // [ '🍎', '🍓', '🍌', '🍊', '🍇' ]
 ### 4.8 concat : 배열 병합
 
 ```js
-let fruits = ['🍎', '🍑', '🍌'];
+let fruits = ['🍎', '🍑', '🍌']
 
-console.log(fruits.concat('🍓')); // [ '🍎', '🍑', '🍌', '🍓' ]
-console.log(fruits.concat(['🍒', '🥭'])); // [ '🍎', '🍑', '🍌', '🍒', '🥭' ]
-console.log(fruits.concat(['🍒', '🥭'], '🍇')); // [ '🍎', '🍑', '🍌', '🍒', '🥭', '🍇' ]
+console.log(fruits.concat('🍓')) // [ '🍎', '🍑', '🍌', '🍓' ]
+console.log(fruits.concat(['🍒', '🥭'])) // [ '🍎', '🍑', '🍌', '🍒', '🥭' ]
+console.log(fruits.concat(['🍒', '🥭'], '🍇')) // [ '🍎', '🍑', '🍌', '🍒', '🥭', '🍇' ]
 ```
 
 ---
@@ -417,23 +417,23 @@ console.log(fruits.concat(['🍒', '🥭'], '🍇')); // [ '🍎', '🍑', '🍌
   - `Array.prototype.forEach (element, index, 호출한array 접근)`
 
 ```js
-let fruits = ['사과', '오렌지', '바나나'];
+let fruits = ['사과', '오렌지', '바나나']
 
 // 💡 1. use for (index)
 for (let i = 0; i < fruits.length; i++) {
-  console.log(i); // 0 1 2
-  console.log(fruits[i]); // 사과 오렌지 바나나
+  console.log(i) // 0 1 2
+  console.log(fruits[i]) // 사과 오렌지 바나나
 }
 
 // 💡 2. use for...(element) of
 for (let fruit of fruits) {
-  console.log(fruit); //  사과 오렌지 바나나
+  console.log(fruit) //  사과 오렌지 바나나
 }
 
 // 💡 3. use for...(key) in
 for (let key in fruits) {
-  console.log(key); // 0 1 2
-  console.log(fruits[key]); // 사과 오렌지 바나나
+  console.log(key) // 0 1 2
+  console.log(fruits[key]) // 사과 오렌지 바나나
 }
 ```
 
@@ -450,11 +450,11 @@ for (let key in fruits) {
 #### 4.10.1 element와 index 출력
 
 ```js
-const numbers = [15, 23, 17, 65, 78];
+const numbers = [15, 23, 17, 65, 78]
 
 numbers.forEach((element, index) => {
-  console.log(`Value : ${element}, Index : ${index}`);
-});
+  console.log(`Value : ${element}, Index : ${index}`)
+})
 
 // Value : 15, Index : 0
 // Value : 23, Index : 1
@@ -466,11 +466,11 @@ numbers.forEach((element, index) => {
 #### 4.10.2 호출한 콜백함수 출력
 
 ```js
-const numbers = [15, 23, 17, 65, 78];
+const numbers = [15, 23, 17, 65, 78]
 
 numbers.forEach((element, index, array) => {
-  console.log(array);
-});
+  console.log(array)
+})
 
 // [ 15, 23, 17, 65, 78 ]
 // [ 15, 23, 17, 65, 78 ]
@@ -514,10 +514,10 @@ numbers.forEach((element, index, array) => {
 - `배열.map((요소, 인덱스, 호출한배열), this로 사용되는 값)`
 
 ```js
-const array1 = [1, 4, 9, 16];
-const map1 = array1.map(x => x * 2);
+const array1 = [1, 4, 9, 16]
+const map1 = array1.map(x => x * 2)
 
-console.log(map1); // Array [2, 8, 18, 32]
+console.log(map1) // Array [2, 8, 18, 32]
 ```
 
 ---
@@ -538,9 +538,9 @@ console.log(map1); // Array [2, 8, 18, 32]
 
 ```js
 array.sort(function (a, b) {
-  return a - b;
-}); // 오름차순
-array.sort((a, b) => a - b);
+  return a - b
+}) // 오름차순
+array.sort((a, b) => a - b)
 ```
 
 - 함수는 두 값을 비교할 때 `sort()`값을 비교 함수로 보내고 반환된(음수, 0, 양수) 값에 따라 값을 정렬합니다.
@@ -557,7 +557,7 @@ array.sort((a, b) => a - b);
 - sort()는 40을 100보다 작은 값으로 정렬
 
 ```js
-array.sort((a, b) => b - a); // 내림차순
+array.sort((a, b) => b - a) // 내림차순
 ```
 
 ---
@@ -572,21 +572,21 @@ array.sort((a, b) => b - a); // 내림차순
 - index 탐색(뒤에서부터) : `Array.lastIndexOf(item, from)`
 
 ```js
-let fruits = ['apple', 'orange', 'banana', 'orange', 'melon'];
+let fruits = ['apple', 'orange', 'banana', 'orange', 'melon']
 
 // arr.indexOf(searchElement[, fromIndex])
 // arr.indexOf(배열에서 찾을 요소, 검색을 시작할 색인-option)
-console.log(fruits.indexOf('orange')); // 1
-console.log(fruits.indexOf('Orange')); // -1
-console.log(fruits.indexOf('orange', 2)); // 3
+console.log(fruits.indexOf('orange')) // 1
+console.log(fruits.indexOf('Orange')) // -1
+console.log(fruits.indexOf('orange', 2)) // 3
 
-console.log(fruits.lastIndexOf('orange')); // 3
-console.log(fruits.lastIndexOf('orange', -3)); // 1
-console.log(fruits.lastIndexOf('orange', 0)); // -1
+console.log(fruits.lastIndexOf('orange')) // 3
+console.log(fruits.lastIndexOf('orange', -3)) // 1
+console.log(fruits.lastIndexOf('orange', 0)) // -1
 
-console.log(fruits.includes('banana')); // true
-console.log(fruits.includes('Banana')); // false
-console.log(fruits.includes(0)); // false
+console.log(fruits.includes('banana')) // true
+console.log(fruits.includes('Banana')) // false
+console.log(fruits.includes(0)) // false
 ```
 
 ---
@@ -599,11 +599,11 @@ console.log(fruits.includes(0)); // false
 ```js
 // arr.indexOf(searchElement[, fromIndex])
 // arr.indexOf(배열에서 찾을 요소, 검색을 시작할 색인-option)
-const beasts = ['ant', 'bison', 'camel', 'duck', 'bison'];
+const beasts = ['ant', 'bison', 'camel', 'duck', 'bison']
 
-console.log(beasts.indexOf('bison')); // 1
-console.log(beasts.indexOf('bison', 2)); // 4
-console.log(beasts.indexOf('giraffe')); // -1
+console.log(beasts.indexOf('bison')) // 1
+console.log(beasts.indexOf('bison', 2)) // 4
+console.log(beasts.indexOf('giraffe')) // -1
 ```
 
 ---
@@ -611,14 +611,14 @@ console.log(beasts.indexOf('giraffe')); // -1
 ### 4.15 reverse : 배열 반전
 
 ```js
-let nums = [1, -1, 4, 5, 2, 0];
+let nums = [1, -1, 4, 5, 2, 0]
 
-console.log(nums.sort()); // [ -1, 0, 1, 2, 4, 5 ]
-console.log(nums.reverse()); // [ 5, 4, 2, 1, 0, -1 ]
+console.log(nums.sort()) // [ -1, 0, 1, 2, 4, 5 ]
+console.log(nums.reverse()) // [ 5, 4, 2, 1, 0, -1 ]
 
-let fruits = ['apple', 'orange', 'banana', 'melon'];
-console.log(fruits.sort()); // [ 'apple', 'banana', 'melon', 'orange' ]
-console.log(fruits.reverse()); // [ 'orange', 'melon', 'banana', 'apple' ]
+let fruits = ['apple', 'orange', 'banana', 'melon']
+console.log(fruits.sort()) // [ 'apple', 'banana', 'melon', 'orange' ]
+console.log(fruits.reverse()) // [ 'orange', 'melon', 'banana', 'apple' ]
 ```
 
 ---
@@ -630,13 +630,13 @@ console.log(fruits.reverse()); // [ 'orange', 'melon', 'banana', 'apple' ]
 - 한마디로 find()의 찾아서 값을 반환하는 기능과 map()의 배열 생성 기능의 융합 버젼.
 
 ```js
-const numberArr = [1, 2, 3, 4, 5];
+const numberArr = [1, 2, 3, 4, 5]
 
 const numberFilterArr = numberArr.filter(item => {
-  return item % 2 === 0; // 해당조건에 부합으면 item을 넣어 배열 반환
-});
+  return item % 2 === 0 // 해당조건에 부합으면 item을 넣어 배열 반환
+})
 
-console.log(numberFilterArr); // [2, 4]
+console.log(numberFilterArr) // [2, 4]
 ```
 
 #### 4.16.1 파라미터
@@ -652,22 +652,22 @@ let users = [
   { name: 'bob', age: 17, job: false },
   { name: 'alice', age: 20, job: false },
   { name: 'john', age: 27, job: true },
-];
+]
 
 // filter : 조건을 만족하는 값을 배열로 반환
 let filter_job = users.filter(function (user) {
-  return user.job == false;
-});
-console.log(filter_job);
+  return user.job == false
+})
+console.log(filter_job)
 // [
 //   { name: "bob", age: 17, job: false },
 //   { name: "alice", age: 20, job: false },
 // ]
 
 let filter_age = users.filter(function (user) {
-  return user.age > 19;
-});
-console.log(filter_age);
+  return user.age > 19
+})
+console.log(filter_age)
 // [
 //   { name: "alice", age: 20, job: false },
 //   { name: "john", age: 27, job: true },
@@ -685,17 +685,17 @@ console.log(filter_age);
 - 누산기(accumulator) = 계산 결과를 저장해놓는 곳 = 연산 장치에 일시적으로 저장하는 레지스터 = 묶을 누, 셈 산, 그릇 기
 
 ```js
-const arr = [1, 2, 3, 4, 5];
+const arr = [1, 2, 3, 4, 5]
 const result = arr.reduce((acc, cur) => {
-  return (acc += cur);
-}, 0);
-console.log(result); // 15
+  return (acc += cur)
+}, 0)
+console.log(result) // 15
 
-const arr2 = [1, 2, 3, 4, 5];
+const arr2 = [1, 2, 3, 4, 5]
 const result2 = arr2.reduce((acc, cur) => {
-  return (acc += cur);
-}, 10);
-console.log(result2); // 25
+  return (acc += cur)
+}, 10)
+console.log(result2) // 25
 ```
 
 ---
@@ -709,15 +709,15 @@ console.log(result2); // 25
   - `array` : 배열
 
 ```js
-let nums = [1, 2, 3, 4, 5];
-let call_count = 0;
+let nums = [1, 2, 3, 4, 5]
+let call_count = 0
 
-console.log('result\tvalue\tindex');
+console.log('result\tvalue\tindex')
 let sum = nums.reduce(function (accumulator, item, index, array) {
-  console.log(accumulator, '\t\t', item, '\t\t', index);
-  call_count++;
-  return accumulator + item;
-}, 0); // initial 없다면 index 1부터 시작
+  console.log(accumulator, '\t\t', item, '\t\t', index)
+  call_count++
+  return accumulator + item
+}, 0) // initial 없다면 index 1부터 시작
 /* 결과
 result	value	index
 0 		 1 		 0
@@ -727,8 +727,8 @@ result	value	index
 10 		 5 		 4
 */
 
-console.log(call_count); // 5
-console.log(sum); // 15
+console.log(call_count) // 5
+console.log(sum) // 15
 ```
 
 ---
@@ -740,16 +740,16 @@ console.log(sum); // 15
 - String 객체를 구분자를 이용하여 여러 개의 문자열로 나눔
 
 ```js
-const str = 'The quick brown fox jumps over the lazy dog.';
+const str = 'The quick brown fox jumps over the lazy dog.'
 
-const words = str.split(' ');
-console.log(words[3]); // "fox"
+const words = str.split(' ')
+console.log(words[3]) // "fox"
 
-const chars = str.split('');
-console.log(chars[8]); // "k"
+const chars = str.split('')
+console.log(chars[8]) // "k"
 
-const strCopy = str.split();
-console.log(strCopy); // Array ["The quick brown fox jumps over the lazy dog."]
+const strCopy = str.split()
+console.log(strCopy) // Array ["The quick brown fox jumps over the lazy dog."]
 
 // **** 응용 예시
 const text = '안녕하세요'
@@ -772,17 +772,17 @@ console.log(text3.replace('안녕', '#@$%안녕#@$%').split('#@$%')) // [ '철�
 - 배열의 모든 요소를 연결해 하나의 문자열로 만듭니다.
 
 ```js
-const elements = ['Fire', 'Air', 'Water'];
+const elements = ['Fire', 'Air', 'Water']
 
-console.log(elements.join()); // "Fire,Air,Water"
-console.log(elements.join('')); // "FireAirWater"
-console.log(elements.join('-')); // "Fire-Air-Water"
+console.log(elements.join()) // "Fire,Air,Water"
+console.log(elements.join('')) // "FireAirWater"
+console.log(elements.join('-')) // "Fire-Air-Water"
 ```
 
 #### 4.19.1 split-reverse-join : 문자열 뒤집기
 
 ```js
-문자열.split('').reverse().join('');
+문자열.split('').reverse().join('')
 
 // 1. 문자사이에 공백을 기준으로 배열로
 // 2. 뒤집고
@@ -806,18 +806,18 @@ console.log(elements.join('-')); // "Fire-Air-Water"
 
 ```js
 // 1. 문자열을 배열로 만드는 예시
-console.log(Array.from('Hello'));
+console.log(Array.from('Hello'))
 // [ 'H', 'e', 'l', 'l', 'o' ]
 
 // 2. 유사 배열 객체를 배열로 만드는 예시
-console.log(Array.from({ 0: '찬민', 1: '희진', 2: '태인', length: 3 }));
+console.log(Array.from({ 0: '찬민', 1: '희진', 2: '태인', length: 3 }))
 // [ '찬민', '희진', '태인' ]
 
 // 3. 함수의 매개변수들을 순서대로 배열로 만드는 예시
 const funcA = (...arguments) => {
-  return Array.from(arguments);
-};
-console.log(funcA(1, 2, 3, 4, 5));
+  return Array.from(arguments)
+}
+console.log(funcA(1, 2, 3, 4, 5))
 // [ 1, 2, 3, 4, 5 ]
 ```
 
@@ -828,9 +828,9 @@ console.log(funcA(1, 2, 3, 4, 5));
 ```js
 // 맵핑 함수의 첫 번째 인자 언더스코어(_) 는 특별한 인자가 아니라,
 // 불필요한 인자의 공간을 채우기 위한 용도입니다.
-const arr = Array.from(Array(31), (_, index) => index + 1);
+const arr = Array.from(Array(31), (_, index) => index + 1)
 
-console.log(arr);
+console.log(arr)
 ```
 
 ---
@@ -847,18 +847,18 @@ let users = [
   { name: 'bob', age: 17, job: false },
   { name: 'alice', age: 20, job: false },
   { name: 'john', age: 27, job: true },
-];
+]
 
 // find : 조건에 맞는 하나의 값만 반환
 let find_job = users.find(function (user) {
-  return user.job == false;
-});
-console.log(find_job); // { name: 'bob', age: 17, job: false }
+  return user.job == false
+})
+console.log(find_job) // { name: 'bob', age: 17, job: false }
 
 let find_age = users.find(function (user) {
-  return user.age > 19;
-});
-console.log(find_age); // { name: 'alice', age: 20, job: false }
+  return user.age > 19
+})
+console.log(find_age) // { name: 'alice', age: 20, job: false }
 ```
 
 ---
@@ -876,21 +876,21 @@ let users = [
   { name: 'bob', age: 17, job: false },
   { name: 'alice', age: 20, job: false },
   { name: 'john', age: 27, job: true },
-];
+]
 
 // some : 조건을 만족하는 요소가 있다면 true
 let some_job = users.some(function (users) {
-  return users.job == false;
-});
-console.log(some_job); // true
+  return users.job == false
+})
+console.log(some_job) // true
 
 let some_age = users.some(function (users) {
-  return users.age < 16;
-});
-console.log(some_age); // false
+  return users.age < 16
+})
+console.log(some_age) // false
 
-let empty = [].some(item => item > 16);
-console.log(empty); // false
+let empty = [].some(item => item > 16)
+console.log(empty) // false
 ```
 
 ---
@@ -908,20 +908,20 @@ let users = [
   { name: 'bob', age: 17, job: false },
   { name: 'alice', age: 20, job: false },
   { name: 'john', age: 27, job: true },
-];
+]
 
 let some_job = users.every(function (users) {
-  return users.job == false;
-});
-console.log(some_job); // false
+  return users.job == false
+})
+console.log(some_job) // false
 
 let some_age = users.every(function (users) {
-  return users.age > 16;
-});
-console.log(some_age); // true
+  return users.age > 16
+})
+console.log(some_age) // true
 
-let empty = [].every(item => item > 16);
-console.log(empty); // true
+let empty = [].every(item => item > 16)
+console.log(empty) // true
 ```
 
 ---
@@ -936,27 +936,27 @@ let array = [
   [101, 102, 103],
   [201, 202, 203],
   [301, 302, 303],
-];
+]
 
-console.log(array);
-console.log(array[0]); // [ 101, 102, 103 ]
-console.log(array[1][0]); // 201
-console.log(array[2][2]); // 303
+console.log(array)
+console.log(array[0]) // [ 101, 102, 103 ]
+console.log(array[1][0]) // 201
+console.log(array[2][2]) // 303
 
-let arr_2 = array.pop();
-console.log(array.length); // 2
-console.log(arr_2); // [ 301, 302, 303 ]
-console.log(array); // [ [ 101, 102, 103 ], [ 201, 202, 203 ] ]
+let arr_2 = array.pop()
+console.log(array.length) // 2
+console.log(arr_2) // [ 301, 302, 303 ]
+console.log(array) // [ [ 101, 102, 103 ], [ 201, 202, 203 ] ]
 
-let array_num = array.push([401, 402, 403]);
-console.log(array.length); // 3
-console.log(array_num); // 3
-console.log(array); // [ [ 101, 102, 103 ], [ 201, 202, 203 ], [ 401, 402, 403 ] ]
+let array_num = array.push([401, 402, 403])
+console.log(array.length) // 3
+console.log(array_num) // 3
+console.log(array) // [ [ 101, 102, 103 ], [ 201, 202, 203 ], [ 401, 402, 403 ] ]
 
 for (let i = 0; i < array.length; i++) {
   for (let j = 0; j < array[i].length; j++) {
-    array[i][j] += 1000;
-    console.log(array[i][j]); // 1101 ... 1403
+    array[i][j] += 1000
+    console.log(array[i][j]) // 1101 ... 1403
   }
 }
 ```

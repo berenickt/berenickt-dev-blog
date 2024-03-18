@@ -53,11 +53,14 @@ date: 2023/01/29
     <p id="innerHTML"></p>
     <script>
       // 단순히 텍스트로 취급해서 값을 그대로 노드의 콘텐츠에 적용
-      document.querySelector('#textContent').textContent = `<strong>textContent</strong> 속성`
-      document.querySelector('#innerText').innerText = `<strong>innerText</strong> 속성`
+      document.querySelector('#textContent').textContent =
+        `<strong>textContent</strong> 속성`
+      document.querySelector('#innerText').innerText =
+        `<strong>innerText</strong> 속성`
 
       // 태그로 인식해 노드의 콘텐츠에 적용
-      document.querySelector('#innerHTML').innerHTML = `<strong>innerHTML</strong> 속성`
+      document.querySelector('#innerHTML').innerHTML =
+        `<strong>innerHTML</strong> 속성`
     </script>
   </body>
 </html>

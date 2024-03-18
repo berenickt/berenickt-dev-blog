@@ -140,7 +140,9 @@ const orderCreator = {
 // 주문 처리 모듈
 const orderProcessor = {
   processOrder: order => {
-    console.log(`Processing order for ${order.customerName}: ${order.quantity} ${order.product}`)
+    console.log(
+      `Processing order for ${order.customerName}: ${order.quantity} ${order.product}`,
+    )
     // 주문 처리 로직
   },
 }

@@ -304,7 +304,8 @@ export async function middleware(request: NextRequest) {
       const redirectData = await fetch(api)
 
       if (redirectData.ok) {
-        const redirectEntry: RedirectEntry | undefined = await redirectData.json()
+        const redirectEntry: RedirectEntry | undefined =
+          await redirectData.json()
 
         if (redirectEntry) {
           // Determine the status code

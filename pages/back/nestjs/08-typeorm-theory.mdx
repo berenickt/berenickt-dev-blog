@@ -368,7 +368,13 @@ DB에 들어간 컬럼명을 확인해보면, `nameFirst`, `nameLast`로 들어�
 `src/entity/inheritance.entity.ts` 파일을 만든다.
 
 ```ts inheritance.entity.ts
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm'
 
 export class BaseModel {
   @PrimaryGeneratedColumn()
@@ -544,7 +550,13 @@ DB에 들어간 컬럼명을 확인해보면,
 `src/entity/profile.entity.ts` 파일을 만든다.
 
 ```ts profile.entity.ts
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm'
 import { UserModel } from './user.entity'
 
 @Entity()
@@ -787,7 +799,14 @@ export class TagModel {
 `post.entity.ts`에 tags를 다대다 관계로 연결합니다.
 
 ```ts post.entity.ts
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm'
 import { UserModel } from './user.entity'
 import { TagModel } from './tag.entity'
 

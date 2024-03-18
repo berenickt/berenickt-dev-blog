@@ -1,31 +1,31 @@
 ---
-title: "04-연결리스트(Linked List)"
+title: '04-연결리스트(Linked List)'
 date: 2023/01/11
 ---
 
 # 1. Linked List
 
-추가와 삭제가 반복되는 로직이라면 어떻게 해야될까? 
+추가와 삭제가 반복되는 로직이라면 어떻게 해야될까?
 
-* 배열을 이용하면 시간복잡도가 굉장히 커져 권장되지 않습니다.
-* 배열은 탐색이 많을 떄 유용한 자료구조이다.
+- 배열을 이용하면 시간복잡도가 굉장히 커져 권장되지 않습니다.
+- 배열은 탐색이 많을 떄 유용한 자료구조이다.
 
 추가와 삭제가 많을 떄 유용한 자료구조는 `연결 리스트`이다.
 
-* 연결 리스트는 **각 요소를 포인터로 연결하여 관리**하는 선형 자료구조다.
-* 각 요소는 `노드(Node)`라고 부르며 `데이터 영역`과 `포인터 영역`으로 구성된다.
+- 연결 리스트는 **각 요소를 포인터로 연결하여 관리**하는 선형 자료구조다.
+- 각 요소는 `노드(Node)`라고 부르며 `데이터 영역`과 `포인터 영역`으로 구성된다.
 
 ![Data Structure_4_1](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_4_1.png)
 
-------
+---
 
 ## 1.2 배열과 차이점
 
 ### 1.2.1 메모리 차이
 
-* `배열`은 순차적인 데이터가 들어가기에 메모리 영역을 연속적으로 사용
-* `연결 리스트`는 순차적이지 않기에 각 데이터가 퍼져있음
-  * 퍼져있는 메모리의 영역을 알기 위해 포인터를 사용
+- `배열`은 순차적인 데이터가 들어가기에 메모리 영역을 연속적으로 사용
+- `연결 리스트`는 순차적이지 않기에 각 데이터가 퍼져있음
+  - 퍼져있는 메모리의 영역을 알기 위해 포인터를 사용
 
 ![Data Structure_4_2](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_4_2.png)
 
@@ -37,16 +37,16 @@ date: 2023/01/11
 
 ![Data Structure_4_4](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_4_4.png)
 
-------
+---
 
 # 2. 연결 리스트(Singly Linked List)
 
-* **Head에서 Tail까지 단방향**으로 이어지는 연결 리스트
-* 가장 단순한 형태인 연결리스트
+- **Head에서 Tail까지 단방향**으로 이어지는 연결 리스트
+- 가장 단순한 형태인 연결리스트
 
 ![Data Structure_4_5](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_4_5.png)
 
-------
+---
 
 ## 2.1 요소 찾기
 
@@ -59,7 +59,7 @@ date: 2023/01/11
 
 ![Data Structure_4_6](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_4_6.png)
 
-------
+---
 
 ## 2.2 요소 추가
 
@@ -70,7 +70,7 @@ date: 2023/01/11
 
 ![Data Structure_4_7](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_4_7.png)
 
-------
+---
 
 ## 2.3 요소 삭제
 
@@ -81,17 +81,17 @@ date: 2023/01/11
 
 ![Data Structure_4_8](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_4_8.png)
 
-------
+---
 
 # 3. 이중 연결 리스트(Doubly Linked List)
 
-* **양방향으로 이어지는 연결 리스트**
-* **포인터가 2개**가 존재
-* Singly Linked List보다 자료구조의 크기가 조금 더 크다.
+- **양방향으로 이어지는 연결 리스트**
+- **포인터가 2개**가 존재
+- Singly Linked List보다 자료구조의 크기가 조금 더 크다.
 
 ![Data Structure_4_9](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_4_9.png)
 
-------
+---
 
 ## 3.1 요소 추가
 
@@ -113,7 +113,7 @@ date: 2023/01/11
 
 ![Data Structure_4_13](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_4_13.png)
 
-------
+---
 
 ## 3.2 요소 삭제
 
@@ -131,17 +131,17 @@ date: 2023/01/11
 
 ![Data Structure_4_16](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_4_16.png)
 
-------
+---
 
 # 4. 환형 연결리스트(Circular Linked List)
 
-* Singly 혹은 Doubly Linked List에서 **Tail이 Head로 연결**되는 연결리스트
-* 메모리를 아껴쓸 수 있다. 
-* 원형 큐 등을 만들때도 사용된다.
+- Singly 혹은 Doubly Linked List에서 **Tail이 Head로 연결**되는 연결리스트
+- 메모리를 아껴쓸 수 있다.
+- 원형 큐 등을 만들때도 사용된다.
 
 ![Data Structure_4_17](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_4_17.png)
 
-------
+---
 
 # 5. 구현
 
@@ -149,92 +149,92 @@ date: 2023/01/11
 class Node {
   // 생성자: new 키워드로 객체를 생성할때 자동으로 호출되는 함수
   constructor(value) {
-    this.value = value; // 값
-    this.next = null; // 포인터
+    this.value = value // 값
+    this.next = null // 포인터
   }
 }
 
 class SinglyLinkedList {
   constructor() {
-    this.head = null; // head 포인터
-    this.tail = null; // tail 포인터
+    this.head = null // head 포인터
+    this.tail = null // tail 포인터
   }
 
   // 📝 해당하는 값 찾기
   find(value) {
-    let currNode = this.head; // 입력받은 연결리스트의 Head 포인터 가져오기
+    let currNode = this.head // 입력받은 연결리스트의 Head 포인터 가져오기
     // 입력한 값을 찾을 때까지 다음 노드로 순회
     while (currNode.value !== value) {
-      currNode = currNode.next;
+      currNode = currNode.next
     }
-    return currNode; // 값을 찾으면 해당 노드를 반환
+    return currNode // 값을 찾으면 해당 노드를 반환
   }
 
   // 📝 끝에 추가
   append(newValue) {
-    const newNode = new Node(newValue); // 입력받은 값으로 노드 생성
+    const newNode = new Node(newValue) // 입력받은 값으로 노드 생성
     // 헤드가 비어있다면
     if (this.head === null) {
       // head와 tail에 생성한 노드를 가리킴
-      this.head = newNode;
-      this.tail = newNode;
+      this.head = newNode
+      this.tail = newNode
     } else {
       // 값이 존재하면, 다음 노드로 생성한 노드를 가리킴
       // tail은 생성한 노드를 가리킴
-      this.tail.next = newNode;
-      this.tail = newNode;
+      this.tail.next = newNode
+      this.tail = newNode
     }
   }
 
   // 📝 중간에 추가
   insert(node, newValue) {
-    const newNode = new Node(newValue); // 입력받은 값으로 노드 생성
-    newNode.next = node.next; // (생성한 노드의 다음)을 (입력받은 노드의 다음)을 가리킴
-    node.next = newNode; // (입력받은 노드의 다음)을 (새로 생성한 노드)를 가리킴
+    const newNode = new Node(newValue) // 입력받은 값으로 노드 생성
+    newNode.next = node.next // (생성한 노드의 다음)을 (입력받은 노드의 다음)을 가리킴
+    node.next = newNode // (입력받은 노드의 다음)을 (새로 생성한 노드)를 가리킴
   }
 
   // 📝 삭제
   remove(value) {
-    let prevNode = this.head; // 입력받은 연결리스트의 Head 포인터 가져오기
+    let prevNode = this.head // 입력받은 연결리스트의 Head 포인터 가져오기
     // 입력한 값을 찾을 때까지 다음 노드로 순회
     while (prevNode.next.value !== value) {
-      prevNode = prevNode.next;
+      prevNode = prevNode.next
     }
     // 값을 찾고 다음이 null이 아니라면
     if (prevNode.next !== null) {
       // (이전 노드의 다음)을 (다음의 다음)을 가리킴
       // 그러면 중간 노드가 아무 노드를 가리키고 있지 않기 때문에 GC에 의해 메모리 상에서 삭제
-      prevNode.next = prevNode.next.next;
+      prevNode.next = prevNode.next.next
     }
   }
 
   // 📝 출력
   display() {
-    let currNode = this.head;
-    let displayString = '[';
+    let currNode = this.head
+    let displayString = '['
     while (currNode !== null) {
-      displayString += `${currNode.value}, `;
-      currNode = currNode.next;
+      displayString += `${currNode.value}, `
+      currNode = currNode.next
     }
-    displayString = displayString.substr(0, displayString.length - 2);
-    displayString += ']';
-    console.log(displayString);
+    displayString = displayString.substr(0, displayString.length - 2)
+    displayString += ']'
+    console.log(displayString)
   }
 }
 
-const linkedList = new SinglyLinkedList();
-linkedList.append(1);
-linkedList.append(2);
-linkedList.append(3);
-linkedList.append(5);
-linkedList.display(); // [1, 2, 3, 5]
-console.log(linkedList.find(3));
+const linkedList = new SinglyLinkedList()
+linkedList.append(1)
+linkedList.append(2)
+linkedList.append(3)
+linkedList.append(5)
+linkedList.display() // [1, 2, 3, 5]
+console.log(linkedList.find(3))
 // Node { value: 3, next: Node { value: 5, next: null } }
 
-linkedList.remove(3);
-linkedList.display(); // [1, 2, 5]
-linkedList.insert(linkedList.find(2), 10);
-linkedList.display(); // [1, 2, 10, 5]
+linkedList.remove(3)
+linkedList.display() // [1, 2, 5]
+linkedList.insert(linkedList.find(2), 10)
+linkedList.display() // [1, 2, 10, 5]
 ```
 
 코딩 테스트에서 연결리스트를 직접 구현하는 경우는 많지 않습니다. 배열을 사용하면 되기 때문이죠.

@@ -178,7 +178,15 @@ export default class Example extends Component {
         <ThemeContext.Provider value={this.state.theme}>
           <ThemeButton changeTheme={this.toggleTheme} />
           <ThemeContext.Consumer>
-            {theme => <div style={{ height: 300, width: 300, backgroundColor: theme.background }}></div>}
+            {theme => (
+              <div
+                style={{
+                  height: 300,
+                  width: 300,
+                  backgroundColor: theme.background,
+                }}
+              ></div>
+            )}
           </ThemeContext.Consumer>
         </ThemeContext.Provider>
         <ThemeButton />
@@ -207,7 +215,8 @@ export default function ThemeButton(props) {
     <button
       {...props}
       onClick={props.changeTheme}
-      style={{ backgroundColor: theme.background, color: theme.foreground }}>
+      style={{ backgroundColor: theme.background, color: theme.foreground }}
+    >
       버튼
     </button>
   )

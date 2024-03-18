@@ -299,7 +299,9 @@ export class ChatsGateway implements OnGatewayConnection {
 
 // ws://localhost:3000/chats
 @WebSocketGateway({ namespace: 'chats' })
-export class ChatsGateway implements OnGatewayConnection, OnGatewayInit, OnGatewayDisconnect {
+export class ChatsGateway
+  implements OnGatewayConnection, OnGatewayInit, OnGatewayDisconnect
+{
   // 생략
 
   @WebSocketServer()

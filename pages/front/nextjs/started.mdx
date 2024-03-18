@@ -92,7 +92,11 @@ App 라우터를 사용하면 React의 최신 기능을 사용할 수 있으며,
 필요한 `<html> `및 `<body>` 태그를 사용하여, `app/layout.tsx` 내부에 [루트 레이아웃](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts#root-layout-required)을 만든다:
 
 ```tsx app/layout.tsx
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
       <body>{children}</body>

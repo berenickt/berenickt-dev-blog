@@ -219,7 +219,11 @@ Your Server Component will now be able to directly render your provider since it
 ```tsx app/layout.tsx
 import ThemeProvider from './theme-provider'
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html>
       <body>
@@ -313,7 +317,11 @@ The following pattern is not supported. You cannot import a Server Component int
 // You cannot import a Server Component into a Client Component.
 import ServerComponent from './Server-Component'
 
-export default function ClientComponent({ children }: { children: React.ReactNode }) {
+export default function ClientComponent({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const [count, setCount] = useState(0)
 
   return (
@@ -341,7 +349,11 @@ In the example below, `<ClientComponent>` accepts a `children` prop:
 
 import { useState } from 'react'
 
-export default function ClientComponent({ children }: { children: React.ReactNode }) {
+export default function ClientComponent({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const [count, setCount] = useState(0)
 
   return (

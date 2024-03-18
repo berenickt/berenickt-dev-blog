@@ -59,7 +59,11 @@ export class PostsModule {}
 `users/decorator/user.decorator.ts` 파일을 만든다.
 
 ```ts users/decorator/user.decorator.ts
-import { ExecutionContext, InternalServerErrorException, createParamDecorator } from '@nestjs/common'
+import {
+  ExecutionContext,
+  InternalServerErrorException,
+  createParamDecorator,
+} from '@nestjs/common'
 
 export const User = createParamDecorator((data, context: ExecutionContext) => {
   const req = context.switchToHttp().getRequest()
@@ -119,7 +123,11 @@ verifyToken(token: string) {
 data 파라미터를 사용해서, 사용자의 특정 파라미터를 넣어주면, 해댱되는 프로퍼티를 반환하게 해줄 수 있다.
 
 ```ts users/decorator/user.decorator.ts
-import { ExecutionContext, InternalServerErrorException, createParamDecorator } from '@nestjs/common'
+import {
+  ExecutionContext,
+  InternalServerErrorException,
+  createParamDecorator,
+} from '@nestjs/common'
 import { UsersModel } from '../entities/users.entity'
 
 export const User = createParamDecorator(

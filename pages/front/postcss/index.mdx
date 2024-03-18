@@ -1,4 +1,3 @@
-
 # 5. PostCSS
 
 - https://postcss.org/
@@ -15,11 +14,11 @@
 버튼1
 
 ```jsx
-import React from 'react';
-import styles from './Button1.module.css';
+import React from 'react'
+import styles from './Button1.module.css'
 
 export default function Button1() {
-  return <button className={styles.button}>Button1</button>;
+  return <button className={styles.button}>Button1</button>
 }
 ```
 
@@ -33,11 +32,11 @@ export default function Button1() {
 버튼2
 
 ```jsx
-import React from 'react';
-import styles from './Button2.module.css';
+import React from 'react'
+import styles from './Button2.module.css'
 
 export default function Button2() {
-  return <button className={styles.button}>Button2</button>;
+  return <button className={styles.button}>Button2</button>
 }
 ```
 
@@ -51,9 +50,9 @@ export default function Button2() {
 App에 적용
 
 ```jsx
-import './App.css';
-import Button1 from './components/Button1';
-import Button2 from './components/Button2';
+import './App.css'
+import Button1 from './components/Button1'
+import Button2 from './components/Button2'
 
 export default function App() {
   return (
@@ -61,7 +60,7 @@ export default function App() {
       <Button1 />
       <Button2 />
     </>
-  );
+  )
 }
 ```
 

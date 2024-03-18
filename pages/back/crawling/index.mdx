@@ -92,7 +92,10 @@ const createMessage = async () => {
   // 3. 스크래핑 결과(result)에서 OG(오픈그래프) 코드 골라내서 변수에 저장하기
   const $ = cheerio.load(result.data)
   $('meta').each((index, element) => {
-    if ($(element).attr('property') && $(element).attr('property').includes('og:')) {
+    if (
+      $(element).attr('property') &&
+      $(element).attr('property').includes('og:')
+    ) {
       const key = $(element).attr('property') // og:title, og:description, ...
       const value = $(element).attr('content') // 네이버, 네이버 메인에서 ~~~
       console.log(key, value)

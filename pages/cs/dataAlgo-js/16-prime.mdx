@@ -1,5 +1,5 @@
 ---
-title: "16-소수 구하기(prime)"
+title: '16-소수 구하기(prime)'
 date: 2023/02/07
 ---
 
@@ -16,7 +16,7 @@ date: 2023/02/07
 
 소수는 1 또는 자기 자신만은 약수로 가지는 수를 의미한다.
 
-------
+---
 
 # 2. 소수를 구하는 효율적인 방법
 
@@ -40,7 +40,7 @@ function is_prime(num) {
 }
 ```
 
-------
+---
 
 ## 2.2 효율성 개선하기
 
@@ -55,14 +55,14 @@ function is_prime(num) {
 function is_prime(num) {
   for (let i = 2; i * i <= num; i += 1) {
     if (num % i == 0) {
-      return false;
+      return false
     }
   }
-  return true;
+  return true
 }
 ```
 
-------
+---
 
 ## 2.3 에라토스테네스의 체⭐
 
@@ -70,18 +70,21 @@ function is_prime(num) {
 
 고대 그리스 수학자 에라토스테네스가 발견한 소수를 찾는 방법으로 **소수를 판단할 떄, 가장 효율적**인 알고리즘
 
-<img src="https://raw.githubusercontent.com/berenickt/image-server/main/img/Programmers_JS_Algorithm_16_5.png" alt="Programmers_JS_Algorithm_16_5" />
+<img
+  src="https://raw.githubusercontent.com/berenickt/image-server/main/img/Programmers_JS_Algorithm_16_5.png"
+  alt="Programmers_JS_Algorithm_16_5"
+/>
 
-* 2를 제외한 2의 배수가 되는 수들을 모두 체크
-* 3의 배수가 되는 수들을 모두 체크
-* 4는 이미 체크되어 있기 떄문에 넘어감
-* 5의 배수가 되는 수들을 모두 체크
-* 7의 배수가 되는 수들을 모두 체크
+- 2를 제외한 2의 배수가 되는 수들을 모두 체크
+- 3의 배수가 되는 수들을 모두 체크
+- 4는 이미 체크되어 있기 떄문에 넘어감
+- 5의 배수가 되는 수들을 모두 체크
+- 7의 배수가 되는 수들을 모두 체크
 
 ![Programmers_JS_Algorithm_16_6](https://raw.githubusercontent.com/berenickt/image-server/main/img/Programmers_JS_Algorithm_16_6.png)
 
-* 8부터는 확인할 필요가 없다
-* 이후 54까지 체크되지 않은 수들은 모두 소수로 판단
+- 8부터는 확인할 필요가 없다
+- 이후 54까지 체크되지 않은 수들은 모두 소수로 판단
 
 에라토스테네스의 체는 **1부터 N까지 모든 소수를 구하는 경우 가장 효율적**이다.
 
@@ -90,60 +93,57 @@ function is_prime(num) {
 // O(n log log n)
 function get_primes(num) {
   // 0과 1을 제외한 입력값의 나머지 숫자까지 true를 담은 배열
-  const prime = [false, false, ...Array(num - 1).fill(true)];
-  
+  const prime = [false, false, ...Array(num - 1).fill(true)]
+
   // 2 ~ 입력받은 수까지 순회
   for (let i = 2; i * i <= num; i += 1) {
     // 2, 3, 4 순으로 배수들을 false로 체크
     if (prime[i]) {
       for (let j = i * 2; j <= num; j += i) {
-        prime[j] = false;
+        prime[j] = false
       }
     }
   }
-  return prime.filter(Boolean); // false같은 값을 제거
+  return prime.filter(Boolean) // false같은 값을 제거
 }
 ```
 
-------
+---
 
 ### 2.3.1 추가 설명 : filter(Boolean)
 
 ```js
-const something = [
- ...some
-].filter(Boolean);
+const something = [...some].filter(Boolean)
 ```
 
 **왜 이렇게 사용할까?** JS에서 제공되는 배열은 아래와 같이 선언하여 사용할 수 있다.
 
 ```js
-const bad = undefined;
-const bomb = [undefined, 5, null, ,,undefined];
+const bad = undefined
+const bomb = [undefined, 5, null, , , undefined]
 
-
-const arr = [bad, 1, 2, ...bomb];
+const arr = [bad, 1, 2, ...bomb]
 // arr = [undefined, 1, 2, undefined, 5, null, undefined, undefined, undefined]
 ```
 
-위에서 제공되는 예시와 같이 `undefined` 또는 `null`이 의도하지 않게 들어갈 수 있다. 
+위에서 제공되는 예시와 같이 `undefined` 또는 `null`이 의도하지 않게 들어갈 수 있다.
 이러한 가능성은 반복문에서 문제가 발생될 가능성이 크다.
 
 ```js
-arr.map((item) => {
-  console.log(item.value);  // ERROR! Uncaught TypeError: Cannot read property 'item' of undefined
+arr.map(item => {
+  console.log(item.value) // ERROR! Uncaught TypeError: Cannot read property 'item' of undefined
 })
 ```
 
 이를 해결하기위해 일반적으로 반복문 내에서 체크하는 로직을 삽입하여 처리하기도 한다.
 
 ```js
-arr.map((item) => {
+arr.map(item => {
   if (item) {
-    return item;
+    return item
   }
-  
-  console.log(item.value);
+
+  console.log(item.value)
 })
 ```
 
@@ -155,41 +155,41 @@ arr.map((item) => {
 이보다 더 좋은 방법은 없을까? 그 방법이 `filter(Boolean)`을 사용하여 배열을 **믿을 수 있는 상태**로 만드는 것이다! 심플하고 간단하게 사용할 수 있다.
 
 ```js
-let array = [false, 0, -0, 0n, "", null, undefined, NaN, {hello: "world"}];
+let array = [false, 0, -0, 0n, '', null, undefined, NaN, { hello: 'world' }]
 
-console.log(array.filter(Boolean)); // [{hello: "world"}]
+console.log(array.filter(Boolean)) // [{hello: "world"}]
 ```
 
 `Boolean`을 `iterator` 로 사용하여 `false, 0, -0, 0n, "", null, undefined, NaN`를 제거할 수 있다.
 
 > Reference : [https://michaeluloth.com/filter-b](https://michaeluloth.com/filter-boolean)
 
-------
+---
 
 # 3. 실습 : 소수 찾기
 
 ## 3.1 문제
 
-1부터 입력받은 숫자 n 사이에 있는 소수의 개수를 반환하는 함수, solution을 만들어 보세요. 
+1부터 입력받은 숫자 n 사이에 있는 소수의 개수를 반환하는 함수, solution을 만들어 보세요.
 소수는 1과 자기 자신으로만 나누어지는 수를 의미합니다. (1은 소수가 아닙니다.)
 
 [제한 조건]
 
-* n은 2이상 1000000이하의 자연수입니다.
+- n은 2이상 1000000이하의 자연수입니다.
 
 [입출력 예]
 
-|  n   | result |
-| :--: | :----: |
-|  10  |   4    |
-|  5   |   3    |
+|  n  | result |
+| :-: | :----: |
+| 10  |   4    |
+|  5  |   3    |
 
-------
+---
 
 ## 3.2 풀이
 
-이 문제는 이름 그대로 1부터 입력받은 숫자 n 사이에 있는 소수를 찾는 문제입니다. 
-1부터 n까지 소수를 모두 찾아야할 경우 가장 효율적인 알고리즘은 에라토스테네스의 체라고 말씀드린 것 기억나시나요? 
+이 문제는 이름 그대로 1부터 입력받은 숫자 n 사이에 있는 소수를 찾는 문제입니다.
+1부터 n까지 소수를 모두 찾아야할 경우 가장 효율적인 알고리즘은 에라토스테네스의 체라고 말씀드린 것 기억나시나요?
 이번 문제는 에라토스테네스의 체를 이용하여 쉽게 풀 수 있습니다.
 
 그렇지만 다른 알고리즘도 이용하여 한 번 비교해보도록 하겠습니다.
@@ -203,26 +203,26 @@ console.log(array.filter(Boolean)); // [{hello: "world"}]
 function isPrime(num) {
   for (let i = 2; i < num; i += 1) {
     if (num % i == 0) {
-      return false;
+      return false
     }
   }
-  return true;
+  return true
 }
 
 function solution(n) {
-  let answer = 0;
+  let answer = 0
   for (let i = 2; i <= n; i += 1) {
     if (isPrime(i)) {
-      answer += 1;
+      answer += 1
     }
   }
-  return answer;
+  return answer
 }
 ```
 
 하지만 이 코드의 경우 성능이 느리기 때문에 모든 테스트 케이스를 통과하지 못합니다. 따라서 더 효율적인 방법을 찾아야 합니다.
 
-------
+---
 
 ### 3.2.2 제곱근 이후 연산하지 않기
 
@@ -234,26 +234,26 @@ function isPrime(num) {
   for (let i = 2; i * i <= num; i += 1) {
     // 이 부분이 변경됩니다.
     if (num % i == 0) {
-      return false;
+      return false
     }
   }
-  return true;
+  return true
 }
 
 function solution(n) {
-  let answer = 0;
+  let answer = 0
   for (let i = 2; i <= n; i += 1) {
     if (isPrime(i)) {
-      answer += 1;
+      answer += 1
     }
   }
-  return answer;
+  return answer
 }
 ```
 
 정확성 테스트는 모두 통과하지만 여전히 효율성 테스트는 통과하지 못합니다. 따라서 더 효율적인 알고리즘을 사용해야 합니다.
 
-------
+---
 
 ### 3.2.3 에라토스테네스의 체
 
@@ -264,22 +264,21 @@ function solution(n) {
 // O(n log log n)
 function get_primes(num) {
   // 0과 1은 소수가 아니기에 미리 false로 체크합니다.
-  const prime = [false, false, ...Array(num - 1).fill(true)];
+  const prime = [false, false, ...Array(num - 1).fill(true)]
 
   for (let i = 2; i * i <= num; i += 1) {
     if (prime[i]) {
       for (let j = i * 2; j <= num; j += i) {
-        prime[j] = false;
+        prime[j] = false
       }
     }
   }
-  return prime.filter(Boolean); // true만 필터링하고 싶을 경우 이런 방식으로 쓸 수 있습니다.
+  return prime.filter(Boolean) // true만 필터링하고 싶을 경우 이런 방식으로 쓸 수 있습니다.
 }
 
 function solution(n) {
-  return get_primes(n).length;
+  return get_primes(n).length
 }
 ```
 
 이 경우 효율성 테스트를 통과합니다. 정확도 테스트에서 걸린 시간을 확인해보아도 훨씬 빠르다는 것을 알 수 있습니다.
-

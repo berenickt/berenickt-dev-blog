@@ -1,38 +1,38 @@
 ---
-title: "09-트리 (Tree)"
+title: '09-트리 (Tree)'
 date: 2023/01/11
 ---
 
 # 1. 트리(Tree)
 
-* **방향 그래프의 일종**으로 **정점을 가리키는 간선이 하나 밖에 없는 구조**를 가지고 있다.
-  * e.g. 디렉토리(폴더) 구조
-  * e.g. 회사 조직도
+- **방향 그래프의 일종**으로 **정점을 가리키는 간선이 하나 밖에 없는 구조**를 가지고 있다.
+  - e.g. 디렉토리(폴더) 구조
+  - e.g. 회사 조직도
 
-------
+---
 
 ## 1.1 트리 용어
 
 ![Data Structure_9_1](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_9_1.webp)
 
-* `Node` : 트리의 구성요소, 트리 구조를 이루는 **모든 개별 데이터**
-  * 부모 노드(Parent node), 자식 노드(Child node)
-* `Root` : 트리의 최상위 Node
-* `리프(Leaf)` : 트리 구조의 끝지점이고, 자식 노드가 없는 노드
-* `깊이 (depth)` : 루트로부터 하위 계층의 특정 노드까지의 깊이(depth)를 표현
-* `레벨(Level)` : **트리 구조**에서 **같은 깊이**를 가지고 있는 **노드를 묶어서 레벨(level)**로 표현
-* `Leaf Node` : 트리의 깊이 단계
-* `Sub tree` : 트리 구조에서 root에서 뻗어나오는 큰 트리의 내부에, 트리 구조를 갖춘 작은 트리
+- `Node` : 트리의 구성요소, 트리 구조를 이루는 **모든 개별 데이터**
+  - 부모 노드(Parent node), 자식 노드(Child node)
+- `Root` : 트리의 최상위 Node
+- `리프(Leaf)` : 트리 구조의 끝지점이고, 자식 노드가 없는 노드
+- `깊이 (depth)` : 루트로부터 하위 계층의 특정 노드까지의 깊이(depth)를 표현
+- `레벨(Level)` : **트리 구조**에서 **같은 깊이**를 가지고 있는 **노드를 묶어서 레벨(level)**로 표현
+- `Leaf Node` : 트리의 깊이 단계
+- `Sub tree` : 트리 구조에서 root에서 뻗어나오는 큰 트리의 내부에, 트리 구조를 갖춘 작은 트리
 
-------
+---
 
 ## 1.2 트리의 특징
 
-* 루트 정점을 제외한 **모든 정점은 하나의 부모 정점을 가진다.**
-* 정점이 N개인 트리는 반드시 N-1개의 간선을 가진다.
-* 루트에서 **특정 정점으로 가는 경로는 유일**하다.
+- 루트 정점을 제외한 **모든 정점은 하나의 부모 정점을 가진다.**
+- 정점이 N개인 트리는 반드시 N-1개의 간선을 가진다.
+- 루트에서 **특정 정점으로 가는 경로는 유일**하다.
 
-------
+---
 
 ## 1.3 트리의 구현 방법
 
@@ -40,31 +40,31 @@ date: 2023/01/11
 
 ![Data Structure_9_2](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_9_2.png)
 
-------
+---
 
 # 2. 이진 트리
 
 ![Data Structure_9_3](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_9_3.png)
 
-* **이진 트리**는 **각 정점이 최대 2개의 자식을 가지는 트리**를 의미한다.
-* **완전 이진 트리**는 **마지막 레벨을 제외하고 모든 정점이 채워진 트리**를 의미한다.
-* **포화 이진 트**리는 **마지막 레벨까지 모든 정점이 채워진 트리**를 의미한다.
-* **편향 트리**는 **한 방향으로만 정점이 이어지는 트리**를 의미한다.
+- **이진 트리**는 **각 정점이 최대 2개의 자식을 가지는 트리**를 의미한다.
+- **완전 이진 트리**는 **마지막 레벨을 제외하고 모든 정점이 채워진 트리**를 의미한다.
+- **포화 이진 트**리는 **마지막 레벨까지 모든 정점이 채워진 트리**를 의미한다.
+- **편향 트리**는 **한 방향으로만 정점이 이어지는 트리**를 의미한다.
 
-------
+---
 
 ## 2.1 이진 트리의 특징
 
-* 정점이 N개인 이진 트리는 최악의 경우 높이가 N이 될 수 있다.
-* 정점이 N개인 포화 또는 완전 이진트리의 높이는 $log\ N$이다.
-* 높이가 h인 포화 이진 트리는 $2^h -1$개의 정점을 갖는다.
-* **일반적인 이진 트리를 사용하는 경우는 많지 않다**. 다음 자료구조에 응용된다.
-  * 이진 탐색 트리
-  * 힙
-  * AVL 트리
-  * 레드 블랙 트리
+- 정점이 N개인 이진 트리는 최악의 경우 높이가 N이 될 수 있다.
+- 정점이 N개인 포화 또는 완전 이진트리의 높이는 $log\ N$이다.
+- 높이가 h인 포화 이진 트리는 $2^h -1$개의 정점을 갖는다.
+- **일반적인 이진 트리를 사용하는 경우는 많지 않다**. 다음 자료구조에 응용된다.
+  - 이진 탐색 트리
+  - 힙
+  - AVL 트리
+  - 레드 블랙 트리
 
-------
+---
 
 ## 2.2 이진 트리의 구현 방법
 
@@ -72,17 +72,17 @@ date: 2023/01/11
 
 ![Data Structure_9_4](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_9_4.png)
 
-------
+---
 
 ## 2.3 이진 트리의 순회
 
 ![Data Structure_9_5](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_9_5.PNG)
 
-* `전위 순회(Preorder Traversal)`: (루트) -> 왼쪽 서브트리 -> 오른쪽 서브트리
-* `중위 순회(Inorder Traversal)`: 왼쪽 서브트리 -> (루트) -> 오른쪽 서브트리
-* `후위 순회(Postorder Traversal)`: 왼쪽 서브트리 -> 오른쪽 서브트리 -> (루트)
+- `전위 순회(Preorder Traversal)`: (루트) -> 왼쪽 서브트리 -> 오른쪽 서브트리
+- `중위 순회(Inorder Traversal)`: 왼쪽 서브트리 -> (루트) -> 오른쪽 서브트리
+- `후위 순회(Postorder Traversal)`: 왼쪽 서브트리 -> 오른쪽 서브트리 -> (루트)
 
-------
+---
 
 # 2. 구현
 
@@ -98,56 +98,63 @@ const tree = [
   // 1
   9,
   // 1*2, 1*2+1
-  3, 8,
+  3,
+  8,
   // 2*2, 2*2+1, 3*2, 3*2+1
-  2, 5, undefined, 7,
+  2,
+  5,
+  undefined,
+  7,
   // 4*2, 4*2+1, 5*2, 5*2+1
-  undefined, undefined, undefined, 4
-];
+  undefined,
+  undefined,
+  undefined,
+  4,
+]
 ```
 
-------
+---
 
 ## 2.2 이진 트리(Linked List)
 
 ```js
 class Node {
   constructor(value) {
-    this.value = value;
-    this.left = null;
-    this.right = null;
+    this.value = value
+    this.left = null
+    this.right = null
   }
 }
 
 class Tree {
   constructor(node) {
-    this.root = node;
+    this.root = node
   }
   display() {
     // Level Order
-    const queue = new Queue();
-    queue.enqueue(this.root);
+    const queue = new Queue()
+    queue.enqueue(this.root)
     while (queue.size) {
-      const currentNode = queue.dequeue();
-      console.log(currentNode.value);
-      if (currentNode.left) queue.enqueue(currentNode.left);
-      if (currentNode.right) queue.enqueue(currentNode.right);
+      const currentNode = queue.dequeue()
+      console.log(currentNode.value)
+      if (currentNode.left) queue.enqueue(currentNode.left)
+      if (currentNode.right) queue.enqueue(currentNode.right)
     }
   }
 }
 
-const tree = new Tree(new Node(9));
-tree.root.left = new Node(3);
-tree.root.right = new Node(8);
-tree.root.left.left = new Node(2);
-tree.root.left.right = new Node(5);
-tree.root.right.right = new Node(7);
-tree.root.left.right.right = new Node(4);
+const tree = new Tree(new Node(9))
+tree.root.left = new Node(3)
+tree.root.right = new Node(8)
+tree.root.left.left = new Node(2)
+tree.root.left.right = new Node(5)
+tree.root.right.right = new Node(7)
+tree.root.left.right.right = new Node(4)
 ```
 
-------
+---
 
 # [참고]
 
-* https://hanamon.kr/%EC%9E%90%EB%A3%8C%EA%B5%AC%EC%A1%B0-tree-%ED%8A%B8%EB%A6%AC/
-* https://laboputer.github.io/ps/2017/09/27/tree/
+- https://hanamon.kr/%EC%9E%90%EB%A3%8C%EA%B5%AC%EC%A1%B0-tree-%ED%8A%B8%EB%A6%AC/
+- https://laboputer.github.io/ps/2017/09/27/tree/

@@ -84,7 +84,11 @@ export class UsersService {
   // 생략
 
   // **** 팔로우 요청 승인
-  async confirmFollow(followerId: number, followeeId: number, qr?: QueryRunner) {
+  async confirmFollow(
+    followerId: number,
+    followeeId: number,
+    qr?: QueryRunner,
+  ) {
     const userFollowersRepository = this.getUserFollowRepository(qr)
 
     const existing = await userFollowersRepository.findOne({
@@ -237,7 +241,12 @@ export class CommentsController {
     @User() user: UsersModel,
     @QueryRunner() qr: QR,
   ) {
-    const resp = await this.commentsService.createComment(body, postId, user, qr)
+    const resp = await this.commentsService.createComment(
+      body,
+      postId,
+      user,
+      qr,
+    )
 
     await this.postsService.incrementCommentCount(postId, qr)
 

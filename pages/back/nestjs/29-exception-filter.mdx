@@ -34,7 +34,12 @@ date: 2023/12/25
 `common/exception-filter/http.exception-filter.ts` 파일을 만든다.
 
 ```ts common/exception-filter/http.exception-filter.ts
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from '@nestjs/common'
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+} from '@nestjs/common'
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {

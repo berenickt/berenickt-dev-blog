@@ -27,7 +27,9 @@ export class IsPostMineOrAdminGuard implements CanActivate {
   constructor(private readonly postService: PostsService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest() as Request & { user: UsersModel }
+    const req = context.switchToHttp().getRequest() as Request & {
+      user: UsersModel
+    }
 
     const { user } = req
 
@@ -94,7 +96,13 @@ patchPost(
 `posts/comments/guard/is-comment-mine-or-admin.guard.ts` 파일을 만든다.
 
 ```ts posts/comments/guard/is-comment-mine-or-admin.guard.ts
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common'
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { Request } from 'express'
 import { UsersModel } from 'src/users/entity/users.entity'
 import { RolesEnum } from 'src/users/const/roles.const'
@@ -105,7 +113,9 @@ export class IsCommentMineOrAdminGuard implements CanActivate {
   constructor(private readonly commentService: CommentsService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest() as Request & { user: UsersModel }
+    const req = context.switchToHttp().getRequest() as Request & {
+      user: UsersModel
+    }
 
     const { user } = req
 
@@ -119,7 +129,10 @@ export class IsCommentMineOrAdminGuard implements CanActivate {
 
     const commentId = req.params.commentId
 
-    const isOk = await this.commentService.isCommentMine(user.id, parseInt(commentId))
+    const isOk = await this.commentService.isCommentMine(
+      user.id,
+      parseInt(commentId),
+    )
 
     if (!isOk) {
       throw new ForbiddenException('권한이 없습니다.')

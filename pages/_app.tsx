@@ -30,7 +30,10 @@ const DEFAULT_SEO = {
   },
 }
 
-export default function Nextra({ Component, pageProps }: AppProps): ReactElement {
+export default function Nextra({
+  Component,
+  pageProps,
+}: AppProps): ReactElement {
   return (
     <>
       <DefaultSeo {...DEFAULT_SEO} />

@@ -1,24 +1,24 @@
 ---
-title: "03-배열(Array) & 객체(Object)"
+title: '03-배열(Array) & 객체(Object)'
 date: 2023/01/11
 ---
 
 # 1. 배열(순차 리스트)
 
-* 연관된 데이터를 연속적인 형태로 구성된 구조를 가진다.
-* 배열에 포함된 원소는 순서대로 번호(index)가 붙는다.
-* e.g. **학교 출석부**
+- 연관된 데이터를 연속적인 형태로 구성된 구조를 가진다.
+- 배열에 포함된 원소는 순서대로 번호(index)가 붙는다.
+- e.g. **학교 출석부**
 
-------
+---
 
 ## 1.1 배열의 특징
 
-* 고정된 크기를 가지며 일반적으론 동적으로 크기를 늘릴 수 없다.
-  * 자바스크립트처럼 대부분의 스크립트 언어는 동적으로 크기가 증감되도록 만들어져 있다.
-* 원하는 원소의 index를 알고 있다면 $0(1)$로 원소를 찾을 수 있다
-* **원소를 삭제하면 해당 index에 빈자리**가 생긴다.
+- 고정된 크기를 가지며 일반적으론 동적으로 크기를 늘릴 수 없다.
+  - 자바스크립트처럼 대부분의 스크립트 언어는 동적으로 크기가 증감되도록 만들어져 있다.
+- 원하는 원소의 index를 알고 있다면 $0(1)$로 원소를 찾을 수 있다
+- **원소를 삭제하면 해당 index에 빈자리**가 생긴다.
 
-------
+---
 
 ## 1.2 배열 요소 삭제
 
@@ -26,9 +26,9 @@ e.g. 8번을 지우고 순서를 맞추려면
 
 ![Data Structure_3_1](https://raw.githubusercontent.com/berenickt/image-server/main/img/Data%20Structure_3_1.png)
 
-삭제 후 순서를 맞추려면 $O(n)$이 소요된다. 
+삭제 후 순서를 맞추려면 $O(n)$이 소요된다.
 
-------
+---
 
 ## 1.3 배열 요소 추가
 
@@ -45,94 +45,94 @@ e.g. 중간에 128의 요소를 추가하려면
 
 ```js
 // 📝 빈 Arrays 생성
-let arr1 = [];
-console.log(arr1);
+let arr1 = []
+console.log(arr1)
 
 // 📝 미리 초기화된 Array를 생성
-let arr2 = [1, 2, 3, 4, 5];
-console.log(arr2);
+let arr2 = [1, 2, 3, 4, 5]
+console.log(arr2)
 
 // 📝 많은 값을 같은 값으로 초기화할 경우 fill을 사용
-let arr3 = Array(10).fill(0);
-console.log(arr3);
+let arr3 = Array(10).fill(0)
+console.log(arr3)
 
 // 📝 특정 로직을 사용하여 초기화할 경우 from을 사용
-let arr4 = Array.from({ length: 100 }, (_, i) => i);
-console.log(arr4);
+let arr4 = Array.from({ length: 100 }, (_, i) => i)
+console.log(arr4)
 ```
 
-------
+---
 
 ### 1.4.2 배열 요소 추가, 삭제
 
 ```js
-const arr = [1, 2, 3];
-console.log(arr);
+const arr = [1, 2, 3]
+console.log(arr)
 
 // 📝 4 가 끝에 추가 -> O(1)
-arr.push(4); // O(1)
+arr.push(4) // O(1)
 
 // 📝 여러 개를 한 번에 추가 -> O(1)
-arr.push(5, 6); //  -> O(1)
-console.log(arr);
+arr.push(5, 6) //  -> O(1)
+console.log(arr)
 
 // 📝 3번 인덱스에 128을 추가 -> O(n)
-arr.splice(3, 0, 128); //  -> O(n)
-console.log(arr);
+arr.splice(3, 0, 128) //  -> O(n)
+console.log(arr)
 
 // 📝 3번 인덱스 값을 제거
-arr.splice(3, 1); // O(n)
-console.log(arr[3]);
+arr.splice(3, 1) // O(n)
+console.log(arr[3])
 ```
 
-------
+---
 
 ### 1.4.3 특이점
 
-JavaScript의 배열은 여러 스크립트 언어의 배열과 다르게 동적으로 작동합니다. 
+JavaScript의 배열은 여러 스크립트 언어의 배열과 다르게 동적으로 작동합니다.
 즉, 배열의 크기가 고정되어 있지 않고 필요에 따라 줄어들기도, 늘어나기도 합니다.
 
-더 특이한 점은 JS의 배열은 인덱스가 숫자 뿐만 아니라 문자나 논리값도 들어갈 수 있습니다. 
+더 특이한 점은 JS의 배열은 인덱스가 숫자 뿐만 아니라 문자나 논리값도 들어갈 수 있습니다.
 
-* cf. 숫자 이외의 값을 넣는다면, 자동으로 문자열로 변환된 값이 키값이 됩니다. 
-  * 이는 JavaScript의 배열이 근본적으로 객체타입이기 때문입니다. 
+- cf. 숫자 이외의 값을 넣는다면, 자동으로 문자열로 변환된 값이 키값이 됩니다.
+  - 이는 JavaScript의 배열이 근본적으로 객체타입이기 때문입니다.
 
-그렇지만 배열이 일반적인 객체와 다른 점은 length가 내부적으로 관리된다는 점입니다. 반면 인덱스와 무관한 값을 값으로 사용한 경우 
+그렇지만 배열이 일반적인 객체와 다른 점은 length가 내부적으로 관리된다는 점입니다. 반면 인덱스와 무관한 값을 값으로 사용한 경우
 길이에 영향을 미치지 않습니다. 이는 좋은 코드가 아니기에 알고만 있고, 사용을 하지 않는 것을 추천드립니다.
 
 ```js
 // 자바스크립트의 Arrays 다른 언어의 Array와 조금 다릅니다.
 // 자바스크립트의 Arrays는 동적입니다.
 // 📝 즉, 필요에 따라 줄어들기도, 늘어나기도 합니다.
-const arr = [];
-console.log(arr);
-arr.push(1);
-arr.push(1);
-arr.push(2);
-arr.push(3);
-console.log(arr); // [ 1, 1, 2, 3 ]
+const arr = []
+console.log(arr)
+arr.push(1)
+arr.push(1)
+arr.push(2)
+arr.push(3)
+console.log(arr) // [ 1, 1, 2, 3 ]
 
 // 자바스크립트의 Arrays HashMap에 가깝습니다.
-console.log(arr.length); // 4
+console.log(arr.length) // 4
 
 // 📝 index가 number가 아니어도 됩니다.
 // 숫자값이나 논리값도 들어갈 수 있음
-arr['string'] = 10;
-arr[false] = 0;
-console.log(arr); // [ 1, 1, 2, 3, string: 10, false: 0 ]
-console.log(arr.length); // 4
-arr[4] = 5;
-console.log(arr.length); // 5
+arr['string'] = 10
+arr[false] = 0
+console.log(arr) // [ 1, 1, 2, 3, string: 10, false: 0 ]
+console.log(arr.length) // 4
+arr[4] = 5
+console.log(arr.length) // 5
 ```
 
-------
+---
 
 # 2. 객체
 
-* 객체는 여러 값을 `키-값`형태로 결합시킨 복합 타입
-* e.g. **학교 사물함** : 사물함의 각 칸에는 이름이 붙어있음
+- 객체는 여러 값을 `키-값`형태로 결합시킨 복합 타입
+- e.g. **학교 사물함** : 사물함의 각 칸에는 이름이 붙어있음
 
-------
+---
 
 # 3. 배열 실습
 
@@ -140,198 +140,198 @@ console.log(arr.length); // 5
 
 ```js
 // 배열 선언 및 초기화
-const arr1 = new Array();
-const arr2 = [];
-const arr3 = [1, 2, 3, 4, 5];
-const arr4 = new Array(5);
+const arr1 = new Array()
+const arr2 = []
+const arr3 = [1, 2, 3, 4, 5]
+const arr4 = new Array(5)
 
 // 📝 fill(채울 값)
-const arr5 = new Array(5).fill(5);
+const arr5 = new Array(5).fill(5)
 
 // 📝 from(초기화할 배열, function(배열값, 배열인덱스) {})
 const arr6 = Array.from(Array(5), function (v, k) {
-  return k + 1;
-});
+  return k + 1
+})
 
-console.log(arr1); // []
-console.log(arr2); // []
-console.log(arr3); // [ 1, 2, 3, 4, 5 ]
-console.log(arr4); // [ <5 empty items> ]
-console.log(arr5); // [ 5, 5, 5, 5, 5 ]
-console.log(arr6); // [ 1, 2, 3, 4, 5 ]
+console.log(arr1) // []
+console.log(arr2) // []
+console.log(arr3) // [ 1, 2, 3, 4, 5 ]
+console.log(arr4) // [ <5 empty items> ]
+console.log(arr5) // [ 5, 5, 5, 5, 5 ]
+console.log(arr6) // [ 1, 2, 3, 4, 5 ]
 ```
 
-------
+---
 
 ## 3.2 **length**: 배열 길이
 
 ```js
-const arr = [1, 2, 3, 4, 5, 6];
+const arr = [1, 2, 3, 4, 5, 6]
 
-console.log(arr.length); // 6
-arr.length = 3;
-console.log(arr); // [ 1, 2, 3 ]
-arr.length = 10;
-console.log(arr); // [ 1, 2, 3, <7 empty items> ]
+console.log(arr.length) // 6
+arr.length = 3
+console.log(arr) // [ 1, 2, 3 ]
+arr.length = 10
+console.log(arr) // [ 1, 2, 3, <7 empty items> ]
 ```
 
-------
+---
 
 ## 3.3 **join**(배열 합치기), **reverse**(역순)
 
 ```js
-const arr = [1, 2, 3, 4, 5, 6];
+const arr = [1, 2, 3, 4, 5, 6]
 
 // 📝 join : 배열 합치기
-console.log(arr.join(', ')); // 1, 2, 3, 4, 5, 6
+console.log(arr.join(', ')) // 1, 2, 3, 4, 5, 6
 
 // 📝 reverse : 배열 역으로 출력, 원래 배열에도 영향을 받음
-console.log(arr.reverse()); // [ 6, 5, 4, 3, 2, 1 ]
-console.log(arr); // [ 6, 5, 4, 3, 2, 1 ]
+console.log(arr.reverse()) // [ 6, 5, 4, 3, 2, 1 ]
+console.log(arr) // [ 6, 5, 4, 3, 2, 1 ]
 ```
 
-------
+---
 
 ## 3.4 **concat** : 2개 배열 합치기
 
 ```js
-const arr1 = [1, 2, 3, 4, 5, 6];
-const arr2 = [7, 8, 9, 10];
+const arr1 = [1, 2, 3, 4, 5, 6]
+const arr2 = [7, 8, 9, 10]
 
 // 📝 concat : 2개의 배열 합치기
-console.log(arr1.concat(arr2));
+console.log(arr1.concat(arr2))
 // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 ```
 
-------
+---
 
 ## 3.5 **push**(끝 요소 추가), **pop**(끝 요소 제거)
 
 ```js
-const arr = [1, 2, 3, 4, 5, 6];
+const arr = [1, 2, 3, 4, 5, 6]
 
 // 📝 push : 끝에 요소 추가
-arr.push(7);
-arr.push(7, 8, 9);
-console.log(arr);
+arr.push(7)
+arr.push(7, 8, 9)
+console.log(arr)
 // [1, 2, 3, 4, 5, 6, 7, 7, 8, 9]
 
 // 📝 pop : 끝에 요소 제거
-arr.pop(); // 9
-arr.pop(); // 8
-console.log(arr.pop()); // 7
-console.log(arr);
+arr.pop() // 9
+arr.pop() // 8
+console.log(arr.pop()) // 7
+console.log(arr)
 // [1, 2, 3, 4, 5, 6, 7]
 ```
 
-------
+---
 
 ## 3.6 **shift**(앞 요소 제거), **unshift**(앞 요소 추가)
 
 ```js
-const arr = [1, 2, 3, 4, 5, 6];
+const arr = [1, 2, 3, 4, 5, 6]
 
 // 📝 shift : 맨 앞에 요소 제거
-arr.shift();
-arr.shift();
-console.log(arr); // [ 3, 4, 5, 6 ]
+arr.shift()
+arr.shift()
+console.log(arr) // [ 3, 4, 5, 6 ]
 
 // 📝 unshift : 맨 앞에 요소 추가
-arr.unshift(10);
-console.log(arr); // [ 10, 3, 4, 5, 6 ]
+arr.unshift(10)
+console.log(arr) // [ 10, 3, 4, 5, 6 ]
 ```
 
-------
+---
 
 ## 3.7 **slice** : 중간 요소 자르기
 
 ```js
-const arr = [1, 2, 3, 4, 5, 6];
+const arr = [1, 2, 3, 4, 5, 6]
 
 // 📝 slice(시작 인덱스 포함, 끝 인덱스 미포함) : 값 잘라내기
 // 명시한 끝 인덱스 이전까지 짤림
-console.log(arr.slice(2, 4)); // [ 3, 4 ]
+console.log(arr.slice(2, 4)) // [ 3, 4 ]
 
 // 원본 배열에 영향없음
-console.log(arr); // [ 1, 2, 3, 4, 5, 6 ]
+console.log(arr) // [ 1, 2, 3, 4, 5, 6 ]
 ```
 
-------
+---
 
 ## 3.8 **splice** : 중간 요소 삭제
 
 ```js
-const arr = [1, 2, 3, 4, 5, 6];
+const arr = [1, 2, 3, 4, 5, 6]
 
 // 📝 splice : 중간 요소 삭제
 // splice(시작 인덱스, 삭제할 개수)
-arr.splice(2, 2);
-console.log(arr); // [ 1, 2, 5, 6 ]
+arr.splice(2, 2)
+console.log(arr) // [ 1, 2, 5, 6 ]
 ```
 
-------
+---
 
 ## 3.9 **for of : 배열 순회**
 
 ```js
-const arr = [1, 2, 3, 4, 5, 6];
+const arr = [1, 2, 3, 4, 5, 6]
 
 // 📝 for문 : 배열 순회
 for (let i = 0; i < 6; i += 1) {
-  console.log(arr[i]); // 1 2 3 4 5 6
+  console.log(arr[i]) // 1 2 3 4 5 6
 }
 
 // 📝 for of : 배열 순회
 for (const item of arr) {
-  console.log(item); // 1 2 3 4 5 6
+  console.log(item) // 1 2 3 4 5 6
 }
 ```
 
-------
+---
 
 ## 3.10 배열 = 객체
 
 ```js
-const arr = [1, 2, 3, 4, 5, 6];
+const arr = [1, 2, 3, 4, 5, 6]
 
 // 배열은 사실 객체이다.
-console.log(typeof arr); // object
+console.log(typeof arr) // object
 
 // 따라서 객체 값을 넣을 수 있다.
-arr['key'] = 'value';
-console.log(arr); // [ 1, 2, 3, 4, 5, 6, key: 'value' ]
+arr['key'] = 'value'
+console.log(arr) // [ 1, 2, 3, 4, 5, 6, key: 'value' ]
 
 // 하지만 배열을 올바르게 사용하는 방법이 아니므로 추천하지 않는다.
-console.log(arr.length); // 6
+console.log(arr.length) // 6
 ```
 
-------
+---
 
 # 4. 객체 실습
 
 ## 4.1 객체 선언 및 초기화
 
 ```js
-const obj1 = new Object();
-const obj2 = {};
-const obj3 = { name: '메시', company: 'Cobalt. Inc.' };
+const obj1 = new Object()
+const obj2 = {}
+const obj3 = { name: '메시', company: 'Cobalt. Inc.' }
 
-console.log(obj1); // {}
-console.log(obj2); // {}
-console.log(obj3); // { name: '메시', company: 'Cobalt. Inc.' }
+console.log(obj1) // {}
+console.log(obj2) // {}
+console.log(obj3) // { name: '메시', company: 'Cobalt. Inc.' }
 ```
 
-------
+---
 
 ## 4.2 객체 요소 추가 및 삭제
 
 ```js
-const obj = { name: '메시', company: 'Cobalt. Inc.' };
+const obj = { name: '메시', company: 'Cobalt. Inc.' }
 
 // 📝 객체 요소 추가
-obj['email'] = 'kciter@naver.com';
-obj.phone = '01012345678';
-console.log(obj);
+obj['email'] = 'kciter@naver.com'
+obj.phone = '01012345678'
+console.log(obj)
 // {
 //   name: '메시',
 //   company: 'Cobalt. Inc.',
@@ -340,56 +340,55 @@ console.log(obj);
 // }
 
 // 📝 객체 요소 삭제
-delete obj.phone;
-console.log(obj);
+delete obj.phone
+console.log(obj)
 // { name: '메시', company: 'Cobalt. Inc.', email: 'kciter@naver.com' }
 ```
 
-------
+---
 
 ## 4.3 **in 연산자** : 키 존재 여부 확인
 
 ```js
-const obj = { name: '메시', company: 'Cobalt. Inc.' };
+const obj = { name: '메시', company: 'Cobalt. Inc.' }
 
-obj['email'] = 'kciter@naver.com';
+obj['email'] = 'kciter@naver.com'
 
 // 📝 in : 키 존재 여부 확인
-console.log('email' in obj); // true
-console.log('phone' in obj); // false
+console.log('email' in obj) // true
+console.log('phone' in obj) // false
 ```
 
-------
+---
 
 ## 4.4 **배열 형태로 key, value 출력**
 
 ```js
-const obj = { name: '메시', company: 'Cobalt. Inc.' };
+const obj = { name: '메시', company: 'Cobalt. Inc.' }
 
-obj['email'] = 'kciter@naver.com';
+obj['email'] = 'kciter@naver.com'
 
 // 📝 배열 형태로 key 출력
-console.log(Object.keys(obj)); // [ 'name', 'company', 'email' ]
+console.log(Object.keys(obj)) // [ 'name', 'company', 'email' ]
 
 // 📝 배열 형태로 value 출력
-console.log(Object.values(obj)); // [ '메시', 'Cobalt. Inc.', 'kciter@naver.com' ]
+console.log(Object.values(obj)) // [ '메시', 'Cobalt. Inc.', 'kciter@naver.com' ]
 ```
 
-------
+---
 
 ## 4.5 **for in : 객체 순회**
 
 ```js
-const obj = { name: '메시', company: 'Cobalt. Inc.' };
+const obj = { name: '메시', company: 'Cobalt. Inc.' }
 
-obj['email'] = 'kciter@naver.com';
+obj['email'] = 'kciter@naver.com'
 
 // 📝 for in : 객체 순회
 for (const key in obj) {
-  console.log(key, obj[key]);
+  console.log(key, obj[key])
 }
 // name 메시
 // company Cobalt. Inc.
 // email kciter@naver.com
 ```
-
