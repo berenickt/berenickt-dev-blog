@@ -42,6 +42,7 @@
   "sass": "Sass",
   "emotion": "Emotion",
   "styled-components": "Styled Components",
+  "tailwindcss": "TailwindCSS",
   "-- 7. UI 라이브러리 --": {
     "type": "separator",
     "title": "7. UI 라이브러리"
