@@ -64,23 +64,18 @@ date: 2024/01/10
 ### 4.1 Homebrew 설치
 
 ```bash
-## 설치여부 및 버전 체크
-$ brew --version
-
-## 설치하기
+# 설치
 $ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-# 참고로, 기존 Homebrew 경로는 Intel칩 기준이라, /opt 경로로 바꿔줘야 한다
-## /opt 경로 바꾸기
-$ echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/<USER_ID>/.zprofile
+##### .zshrc에 homebrew path 추가
+echo 'export PATH=/opt/homebrew/bin:$PATH'
+#####
 
-$ eval "$(/opt/homebrew/bin/brew shellenv)"
+# zshrc 반영
+$ source ~/.zshrc
 
-## brew 동작 확인
-$ brew help
-
-## 만약 권한이 없다고 하면 아래 명령어 입력
-$ sudo chown -R $(whoami) /opt/homebrew
+# homebrew 버전확인
+$ brew --version
 ```
 
 - `Homebrew` : MAC/Linux에서 패키지를 설치하고 관리할 수 있는 맥용 패키지 관리자
@@ -91,8 +86,26 @@ $ sudo chown -R $(whoami) /opt/homebrew
 ### 4.2 Node
 
 ```bash
-brew install node
-arch -arm64 brew install node # m1 맥북
+$ brew install nvm
+
+
+##### ~/.bash_profile에 아래 코드 추가
+export NVM_DIR="$HOME/.nvm"
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+#####
+
+# nvm 버전 확인
+$ nvm -v
+
+# nvm 설치가능한 버전 확인
+$ nvm ls
+
+# 원하는 node 버전 설치
+$ nvm install 18.19.1
+
+# 버전 변경
+nvm use 18.19.1
 
 # yarn 설치
 npm install --global yarn
@@ -109,9 +122,11 @@ yarn --version
 ### 4.3 Watchman
 
 ```bash
-# watchman 설치 및 버전 확인
-$ brew install watchman
-$ watchman -v
+# watchman 설치
+brew install watchman
+
+# watchman 설치 확인
+watchman --version
 ```
 
 - watchman은 파일 시스템의 변경 사항을 관찰하기 위한 Facebook 도구
@@ -122,42 +137,30 @@ $ watchman -v
 ### 4.4 CocoaPods & Ruby
 
 ```bash
-# 루비 설치
-arch -arm64 brew install ruby
-arch -arm64 brew install ruby-build
+# 루비 버전 관리도구 설치
+$ brew install rbenv ruby-build
 
-# 루비 버전 관리
-arch -arm64 brew install rbenv
-rbenv install 2.7.5
-rbenv global 2.7.5    # 장치에 기본 루비 버전을 아래 버전으로 설정
-ruby --version
+# 2.7.6 버전 루비 설치
+$ rbenv install 2.7.6
+$ rbenv global 2.7.6
+
+# ruby 버전이 바뀌지 않는 경우, 환경설정이 필요
+$ rbenv init
+$ code ~/.zshrc
+
+# 파일 맨 끝에 복사한 eval "$(rbenv init - zsh)" 를 붙여넣고, 저장
+$ ruby --version
+# ruby 2.7.6p219 (2022-04-12 revision c9c2245c0a) [arm64-darwin23]
 
 # CocoaPods 설치
 $ sudo gem install cocoapods
 $ pod --version
-
-# jekyll, bundler
-$ gem install jekyll bunlder
 ```
 
-- 코코아팟은 오브젝트C나 스위프트로 개발된 오픈 라이브러리들을
-- 내 프로젝트에 간편하게 확장시킬 수 있도록 도와주는 iOS용 프로그램
+- 코코아팟은 오브젝트C나 스위프트로 개발된 오픈 라이브러리들을 프로젝트 내에 간편하게 확장시킬 수 있도록 도와주는 iOS용 프로그램
 - CocoaPods는 Ruby로 구축되어있으며 gem을 사용하여 cocoapods를 설치해야 하는데,
-- 이 경우 sudo(관리자 권한)으로 설치해주어야 한다.
-
-> 💡 Mac M1 Architecture는 CocoaPods와 호환되지 않는다.
->
-> ```bash
-> sudo arch -x86_64 gem install ffi
-> arch -x86_64 pod install
->
-> # cocoapods 설치
-> pod --version
-> ```
->
-> - 만약 설치하면서 에러가 발생하면 다음 명령어를 실행.
-> - 이 명령어는 ffi 패키지를 설치하여, 동적 연결된 라이브러리를 불러와,
->   - M1 arch에 적절한 pod install이 실행되도록 해준다.
+  - 이 경우 sudo(관리자 권한)으로 설치해주어야 한다.
+  - ios 개발에 사용되는 의존성관리자. Ruby 기반이라 **Ruby 버전에 따라 설치 안될 수 있음**
 
 ---
 
@@ -319,25 +322,43 @@ react-native: 0.61.5
 
 ```bash
 # 프로젝트 생성
-$ react-native init 프로젝트명
+$ npx react-native init 프로젝트명
 
-# 버전 명시할 경우 react-native init --version 버전 프로젝트명
-$ react-native init --version 0.61.5 cliFirst
+# 버전 명시할 경우
+$ npx react-native init --version 버전 프로젝트명
 ```
 
 ---
 
 ### 6.1 IOS 시뮬레이터 구동
 
-```bash
-$ yarn start
+터미널 창을 2개를 띄워줘야 한다.
 
-$ yarn ios
+```bash
+# Metro 시작하기 (번들러 도구)
+$ npx react-native start
+```
+
+```bash
+# ios 시뮬레이터
+npx react-native run-ios
+
+# 위 명령어 실행 후, Metro를 띄운 창에서 번들링이 끝나면, react-native 프로젝트가 실행된다.
 ```
 
 ---
 
 ### 6.2 Android 시뮬레이터 구동
+
+---
+
+## 7. 환경설정 점검
+
+```bash
+npx @react-native-community/cli doctor
+```
+
+**react-native doctor라는 명령어로 환경설정이 잘 됐는지 확인해볼 수 있다.**
 
 ---
 
