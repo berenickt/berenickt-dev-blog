@@ -15,5 +15,6 @@
   "07-configuring": "Configuring",
   "08-testing": "Testing",
   "09-authentication": "Authentication",
-  "10-deploying": "Deploying"
+  "10-deploying": "Deploying",
+  "11-API-Ref": "API-Ref"
 }
