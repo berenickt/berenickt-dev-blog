@@ -58,26 +58,27 @@
   "cypress": "Cypress",
   "react-test-lib": "React Test Lib(RTL)",
   "storybook": "Storybook",
-  "-- (9) 3D & 인터랙티브 --": {
+  "-- (9) 배포 --": {
     "type": "separator",
-    "title": "(9) 3D & 인터랙티브"
+    "title": "(9) 배포"
+  },
+  "deploy": "배포",
+  "-- (10) 3D & 인터랙티브 --": {
+    "type": "separator",
+    "title": "(10) 3D & 인터랙티브"
   },
   "threejs": "Three.js",
   "canvas": "Canvas",
   "d3js": "D3.js",
   "chartjs": "Chart.js",
   "web-gl": "WebGL",
-  "-- (10) 번들러 --": {
-    "type": "separator",
-    "title": "(10) 번들러"
-  },
-  "webpack": "WebPack",
-  "turbopack": "TurboPack",
-  "vite": "Vite",
   "-- (11) 기타 --": {
     "type": "separator",
     "title": "(11) 기타"
   },
+  "webpack": "WebPack",
+  "turbopack": "TurboPack",
+  "vite": "Vite",
   "web-rtc": "WebRtc-영상",
   "tensorflow": "TensorFlow-인공지능"
 }
